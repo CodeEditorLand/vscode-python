@@ -1,60 +1,9 @@
 {
   "name": "python",
   "displayName": "Python",
-  "description": "IntelliSense (Pylance), Linting, Debugging (multi-threaded, remote), code formatting, refactoring, unit tests, and more.",
   "version": "0.0.1",
-  "featureFlags": {
-    "usingNewInterpreterStorage": true
-  },
-  "capabilities": {
-    "untrustedWorkspaces": {
-      "supported": "limited",
-      "description": "Only Partial IntelliSense with Pylance is supported. Cannot execute Python with untrusted files."
-    },
-    "virtualWorkspaces": {
-      "supported": "limited",
-      "description": "Only Partial IntelliSense supported."
-    }
-  },
-  "publisher": "ms-python",
-  "enabledApiProposals": [
-    "contribEditorContentMenu",
-    "quickPickSortByLabel",
-    "testObserver",
-    "quickPickItemTooltip",
-    "saveEditor",
-    "terminalDataWriteEvent"
-  ],
-  "author": {
-    "name": "Nikola Hristov",
-    "email": "nikola@nikolahristov.tech",
-    "url": "https://nikolahristov.tech"
-  },
-  "license": "MIT",
-  "homepage": "https://github.com/CodeEditorLand/CodeEditorLand#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/CodeEditorLand/CodeEditorLand.git"
-  },
-  "bugs": {
-    "url": "https://github.com/CodeEditorLand/CodeEditorLand/issues"
-  },
-  "qna": "https://github.com/microsoft/vscode-python/discussions/categories/q-a",
-  "icon": "icon.png",
-  "galleryBanner": {
-    "color": "#1e415e",
-    "theme": "dark"
-  },
-  "engines": {
-    "vscode": "1.82.0"
-  },
-  "enableTelemetry": false,
-  "keywords": [
-    "python",
-    "django",
-    "unittest",
-    "multi-root ready"
-  ],
+  "private": "false",
+  "description": "IntelliSense (Pylance), Linting, Debugging (multi-threaded, remote), code formatting, refactoring, unit tests, and more.",
   "categories": [
     "Programming Languages",
     "Debuggers",
@@ -64,250 +13,70 @@
     "Data Science",
     "Machine Learning"
   ],
-  "activationEvents": [
-    "onDebugInitialConfigurations",
-    "onLanguage:python",
-    "onDebugDynamicConfigurations:python",
-    "onDebugResolve:python",
-    "workspaceContains:mspythonconfig.json",
-    "workspaceContains:pyproject.toml",
-    "workspaceContains:Pipfile",
-    "workspaceContains:setup.py",
-    "workspaceContains:requirements.txt",
-    "workspaceContains:manage.py",
-    "workspaceContains:app.py"
+  "keywords": [
+    "python",
+    "django",
+    "unittest",
+    "multi-root ready"
   ],
+  "homepage": "https://github.com/CodeEditorLand/CodeEditorLand#readme",
+  "bugs": {
+    "url": "https://github.com/CodeEditorLand/CodeEditorLand/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CodeEditorLand/CodeEditorLand.git"
+  },
+  "license": "MIT",
+  "qna": "https://github.com/microsoft/vscode-python/discussions/categories/q-a",
+  "author": {
+    "name": "Nikola Hristov",
+    "email": "nikola@nikolahristov.tech",
+    "url": "https://nikolahristov.tech"
+  },
+  "publisher": "playform",
+  "type": "module",
   "main": "./out/client/extension",
   "browser": "./dist/extension.browser.js",
-  "l10n": "./l10n",
+  "scripts": {
+    "addExtensionPackDependencies": "gulp addExtensionPackDependencies",
+    "checkDependencies": "gulp checkDependencies",
+    "clean": "gulp clean",
+    "compile": "tsc -watch -p ./",
+    "compileApi": "node ./node_modules/typescript/lib/tsc.js -b ./pythonExtensionApi/tsconfig.json",
+    "compiled": "deemon npm run compile",
+    "format-check": "prettier --check 'src/**/*.ts' 'build/**/*.js' '.github/**/*.yml' gulpfile.js",
+    "format-fix": "prettier --write 'src/**/*.ts' 'build/**/*.js' '.github/**/*.yml' gulpfile.js",
+    "kill-compiled": "deemon --kill npm run compile",
+    "lint": "eslint --ext .ts,.js src build pythonExtensionApi",
+    "lint-fix": "eslint --fix --ext .ts,.js src build pythonExtensionApi gulpfile.js",
+    "lint-staged": "node gulpfile.js",
+    "package": "gulp clean && gulp prePublishBundle && vsce package -o ms-python-insiders.vsix",
+    "prePublish": "gulp clean && gulp prePublishNonBundle",
+    "preTestJediLSP": "node ./out/test/languageServers/jedi/lspSetup.js",
+    "prepublishOnly": "TypeScriptESBuild Source/**/*.ts",
+    "test": "node ./out/test/standardTest.js && node ./out/test/multiRootTest.js",
+    "test:cover:report": "nyc --nycrc-path ./build/.nycrc  report --reporter=text --reporter=html --reporter=text-summary --reporter=cobertura",
+    "test:functional": "mocha --require source-map-support/register --config ./build/.mocha.functional.json",
+    "test:functional:cover": "nyc --no-clean --nycrc-path ./build/.nycrc mocha --require source-map-support/register --config ./build/.mocha.functional.json",
+    "test:functional:memleak": "node --inspect-brk ./node_modules/mocha/bin/_mocha --require source-map-support/register --config ./build/.mocha.functional.json",
+    "test:functional:perf": "node --inspect-brk ./node_modules/mocha/bin/_mocha --require source-map-support/register --config ./build/.mocha.functional.perf.json",
+    "test:unittests": "mocha --config ./build/.mocha.unittests.json",
+    "test:unittests:cover": "nyc --no-clean --nycrc-path ./build/.nycrc mocha --config ./build/.mocha.unittests.json",
+    "testDebugger": "node ./out/test/testBootstrap.js ./out/test/debuggerTest.js",
+    "testDebugger:cover": "nyc --no-clean --use-spawn-wrap --nycrc-path ./build/.nycrc --require source-map-support/register node ./out/test/debuggerTest.js",
+    "testInsiders": "cross-env VSC_PYTHON_CI_TEST_VSC_CHANNEL=insiders INSTALL_PYLANCE_EXTENSION=true TEST_FILES_SUFFIX=insiders.test CODE_TESTS_WORKSPACE=src/testMultiRootWkspc/smokeTests \"node ./out/test/standardTest.js\"",
+    "testJediLSP": "node ./out/test/languageServers/jedi/lspSetup.js && cross-env CODE_TESTS_WORKSPACE=src/test VSC_PYTHON_CI_TEST_GREP='Language Server:' node ./out/test/testBootstrap.js ./out/test/standardTest.js && node ./out/test/languageServers/jedi/lspTeardown.js",
+    "testMultiWorkspace": "node ./out/test/testBootstrap.js ./out/test/multiRootTest.js",
+    "testPerformance": "node ./out/test/testBootstrap.js ./out/test/performanceTest.js",
+    "testSingleWorkspace": "node ./out/test/testBootstrap.js ./out/test/standardTest.js",
+    "testSingleWorkspace:cover": "nyc --no-clean --use-spawn-wrap --nycrc-path ./build/.nycrc --require source-map-support/register node ./out/test/standardTest.js",
+    "testSmoke": "cross-env INSTALL_JUPYTER_EXTENSION=true \"node ./out/test/smokeTest.js\"",
+    "updateBuildNumber": "gulp updateBuildNumber",
+    "verifyBundle": "gulp verifyBundle",
+    "webpack": "webpack"
+  },
   "contributes": {
-    "walkthroughs": [
-      {
-        "id": "pythonWelcome",
-        "title": "%walkthrough.pythonWelcome.title%",
-        "description": "%walkthrough.pythonWelcome.description%",
-        "when": "workspacePlatform != webworker",
-        "steps": [
-          {
-            "id": "python.createPythonFile",
-            "title": "%walkthrough.step.python.createPythonFile.title%",
-            "description": "%walkthrough.step.python.createPythonFile.description%",
-            "media": {
-              "svg": "resources/walkthrough/open-folder.svg",
-              "altText": "%walkthrough.step.python.createPythonFile.altText%"
-            },
-            "when": ""
-          },
-          {
-            "id": "python.installPythonWin8",
-            "title": "%walkthrough.step.python.installPythonWin8.title%",
-            "description": "%walkthrough.step.python.installPythonWin8.description%",
-            "media": {
-              "markdown": "resources/walkthrough/install-python-windows-8.md"
-            },
-            "when": "workspacePlatform == windows && showInstallPythonTile"
-          },
-          {
-            "id": "python.installPythonMac",
-            "title": "%walkthrough.step.python.installPythonMac.title%",
-            "description": "%walkthrough.step.python.installPythonMac.description%",
-            "media": {
-              "markdown": "resources/walkthrough/install-python-macos.md"
-            },
-            "when": "workspacePlatform == mac && showInstallPythonTile",
-            "command": "workbench.action.terminal.new"
-          },
-          {
-            "id": "python.installPythonLinux",
-            "title": "%walkthrough.step.python.installPythonLinux.title%",
-            "description": "%walkthrough.step.python.installPythonLinux.description%",
-            "media": {
-              "markdown": "resources/walkthrough/install-python-linux.md"
-            },
-            "when": "workspacePlatform == linux && showInstallPythonTile",
-            "command": "workbench.action.terminal.new"
-          },
-          {
-            "id": "python.selectInterpreter",
-            "title": "%walkthrough.step.python.selectInterpreter.title%",
-            "description": "%walkthrough.step.python.selectInterpreter.description%",
-            "media": {
-              "svg": "resources/walkthrough/python-interpreter.svg",
-              "altText": "%walkthrough.step.python.selectInterpreter.altText%"
-            },
-            "when": "workspaceFolderCount == 0"
-          },
-          {
-            "id": "python.createEnvironment",
-            "title": "%walkthrough.step.python.createEnvironment.title%",
-            "description": "%walkthrough.step.python.createEnvironment.description%",
-            "media": {
-              "svg": "resources/walkthrough/create-environment.svg",
-              "altText": "%walkthrough.step.python.createEnvironment.altText%"
-            },
-            "when": "workspaceFolderCount > 0"
-          },
-          {
-            "id": "python.runAndDebug",
-            "title": "%walkthrough.step.python.runAndDebug.title%",
-            "description": "%walkthrough.step.python.runAndDebug.description%",
-            "media": {
-              "svg": "resources/walkthrough/rundebug2.svg",
-              "altText": "%walkthrough.step.python.runAndDebug.altText%"
-            },
-            "when": ""
-          },
-          {
-            "id": "python.learnMoreWithDS",
-            "title": "%walkthrough.step.python.learnMoreWithDS.title%",
-            "description": "%walkthrough.step.python.learnMoreWithDS.description%",
-            "media": {
-              "altText": "%walkthrough.step.python.learnMoreWithDS.altText%",
-              "svg": "resources/walkthrough/learnmore.svg"
-            },
-            "when": ""
-          }
-        ]
-      },
-      {
-        "id": "pythonWelcome2",
-        "title": "%walkthrough.pythonWelcome.title%",
-        "description": "%walkthrough.pythonWelcome.description%",
-        "when": "false",
-        "steps": [
-          {
-            "id": "python.createPythonFolder",
-            "title": "%walkthrough.step.python.createPythonFolder.title%",
-            "description": "%walkthrough.step.python.createPythonFolder.description%",
-            "media": {
-              "svg": "resources/walkthrough/open-folder.svg",
-              "altText": "%walkthrough.step.python.createPythonFile.altText%"
-            },
-            "when": "workspaceFolderCount = 0"
-          },
-          {
-            "id": "python.createPythonFile",
-            "title": "%walkthrough.step.python.createPythonFile.title%",
-            "description": "%walkthrough.step.python.createPythonFile.description%",
-            "media": {
-              "svg": "resources/walkthrough/open-folder.svg",
-              "altText": "%walkthrough.step.python.createPythonFile.altText%"
-            },
-            "when": ""
-          },
-          {
-            "id": "python.installPythonWin8",
-            "title": "%walkthrough.step.python.installPythonWin8.title%",
-            "description": "%walkthrough.step.python.installPythonWin8.description%",
-            "media": {
-              "markdown": "resources/walkthrough/install-python-windows-8.md"
-            },
-            "when": "workspacePlatform == windows && showInstallPythonTile"
-          },
-          {
-            "id": "python.installPythonMac",
-            "title": "%walkthrough.step.python.installPythonMac.title%",
-            "description": "%walkthrough.step.python.installPythonMac.description%",
-            "media": {
-              "markdown": "resources/walkthrough/install-python-macos.md"
-            },
-            "when": "workspacePlatform == mac && showInstallPythonTile",
-            "command": "workbench.action.terminal.new"
-          },
-          {
-            "id": "python.installPythonLinux",
-            "title": "%walkthrough.step.python.installPythonLinux.title%",
-            "description": "%walkthrough.step.python.installPythonLinux.description%",
-            "media": {
-              "markdown": "resources/walkthrough/install-python-linux.md"
-            },
-            "when": "workspacePlatform == linux && showInstallPythonTile",
-            "command": "workbench.action.terminal.new"
-          },
-          {
-            "id": "python.createEnvironment2",
-            "title": "%walkthrough.step.python.createEnvironment.title2%",
-            "description": "%walkthrough.step.python.createEnvironment.description2%",
-            "media": {
-              "markdown": "resources/walkthrough/environments-info.md"
-            },
-            "when": ""
-          },
-          {
-            "id": "python.runAndDebug",
-            "title": "%walkthrough.step.python.runAndDebug.title%",
-            "description": "%walkthrough.step.python.runAndDebug.description%",
-            "media": {
-              "svg": "resources/walkthrough/rundebug2.svg",
-              "altText": "%walkthrough.step.python.runAndDebug.altText%"
-            },
-            "when": ""
-          },
-          {
-            "id": "python.learnMoreWithDS2",
-            "title": "%walkthrough.step.python.learnMoreWithDS.title%",
-            "description": "%walkthrough.step.python.learnMoreWithDS.description2%",
-            "media": {
-              "altText": "%walkthrough.step.python.learnMoreWithDS.altText%",
-              "svg": "resources/walkthrough/learnmore.svg"
-            },
-            "when": ""
-          }
-        ]
-      },
-      {
-        "id": "pythonDataScienceWelcome",
-        "title": "%walkthrough.pythonDataScienceWelcome.title%",
-        "description": "%walkthrough.pythonDataScienceWelcome.description%",
-        "when": "false",
-        "steps": [
-          {
-            "id": "python.installJupyterExt",
-            "title": "%walkthrough.step.python.installJupyterExt.title%",
-            "description": "%walkthrough.step.python.installJupyterExt.description%",
-            "media": {
-              "svg": "resources/walkthrough/data-science.svg",
-              "altText": "%walkthrough.step.python.installJupyterExt.altText%"
-            }
-          },
-          {
-            "id": "python.createNewNotebook",
-            "title": "%walkthrough.step.python.createNewNotebook.title%",
-            "description": "%walkthrough.step.python.createNewNotebook.description%",
-            "media": {
-              "svg": "resources/walkthrough/create-notebook.svg",
-              "altText": "%walkthrough.step.python.createNewNotebook.altText%"
-            },
-            "completionEvents": [
-              "onCommand:jupyter.createnewnotebook",
-              "onCommand:workbench.action.files.openFolder",
-              "onCommand:workbench.action.files.openFileFolder"
-            ]
-          },
-          {
-            "id": "python.openInteractiveWindow",
-            "title": "%walkthrough.step.python.openInteractiveWindow.title%",
-            "description": "%walkthrough.step.python.openInteractiveWindow.description%",
-            "media": {
-              "svg": "resources/walkthrough/interactive-window.svg",
-              "altText": "%walkthrough.step.python.openInteractiveWindow.altText%"
-            },
-            "completionEvents": [
-              "onCommand:jupyter.createnewinteractive"
-            ]
-          },
-          {
-            "id": "python.dataScienceLearnMore",
-            "title": "%walkthrough.step.python.dataScienceLearnMore.title%",
-            "description": "%walkthrough.step.python.dataScienceLearnMore.description%",
-            "media": {
-              "svg": "resources/walkthrough/learnmore.svg",
-              "altText": "%walkthrough.step.python.dataScienceLearnMore.altText%"
-            }
-          }
-        ]
-      }
-    ],
     "breakpoints": [
       {
         "language": "html"
@@ -1500,6 +1269,233 @@
         "when": "!virtualWorkspace && shellExecutionSupported"
       }
     ],
+    "walkthroughs": [
+      {
+        "id": "pythonWelcome",
+        "title": "%walkthrough.pythonWelcome.title%",
+        "description": "%walkthrough.pythonWelcome.description%",
+        "when": "workspacePlatform != webworker",
+        "steps": [
+          {
+            "id": "python.createPythonFile",
+            "title": "%walkthrough.step.python.createPythonFile.title%",
+            "description": "%walkthrough.step.python.createPythonFile.description%",
+            "media": {
+              "svg": "resources/walkthrough/open-folder.svg",
+              "altText": "%walkthrough.step.python.createPythonFile.altText%"
+            },
+            "when": ""
+          },
+          {
+            "id": "python.installPythonWin8",
+            "title": "%walkthrough.step.python.installPythonWin8.title%",
+            "description": "%walkthrough.step.python.installPythonWin8.description%",
+            "media": {
+              "markdown": "resources/walkthrough/install-python-windows-8.md"
+            },
+            "when": "workspacePlatform == windows && showInstallPythonTile"
+          },
+          {
+            "id": "python.installPythonMac",
+            "title": "%walkthrough.step.python.installPythonMac.title%",
+            "description": "%walkthrough.step.python.installPythonMac.description%",
+            "media": {
+              "markdown": "resources/walkthrough/install-python-macos.md"
+            },
+            "when": "workspacePlatform == mac && showInstallPythonTile",
+            "command": "workbench.action.terminal.new"
+          },
+          {
+            "id": "python.installPythonLinux",
+            "title": "%walkthrough.step.python.installPythonLinux.title%",
+            "description": "%walkthrough.step.python.installPythonLinux.description%",
+            "media": {
+              "markdown": "resources/walkthrough/install-python-linux.md"
+            },
+            "when": "workspacePlatform == linux && showInstallPythonTile",
+            "command": "workbench.action.terminal.new"
+          },
+          {
+            "id": "python.selectInterpreter",
+            "title": "%walkthrough.step.python.selectInterpreter.title%",
+            "description": "%walkthrough.step.python.selectInterpreter.description%",
+            "media": {
+              "svg": "resources/walkthrough/python-interpreter.svg",
+              "altText": "%walkthrough.step.python.selectInterpreter.altText%"
+            },
+            "when": "workspaceFolderCount == 0"
+          },
+          {
+            "id": "python.createEnvironment",
+            "title": "%walkthrough.step.python.createEnvironment.title%",
+            "description": "%walkthrough.step.python.createEnvironment.description%",
+            "media": {
+              "svg": "resources/walkthrough/create-environment.svg",
+              "altText": "%walkthrough.step.python.createEnvironment.altText%"
+            },
+            "when": "workspaceFolderCount > 0"
+          },
+          {
+            "id": "python.runAndDebug",
+            "title": "%walkthrough.step.python.runAndDebug.title%",
+            "description": "%walkthrough.step.python.runAndDebug.description%",
+            "media": {
+              "svg": "resources/walkthrough/rundebug2.svg",
+              "altText": "%walkthrough.step.python.runAndDebug.altText%"
+            },
+            "when": ""
+          },
+          {
+            "id": "python.learnMoreWithDS",
+            "title": "%walkthrough.step.python.learnMoreWithDS.title%",
+            "description": "%walkthrough.step.python.learnMoreWithDS.description%",
+            "media": {
+              "altText": "%walkthrough.step.python.learnMoreWithDS.altText%",
+              "svg": "resources/walkthrough/learnmore.svg"
+            },
+            "when": ""
+          }
+        ]
+      },
+      {
+        "id": "pythonWelcome2",
+        "title": "%walkthrough.pythonWelcome.title%",
+        "description": "%walkthrough.pythonWelcome.description%",
+        "when": "false",
+        "steps": [
+          {
+            "id": "python.createPythonFolder",
+            "title": "%walkthrough.step.python.createPythonFolder.title%",
+            "description": "%walkthrough.step.python.createPythonFolder.description%",
+            "media": {
+              "svg": "resources/walkthrough/open-folder.svg",
+              "altText": "%walkthrough.step.python.createPythonFile.altText%"
+            },
+            "when": "workspaceFolderCount = 0"
+          },
+          {
+            "id": "python.createPythonFile",
+            "title": "%walkthrough.step.python.createPythonFile.title%",
+            "description": "%walkthrough.step.python.createPythonFile.description%",
+            "media": {
+              "svg": "resources/walkthrough/open-folder.svg",
+              "altText": "%walkthrough.step.python.createPythonFile.altText%"
+            },
+            "when": ""
+          },
+          {
+            "id": "python.installPythonWin8",
+            "title": "%walkthrough.step.python.installPythonWin8.title%",
+            "description": "%walkthrough.step.python.installPythonWin8.description%",
+            "media": {
+              "markdown": "resources/walkthrough/install-python-windows-8.md"
+            },
+            "when": "workspacePlatform == windows && showInstallPythonTile"
+          },
+          {
+            "id": "python.installPythonMac",
+            "title": "%walkthrough.step.python.installPythonMac.title%",
+            "description": "%walkthrough.step.python.installPythonMac.description%",
+            "media": {
+              "markdown": "resources/walkthrough/install-python-macos.md"
+            },
+            "when": "workspacePlatform == mac && showInstallPythonTile",
+            "command": "workbench.action.terminal.new"
+          },
+          {
+            "id": "python.installPythonLinux",
+            "title": "%walkthrough.step.python.installPythonLinux.title%",
+            "description": "%walkthrough.step.python.installPythonLinux.description%",
+            "media": {
+              "markdown": "resources/walkthrough/install-python-linux.md"
+            },
+            "when": "workspacePlatform == linux && showInstallPythonTile",
+            "command": "workbench.action.terminal.new"
+          },
+          {
+            "id": "python.createEnvironment2",
+            "title": "%walkthrough.step.python.createEnvironment.title2%",
+            "description": "%walkthrough.step.python.createEnvironment.description2%",
+            "media": {
+              "markdown": "resources/walkthrough/environments-info.md"
+            },
+            "when": ""
+          },
+          {
+            "id": "python.runAndDebug",
+            "title": "%walkthrough.step.python.runAndDebug.title%",
+            "description": "%walkthrough.step.python.runAndDebug.description%",
+            "media": {
+              "svg": "resources/walkthrough/rundebug2.svg",
+              "altText": "%walkthrough.step.python.runAndDebug.altText%"
+            },
+            "when": ""
+          },
+          {
+            "id": "python.learnMoreWithDS2",
+            "title": "%walkthrough.step.python.learnMoreWithDS.title%",
+            "description": "%walkthrough.step.python.learnMoreWithDS.description2%",
+            "media": {
+              "altText": "%walkthrough.step.python.learnMoreWithDS.altText%",
+              "svg": "resources/walkthrough/learnmore.svg"
+            },
+            "when": ""
+          }
+        ]
+      },
+      {
+        "id": "pythonDataScienceWelcome",
+        "title": "%walkthrough.pythonDataScienceWelcome.title%",
+        "description": "%walkthrough.pythonDataScienceWelcome.description%",
+        "when": "false",
+        "steps": [
+          {
+            "id": "python.installJupyterExt",
+            "title": "%walkthrough.step.python.installJupyterExt.title%",
+            "description": "%walkthrough.step.python.installJupyterExt.description%",
+            "media": {
+              "svg": "resources/walkthrough/data-science.svg",
+              "altText": "%walkthrough.step.python.installJupyterExt.altText%"
+            }
+          },
+          {
+            "id": "python.createNewNotebook",
+            "title": "%walkthrough.step.python.createNewNotebook.title%",
+            "description": "%walkthrough.step.python.createNewNotebook.description%",
+            "media": {
+              "svg": "resources/walkthrough/create-notebook.svg",
+              "altText": "%walkthrough.step.python.createNewNotebook.altText%"
+            },
+            "completionEvents": [
+              "onCommand:jupyter.createnewnotebook",
+              "onCommand:workbench.action.files.openFolder",
+              "onCommand:workbench.action.files.openFileFolder"
+            ]
+          },
+          {
+            "id": "python.openInteractiveWindow",
+            "title": "%walkthrough.step.python.openInteractiveWindow.title%",
+            "description": "%walkthrough.step.python.openInteractiveWindow.description%",
+            "media": {
+              "svg": "resources/walkthrough/interactive-window.svg",
+              "altText": "%walkthrough.step.python.openInteractiveWindow.altText%"
+            },
+            "completionEvents": [
+              "onCommand:jupyter.createnewinteractive"
+            ]
+          },
+          {
+            "id": "python.dataScienceLearnMore",
+            "title": "%walkthrough.step.python.dataScienceLearnMore.title%",
+            "description": "%walkthrough.step.python.dataScienceLearnMore.description%",
+            "media": {
+              "svg": "resources/walkthrough/learnmore.svg",
+              "altText": "%walkthrough.step.python.dataScienceLearnMore.altText%"
+            }
+          }
+        ]
+      }
+    ],
     "yamlValidation": [
       {
         "fileMatch": ".condarc",
@@ -1515,44 +1511,19 @@
       }
     ]
   },
-  "scripts": {
-    "package": "gulp clean && gulp prePublishBundle && vsce package -o ms-python-insiders.vsix",
-    "prePublish": "gulp clean && gulp prePublishNonBundle",
-    "compile": "tsc -watch -p ./",
-    "compileApi": "node ./node_modules/typescript/lib/tsc.js -b ./pythonExtensionApi/tsconfig.json",
-    "compiled": "deemon npm run compile",
-    "kill-compiled": "deemon --kill npm run compile",
-    "checkDependencies": "gulp checkDependencies",
-    "test": "node ./out/test/standardTest.js && node ./out/test/multiRootTest.js",
-    "test:unittests": "mocha --config ./build/.mocha.unittests.json",
-    "test:unittests:cover": "nyc --no-clean --nycrc-path ./build/.nycrc mocha --config ./build/.mocha.unittests.json",
-    "test:functional": "mocha --require source-map-support/register --config ./build/.mocha.functional.json",
-    "test:functional:perf": "node --inspect-brk ./node_modules/mocha/bin/_mocha --require source-map-support/register --config ./build/.mocha.functional.perf.json",
-    "test:functional:memleak": "node --inspect-brk ./node_modules/mocha/bin/_mocha --require source-map-support/register --config ./build/.mocha.functional.json",
-    "test:functional:cover": "nyc --no-clean --nycrc-path ./build/.nycrc mocha --require source-map-support/register --config ./build/.mocha.functional.json",
-    "test:cover:report": "nyc --nycrc-path ./build/.nycrc  report --reporter=text --reporter=html --reporter=text-summary --reporter=cobertura",
-    "testDebugger": "node ./out/test/testBootstrap.js ./out/test/debuggerTest.js",
-    "testDebugger:cover": "nyc --no-clean --use-spawn-wrap --nycrc-path ./build/.nycrc --require source-map-support/register node ./out/test/debuggerTest.js",
-    "testSingleWorkspace": "node ./out/test/testBootstrap.js ./out/test/standardTest.js",
-    "testSingleWorkspace:cover": "nyc --no-clean --use-spawn-wrap --nycrc-path ./build/.nycrc --require source-map-support/register node ./out/test/standardTest.js",
-    "preTestJediLSP": "node ./out/test/languageServers/jedi/lspSetup.js",
-    "testJediLSP": "node ./out/test/languageServers/jedi/lspSetup.js && cross-env CODE_TESTS_WORKSPACE=src/test VSC_PYTHON_CI_TEST_GREP='Language Server:' node ./out/test/testBootstrap.js ./out/test/standardTest.js && node ./out/test/languageServers/jedi/lspTeardown.js",
-    "testMultiWorkspace": "node ./out/test/testBootstrap.js ./out/test/multiRootTest.js",
-    "testPerformance": "node ./out/test/testBootstrap.js ./out/test/performanceTest.js",
-    "testSmoke": "cross-env INSTALL_JUPYTER_EXTENSION=true \"node ./out/test/smokeTest.js\"",
-    "testInsiders": "cross-env VSC_PYTHON_CI_TEST_VSC_CHANNEL=insiders INSTALL_PYLANCE_EXTENSION=true TEST_FILES_SUFFIX=insiders.test CODE_TESTS_WORKSPACE=src/testMultiRootWkspc/smokeTests \"node ./out/test/standardTest.js\"",
-    "lint-staged": "node gulpfile.js",
-    "lint": "eslint --ext .ts,.js src build pythonExtensionApi",
-    "lint-fix": "eslint --fix --ext .ts,.js src build pythonExtensionApi gulpfile.js",
-    "format-check": "prettier --check 'src/**/*.ts' 'build/**/*.js' '.github/**/*.yml' gulpfile.js",
-    "format-fix": "prettier --write 'src/**/*.ts' 'build/**/*.js' '.github/**/*.yml' gulpfile.js",
-    "clean": "gulp clean",
-    "addExtensionPackDependencies": "gulp addExtensionPackDependencies",
-    "updateBuildNumber": "gulp updateBuildNumber",
-    "verifyBundle": "gulp verifyBundle",
-    "webpack": "webpack",
-    "prepublishOnly": "TypeScriptESBuild Source/**/*.ts"
-  },
+  "activationEvents": [
+    "onDebugInitialConfigurations",
+    "onLanguage:python",
+    "onDebugDynamicConfigurations:python",
+    "onDebugResolve:python",
+    "workspaceContains:mspythonconfig.json",
+    "workspaceContains:pyproject.toml",
+    "workspaceContains:Pipfile",
+    "workspaceContains:setup.py",
+    "workspaceContains:requirements.txt",
+    "workspaceContains:manage.py",
+    "workspaceContains:app.py"
+  ],
   "dependencies": {
     "@iarna/toml": "2.2.5",
     "@vscode/extension-telemetry": "0.8.5",
@@ -1659,6 +1630,7 @@
     "tsconfig-paths-webpack-plugin": "4.1.0",
     "typemoq": "2.1.0",
     "typescript": "5.2.2",
+    "typescript-esbuild": "0.3.1",
     "uuid": "9.0.1",
     "vscode-debugadapter-testsupport": "1.27.0",
     "webpack": "5.89.0",
@@ -1668,12 +1640,40 @@
     "webpack-merge": "5.10.0",
     "webpack-node-externals": "3.0.0",
     "webpack-require-from": "1.8.6",
-    "yargs": "17.7.2",
-    "typescript-esbuild": "0.3.1"
+    "yargs": "17.7.2"
   },
-  "type": "module",
-  "private": "false",
+  "engines": {
+    "vscode": "1.82.0"
+  },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "icon": "icon.png",
+  "galleryBanner": {
+    "color": "#1e415e",
+    "theme": "dark"
+  },
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "Only Partial IntelliSense with Pylance is supported. Cannot execute Python with untrusted files."
+    },
+    "virtualWorkspaces": {
+      "supported": "limited",
+      "description": "Only Partial IntelliSense supported."
+    }
+  },
+  "enableTelemetry": false,
+  "enabledApiProposals": [
+    "contribEditorContentMenu",
+    "quickPickSortByLabel",
+    "testObserver",
+    "quickPickItemTooltip",
+    "saveEditor",
+    "terminalDataWriteEvent"
+  ],
+  "featureFlags": {
+    "usingNewInterpreterStorage": true
+  },
+  "l10n": "./l10n"
 }
