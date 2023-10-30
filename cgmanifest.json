@@ -1,15 +1,15 @@
 {
-    "Registrations": [
-        {
-            "Component": {
-                "Other": {
-                    "Name": "get-pip",
-                    "Version": "21.3.1",
-                    "DownloadUrl": "https://github.com/pypa/get-pip"
-                },
-                "Type": "other"
-            },
-            "DevelopmentDependency": false
-        }
-    ]
+	"Registrations": [
+		{
+			"Component": {
+				"Other": {
+					"Name": "get-pip",
+					"Version": "21.3.1",
+					"DownloadUrl": "https://github.com/pypa/get-pip"
+				},
+				"Type": "other"
+			},
+			"DevelopmentDependency": false
+		}
+	]
 }
