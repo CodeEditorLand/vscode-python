@@ -7,7 +7,7 @@ echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.
 # echo 'eval "$(pyenv init -)"' >> ~/.bashrc
 
 export PYENV_ROOT="$HOME/.pyenv"
-command -v pyenv > /dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
 # eval "$(pyenv init -)" Comment this out and DO NOT use shim.
 source ~/.bashrc
 
@@ -26,7 +26,8 @@ pyenv exec python3.8 -m venv .venv
 source /workspaces/vscode-python/.venv/bin/activate
 
 # Install required Python libraries.
-npx gulp installPythonLibs
+/workspaces/vscode-python/.venv/bin/python -m pip install nox
+nox --session install_python_libs
 
 /workspaces/vscode-python/.venv/bin/python -m pip install -r build/test-requirements.txt
 /workspaces/vscode-python/.venv/bin/python -m pip install -r build/functional-test-requirements.txt
