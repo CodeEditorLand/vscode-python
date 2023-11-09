@@ -296,11 +296,9 @@ suite("TensorBoard session creation", async () => {
 					ProductInstallStatus.NotInstalled,
 					"Yes"
 				);
-				sandbox
-					.stub(applicationShell, "showQuickPick")
-					.resolves({
-						label: TensorBoard.useCurrentWorkingDirectory,
-					});
+				sandbox.stub(applicationShell, "showQuickPick").resolves({
+					label: TensorBoard.useCurrentWorkingDirectory,
+				});
 				// Ensure we ask to install the profiler package and that it resolves to a cancellation
 				sandbox
 					.stub(installer, "install")
@@ -410,11 +408,9 @@ suite("TensorBoard session creation", async () => {
 		});
 		suite("No prompt", async () => {
 			async function runTest() {
-				sandbox
-					.stub(applicationShell, "showQuickPick")
-					.resolves({
-						label: TensorBoard.useCurrentWorkingDirectory,
-					});
+				sandbox.stub(applicationShell, "showQuickPick").resolves({
+					label: TensorBoard.useCurrentWorkingDirectory,
+				});
 				await commandManager.executeCommand(
 					"python.launchTensorBoard",
 					TensorBoardEntrypoint.palette,

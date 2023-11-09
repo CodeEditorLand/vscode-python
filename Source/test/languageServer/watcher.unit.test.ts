@@ -774,18 +774,14 @@ suite("Language server watcher", () => {
 			multiLS ? "s" : ""
 		} should be instantiated when using ${languageServer}`, async () => {
 			const getActiveInterpreterStub = sandbox.stub();
-			getActiveInterpreterStub
-				.onFirstCall()
-				.returns({
-					path: "folder1/python",
-					version: { major: 3, minor: 9 },
-				});
-			getActiveInterpreterStub
-				.onSecondCall()
-				.returns({
-					path: "folder2/python",
-					version: { major: 3, minor: 10 },
-				});
+			getActiveInterpreterStub.onFirstCall().returns({
+				path: "folder1/python",
+				version: { major: 3, minor: 9 },
+			});
+			getActiveInterpreterStub.onSecondCall().returns({
+				path: "folder2/python",
+				version: { major: 3, minor: 10 },
+			});
 			const startLanguageServerStub = sandbox.stub(
 				extensionLSCls.prototype,
 				"startLanguageServer"

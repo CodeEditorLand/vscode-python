@@ -1,62 +1,75 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-'use strict';
+"use strict";
 
-import { Readable } from 'stream';
+import { Readable } from "stream";
 import {
-    CancellationToken,
-    DebugAdapterDescriptorFactory,
-    DebugAdapterTrackerFactory,
-    DebugConfigurationProvider,
-    Disposable,
-    WorkspaceFolder,
-} from 'vscode';
+	CancellationToken,
+	DebugAdapterDescriptorFactory,
+	DebugAdapterTrackerFactory,
+	DebugConfigurationProvider,
+	Disposable,
+	WorkspaceFolder,
+} from "vscode";
 
-import { DebugConfigurationArguments } from '../types';
+import { DebugConfigurationArguments } from "../types";
 
-export const IDebugConfigurationService = Symbol('IDebugConfigurationService');
-export interface IDebugConfigurationService extends DebugConfigurationProvider {}
+export const IDebugConfigurationService = Symbol("IDebugConfigurationService");
+export interface IDebugConfigurationService
+	extends DebugConfigurationProvider {}
 
-export const IDynamicDebugConfigurationService = Symbol('IDynamicDebugConfigurationService');
-export interface IDynamicDebugConfigurationService extends DebugConfigurationProvider {}
+export const IDynamicDebugConfigurationService = Symbol(
+	"IDynamicDebugConfigurationService"
+);
+export interface IDynamicDebugConfigurationService
+	extends DebugConfigurationProvider {}
 
 export type DebugConfigurationState = {
-    config: Partial<DebugConfigurationArguments>;
-    folder?: WorkspaceFolder;
-    token?: CancellationToken;
+	config: Partial<DebugConfigurationArguments>;
+	folder?: WorkspaceFolder;
+	token?: CancellationToken;
 };
 
 export enum DebugConfigurationType {
-    launchFile = 'launchFile',
-    remoteAttach = 'remoteAttach',
-    launchDjango = 'launchDjango',
-    launchFastAPI = 'launchFastAPI',
-    launchFlask = 'launchFlask',
-    launchModule = 'launchModule',
-    launchPyramid = 'launchPyramid',
-    pidAttach = 'pidAttach',
+	launchFile = "launchFile",
+	remoteAttach = "remoteAttach",
+	launchDjango = "launchDjango",
+	launchFastAPI = "launchFastAPI",
+	launchFlask = "launchFlask",
+	launchModule = "launchModule",
+	launchPyramid = "launchPyramid",
+	pidAttach = "pidAttach",
 }
 
 export enum PythonPathSource {
-    launchJson = 'launch.json',
-    settingsJson = 'settings.json',
+	launchJson = "launch.json",
+	settingsJson = "settings.json",
 }
 
-export const IDebugAdapterDescriptorFactory = Symbol('IDebugAdapterDescriptorFactory');
-export interface IDebugAdapterDescriptorFactory extends DebugAdapterDescriptorFactory {}
+export const IDebugAdapterDescriptorFactory = Symbol(
+	"IDebugAdapterDescriptorFactory"
+);
+export interface IDebugAdapterDescriptorFactory
+	extends DebugAdapterDescriptorFactory {}
 
-export const IDebugSessionLoggingFactory = Symbol('IDebugSessionLoggingFactory');
+export const IDebugSessionLoggingFactory = Symbol(
+	"IDebugSessionLoggingFactory"
+);
 
-export interface IDebugSessionLoggingFactory extends DebugAdapterTrackerFactory {}
+export interface IDebugSessionLoggingFactory
+	extends DebugAdapterTrackerFactory {}
 
-export const IOutdatedDebuggerPromptFactory = Symbol('IOutdatedDebuggerPromptFactory');
+export const IOutdatedDebuggerPromptFactory = Symbol(
+	"IOutdatedDebuggerPromptFactory"
+);
 
-export interface IOutdatedDebuggerPromptFactory extends DebugAdapterTrackerFactory {}
+export interface IOutdatedDebuggerPromptFactory
+	extends DebugAdapterTrackerFactory {}
 
-export const IProtocolParser = Symbol('IProtocolParser');
+export const IProtocolParser = Symbol("IProtocolParser");
 export interface IProtocolParser extends Disposable {
-    connect(stream: Readable): void;
-    once(event: string | symbol, listener: (...args: unknown[]) => void): this;
-    on(event: string | symbol, listener: (...args: unknown[]) => void): this;
+	connect(stream: Readable): void;
+	once(event: string | symbol, listener: (...args: unknown[]) => void): this;
+	on(event: string | symbol, listener: (...args: unknown[]) => void): this;
 }

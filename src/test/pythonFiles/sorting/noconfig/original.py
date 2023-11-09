@@ -15,4 +15,3 @@ def test():
 from rope.base import libutils
 from rope.refactor.rename import Rename
 from rope.refactor.extract import ExtractMethod, ExtractVariable
-    
