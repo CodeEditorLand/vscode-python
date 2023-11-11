@@ -4,8 +4,7 @@ This npm module implements an API facade for the Python extension in VS Code.
 
 ## Example
 
-First we need to define a `package.json` for the extension that wants to use the
-API:
+First we need to define a `package.json` for the extension that wants to use the API:
 
 ```jsonc
 {
@@ -24,12 +23,9 @@ API:
 }
 ```
 
-Update `"@types/vscode"` to
-[a recent version](https://code.visualstudio.com/updates/) of VS Code, say
-`"^1.81.0"` for VS Code version `"1.81"`, in case there are any conflicts.
+Update `"@types/vscode"` to [a recent version](https://code.visualstudio.com/updates/) of VS Code, say `"^1.81.0"` for VS Code version `"1.81"`, in case there are any conflicts.
 
-The actual source code to get the active environment to run some script could
-look like this:
+The actual source code to get the active environment to run some script could look like this:
 
 ```typescript
 // Import the API
@@ -56,5 +52,4 @@ if (environment) {
 }
 ```
 
-Check out [the wiki](https://aka.ms/pythonEnvironmentApi) for many more examples
-and usage.
+Check out [the wiki](https://aka.ms/pythonEnvironmentApi) for many more examples and usage.

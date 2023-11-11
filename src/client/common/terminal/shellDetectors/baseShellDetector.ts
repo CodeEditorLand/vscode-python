@@ -1,16 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
+'use strict';
 
-import { injectable, unmanaged } from "inversify";
-import { Terminal } from "vscode";
-import { traceVerbose } from "../../../logging";
-import {
-	IShellDetector,
-	ShellIdentificationTelemetry,
-	TerminalShellType,
-} from "../types";
+import { injectable, unmanaged } from 'inversify';
+import { Terminal } from 'vscode';
+import { traceVerbose } from '../../../logging';
+import { IShellDetector, ShellIdentificationTelemetry, TerminalShellType } from '../types';
 
 /*
 When identifying the shell use the following algorithm:
@@ -54,37 +50,32 @@ detectableShells.set(TerminalShellType.xonsh, IS_XONSH);
 
 @injectable()
 export abstract class BaseShellDetector implements IShellDetector {
-	constructor(@unmanaged() public readonly priority: number) {}
-	public abstract identify(
-		telemetryProperties: ShellIdentificationTelemetry,
-		terminal?: Terminal
-	): TerminalShellType | undefined;
-	public identifyShellFromShellPath(shellPath: string): TerminalShellType {
-		return identifyShellFromShellPath(shellPath);
-	}
+    constructor(@unmanaged() public readonly priority: number) {}
+    public abstract identify(
+        telemetryProperties: ShellIdentificationTelemetry,
+        terminal?: Terminal,
+    ): TerminalShellType | undefined;
+    public identifyShellFromShellPath(shellPath: string): TerminalShellType {
+        return identifyShellFromShellPath(shellPath);
+    }
 }
 
-export function identifyShellFromShellPath(
-	shellPath: string
-): TerminalShellType {
-	// Remove .exe extension so shells can be more consistently detected
-	// on Windows (including Cygwin).
-	const basePath = shellPath.replace(/\.exe$/i, "");
+export function identifyShellFromShellPath(shellPath: string): TerminalShellType {
+    // Remove .exe extension so shells can be more consistently detected
+    // on Windows (including Cygwin).
+    const basePath = shellPath.replace(/\.exe$/i, '');
 
-	const shell = Array.from(detectableShells.keys()).reduce(
-		(matchedShell, shellToDetect) => {
-			if (matchedShell === TerminalShellType.other) {
-				const pat = detectableShells.get(shellToDetect);
-				if (pat && pat.test(basePath)) {
-					return shellToDetect;
-				}
-			}
-			return matchedShell;
-		},
-		TerminalShellType.other
-	);
+    const shell = Array.from(detectableShells.keys()).reduce((matchedShell, shellToDetect) => {
+        if (matchedShell === TerminalShellType.other) {
+            const pat = detectableShells.get(shellToDetect);
+            if (pat && pat.test(basePath)) {
+                return shellToDetect;
+            }
+        }
+        return matchedShell;
+    }, TerminalShellType.other);
 
-	traceVerbose(`Shell path '${shellPath}', base path '${basePath}'`);
-	traceVerbose(`Shell path identified as shell '${shell}'`);
-	return shell;
+    traceVerbose(`Shell path '${shellPath}', base path '${basePath}'`);
+    traceVerbose(`Shell path identified as shell '${shell}'`);
+    return shell;
 }

@@ -1,22 +1,16 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
+'use strict';
 
-import * as minimatch from "minimatch";
-import * as path from "path";
-import {
-	FileChangeType,
-	watchLocationForPattern,
-} from "../../common/platform/fileSystemWatcher";
-import { IDisposable } from "../../common/types";
-import { getOSType, OSType } from "../../common/utils/platform";
-import { traceVerbose } from "../../logging";
+import * as minimatch from 'minimatch';
+import * as path from 'path';
+import { FileChangeType, watchLocationForPattern } from '../../common/platform/fileSystemWatcher';
+import { IDisposable } from '../../common/types';
+import { getOSType, OSType } from '../../common/utils/platform';
+import { traceVerbose } from '../../logging';
 
-const [executable, binName] =
-	getOSType() === OSType.Windows
-		? ["python.exe", "Scripts"]
-		: ["python", "bin"];
+const [executable, binName] = getOSType() === OSType.Windows ? ['python.exe', 'Scripts'] : ['python', 'bin'];
 
 /**
  * Start watching the given directory for changes to files matching the glob.
@@ -26,62 +20,54 @@ const [executable, binName] =
  * @param executableGlob - matches the executable under the directory
  */
 export function watchLocationForPythonBinaries(
-	baseDir: string,
-	callback: (type: FileChangeType, absPath: string) => void,
-	executableGlob: string = executable
+    baseDir: string,
+    callback: (type: FileChangeType, absPath: string) => void,
+    executableGlob: string = executable,
 ): IDisposable {
-	const resolvedGlob = path.posix.normalize(executableGlob);
-	const [baseGlob] = resolvedGlob.split("/").slice(-1);
-	function callbackClosure(type: FileChangeType, e: string) {
-		traceVerbose(
-			"Received event",
-			type,
-			JSON.stringify(e),
-			"for baseglob",
-			baseGlob
-		);
-		const isMatch = minimatch(path.basename(e), baseGlob, {
-			nocase: getOSType() === OSType.Windows,
-		});
-		if (!isMatch) {
-			// When deleting the file for some reason path to all directories leading up to python are reported
-			// Skip those events
-			return;
-		}
-		callback(type, e);
-	}
-	return watchLocationForPattern(baseDir, resolvedGlob, callbackClosure);
+    const resolvedGlob = path.posix.normalize(executableGlob);
+    const [baseGlob] = resolvedGlob.split('/').slice(-1);
+    function callbackClosure(type: FileChangeType, e: string) {
+        traceVerbose('Received event', type, JSON.stringify(e), 'for baseglob', baseGlob);
+        const isMatch = minimatch(path.basename(e), baseGlob, { nocase: getOSType() === OSType.Windows });
+        if (!isMatch) {
+            // When deleting the file for some reason path to all directories leading up to python are reported
+            // Skip those events
+            return;
+        }
+        callback(type, e);
+    }
+    return watchLocationForPattern(baseDir, resolvedGlob, callbackClosure);
 }
 
 export enum PythonEnvStructure {
-	Standard = "standard",
-	Flat = "flat",
+    Standard = 'standard',
+    Flat = 'flat',
 }
 
 /**
  * Generate the globs to use when watching a directory for Python executables.
  */
 export function resolvePythonExeGlobs(
-	basenameGlob = executable,
-	// Be default we always expect a "standard" structure.
-	structure = PythonEnvStructure.Standard
+    basenameGlob = executable,
+    // Be default we always expect a "standard" structure.
+    structure = PythonEnvStructure.Standard,
 ): string[] {
-	if (path.posix.normalize(basenameGlob).includes("/")) {
-		throw Error(`invalid basename glob "${basenameGlob}"`);
-	}
-	const globs: string[] = [];
-	if (structure === PythonEnvStructure.Standard) {
-		globs.push(
-			// Check the directory.
-			basenameGlob,
-			// Check in all subdirectories.
-			`*/${basenameGlob}`,
-			// Check in the "bin" directory of all subdirectories.
-			`*/${binName}/${basenameGlob}`
-		);
-	} else if (structure === PythonEnvStructure.Flat) {
-		// Check only the directory.
-		globs.push(basenameGlob);
-	}
-	return globs;
+    if (path.posix.normalize(basenameGlob).includes('/')) {
+        throw Error(`invalid basename glob "${basenameGlob}"`);
+    }
+    const globs: string[] = [];
+    if (structure === PythonEnvStructure.Standard) {
+        globs.push(
+            // Check the directory.
+            basenameGlob,
+            // Check in all subdirectories.
+            `*/${basenameGlob}`,
+            // Check in the "bin" directory of all subdirectories.
+            `*/${binName}/${basenameGlob}`,
+        );
+    } else if (structure === PythonEnvStructure.Flat) {
+        // Check only the directory.
+        globs.push(basenameGlob);
+    }
+    return globs;
 }
