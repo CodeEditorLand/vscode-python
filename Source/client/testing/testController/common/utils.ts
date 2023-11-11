@@ -375,7 +375,7 @@ export function createExecutionErrorPayload(
 	const etp: ExecutionTestPayload = {
 		cwd,
 		status: "error",
-		error: "Test run failed, the python test process was terminated before it could exit on its own.",
+		error: `Test run failed, the python test process was terminated before it could exit on its own for workspace ${cwd}`,
 		result: {},
 	};
 	// add error result for each attempted test.
@@ -399,7 +399,7 @@ export function createDiscoveryErrorPayload(
 		cwd,
 		status: "error",
 		error: [
-			` \n The python test process was terminated before it could exit on its own, the process errored with: Code: ${code}, Signal: ${signal}`,
+			` \n The python test process was terminated before it could exit on its own, the process errored with: Code: ${code}, Signal: ${signal} for workspace ${cwd}`,
 		],
 	};
 }

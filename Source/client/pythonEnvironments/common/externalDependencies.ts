@@ -208,10 +208,14 @@ export async function* getSubDirs(
  * Returns the value for setting `python.<name>`.
  * @param name The name of the setting.
  */
-export function getPythonSetting<T>(name: string): T | undefined {
+export function getPythonSetting<T>(
+	name: string,
+	root?: string
+): T | undefined {
+	const resource = root ? vscode.Uri.file(root) : undefined;
 	const settings = internalServiceContainer
 		.get<IConfigurationService>(IConfigurationService)
-		.getSettings();
+		.getSettings(resource);
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	return (settings as any)[name];
 }
@@ -223,11 +227,13 @@ export function getPythonSetting<T>(name: string): T | undefined {
  */
 export function onDidChangePythonSetting(
 	name: string,
-	callback: () => void
+	callback: () => void,
+	root?: string
 ): IDisposable {
 	return vscode.workspace.onDidChangeConfiguration(
 		(event: vscode.ConfigurationChangeEvent) => {
-			if (event.affectsConfiguration(`python.${name}`)) {
+			const scope = root ? vscode.Uri.file(root) : undefined;
+			if (event.affectsConfiguration(`python.${name}`, scope)) {
 				callback();
 			}
 		}

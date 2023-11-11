@@ -44,6 +44,7 @@ import { EnvsCollectionService } from "./base/locators/composite/envsCollectionS
 import { IDisposable } from "../common/types";
 import { traceError } from "../logging";
 import { ActiveStateLocator } from "./base/locators/lowLevel/activeStateLocator";
+import { CustomWorkspaceLocator } from "./base/locators/lowLevel/customWorkspaceLocator";
 
 /**
  * Set up the Python environments component (during extension activation).'
@@ -212,6 +213,7 @@ function createWorkspaceLocator(ext: ExtensionState): WorkspaceLocators {
 		(root: vscode.Uri) => [
 			new WorkspaceVirtualEnvironmentLocator(root.fsPath),
 			new PoetryLocator(root.fsPath),
+			new CustomWorkspaceLocator(root.fsPath),
 		],
 		// Add an ILocator factory func here for each kind of workspace-rooted locator.
 	]);

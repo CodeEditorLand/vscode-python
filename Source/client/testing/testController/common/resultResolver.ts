@@ -99,6 +99,8 @@ export class PythonResultResolver implements ITestResultResolver {
 			const { error } = rawTestData;
 			traceError(
 				testingErrorConst,
+				"for workspace: ",
+				workspacePath,
 				"\r\n",
 				error?.join("\r\n\r\n") ?? ""
 			);
@@ -201,7 +203,7 @@ export class PythonResultResolver implements ITestResultResolver {
 					}).join("\r\n");
 					const text = `${testItem.test} failed with error: ${
 						testItem.message ?? testItem.outcome
-					}\r\n${traceback}\r\n`;
+					}\r\n${traceback}`;
 					const message = new TestMessage(text);
 
 					const grabVSid = this.runIdToVSid.get(keyTemp);
@@ -229,7 +231,7 @@ export class PythonResultResolver implements ITestResultResolver {
 
 					const text = `${testItem.test} failed: ${
 						testItem.message ?? testItem.outcome
-					}\r\n${traceback}\r\n`;
+					}\r\n${traceback}`;
 					const message = new TestMessage(text);
 
 					// note that keyTemp is a runId for unittest library...
@@ -303,7 +305,7 @@ export class PythonResultResolver implements ITestResultResolver {
 							const traceback = data.traceback ?? "";
 							const text = `${data.subtest} failed: ${
 								testItem.message ?? testItem.outcome
-							}\r\n${traceback}\r\n`;
+							}\r\n${traceback}`;
 							parentTestItem.children.add(subTestItem);
 							runInstance.started(subTestItem);
 							const message = new TestMessage(text);

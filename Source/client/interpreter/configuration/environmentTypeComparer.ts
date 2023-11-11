@@ -289,6 +289,10 @@ function compareEnvironmentType(
 	a: PythonEnvironment,
 	b: PythonEnvironment
 ): number {
+	if (!a.type && !b.type) {
+		// Return 0 if two global interpreters are being compared.
+		return 0;
+	}
 	const envTypeByPriority = getPrioritizedEnvironmentType();
 	return Math.sign(
 		envTypeByPriority.indexOf(a.envType) -

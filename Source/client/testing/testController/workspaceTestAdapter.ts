@@ -179,7 +179,10 @@ export class WorkspaceTestAdapter {
 					: Testing.errorPytestDiscovery;
 			}
 
-			traceError(`${cancel}\r\n`, ex);
+			traceError(
+				`${cancel} for workspace: ${this.workspaceUri} \r\n`,
+				ex
+			);
 
 			// Report also on the test view.
 			const message = util.format(

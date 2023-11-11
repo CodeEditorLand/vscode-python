@@ -16,11 +16,13 @@ import { TerminalCodeExecutionProvider } from "../../client/terminals/codeExecut
 import { TerminalDeactivateLimitationPrompt } from "../../client/terminals/envCollectionActivation/deactivatePrompt";
 import { TerminalIndicatorPrompt } from "../../client/terminals/envCollectionActivation/indicatorPrompt";
 import { TerminalEnvVarCollectionService } from "../../client/terminals/envCollectionActivation/service";
+import { ShellIntegrationService } from "../../client/terminals/envCollectionActivation/shellIntegrationService";
 import { registerTypes } from "../../client/terminals/serviceRegistry";
 import {
 	ICodeExecutionHelper,
 	ICodeExecutionManager,
 	ICodeExecutionService,
+	IShellIntegrationService,
 	ITerminalAutoActivation,
 	ITerminalEnvVarCollectionService,
 } from "../../client/terminals/types";
@@ -48,6 +50,7 @@ suite("Terminal - Service Registry", () => {
 				IExtensionSingleActivationService,
 				TerminalDeactivateLimitationPrompt,
 			],
+			[IShellIntegrationService, ShellIntegrationService],
 		].forEach((args) => {
 			if (args.length === 2) {
 				services

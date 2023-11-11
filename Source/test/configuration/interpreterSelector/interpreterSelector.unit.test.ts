@@ -21,6 +21,7 @@ import {
 	IInterpreterService,
 	WorkspacePythonPath,
 } from "../../../client/interpreter/contracts";
+import { PythonEnvType } from "../../../client/pythonEnvironments/base/info";
 import {
 	EnvironmentType,
 	PythonEnvironment,
@@ -214,12 +215,14 @@ suite("Interpreters - selector", () => {
 					"python"
 				),
 				envType: EnvironmentType.Venv,
+				type: PythonEnvType.Virtual,
 			},
 			{
 				displayName: "two",
 				envPath: path.join(workspacePath, ".venv"),
 				path: path.join(workspacePath, ".venv", "bin", "python"),
 				envType: EnvironmentType.Venv,
+				type: PythonEnvType.Virtual,
 			},
 			{
 				displayName: "three",
@@ -233,6 +236,7 @@ suite("Interpreters - selector", () => {
 				path: path.join("a", "conda", "environment"),
 				envName: "conda-env",
 				envType: EnvironmentType.Conda,
+				type: PythonEnvType.Conda,
 			},
 		].map((item) => ({ ...info, ...item }));
 

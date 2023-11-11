@@ -12,6 +12,7 @@ import {
 	ICodeExecutionHelper,
 	ICodeExecutionManager,
 	ICodeExecutionService,
+	IShellIntegrationService,
 	ITerminalAutoActivation,
 	ITerminalEnvVarCollectionService,
 } from "./types";
@@ -22,6 +23,7 @@ import {
 } from "../activation/types";
 import { TerminalDeactivateLimitationPrompt } from "./envCollectionActivation/deactivatePrompt";
 import { TerminalIndicatorPrompt } from "./envCollectionActivation/indicatorPrompt";
+import { ShellIntegrationService } from "./envCollectionActivation/shellIntegrationService";
 
 export function registerTypes(serviceManager: IServiceManager): void {
 	serviceManager.addSingleton<ICodeExecutionHelper>(
@@ -65,6 +67,10 @@ export function registerTypes(serviceManager: IServiceManager): void {
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
 		TerminalDeactivateLimitationPrompt
+	);
+	serviceManager.addSingleton<IShellIntegrationService>(
+		IShellIntegrationService,
+		ShellIntegrationService
 	);
 	serviceManager.addBinding(
 		ITerminalEnvVarCollectionService,

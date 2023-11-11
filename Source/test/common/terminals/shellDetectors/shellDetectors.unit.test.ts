@@ -75,6 +75,10 @@ suite("Shell Detectors", () => {
 		TerminalShellType.powershellCore
 	);
 	shellPathsAndIdentification.set(
+		"C:\\Program Files\\nu\\bin\\nu.EXE",
+		TerminalShellType.nushell
+	);
+	shellPathsAndIdentification.set(
 		"/usr/microsoft/xxx/powershell/powershell",
 		TerminalShellType.powershell
 	);

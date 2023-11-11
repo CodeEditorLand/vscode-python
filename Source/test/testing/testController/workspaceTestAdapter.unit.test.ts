@@ -28,6 +28,7 @@ import {
 import * as testItemUtilities from "../../../client/testing/testController/common/testItemUtilities";
 import * as util from "../../../client/testing/testController/common/utils";
 import * as ResultResolver from "../../../client/testing/testController/common/resultResolver";
+import { IPythonExecutionFactory } from "../../../client/common/process/types";
 
 suite("Workspace test adapter", () => {
 	suite("Test discovery", () => {
@@ -157,12 +158,12 @@ suite("Workspace test adapter", () => {
 				stubConfigSettings,
 				outputChannel.object
 			);
-
+			const uriFoo = Uri.parse("foo");
 			const workspaceTestAdapter = new WorkspaceTestAdapter(
 				"unittest",
 				testDiscoveryAdapter,
 				testExecutionAdapter,
-				Uri.parse("foo"),
+				uriFoo,
 				stubResultResolver
 			);
 
@@ -189,7 +190,12 @@ suite("Workspace test adapter", () => {
 				.returns(errorTestItemOptions);
 			const testProvider = "unittest";
 
-			await workspaceTestAdapter.discoverTests(testController);
+			const execFactory = typemoq.Mock.ofType<IPythonExecutionFactory>();
+			await workspaceTestAdapter.discoverTests(
+				testController,
+				undefined,
+				execFactory.object
+			);
 
 			sinon.assert.calledWithMatch(
 				createErrorTestItemStub,
@@ -198,7 +204,7 @@ suite("Workspace test adapter", () => {
 			);
 			sinon.assert.calledWithMatch(
 				buildErrorNodeOptionsStub,
-				Uri.parse("foo"),
+				uriFoo,
 				sinon.match.any,
 				testProvider
 			);
