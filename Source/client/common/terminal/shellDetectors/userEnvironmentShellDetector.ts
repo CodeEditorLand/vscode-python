@@ -1,16 +1,16 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
+'use strict';
 
-import { inject, injectable } from "inversify";
-import { Terminal } from "vscode";
-import { traceVerbose } from "../../../logging";
-import { IPlatformService } from "../../platform/types";
-import { ICurrentProcess } from "../../types";
-import { OSType } from "../../utils/platform";
-import { ShellIdentificationTelemetry, TerminalShellType } from "../types";
-import { BaseShellDetector } from "./baseShellDetector";
+import { inject, injectable } from 'inversify';
+import { Terminal } from 'vscode';
+import { traceVerbose } from '../../../logging';
+import { IPlatformService } from '../../platform/types';
+import { ICurrentProcess } from '../../types';
+import { OSType } from '../../utils/platform';
+import { ShellIdentificationTelemetry, TerminalShellType } from '../types';
+import { BaseShellDetector } from './baseShellDetector';
 
 /**
  * Identifies the shell based on the users environment (env variables).
@@ -21,30 +21,29 @@ import { BaseShellDetector } from "./baseShellDetector";
  */
 @injectable()
 export class UserEnvironmentShellDetector extends BaseShellDetector {
-	constructor(
-		@inject(ICurrentProcess)
-		private readonly currentProcess: ICurrentProcess,
-		@inject(IPlatformService) private readonly platform: IPlatformService
-	) {
-		super(1);
-	}
-	public getDefaultPlatformShell(): string {
-		return getDefaultShell(this.platform, this.currentProcess);
-	}
-	public identify(
-		telemetryProperties: ShellIdentificationTelemetry,
-		_terminal?: Terminal
-	): TerminalShellType | undefined {
-		const shellPath = this.getDefaultPlatformShell();
-		telemetryProperties.hasShellInEnv = !!shellPath;
-		const shell = this.identifyShellFromShellPath(shellPath);
+    constructor(
+        @inject(ICurrentProcess) private readonly currentProcess: ICurrentProcess,
+        @inject(IPlatformService) private readonly platform: IPlatformService,
+    ) {
+        super(1);
+    }
+    public getDefaultPlatformShell(): string {
+        return getDefaultShell(this.platform, this.currentProcess);
+    }
+    public identify(
+        telemetryProperties: ShellIdentificationTelemetry,
+        _terminal?: Terminal,
+    ): TerminalShellType | undefined {
+        const shellPath = this.getDefaultPlatformShell();
+        telemetryProperties.hasShellInEnv = !!shellPath;
+        const shell = this.identifyShellFromShellPath(shellPath);
 
-		if (shell !== TerminalShellType.other) {
-			telemetryProperties.shellIdentificationSource = "environment";
-		}
-		traceVerbose(`Shell path from user env '${shellPath}'`);
-		return shell;
-	}
+        if (shell !== TerminalShellType.other) {
+            telemetryProperties.shellIdentificationSource = 'environment';
+        }
+        traceVerbose(`Shell path from user env '${shellPath}'`);
+        return shell;
+    }
 }
 
 /*
@@ -53,34 +52,24 @@ export class UserEnvironmentShellDetector extends BaseShellDetector {
  On Windows, determine the default shell.
  On others, default to bash.
 */
-function getDefaultShell(
-	platform: IPlatformService,
-	currentProcess: ICurrentProcess
-): string {
-	if (platform.osType === OSType.Windows) {
-		return getTerminalDefaultShellWindows(platform, currentProcess);
-	}
+function getDefaultShell(platform: IPlatformService, currentProcess: ICurrentProcess): string {
+    if (platform.osType === OSType.Windows) {
+        return getTerminalDefaultShellWindows(platform, currentProcess);
+    }
 
-	return currentProcess.env.SHELL && currentProcess.env.SHELL !== "/bin/false"
-		? currentProcess.env.SHELL
-		: "/bin/bash";
+    return currentProcess.env.SHELL && currentProcess.env.SHELL !== '/bin/false'
+        ? currentProcess.env.SHELL
+        : '/bin/bash';
 }
-function getTerminalDefaultShellWindows(
-	platform: IPlatformService,
-	currentProcess: ICurrentProcess
-): string {
-	const isAtLeastWindows10 = parseFloat(platform.osRelease) >= 10;
-	const is32ProcessOn64Windows = currentProcess.env.hasOwnProperty(
-		"PROCESSOR_ARCHITEW6432"
-	);
-	const powerShellPath = `${currentProcess.env.windir}\\${
-		is32ProcessOn64Windows ? "Sysnative" : "System32"
-	}\\WindowsPowerShell\\v1.0\\powershell.exe`;
-	return isAtLeastWindows10
-		? powerShellPath
-		: getWindowsShell(currentProcess);
+function getTerminalDefaultShellWindows(platform: IPlatformService, currentProcess: ICurrentProcess): string {
+    const isAtLeastWindows10 = parseFloat(platform.osRelease) >= 10;
+    const is32ProcessOn64Windows = currentProcess.env.hasOwnProperty('PROCESSOR_ARCHITEW6432');
+    const powerShellPath = `${currentProcess.env.windir}\\${
+        is32ProcessOn64Windows ? 'Sysnative' : 'System32'
+    }\\WindowsPowerShell\\v1.0\\powershell.exe`;
+    return isAtLeastWindows10 ? powerShellPath : getWindowsShell(currentProcess);
 }
 
 function getWindowsShell(currentProcess: ICurrentProcess): string {
-	return currentProcess.env.comspec || "cmd.exe";
+    return currentProcess.env.comspec || 'cmd.exe';
 }
