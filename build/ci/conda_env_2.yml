@@ -1,4 +1,4 @@
 name: conda_env_2
 dependencies:
-  - python=3.8
-  - pip
+    - python=3.8
+    - pip

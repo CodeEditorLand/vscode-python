@@ -2,6 +2,9 @@
 // Licensed under the MIT License.
 
 export type IStartupDurations = Record<
-    'totalNonBlockingActivateTime' | 'totalActivateTime' | 'startActivateTime' | 'codeLoadingTime',
-    number
+	| "totalNonBlockingActivateTime"
+	| "totalActivateTime"
+	| "startActivateTime"
+	| "codeLoadingTime",
+	number
 >;
