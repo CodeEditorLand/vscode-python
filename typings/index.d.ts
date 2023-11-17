@@ -3,5 +3,5 @@
 
 // Added to allow compilation of backbone types pulled in from ipywidgets (@jupyterlab/widgets).
 declare namespace JQuery {
-	type TriggeredEvent = unknown;
+    type TriggeredEvent = unknown;
 }
