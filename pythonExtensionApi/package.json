@@ -32,9 +32,9 @@
 		"prepublishOnly": "echo \"⛔ Can only publish from a secure pipeline ⛔\" && node ../build/fail"
 	},
 	"devDependencies": {
-		"@types/vscode": "1.78.0",
+		"@types/vscode": "1.84.1",
 		"source-map": "0.8.0-beta.0",
-		"typescript": "5.0.4"
+		"typescript": "5.2.2"
 	},
 	"engines": {
 		"node": ">=18.17.1",
