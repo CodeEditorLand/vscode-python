@@ -2,6 +2,7 @@
   "name": "python",
   "displayName": "Python",
   "version": "0.0.1",
+  "private": "false",
   "description": "IntelliSense (Pylance), Linting, Debugging (multi-threaded, remote), code formatting, refactoring, unit tests, and more.",
   "homepage": "https://github.com/CodeEditorLand/CodeEditorLand#readme",
   "bugs": {
@@ -19,6 +20,7 @@
     "url": "https://nikolahristov.tech"
   },
   "publisher": "playform",
+  "type": "module",
   "main": "./out/client/extension",
   "browser": "./dist/extension.browser.js",
   "scripts": {
@@ -35,6 +37,7 @@
     "package": "gulp clean && gulp prePublishBundle && vsce package -o ms-python-insiders.vsix",
     "prePublish": "gulp clean && gulp prePublishNonBundle",
     "preTestJediLSP": "node ./out/test/languageServers/jedi/lspSetup.js",
+    "prepublishOnly": "TypeScriptESBuild 'Source/**/*.ts'",
     "test": "node ./out/test/standardTest.js && node ./out/test/multiRootTest.js",
     "test:cover:report": "nyc --nycrc-path ./build/.nycrc  report --reporter=text --reporter=html --reporter=text-summary --reporter=cobertura",
     "test:functional": "mocha --require source-map-support/register --config ./build/.mocha.functional.json",
@@ -54,8 +57,7 @@
     "testSmoke": "cross-env INSTALL_JUPYTER_EXTENSION=true \"node ./out/test/smokeTest.js\"",
     "updateBuildNumber": "gulp updateBuildNumber",
     "verifyBundle": "gulp verifyBundle",
-    "webpack": "webpack",
-    "prepublishOnly": "TypeScriptESBuild 'Source/**/*.ts'"
+    "webpack": "webpack"
   },
   "contributes": {
     "breakpoints": [
@@ -1609,6 +1611,7 @@
     "tsconfig-paths-webpack-plugin": "4.1.0",
     "typemoq": "2.1.0",
     "typescript": "5.3.2",
+    "typescript-esbuild": "0.3.1",
     "uuid": "9.0.1",
     "webpack": "5.89.0",
     "webpack-bundle-analyzer": "4.10.1",
@@ -1617,8 +1620,10 @@
     "webpack-merge": "5.10.0",
     "webpack-node-externals": "3.0.0",
     "webpack-require-from": "1.8.6",
-    "yargs": "17.7.2",
-    "typescript-esbuild": "0.3.1"
+    "yargs": "17.7.2"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "icon": "icon.png",
   "galleryBanner": {
@@ -1648,10 +1653,5 @@
   "featureFlags": {
     "usingNewInterpreterStorage": true
   },
-  "l10n": "./l10n",
-  "type": "module",
-  "private": "false",
-  "publishConfig": {
-    "access": "public"
-  }
+  "l10n": "./l10n"
 }

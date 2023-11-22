@@ -1,6 +1,7 @@
 {
   "name": "@vscode/python-extension",
   "version": "0.0.1",
+  "private": "false",
   "description": "An API facade for the Python extension in VS Code",
   "homepage": "https://github.com/CodeEditorLand/CodeEditorLand#readme",
   "bugs": {
@@ -16,6 +17,8 @@
     "email": "nikola@nikolahristov.tech",
     "url": "https://nikolahristov.tech"
   },
+  "publisher": "playform",
+  "type": "module",
   "main": "./out/main.js",
   "types": "./out/main.d.ts",
   "scripts": {
@@ -34,9 +37,6 @@
     "typescript": "5.3.2",
     "typescript-esbuild": "0.3.1"
   },
-  "type": "module",
-  "publisher": "playform",
-  "private": "false",
   "publishConfig": {
     "access": "public"
   }
