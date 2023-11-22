@@ -1,43 +1,43 @@
 {
-	"name": "@vscode/python-extension",
-	"version": "1.0.5",
-	"description": "An API facade for the Python extension in VS Code",
-	"keywords": [
-		"Python",
-		"VSCode",
-		"API"
-	],
-	"homepage": "https://github.com/microsoft/vscode-python/tree/main/pythonExtensionApi",
-	"bugs": {
-		"url": "https://github.com/Microsoft/vscode-python/issues"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/Microsoft/vscode-python"
-	},
-	"license": "MIT",
-	"author": {
-		"name": "Microsoft Corporation"
-	},
-	"main": "./out/main.js",
-	"types": "./out/main.d.ts",
-	"scripts": {
-		"all": "npm run clean && npm run compile",
-		"all:publish": "git clean -xfd . && npm install && npm run compile && npm run formatTypings",
-		"clean": "node ../node_modules/rimraf/bin.js out",
-		"compile": "node ./node_modules/typescript/lib/tsc.js -b ./tsconfig.json",
-		"formatTypings": "node ../node_modules/eslint/bin/eslint.js --fix ./out/main.d.ts",
-		"lint": "node ../node_modules/eslint/bin/eslint.js --ext ts src",
-		"prepack": "npm run all:publish",
-		"prepublishOnly": "echo \"⛔ Can only publish from a secure pipeline ⛔\" && node ../build/fail"
-	},
-	"devDependencies": {
-		"@types/vscode": "^1.84.1",
-		"source-map": "^0.8.0-beta.0",
-		"typescript": "5.2.2"
-	},
-	"engines": {
-		"node": ">=18.17.1",
-		"vscode": "^1.78.0"
-	}
+  "name": "@vscode/python-extension",
+  "version": "0.0.1",
+  "description": "An API facade for the Python extension in VS Code",
+  "homepage": "https://github.com/CodeEditorLand/CodeEditorLand#readme",
+  "bugs": {
+    "url": "https://github.com/CodeEditorLand/CodeEditorLand/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CodeEditorLand/CodeEditorLand.git"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Nikola Hristov",
+    "email": "nikola@nikolahristov.tech",
+    "url": "https://nikolahristov.tech"
+  },
+  "main": "./out/main.js",
+  "types": "./out/main.d.ts",
+  "scripts": {
+    "all": "npm run clean && npm run compile",
+    "all:publish": "git clean -xfd . && npm install && npm run compile && npm run formatTypings",
+    "clean": "node ../node_modules/rimraf/bin.js out",
+    "compile": "node ./node_modules/typescript/lib/tsc.js -b ./tsconfig.json",
+    "formatTypings": "node ../node_modules/eslint/bin/eslint.js --fix ./out/main.d.ts",
+    "lint": "node ../node_modules/eslint/bin/eslint.js --ext ts src",
+    "prepack": "npm run all:publish",
+    "prepublishOnly": "TypeScriptESBuild 'Source/**/*.ts'"
+  },
+  "devDependencies": {
+    "@types/vscode": "1.84.2",
+    "source-map": "0.8.0-beta.0",
+    "typescript": "5.3.2",
+    "typescript-esbuild": "0.3.1"
+  },
+  "type": "module",
+  "publisher": "playform",
+  "private": "false",
+  "publishConfig": {
+    "access": "public"
+  }
 }
