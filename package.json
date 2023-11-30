@@ -1560,7 +1560,7 @@
 		"@types/glob": "8.1.0",
 		"@types/lodash": "4.14.202",
 		"@types/mocha": "10.0.6",
-		"@types/node": "20.10.0",
+		"@types/node": "20.10.1",
 		"@types/semver": "7.5.6",
 		"@types/shortid": "0.0.32",
 		"@types/sinon": "17.0.2",
