@@ -12,7 +12,7 @@
 		"type": "git",
 		"url": "git+https://github.com/CodeEditorLand/CodeEditorLand.git"
 	},
-	"license": "MIT",
+	"license": "SEE LICENSE IN LICENSE",
 	"qna": "https://github.com/microsoft/vscode-python/discussions/categories/q-a",
 	"author": {
 		"name": "Nikola Hristov",
