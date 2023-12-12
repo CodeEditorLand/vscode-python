@@ -3,7 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-declare module "vscode" {
+declare module 'vscode' {
+
 	// https://github.com/microsoft/vscode/issues/179476
 
 	/**
@@ -36,35 +37,20 @@ declare module "vscode" {
 		readonly options: EnvironmentVariableMutatorOptions;
 	}
 
-	export interface EnvironmentVariableCollection
-		extends Iterable<
-			[variable: string, mutator: EnvironmentVariableMutator]
-		> {
+	export interface EnvironmentVariableCollection extends Iterable<[variable: string, mutator: EnvironmentVariableMutator]> {
 		/**
 		 * @param options Options applied to the mutator.
 		 */
-		replace(
-			variable: string,
-			value: string,
-			options?: EnvironmentVariableMutatorOptions
-		): void;
+		replace(variable: string, value: string, options?: EnvironmentVariableMutatorOptions): void;
 
 		/**
 		 * @param options Options applied to the mutator.
 		 */
-		append(
-			variable: string,
-			value: string,
-			options?: EnvironmentVariableMutatorOptions
-		): void;
+		append(variable: string, value: string, options?: EnvironmentVariableMutatorOptions): void;
 
 		/**
 		 * @param options Options applied to the mutator.
 		 */
-		prepend(
-			variable: string,
-			value: string,
-			options?: EnvironmentVariableMutatorOptions
-		): void;
+		prepend(variable: string, value: string, options?: EnvironmentVariableMutatorOptions): void;
 	}
 }

@@ -1,93 +1,90 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import * as path from "path";
-import { WorkspaceFolder } from "vscode";
-import { IWorkspaceService } from "../../common/application/types";
-import { IConfigurationService, Resource } from "../../common/types";
+import * as path from 'path';
+import { WorkspaceFolder } from 'vscode';
+import { IWorkspaceService } from '../../common/application/types';
+import { IConfigurationService, Resource } from '../../common/types';
 
-import { IEnvironmentVariablesProvider } from "../../common/variables/types";
-import { PythonEnvironment } from "../../pythonEnvironments/info";
-import { LanguageServerAnalysisOptionsWithEnv } from "../common/analysisOptions";
-import { ILanguageServerOutputChannel } from "../types";
+import { IEnvironmentVariablesProvider } from '../../common/variables/types';
+import { PythonEnvironment } from '../../pythonEnvironments/info';
+import { LanguageServerAnalysisOptionsWithEnv } from '../common/analysisOptions';
+import { ILanguageServerOutputChannel } from '../types';
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types, class-methods-use-this */
 
 export class JediLanguageServerAnalysisOptions extends LanguageServerAnalysisOptionsWithEnv {
-	private resource: Resource | undefined;
+    private resource: Resource | undefined;
 
-	constructor(
-		envVarsProvider: IEnvironmentVariablesProvider,
-		lsOutputChannel: ILanguageServerOutputChannel,
-		private readonly configurationService: IConfigurationService,
-		workspace: IWorkspaceService
-	) {
-		super(envVarsProvider, lsOutputChannel, workspace);
-		this.resource = undefined;
-	}
+    private interpreter: PythonEnvironment | undefined;
 
-	public async initialize(
-		resource: Resource,
-		interpreter: PythonEnvironment | undefined
-	) {
-		this.resource = resource;
-		return super.initialize(resource, interpreter);
-	}
+    constructor(
+        envVarsProvider: IEnvironmentVariablesProvider,
+        lsOutputChannel: ILanguageServerOutputChannel,
+        private readonly configurationService: IConfigurationService,
+        workspace: IWorkspaceService,
+    ) {
+        super(envVarsProvider, lsOutputChannel, workspace);
+        this.resource = undefined;
+    }
 
-	protected getWorkspaceFolder(): WorkspaceFolder | undefined {
-		return this.workspace.getWorkspaceFolder(this.resource);
-	}
+    public async initialize(resource: Resource, interpreter: PythonEnvironment | undefined) {
+        this.resource = resource;
+        this.interpreter = interpreter;
+        return super.initialize(resource, interpreter);
+    }
 
-	protected async getInitializationOptions() {
-		const pythonSettings = this.configurationService.getSettings(
-			this.resource
-		);
-		const workspacePath = this.getWorkspaceFolder()?.uri.fsPath;
-		const extraPaths = pythonSettings.autoComplete
-			? pythonSettings.autoComplete.extraPaths.map((extraPath) => {
-					if (path.isAbsolute(extraPath)) {
-						return extraPath;
-					}
-					return workspacePath
-						? path.join(workspacePath, extraPath)
-						: "";
-			  })
-			: [];
+    protected getWorkspaceFolder(): WorkspaceFolder | undefined {
+        return this.workspace.getWorkspaceFolder(this.resource);
+    }
 
-		if (workspacePath) {
-			extraPaths.unshift(workspacePath);
-		}
+    protected async getInitializationOptions() {
+        const pythonSettings = this.configurationService.getSettings(this.resource);
+        const workspacePath = this.getWorkspaceFolder()?.uri.fsPath;
+        const extraPaths = pythonSettings.autoComplete
+            ? pythonSettings.autoComplete.extraPaths.map((extraPath) => {
+                  if (path.isAbsolute(extraPath)) {
+                      return extraPath;
+                  }
+                  return workspacePath ? path.join(workspacePath, extraPath) : '';
+              })
+            : [];
 
-		const distinctExtraPaths = extraPaths
-			.filter((value) => value.length > 0)
-			.filter((value, index, self) => self.indexOf(value) === index);
+        if (workspacePath) {
+            extraPaths.unshift(workspacePath);
+        }
 
-		return {
-			markupKindPreferred: "markdown",
-			completion: {
-				resolveEagerly: false,
-				disableSnippets: true,
-			},
-			diagnostics: {
-				enable: true,
-				didOpen: true,
-				didSave: true,
-				didChange: true,
-			},
-			hover: {
-				disable: {
-					keyword: {
-						all: true,
-					},
-				},
-			},
-			workspace: {
-				extraPaths: distinctExtraPaths,
-				symbols: {
-					// 0 means remove limit on number of workspace symbols returned
-					maxSymbols: 0,
-				},
-			},
-		};
-	}
+        const distinctExtraPaths = extraPaths
+            .filter((value) => value.length > 0)
+            .filter((value, index, self) => self.indexOf(value) === index);
+
+        return {
+            markupKindPreferred: 'markdown',
+            completion: {
+                resolveEagerly: false,
+                disableSnippets: true,
+            },
+            diagnostics: {
+                enable: true,
+                didOpen: true,
+                didSave: true,
+                didChange: true,
+            },
+            hover: {
+                disable: {
+                    keyword: {
+                        all: true,
+                    },
+                },
+            },
+            workspace: {
+                extraPaths: distinctExtraPaths,
+                environmentPath: this.interpreter?.envPath,
+                symbols: {
+                    // 0 means remove limit on number of workspace symbols returned
+                    maxSymbols: 0,
+                },
+            },
+        };
+    }
 }
