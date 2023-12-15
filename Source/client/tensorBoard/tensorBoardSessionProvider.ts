@@ -1,45 +1,57 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { inject, injectable } from 'inversify';
-import { Disposable, l10n, ViewColumn } from 'vscode';
-import { IExtensionSingleActivationService } from '../activation/types';
-import { IApplicationShell, ICommandManager, IWorkspaceService } from '../common/application/types';
-import { Commands } from '../common/constants';
-import { ContextKey } from '../common/contextKey';
-import { IPythonExecutionFactory } from '../common/process/types';
+import { inject, injectable } from "inversify";
+import { Disposable, l10n, ViewColumn } from "vscode";
+import { IExtensionSingleActivationService } from "../activation/types";
 import {
-    IDisposableRegistry,
-    IInstaller,
-    IPersistentState,
-    IPersistentStateFactory,
-    IConfigurationService,
-    IDisposable,
-} from '../common/types';
-import { IMultiStepInputFactory } from '../common/utils/multiStepInput';
-import { IInterpreterService } from '../interpreter/contracts';
-import { traceError, traceVerbose } from '../logging';
-import { sendTelemetryEvent } from '../telemetry';
-import { EventName } from '../telemetry/constants';
-import { TensorBoardEntrypoint, TensorBoardEntrypointTrigger } from './constants';
-import { TensorBoardSession } from './tensorBoardSession';
-import { TensorboardExperiment } from './tensorboarExperiment';
+	IApplicationShell,
+	ICommandManager,
+	IWorkspaceService,
+} from "../common/application/types";
+import { Commands } from "../common/constants";
+import { ContextKey } from "../common/contextKey";
+import { IPythonExecutionFactory } from "../common/process/types";
+import {
+	IDisposableRegistry,
+	IInstaller,
+	IPersistentState,
+	IPersistentStateFactory,
+	IConfigurationService,
+	IDisposable,
+} from "../common/types";
+import { IMultiStepInputFactory } from "../common/utils/multiStepInput";
+import { IInterpreterService } from "../interpreter/contracts";
+import { traceError, traceVerbose } from "../logging";
+import { sendTelemetryEvent } from "../telemetry";
+import { EventName } from "../telemetry/constants";
+import {
+	TensorBoardEntrypoint,
+	TensorBoardEntrypointTrigger,
+} from "./constants";
+import { TensorBoardSession } from "./tensorBoardSession";
+import { TensorboardExperiment } from "./tensorboarExperiment";
 
-export const PREFERRED_VIEWGROUP = 'PythonTensorBoardWebviewPreferredViewGroup';
+export const PREFERRED_VIEWGROUP = "PythonTensorBoardWebviewPreferredViewGroup";
 
 @injectable()
-export class TensorBoardSessionProvider implements IExtensionSingleActivationService {
-    public readonly supportedWorkspaceTypes = { untrustedWorkspace: false, virtualWorkspace: false };
+export class TensorBoardSessionProvider
+	implements IExtensionSingleActivationService
+{
+	public readonly supportedWorkspaceTypes = {
+		untrustedWorkspace: false,
+		virtualWorkspace: false,
+	};
 
-    private knownSessions: TensorBoardSession[] = [];
+	private knownSessions: TensorBoardSession[] = [];
 
-    private preferredViewGroupMemento: IPersistentState<ViewColumn>;
+	private preferredViewGroupMemento: IPersistentState<ViewColumn>;
 
-    private hasActiveTensorBoardSessionContext: ContextKey;
+	private hasActiveTensorBoardSessionContext: ContextKey;
 
-    private readonly disposables: IDisposable[] = [];
+	private readonly disposables: IDisposable[] = [];
 
-    constructor(
+	constructor(
         @inject(IInstaller) private readonly installer: IInstaller,
         @inject(IInterpreterService) private readonly interpreterService: IInterpreterService,
         @inject(IApplicationShell) private readonly applicationShell: IApplicationShell,
@@ -63,17 +75,17 @@ export class TensorBoardSessionProvider implements IExtensionSingleActivationSer
         );
     }
 
-    public dispose(): void {
-        Disposable.from(...this.disposables).dispose();
-    }
+	public dispose(): void {
+		Disposable.from(...this.disposables).dispose();
+	}
 
-    public async activate(): Promise<void> {
-        if (TensorboardExperiment.isTensorboardExtensionInstalled) {
-            return;
-        }
-        this.experiment.disposeOnInstallingTensorboard(this);
+	public async activate(): Promise<void> {
+		if (TensorboardExperiment.isTensorboardExtensionInstalled) {
+			return;
+		}
+		this.experiment.disposeOnInstallingTensorboard(this);
 
-        this.disposables.push(
+		this.disposables.push(
             this.commandManager.registerCommand(
                 Commands.LaunchTensorBoard,
                 (
@@ -95,52 +107,64 @@ export class TensorBoardSessionProvider implements IExtensionSingleActivationSer
                     : undefined,
             ),
         );
-    }
+	}
 
-    private async updateTensorBoardSessionContext() {
-        let hasActiveTensorBoardSession = false;
-        this.knownSessions.forEach((viewer) => {
-            if (viewer.active) {
-                hasActiveTensorBoardSession = true;
-            }
-        });
-        await this.hasActiveTensorBoardSessionContext.set(hasActiveTensorBoardSession);
-    }
+	private async updateTensorBoardSessionContext() {
+		let hasActiveTensorBoardSession = false;
+		this.knownSessions.forEach((viewer) => {
+			if (viewer.active) {
+				hasActiveTensorBoardSession = true;
+			}
+		});
+		await this.hasActiveTensorBoardSessionContext.set(
+			hasActiveTensorBoardSession,
+		);
+	}
 
-    private async didDisposeSession(session: TensorBoardSession) {
-        this.knownSessions = this.knownSessions.filter((s) => s !== session);
-        this.updateTensorBoardSessionContext();
-    }
+	private async didDisposeSession(session: TensorBoardSession) {
+		this.knownSessions = this.knownSessions.filter((s) => s !== session);
+		this.updateTensorBoardSessionContext();
+	}
 
-    private async createNewSession(): Promise<TensorBoardSession | undefined> {
-        traceVerbose('Starting new TensorBoard session...');
-        try {
-            const newSession = new TensorBoardSession(
-                this.installer,
-                this.interpreterService,
-                this.workspaceService,
-                this.pythonExecFactory,
-                this.commandManager,
-                this.disposables,
-                this.applicationShell,
-                this.preferredViewGroupMemento,
-                this.multiStepFactory,
-                this.configurationService,
-            );
-            newSession.onDidChangeViewState(() => this.updateTensorBoardSessionContext(), this, this.disposables);
-            newSession.onDidDispose((e) => this.didDisposeSession(e), this, this.disposables);
-            this.knownSessions.push(newSession);
-            await newSession.initialize();
-            return newSession;
-        } catch (e) {
-            traceError(`Encountered error while starting new TensorBoard session: ${e}`);
-            await this.applicationShell.showErrorMessage(
-                l10n.t(
-                    'We failed to start a TensorBoard session due to the following error: {0}',
-                    (e as Error).message,
-                ),
-            );
-        }
-        return undefined;
-    }
+	private async createNewSession(): Promise<TensorBoardSession | undefined> {
+		traceVerbose("Starting new TensorBoard session...");
+		try {
+			const newSession = new TensorBoardSession(
+				this.installer,
+				this.interpreterService,
+				this.workspaceService,
+				this.pythonExecFactory,
+				this.commandManager,
+				this.disposables,
+				this.applicationShell,
+				this.preferredViewGroupMemento,
+				this.multiStepFactory,
+				this.configurationService,
+			);
+			newSession.onDidChangeViewState(
+				() => this.updateTensorBoardSessionContext(),
+				this,
+				this.disposables,
+			);
+			newSession.onDidDispose(
+				(e) => this.didDisposeSession(e),
+				this,
+				this.disposables,
+			);
+			this.knownSessions.push(newSession);
+			await newSession.initialize();
+			return newSession;
+		} catch (e) {
+			traceError(
+				`Encountered error while starting new TensorBoard session: ${e}`,
+			);
+			await this.applicationShell.showErrorMessage(
+				l10n.t(
+					"We failed to start a TensorBoard session due to the following error: {0}",
+					(e as Error).message,
+				),
+			);
+		}
+		return undefined;
+	}
 }

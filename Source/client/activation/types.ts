@@ -1,14 +1,19 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-'use strict';
+"use strict";
 
-import { Event } from 'vscode';
-import { LanguageClient, LanguageClientOptions } from 'vscode-languageclient/node';
-import type { IDisposable, ILogOutputChannel, Resource } from '../common/types';
-import { PythonEnvironment } from '../pythonEnvironments/info';
+import { Event } from "vscode";
+import {
+	LanguageClient,
+	LanguageClientOptions,
+} from "vscode-languageclient/node";
+import type { IDisposable, ILogOutputChannel, Resource } from "../common/types";
+import { PythonEnvironment } from "../pythonEnvironments/info";
 
-export const IExtensionActivationManager = Symbol('IExtensionActivationManager');
+export const IExtensionActivationManager = Symbol(
+	"IExtensionActivationManager",
+);
 /**
  * Responsible for activation of extension.
  *
@@ -17,26 +22,28 @@ export const IExtensionActivationManager = Symbol('IExtensionActivationManager')
  * @extends {IDisposable}
  */
 export interface IExtensionActivationManager extends IDisposable {
-    /**
-     * Method invoked when extension activates (invoked once).
-     *
-     * @returns {Promise<void>}
-     * @memberof IExtensionActivationManager
-     */
-    activate(): Promise<void>;
-    /**
-     * Method invoked when a workspace is loaded.
-     * This is where we place initialization scripts for each workspace.
-     * (e.g. if we need to run code for each workspace, then this is where that happens).
-     *
-     * @param {Resource} resource
-     * @returns {Promise<void>}
-     * @memberof IExtensionActivationManager
-     */
-    activateWorkspace(resource: Resource): Promise<void>;
+	/**
+	 * Method invoked when extension activates (invoked once).
+	 *
+	 * @returns {Promise<void>}
+	 * @memberof IExtensionActivationManager
+	 */
+	activate(): Promise<void>;
+	/**
+	 * Method invoked when a workspace is loaded.
+	 * This is where we place initialization scripts for each workspace.
+	 * (e.g. if we need to run code for each workspace, then this is where that happens).
+	 *
+	 * @param {Resource} resource
+	 * @returns {Promise<void>}
+	 * @memberof IExtensionActivationManager
+	 */
+	activateWorkspace(resource: Resource): Promise<void>;
 }
 
-export const IExtensionActivationService = Symbol('IExtensionActivationService');
+export const IExtensionActivationService = Symbol(
+	"IExtensionActivationService",
+);
 /**
  * Classes implementing this interface will have their `activate` methods
  * invoked for every workspace folder (in multi-root workspace folders) during the activation of the extension.
@@ -46,77 +53,95 @@ export const IExtensionActivationService = Symbol('IExtensionActivationService')
  * @interface IExtensionActivationService
  */
 export interface IExtensionActivationService {
-    supportedWorkspaceTypes: { untrustedWorkspace: boolean; virtualWorkspace: boolean };
-    activate(resource: Resource): Promise<void>;
+	supportedWorkspaceTypes: {
+		untrustedWorkspace: boolean;
+		virtualWorkspace: boolean;
+	};
+	activate(resource: Resource): Promise<void>;
 }
 
 export enum LanguageServerType {
-    Jedi = 'Jedi',
-    JediLSP = 'JediLSP',
-    Microsoft = 'Microsoft',
-    Node = 'Pylance',
-    None = 'None',
+	Jedi = "Jedi",
+	JediLSP = "JediLSP",
+	Microsoft = "Microsoft",
+	Node = "Pylance",
+	None = "None",
 }
 
-export const ILanguageServerActivator = Symbol('ILanguageServerActivator');
+export const ILanguageServerActivator = Symbol("ILanguageServerActivator");
 export interface ILanguageServerActivator {
-    start(resource: Resource, interpreter: PythonEnvironment | undefined): Promise<void>;
-    activate(): void;
-    deactivate(): void;
+	start(
+		resource: Resource,
+		interpreter: PythonEnvironment | undefined,
+	): Promise<void>;
+	activate(): void;
+	deactivate(): void;
 }
 
-export const ILanguageClientFactory = Symbol('ILanguageClientFactory');
+export const ILanguageClientFactory = Symbol("ILanguageClientFactory");
 export interface ILanguageClientFactory {
-    createLanguageClient(
-        resource: Resource,
-        interpreter: PythonEnvironment | undefined,
-        clientOptions: LanguageClientOptions,
-        env?: NodeJS.ProcessEnv,
-    ): Promise<LanguageClient>;
+	createLanguageClient(
+		resource: Resource,
+		interpreter: PythonEnvironment | undefined,
+		clientOptions: LanguageClientOptions,
+		env?: NodeJS.ProcessEnv,
+	): Promise<LanguageClient>;
 }
-export const ILanguageServerAnalysisOptions = Symbol('ILanguageServerAnalysisOptions');
+export const ILanguageServerAnalysisOptions = Symbol(
+	"ILanguageServerAnalysisOptions",
+);
 export interface ILanguageServerAnalysisOptions extends IDisposable {
-    readonly onDidChange: Event<void>;
-    initialize(resource: Resource, interpreter: PythonEnvironment | undefined): Promise<void>;
-    getAnalysisOptions(): Promise<LanguageClientOptions>;
+	readonly onDidChange: Event<void>;
+	initialize(
+		resource: Resource,
+		interpreter: PythonEnvironment | undefined,
+	): Promise<void>;
+	getAnalysisOptions(): Promise<LanguageClientOptions>;
 }
-export const ILanguageServerManager = Symbol('ILanguageServerManager');
+export const ILanguageServerManager = Symbol("ILanguageServerManager");
 export interface ILanguageServerManager extends IDisposable {
-    start(resource: Resource, interpreter: PythonEnvironment | undefined): Promise<void>;
-    connect(): void;
-    disconnect(): void;
+	start(
+		resource: Resource,
+		interpreter: PythonEnvironment | undefined,
+	): Promise<void>;
+	connect(): void;
+	disconnect(): void;
 }
 
-export const ILanguageServerProxy = Symbol('ILanguageServerProxy');
+export const ILanguageServerProxy = Symbol("ILanguageServerProxy");
 export interface ILanguageServerProxy extends IDisposable {
-    start(
-        resource: Resource,
-        interpreter: PythonEnvironment | undefined,
-        options: LanguageClientOptions,
-    ): Promise<void>;
-    stop(): Promise<void>;
-    /**
-     * Sends a request to LS so as to load other extensions.
-     * This is used as a plugin loader mechanism.
-     * Anyone (such as intellicode) wanting to interact with LS, needs to send this request to LS.
-     * @param {{}} [args]
-     * @memberof ILanguageServerProxy
-     */
-    loadExtension(args?: unknown): void;
+	start(
+		resource: Resource,
+		interpreter: PythonEnvironment | undefined,
+		options: LanguageClientOptions,
+	): Promise<void>;
+	stop(): Promise<void>;
+	/**
+	 * Sends a request to LS so as to load other extensions.
+	 * This is used as a plugin loader mechanism.
+	 * Anyone (such as intellicode) wanting to interact with LS, needs to send this request to LS.
+	 * @param {{}} [args]
+	 * @memberof ILanguageServerProxy
+	 */
+	loadExtension(args?: unknown): void;
 }
 
-export const ILanguageServerOutputChannel = Symbol('ILanguageServerOutputChannel');
+export const ILanguageServerOutputChannel = Symbol(
+	"ILanguageServerOutputChannel",
+);
 export interface ILanguageServerOutputChannel {
-    /**
-     * Creates output channel if necessary and returns it
-     *
-     * @type {ILogOutputChannel}
-     * @memberof ILanguageServerOutputChannel
-     */
-    readonly channel: ILogOutputChannel;
+	/**
+	 * Creates output channel if necessary and returns it
+	 *
+	 * @type {ILogOutputChannel}
+	 * @memberof ILanguageServerOutputChannel
+	 */
+	readonly channel: ILogOutputChannel;
 }
 
-export const IExtensionSingleActivationService = Symbol('IExtensionSingleActivationService');
+export const IExtensionSingleActivationService = Symbol(
+	"IExtensionSingleActivationService",
+);
 /**
  * Classes implementing this interface will have their `activate` methods
  * invoked during the activation of the extension.
@@ -126,6 +151,9 @@ export const IExtensionSingleActivationService = Symbol('IExtensionSingleActivat
  * @interface IExtensionSingleActivationService
  */
 export interface IExtensionSingleActivationService {
-    supportedWorkspaceTypes: { untrustedWorkspace: boolean; virtualWorkspace: boolean };
-    activate(): Promise<void>;
+	supportedWorkspaceTypes: {
+		untrustedWorkspace: boolean;
+		virtualWorkspace: boolean;
+	};
+	activate(): Promise<void>;
 }

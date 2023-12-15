@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 export interface ProposedExtensionAPI {
-    /**
-     * Top level proposed APIs should go here.
-     */
+	/**
+	 * Top level proposed APIs should go here.
+	 */
 }

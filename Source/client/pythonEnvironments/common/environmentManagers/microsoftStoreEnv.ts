@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import * as path from 'path';
-import { getEnvironmentVariable } from '../../../common/utils/platform';
-import { traceWarn } from '../../../logging';
-import { pathExists } from '../externalDependencies';
+import * as path from "path";
+import { getEnvironmentVariable } from "../../../common/utils/platform";
+import { traceWarn } from "../../../logging";
+import { pathExists } from "../externalDependencies";
 
 /**
  * Gets path to the Windows Apps directory.
@@ -12,8 +12,8 @@ import { pathExists } from '../externalDependencies';
  * `%LOCALAPPDATA%/Microsoft/WindowsApps`.
  */
 export function getMicrosoftStoreAppsRoot(): string {
-    const localAppData = getEnvironmentVariable('LOCALAPPDATA') || '';
-    return path.join(localAppData, 'Microsoft', 'WindowsApps');
+	const localAppData = getEnvironmentVariable("LOCALAPPDATA") || "";
+	return path.join(localAppData, "Microsoft", "WindowsApps");
 }
 /**
  * Checks if a given path is under the forbidden microsoft store directory.
@@ -22,11 +22,17 @@ export function getMicrosoftStoreAppsRoot(): string {
  * `%ProgramFiles%/WindowsApps`.
  */
 function isForbiddenStorePath(absPath: string): boolean {
-    const programFilesStorePath = path
-        .join(getEnvironmentVariable('ProgramFiles') || 'Program Files', 'WindowsApps')
-        .normalize()
-        .toUpperCase();
-    return path.normalize(absPath).toUpperCase().includes(programFilesStorePath);
+	const programFilesStorePath = path
+		.join(
+			getEnvironmentVariable("ProgramFiles") || "Program Files",
+			"WindowsApps",
+		)
+		.normalize()
+		.toUpperCase();
+	return path
+		.normalize(absPath)
+		.toUpperCase()
+		.includes(programFilesStorePath);
 }
 /**
  * Checks if a given directory is any one of the possible microsoft store directories, or
@@ -40,8 +46,13 @@ function isForbiddenStorePath(absPath: string): boolean {
  */
 
 export function isMicrosoftStoreDir(dirPath: string): boolean {
-    const storeRootPath = path.normalize(getMicrosoftStoreAppsRoot()).toUpperCase();
-    return path.normalize(dirPath).toUpperCase().includes(storeRootPath) || isForbiddenStorePath(dirPath);
+	const storeRootPath = path
+		.normalize(getMicrosoftStoreAppsRoot())
+		.toUpperCase();
+	return (
+		path.normalize(dirPath).toUpperCase().includes(storeRootPath) ||
+		isForbiddenStorePath(dirPath)
+	);
 }
 /**
  * Checks if store python is installed.
@@ -51,24 +62,26 @@ export function isMicrosoftStoreDir(dirPath: string): boolean {
  * have idle.exe or pip.exe. We can use this as a way to identify the python.exe
  * found in the store apps directory is a real python or a store install shortcut.
  */
-export async function isStorePythonInstalled(interpreterPath?: string): Promise<boolean> {
-    let results = await Promise.all([
-        pathExists(path.join(getMicrosoftStoreAppsRoot(), 'idle.exe')),
-        pathExists(path.join(getMicrosoftStoreAppsRoot(), 'pip.exe')),
-    ]);
+export async function isStorePythonInstalled(
+	interpreterPath?: string,
+): Promise<boolean> {
+	let results = await Promise.all([
+		pathExists(path.join(getMicrosoftStoreAppsRoot(), "idle.exe")),
+		pathExists(path.join(getMicrosoftStoreAppsRoot(), "pip.exe")),
+	]);
 
-    if (results.includes(true)) {
-        return true;
-    }
+	if (results.includes(true)) {
+		return true;
+	}
 
-    if (interpreterPath) {
-        results = await Promise.all([
-            pathExists(path.join(path.dirname(interpreterPath), 'idle.exe')),
-            pathExists(path.join(path.dirname(interpreterPath), 'pip.exe')),
-        ]);
-        return results.includes(true);
-    }
-    return false;
+	if (interpreterPath) {
+		results = await Promise.all([
+			pathExists(path.join(path.dirname(interpreterPath), "idle.exe")),
+			pathExists(path.join(path.dirname(interpreterPath), "pip.exe")),
+		]);
+		return results.includes(true);
+	}
+	return false;
 }
 /**
  * Checks if the given interpreter belongs to Microsoft Store Python environment.
@@ -103,20 +116,28 @@ export async function isStorePythonInstalled(interpreterPath?: string): Promise<
  *
  */
 
-export async function isMicrosoftStoreEnvironment(interpreterPath: string): Promise<boolean> {
-    if (await isStorePythonInstalled(interpreterPath)) {
-        const pythonPathToCompare = path.normalize(interpreterPath).toUpperCase();
-        const localAppDataStorePath = path.normalize(getMicrosoftStoreAppsRoot()).toUpperCase();
-        if (pythonPathToCompare.includes(localAppDataStorePath)) {
-            return true;
-        }
+export async function isMicrosoftStoreEnvironment(
+	interpreterPath: string,
+): Promise<boolean> {
+	if (await isStorePythonInstalled(interpreterPath)) {
+		const pythonPathToCompare = path
+			.normalize(interpreterPath)
+			.toUpperCase();
+		const localAppDataStorePath = path
+			.normalize(getMicrosoftStoreAppsRoot())
+			.toUpperCase();
+		if (pythonPathToCompare.includes(localAppDataStorePath)) {
+			return true;
+		}
 
-        // Program Files store path is a forbidden path. Only admins and system has access this path.
-        // We should never have to look at this path or even execute python from this path.
-        if (isForbiddenStorePath(pythonPathToCompare)) {
-            traceWarn('isMicrosoftStoreEnvironment called with Program Files store path.');
-            return true;
-        }
-    }
-    return false;
+		// Program Files store path is a forbidden path. Only admins and system has access this path.
+		// We should never have to look at this path or even execute python from this path.
+		if (isForbiddenStorePath(pythonPathToCompare)) {
+			traceWarn(
+				"isMicrosoftStoreEnvironment called with Program Files store path.",
+			);
+			return true;
+		}
+	}
+	return false;
 }
