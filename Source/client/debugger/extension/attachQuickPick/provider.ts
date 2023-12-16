@@ -1,30 +1,26 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
+'use strict';
 
-import { inject, injectable } from "inversify";
-import { l10n } from "vscode";
-import { IPlatformService } from "../../../common/platform/types";
-import { IProcessServiceFactory } from "../../../common/process/types";
-import { PsProcessParser } from "./psProcessParser";
-import {
-	IAttachItem,
-	IAttachProcessProvider,
-	ProcessListCommand,
-} from "./types";
-import { WmicProcessParser } from "./wmicProcessParser";
+import { inject, injectable } from 'inversify';
+import { l10n } from 'vscode';
+import { IPlatformService } from '../../../common/platform/types';
+import { IProcessServiceFactory } from '../../../common/process/types';
+import { PsProcessParser } from './psProcessParser';
+import { IAttachItem, IAttachProcessProvider, ProcessListCommand } from './types';
+import { WmicProcessParser } from './wmicProcessParser';
 
 @injectable()
 export class AttachProcessProvider implements IAttachProcessProvider {
-	constructor(
+    constructor(
         @inject(IPlatformService) private readonly platformService: IPlatformService,
         @inject(IProcessServiceFactory) private readonly processServiceFactory: IProcessServiceFactory,
     ) {}
 
-	public getAttachItems(): Promise<IAttachItem[]> {
-		return this._getInternalProcessEntries().then((processEntries) => {
-			processEntries.sort(
+    public getAttachItems(): Promise<IAttachItem[]> {
+        return this._getInternalProcessEntries().then((processEntries) => {
+            processEntries.sort(
                 (
                     { processName: aprocessName, commandLine: aCommandLine },
                     { processName: bProcessName, commandLine: bCommandLine },
@@ -60,36 +56,27 @@ export class AttachProcessProvider implements IAttachProcessProvider {
                 },
             );
 
-			return processEntries;
-		});
-	}
+            return processEntries;
+        });
+    }
 
-	public async _getInternalProcessEntries(): Promise<IAttachItem[]> {
-		let processCmd: ProcessListCommand;
-		if (this.platformService.isMac) {
-			processCmd = PsProcessParser.psDarwinCommand;
-		} else if (this.platformService.isLinux) {
-			processCmd = PsProcessParser.psLinuxCommand;
-		} else if (this.platformService.isWindows) {
-			processCmd = WmicProcessParser.wmicCommand;
-		} else {
-			throw new Error(
-				l10n.t(
-					"Operating system '{0}' not supported.",
-					this.platformService.osType,
-				),
-			);
-		}
+    public async _getInternalProcessEntries(): Promise<IAttachItem[]> {
+        let processCmd: ProcessListCommand;
+        if (this.platformService.isMac) {
+            processCmd = PsProcessParser.psDarwinCommand;
+        } else if (this.platformService.isLinux) {
+            processCmd = PsProcessParser.psLinuxCommand;
+        } else if (this.platformService.isWindows) {
+            processCmd = WmicProcessParser.wmicCommand;
+        } else {
+            throw new Error(l10n.t("Operating system '{0}' not supported.", this.platformService.osType));
+        }
 
-		const processService = await this.processServiceFactory.create();
-		const output = await processService.exec(
-			processCmd.command,
-			processCmd.args,
-			{ throwOnStdErr: true },
-		);
+        const processService = await this.processServiceFactory.create();
+        const output = await processService.exec(processCmd.command, processCmd.args, { throwOnStdErr: true });
 
-		return this.platformService.isWindows
-			? WmicProcessParser.parseProcesses(output.stdout)
-			: PsProcessParser.parseProcesses(output.stdout);
-	}
+        return this.platformService.isWindows
+            ? WmicProcessParser.parseProcesses(output.stdout)
+            : PsProcessParser.parseProcesses(output.stdout);
+    }
 }
