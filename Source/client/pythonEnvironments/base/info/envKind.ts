@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { PythonEnvKind } from '.';
+import { PythonEnvKind } from ".";
 
 /**
  * Get the given kind's user-facing representation.
@@ -9,27 +9,27 @@ import { PythonEnvKind } from '.';
  * If it doesn't have one then the empty string is returned.
  */
 export function getKindDisplayName(kind: PythonEnvKind): string {
-    for (const [candidate, value] of [
-        // Note that Unknown is excluded here.
-        [PythonEnvKind.System, 'system'],
-        [PythonEnvKind.MicrosoftStore, 'Microsoft Store'],
-        [PythonEnvKind.Pyenv, 'pyenv'],
-        [PythonEnvKind.Poetry, 'Poetry'],
-        [PythonEnvKind.Custom, 'custom'],
-        // For now we treat OtherGlobal like Unknown.
-        [PythonEnvKind.Venv, 'venv'],
-        [PythonEnvKind.VirtualEnv, 'virtualenv'],
-        [PythonEnvKind.VirtualEnvWrapper, 'virtualenv'],
-        [PythonEnvKind.Pipenv, 'Pipenv'],
-        [PythonEnvKind.Conda, 'conda'],
-        [PythonEnvKind.ActiveState, 'ActiveState'],
-        // For now we treat OtherVirtual like Unknown.
-    ] as [PythonEnvKind, string][]) {
-        if (kind === candidate) {
-            return value;
-        }
-    }
-    return '';
+	for (const [candidate, value] of [
+		// Note that Unknown is excluded here.
+		[PythonEnvKind.System, "system"],
+		[PythonEnvKind.MicrosoftStore, "Microsoft Store"],
+		[PythonEnvKind.Pyenv, "pyenv"],
+		[PythonEnvKind.Poetry, "Poetry"],
+		[PythonEnvKind.Custom, "custom"],
+		// For now we treat OtherGlobal like Unknown.
+		[PythonEnvKind.Venv, "venv"],
+		[PythonEnvKind.VirtualEnv, "virtualenv"],
+		[PythonEnvKind.VirtualEnvWrapper, "virtualenv"],
+		[PythonEnvKind.Pipenv, "Pipenv"],
+		[PythonEnvKind.Conda, "conda"],
+		[PythonEnvKind.ActiveState, "ActiveState"],
+		// For now we treat OtherVirtual like Unknown.
+	] as [PythonEnvKind, string][]) {
+		if (kind === candidate) {
+			return value;
+		}
+	}
+	return "";
 }
 
 /**
@@ -55,20 +55,20 @@ export function getKindDisplayName(kind: PythonEnvKind): string {
  * Last category is globally installed python, or system python.
  */
 export function getPrioritizedEnvKinds(): PythonEnvKind[] {
-    return [
-        PythonEnvKind.Pyenv,
-        PythonEnvKind.Conda,
-        PythonEnvKind.MicrosoftStore,
-        PythonEnvKind.Pipenv,
-        PythonEnvKind.Poetry,
-        PythonEnvKind.Venv,
-        PythonEnvKind.VirtualEnvWrapper,
-        PythonEnvKind.VirtualEnv,
-        PythonEnvKind.ActiveState,
-        PythonEnvKind.OtherVirtual,
-        PythonEnvKind.OtherGlobal,
-        PythonEnvKind.System,
-        PythonEnvKind.Custom,
-        PythonEnvKind.Unknown,
-    ];
+	return [
+		PythonEnvKind.Pyenv,
+		PythonEnvKind.Conda,
+		PythonEnvKind.MicrosoftStore,
+		PythonEnvKind.Pipenv,
+		PythonEnvKind.Poetry,
+		PythonEnvKind.Venv,
+		PythonEnvKind.VirtualEnvWrapper,
+		PythonEnvKind.VirtualEnv,
+		PythonEnvKind.ActiveState,
+		PythonEnvKind.OtherVirtual,
+		PythonEnvKind.OtherGlobal,
+		PythonEnvKind.System,
+		PythonEnvKind.Custom,
+		PythonEnvKind.Unknown,
+	];
 }

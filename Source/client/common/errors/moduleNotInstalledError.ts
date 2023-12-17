@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 export class ModuleNotInstalledError extends Error {
-    constructor(moduleName: string) {
-        super(`Module '${moduleName}' not installed.`);
-    }
+	constructor(moduleName: string) {
+		super(`Module '${moduleName}' not installed.`);
+	}
 }

@@ -10,22 +10,22 @@ let activationCompleted = false;
  * if extension is already activated.
  */
 export function addItemsToRunAfterActivation(run: () => void): void {
-    if (activationCompleted) {
-        run();
-    } else {
-        itemsToRun.push(run);
-    }
+	if (activationCompleted) {
+		run();
+	} else {
+		itemsToRun.push(run);
+	}
 }
 
 /**
  * This should be called after extension activation is complete.
  */
 export function runAfterActivation(): void {
-    activationCompleted = true;
-    while (itemsToRun.length > 0) {
-        const run = itemsToRun.shift();
-        if (run) {
-            run();
-        }
-    }
+	activationCompleted = true;
+	while (itemsToRun.length > 0) {
+		const run = itemsToRun.shift();
+		if (run) {
+			run();
+		}
+	}
 }
