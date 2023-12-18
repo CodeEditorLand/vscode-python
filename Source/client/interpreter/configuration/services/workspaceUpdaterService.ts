@@ -7,13 +7,13 @@ export class WorkspacePythonPathUpdaterService
 {
 	constructor(
 		private workspace: Uri,
-		private readonly interpreterPathService: IInterpreterPathService,
+		private readonly interpreterPathService: IInterpreterPathService
 	) {}
 	public async updatePythonPath(
-		pythonPath: string | undefined,
+		pythonPath: string | undefined
 	): Promise<void> {
 		const pythonPathValue = this.interpreterPathService.inspect(
-			this.workspace,
+			this.workspace
 		);
 
 		if (pythonPathValue && pythonPathValue.workspaceValue === pythonPath) {
@@ -22,7 +22,7 @@ export class WorkspacePythonPathUpdaterService
 		await this.interpreterPathService.update(
 			this.workspace,
 			ConfigurationTarget.Workspace,
-			pythonPath,
+			pythonPath
 		);
 	}
 }

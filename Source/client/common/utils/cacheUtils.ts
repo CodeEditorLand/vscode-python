@@ -16,7 +16,7 @@ export function getGlobalCacheStore() {
 
 export function getCacheKeyFromFunctionArgs(
 	keyPrefix: string,
-	fnArgs: any[],
+	fnArgs: any[]
 ): string {
 	const argsKey = fnArgs
 		.map((arg) => `${JSON.stringify(arg)}`)

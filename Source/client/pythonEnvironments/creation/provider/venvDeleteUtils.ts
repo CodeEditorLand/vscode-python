@@ -41,7 +41,7 @@ async function tryDeleteDir(dir: string): Promise<boolean> {
 }
 
 export async function deleteEnvironmentNonWindows(
-	workspaceFolder: WorkspaceFolder,
+	workspaceFolder: WorkspaceFolder
 ): Promise<boolean> {
 	const venvPath = getVenvPath(workspaceFolder);
 	if (await tryDeleteDir(venvPath)) {
@@ -54,7 +54,7 @@ export async function deleteEnvironmentNonWindows(
 
 export async function deleteEnvironmentWindows(
 	workspaceFolder: WorkspaceFolder,
-	interpreter: string | undefined,
+	interpreter: string | undefined
 ): Promise<boolean> {
 	const venvPath = getVenvPath(workspaceFolder);
 	const venvPythonPath = path.join(venvPath, "Scripts", "python.exe");
@@ -68,7 +68,7 @@ export async function deleteEnvironmentWindows(
 
 		traceError(`Failed to delete ".venv" dir: ${venvPath}`);
 		traceError(
-			"This happens if the virtual environment is still in use, or some binary in the venv is still running.",
+			"This happens if the virtual environment is still in use, or some binary in the venv is still running."
 		);
 		traceError(`Please delete the ".venv" manually: [${venvPath}]`);
 		showErrorMessageWithLogs(CreateEnv.Venv.errorDeletingEnvironment);
@@ -79,20 +79,20 @@ export async function deleteEnvironmentWindows(
 
 	if (interpreter) {
 		traceError(
-			'We will attempt to switch python temporarily to delete the ".venv"',
+			'We will attempt to switch python temporarily to delete the ".venv"'
 		);
 
 		await switchSelectedPython(
 			interpreter,
 			workspaceFolder.uri,
-			'temporarily to delete the ".venv"',
+			'temporarily to delete the ".venv"'
 		);
 
 		traceInfo(`Attempting to delete ".venv" again: ${venvPath}`);
 		const ms = 500;
 		for (let i = 0; i < 5; i = i + 1) {
 			traceInfo(
-				`Waiting for ${ms}ms to let processes exit, before a delete attempt.`,
+				`Waiting for ${ms}ms to let processes exit, before a delete attempt.`
 			);
 			await sleep(ms);
 			if (await tryDeleteDir(venvPath)) {
@@ -102,7 +102,7 @@ export async function deleteEnvironmentWindows(
 			traceError(
 				`Failed to delete ".venv" dir [${venvPath}] (attempt ${
 					i + 1
-				}/5).`,
+				}/5).`
 			);
 		}
 	} else {

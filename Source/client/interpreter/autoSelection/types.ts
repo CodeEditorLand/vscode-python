@@ -8,7 +8,7 @@ import { Resource } from "../../common/types";
 import { PythonEnvironment } from "../../pythonEnvironments/info";
 
 export const IInterpreterAutoSelectionProxyService = Symbol(
-	"IInterpreterAutoSelectionProxyService",
+	"IInterpreterAutoSelectionProxyService"
 );
 /**
  * Interface similar to IInterpreterAutoSelectionService, to avoid chickn n egg situation.
@@ -23,27 +23,27 @@ export const IInterpreterAutoSelectionProxyService = Symbol(
 export interface IInterpreterAutoSelectionProxyService {
 	readonly onDidChangeAutoSelectedInterpreter: Event<void>;
 	getAutoSelectedInterpreter(
-		resource: Resource,
+		resource: Resource
 	): PythonEnvironment | undefined;
 	registerInstance?(instance: IInterpreterAutoSelectionProxyService): void;
 	setWorkspaceInterpreter(
 		resource: Uri,
-		interpreter: PythonEnvironment | undefined,
+		interpreter: PythonEnvironment | undefined
 	): Promise<void>;
 }
 
 export const IInterpreterAutoSelectionService = Symbol(
-	"IInterpreterAutoSelectionService",
+	"IInterpreterAutoSelectionService"
 );
 export interface IInterpreterAutoSelectionService
 	extends IInterpreterAutoSelectionProxyService {
 	readonly onDidChangeAutoSelectedInterpreter: Event<void>;
 	autoSelectInterpreter(resource: Resource): Promise<void>;
 	getAutoSelectedInterpreter(
-		resource: Resource,
+		resource: Resource
 	): PythonEnvironment | undefined;
 	setGlobalInterpreter(
-		interpreter: PythonEnvironment | undefined,
+		interpreter: PythonEnvironment | undefined
 	): Promise<void>;
 }
 

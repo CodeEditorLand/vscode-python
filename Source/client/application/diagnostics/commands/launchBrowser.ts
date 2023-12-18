@@ -14,7 +14,7 @@ export class LaunchBrowserCommand extends BaseDiagnosticCommand {
 	constructor(
 		diagnostic: IDiagnostic,
 		private serviceContainer: IServiceContainer,
-		private url: string,
+		private url: string
 	) {
 		super(diagnostic);
 	}

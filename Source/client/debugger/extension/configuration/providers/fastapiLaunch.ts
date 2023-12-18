@@ -16,7 +16,7 @@ import { DebugConfigurationState, DebugConfigurationType } from "../../types";
 
 export async function buildFastAPILaunchDebugConfiguration(
 	input: MultiStepInput<DebugConfigurationState>,
-	state: DebugConfigurationState,
+	state: DebugConfigurationState
 ): Promise<void> {
 	const application = await getApplicationPath(state.folder);
 	let manuallyEnteredAValue: boolean | undefined;
@@ -40,7 +40,7 @@ export async function buildFastAPILaunchDebugConfiguration(
 					value && value.trim().length > 0
 						? undefined
 						: DebugConfigStrings.fastapi.enterAppPathOrNamePath
-								.invalid,
+								.invalid
 				),
 		});
 		if (selectedPath) {
@@ -59,7 +59,7 @@ export async function buildFastAPILaunchDebugConfiguration(
 	Object.assign(state.config, config);
 }
 export async function getApplicationPath(
-	folder: WorkspaceFolder | undefined,
+	folder: WorkspaceFolder | undefined
 ): Promise<string | undefined> {
 	if (!folder) {
 		return undefined;

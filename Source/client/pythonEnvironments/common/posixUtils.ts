@@ -63,8 +63,8 @@ export async function commonPosixBinPaths(): Promise<string[]> {
 				"/usr/sbin",
 				"/usr/share",
 				"~/.local/bin",
-			].concat(searchPaths),
-		),
+			].concat(searchPaths)
+		)
 	);
 
 	const exists = await Promise.all(paths.map((p) => fsapi.pathExists(p)));
@@ -115,7 +115,7 @@ function pickShortestPath(pythonPaths: string[]) {
  * @returns : Unique paths to python interpreters found in the search dirs.
  */
 export async function getPythonBinFromPosixPaths(
-	searchDirs: string[],
+	searchDirs: string[]
 ): Promise<string[]> {
 	const binToLinkMap = new Map<string, string[]>();
 	for (const searchDir of searchDirs) {
@@ -124,7 +124,7 @@ export async function getPythonBinFromPosixPaths(
 				"Looking for python binaries within",
 				searchDir,
 				"failed with",
-				ex,
+				ex
 			);
 			return [];
 		});
@@ -134,7 +134,7 @@ export async function getPythonBinFromPosixPaths(
 			// resolving all symlinks to the target binaries.
 			try {
 				traceVerbose(
-					`Attempting to resolve symbolic link: ${filepath}`,
+					`Attempting to resolve symbolic link: ${filepath}`
 				);
 				const resolvedBin = await resolveSymbolicLink(filepath);
 				if (binToLinkMap.has(resolvedBin)) {
@@ -161,7 +161,7 @@ export async function getPythonBinFromPosixPaths(
 	// the code below will pick '/usr/bin/python'.
 	const keys = Array.from(binToLinkMap.keys());
 	const pythonPaths = keys.map((key) =>
-		pickShortestPath([key, ...(binToLinkMap.get(key) ?? [])]),
+		pickShortestPath([key, ...(binToLinkMap.get(key) ?? [])])
 	);
 	return uniq(pythonPaths);
 }

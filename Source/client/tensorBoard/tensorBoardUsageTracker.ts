@@ -28,11 +28,12 @@ export class TensorBoardUsageTracker
 	};
 
 	constructor(
-        @inject(IDocumentManager) private documentManager: IDocumentManager,
-        @inject(IDisposableRegistry) private disposables: IDisposableRegistry,
-        @inject(TensorBoardPrompt) private prompt: TensorBoardPrompt,
-        @inject(TensorboardExperiment) private readonly experiment: TensorboardExperiment,
-    ) {}
+		@inject(IDocumentManager) private documentManager: IDocumentManager,
+		@inject(IDisposableRegistry) private disposables: IDisposableRegistry,
+		@inject(TensorBoardPrompt) private prompt: TensorBoardPrompt,
+		@inject(TensorboardExperiment)
+		private readonly experiment: TensorboardExperiment
+	) {}
 
 	public dispose(): void {
 		Disposable.from(...this.disposables).dispose();
@@ -57,7 +58,7 @@ export class TensorBoardUsageTracker
 		this.documentManager.onDidChangeActiveTextEditor(
 			(e) => this.onChangedActiveTextEditor(e),
 			this,
-			this.disposables,
+			this.disposables
 		);
 	}
 
@@ -75,7 +76,7 @@ export class TensorBoardUsageTracker
 			if (containsTensorBoardImport(lines)) {
 				this.prompt
 					.showNativeTensorBoardPrompt(
-						TensorBoardEntrypointTrigger.fileimport,
+						TensorBoardEntrypointTrigger.fileimport
 					)
 					.ignoreErrors();
 			}

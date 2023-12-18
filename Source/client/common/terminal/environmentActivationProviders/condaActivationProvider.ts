@@ -28,11 +28,12 @@ export class CondaActivationCommandProvider
 	implements ITerminalActivationCommandProvider
 {
 	constructor(
-        @inject(ICondaService) private readonly condaService: ICondaService,
-        @inject(IPlatformService) private platform: IPlatformService,
-        @inject(IConfigurationService) private configService: IConfigurationService,
-        @inject(IComponentAdapter) private pyenvs: IComponentAdapter,
-    ) {}
+		@inject(ICondaService) private readonly condaService: ICondaService,
+		@inject(IPlatformService) private platform: IPlatformService,
+		@inject(IConfigurationService)
+		private configService: IConfigurationService,
+		@inject(IComponentAdapter) private pyenvs: IComponentAdapter
+	) {}
 
 	/**
 	 * Is the given shell supported for activating a conda env?
@@ -47,12 +48,12 @@ export class CondaActivationCommandProvider
 	 */
 	public getActivationCommands(
 		resource: Uri | undefined,
-		targetShell: TerminalShellType,
+		targetShell: TerminalShellType
 	): Promise<string[] | undefined> {
 		const { pythonPath } = this.configService.getSettings(resource);
 		return this.getActivationCommandsForInterpreter(
 			pythonPath,
-			targetShell,
+			targetShell
 		);
 	}
 
@@ -62,7 +63,7 @@ export class CondaActivationCommandProvider
 	 */
 	public async getActivationCommandsForInterpreter(
 		pythonPath: string,
-		targetShell: TerminalShellType,
+		targetShell: TerminalShellType
 	): Promise<string[] | undefined> {
 		const envInfo = await this.pyenvs.getCondaEnvironment(pythonPath);
 		if (!envInfo) {
@@ -77,7 +78,7 @@ export class CondaActivationCommandProvider
 		const activatePath =
 			await this.condaService.getActivationScriptFromInterpreter(
 				interpreterPath,
-				envInfo.name,
+				envInfo.name
 			);
 		// eslint-disable-next-line camelcase
 		if (activatePath?.path) {
@@ -128,7 +129,7 @@ export class CondaActivationCommandProvider
 			case TerminalShellType.fish:
 				return getFishCommands(
 					condaEnv,
-					await this.condaService.getCondaFile(),
+					await this.condaService.getCondaFile()
 				);
 
 			default:
@@ -137,7 +138,7 @@ export class CondaActivationCommandProvider
 				}
 				return getUnixCommands(
 					condaEnv,
-					await this.condaService.getCondaFile(),
+					await this.condaService.getCondaFile()
 				);
 		}
 	}
@@ -158,7 +159,7 @@ export class CondaActivationCommandProvider
 	}
 
 	public async getWindowsCommands(
-		condaEnv: string,
+		condaEnv: string
 	): Promise<string[] | undefined> {
 		const activate = await this.getWindowsActivateCommand();
 		return [`${activate} ${condaEnv.toCommandArgumentForPythonExt()}`];
@@ -172,14 +173,14 @@ export class CondaActivationCommandProvider
  * Extension will not attempt to work around issues by trying to setup shell for user.
  */
 export async function _getPowershellCommands(
-	condaEnv: string,
+	condaEnv: string
 ): Promise<string[] | undefined> {
 	return [`conda activate ${condaEnv.toCommandArgumentForPythonExt()}`];
 }
 
 async function getFishCommands(
 	condaEnv: string,
-	condaFile: string,
+	condaFile: string
 ): Promise<string[] | undefined> {
 	// https://github.com/conda/conda/blob/be8c08c083f4d5e05b06bd2689d2cd0d410c2ffe/shell/etc/fish/conf.d/conda.fish#L18-L28
 	return [
@@ -189,7 +190,7 @@ async function getFishCommands(
 
 async function getUnixCommands(
 	condaEnv: string,
-	condaFile: string,
+	condaFile: string
 ): Promise<string[] | undefined> {
 	const condaDir = path.dirname(condaFile);
 	const activateFile = path.join(condaDir, "activate");

@@ -17,10 +17,10 @@ import { IApplicationEnvironment } from "./types";
 @injectable()
 export class ApplicationEnvironment implements IApplicationEnvironment {
 	constructor(
-        @inject(IPlatformService) private readonly platform: IPlatformService,
-        @inject(IPathUtils) private readonly pathUtils: IPathUtils,
-        @inject(ICurrentProcess) private readonly process: ICurrentProcess,
-    ) {}
+		@inject(IPlatformService) private readonly platform: IPlatformService,
+		@inject(IPathUtils) private readonly pathUtils: IPathUtils,
+		@inject(ICurrentProcess) private readonly process: ICurrentProcess
+	) {}
 
 	public get userSettingsFile(): string | undefined {
 		const vscodeFolderName =
@@ -33,7 +33,7 @@ export class ApplicationEnvironment implements IApplicationEnvironment {
 					"Application Support",
 					vscodeFolderName,
 					"User",
-					"settings.json",
+					"settings.json"
 				);
 			case OSType.Linux:
 				return path.join(
@@ -41,7 +41,7 @@ export class ApplicationEnvironment implements IApplicationEnvironment {
 					".config",
 					vscodeFolderName,
 					"User",
-					"settings.json",
+					"settings.json"
 				);
 			case OSType.Windows:
 				return this.process.env.APPDATA
@@ -49,8 +49,8 @@ export class ApplicationEnvironment implements IApplicationEnvironment {
 							this.process.env.APPDATA,
 							vscodeFolderName,
 							"User",
-							"settings.json",
-					  )
+							"settings.json"
+						)
 					: undefined;
 			default:
 				return;

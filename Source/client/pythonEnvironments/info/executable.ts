@@ -16,7 +16,7 @@ import { copyPythonExecInfo, PythonExecInfo } from "../exec";
  */
 export async function getExecutablePath(
 	python: PythonExecInfo,
-	shellExec: ShellExecFunc,
+	shellExec: ShellExecFunc
 ): Promise<string | undefined> {
 	try {
 		const [args, parse] = getExecutable();
@@ -28,7 +28,7 @@ export async function getExecutablePath(
 				p
 					? `${p} ${c.toCommandArgumentForPythonExt()}`
 					: `${c.toCommandArgumentForPythonExt()}`,
-			"",
+			""
 		);
 		const result = await shellExec(quoted, { timeout: 15000 });
 		const executable = parse(result.stdout.trim());

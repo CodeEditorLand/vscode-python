@@ -16,18 +16,18 @@ export function registerAllCreateEnvironmentFeatures(
 	disposables: IDisposableRegistry,
 	interpreterQuickPick: IInterpreterQuickPick,
 	interpreterPathService: IInterpreterPathService,
-	pathUtils: IPathUtils,
+	pathUtils: IPathUtils
 ): void {
 	registerCreateEnvironmentFeatures(
 		disposables,
 		interpreterQuickPick,
 		interpreterPathService,
-		pathUtils,
+		pathUtils
 	);
 	registerCreateEnvironmentButtonFeatures(disposables);
 	registerPyProjectTomlFeatures(disposables);
 	registerInstalledPackagesDiagnosticsProvider(
 		disposables,
-		interpreterPathService,
+		interpreterPathService
 	);
 }

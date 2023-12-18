@@ -57,7 +57,7 @@ export function isPyenvShimDir(dirPath: string): boolean {
  */
 
 export async function isPyenvEnvironment(
-	interpreterPath: string,
+	interpreterPath: string
 ): Promise<boolean> {
 	const pathToCheck = interpreterPath;
 	const pyenvDir = getPyenvDir();
@@ -245,7 +245,7 @@ function getKnownPyenvVersionParsers(): Map<
  */
 
 export function parsePyenvVersion(
-	str: string,
+	str: string
 ): IPyenvVersionStrings | undefined {
 	const allParsers = getKnownPyenvVersionParsers();
 	const knownPrefixes = Array.from(allParsers.keys());

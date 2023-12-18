@@ -8,7 +8,7 @@ export class ContextKey {
 
 	constructor(
 		private name: string,
-		private commandManager: ICommandManager,
+		private commandManager: ICommandManager
 	) {}
 
 	public async set(value: boolean): Promise<void> {
@@ -19,7 +19,7 @@ export class ContextKey {
 		await this.commandManager.executeCommand(
 			"setContext",
 			this.name,
-			this.lastValue,
+			this.lastValue
 		);
 	}
 }

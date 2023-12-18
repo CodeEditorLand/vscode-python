@@ -15,18 +15,20 @@ export enum FilterKeys {
 
 @injectable()
 export class DiagnosticFilterService implements IDiagnosticFilterService {
-	constructor(@inject(IServiceContainer) private serviceContainer: IServiceContainer) {}
+	constructor(
+		@inject(IServiceContainer) private serviceContainer: IServiceContainer
+	) {}
 	public async shouldIgnoreDiagnostic(code: string): Promise<boolean> {
 		const factory = this.serviceContainer.get<IPersistentStateFactory>(
-			IPersistentStateFactory,
+			IPersistentStateFactory
 		);
 		const globalState = factory.createGlobalPersistentState<string[]>(
 			FilterKeys.GlobalDiagnosticFilter,
-			[],
+			[]
 		);
 		const workspaceState = factory.createWorkspacePersistentState<string[]>(
 			FilterKeys.WorkspaceDiagnosticFilter,
-			[],
+			[]
 		);
 		return (
 			globalState.value.indexOf(code) >= 0 ||
@@ -35,21 +37,21 @@ export class DiagnosticFilterService implements IDiagnosticFilterService {
 	}
 	public async ignoreDiagnostic(
 		code: string,
-		scope: DiagnosticScope,
+		scope: DiagnosticScope
 	): Promise<void> {
 		const factory = this.serviceContainer.get<IPersistentStateFactory>(
-			IPersistentStateFactory,
+			IPersistentStateFactory
 		);
 		const state =
 			scope === DiagnosticScope.Global
 				? factory.createGlobalPersistentState<string[]>(
 						FilterKeys.GlobalDiagnosticFilter,
-						[],
-				  )
+						[]
+					)
 				: factory.createWorkspacePersistentState<string[]>(
 						FilterKeys.WorkspaceDiagnosticFilter,
-						[],
-				  );
+						[]
+					);
 
 		const currentValue = state.value.slice();
 		await state.updateValue(currentValue.concat(code));

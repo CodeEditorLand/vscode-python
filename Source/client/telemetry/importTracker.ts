@@ -61,12 +61,20 @@ export class ImportTracker implements IExtensionSingleActivationService {
 	private hashFn = require("hash.js").sha256;
 
 	constructor(
-        @inject(IDocumentManager) private documentManager: IDocumentManager,
-        @inject(IDisposableRegistry) private disposables: IDisposableRegistry,
-    ) {
-        this.documentManager.onDidOpenTextDocument((t) => this.onOpenedOrSavedDocument(t), this, this.disposables);
-        this.documentManager.onDidSaveTextDocument((t) => this.onOpenedOrSavedDocument(t), this, this.disposables);
-    }
+		@inject(IDocumentManager) private documentManager: IDocumentManager,
+		@inject(IDisposableRegistry) private disposables: IDisposableRegistry
+	) {
+		this.documentManager.onDidOpenTextDocument(
+			(t) => this.onOpenedOrSavedDocument(t),
+			this,
+			this.disposables
+		);
+		this.documentManager.onDidSaveTextDocument(
+			(t) => this.onOpenedOrSavedDocument(t),
+			this,
+			this.disposables
+		);
+	}
 
 	public dispose(): void {
 		this.pendingChecks.clear();
@@ -75,7 +83,7 @@ export class ImportTracker implements IExtensionSingleActivationService {
 	public async activate(): Promise<void> {
 		// Act like all of our open documents just opened; our timeout will make sure this is delayed.
 		this.documentManager.textDocuments.forEach((d) =>
-			this.onOpenedOrSavedDocument(d),
+			this.onOpenedOrSavedDocument(d)
 		);
 	}
 
@@ -93,7 +101,7 @@ export class ImportTracker implements IExtensionSingleActivationService {
 	private scheduleDocument(document: TextDocument) {
 		this.scheduleCheck(
 			document.fileName,
-			this.checkDocument.bind(this, document),
+			this.checkDocument.bind(this, document)
 		);
 	}
 
@@ -154,7 +162,7 @@ export class ImportTracker implements IExtensionSingleActivationService {
 				}
 				if (s && TorchProfilerImportRegEx.test(s)) {
 					sendTelemetryEvent(
-						EventName.TENSORBOARD_TORCH_PROFILER_IMPORT,
+						EventName.TENSORBOARD_TORCH_PROFILER_IMPORT
 					);
 				}
 			}
@@ -166,10 +174,10 @@ export class ImportTracker implements IExtensionSingleActivationService {
 }
 
 export function getDocumentLines(
-	document: TextDocument,
+	document: TextDocument
 ): (string | undefined)[] {
 	const array = Array<string>(
-		Math.min(document.lineCount, MAX_DOCUMENT_LINES),
+		Math.min(document.lineCount, MAX_DOCUMENT_LINES)
 	).fill("");
 	return array
 		.map((_a: string, i: number) => {

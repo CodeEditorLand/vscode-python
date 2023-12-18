@@ -21,14 +21,15 @@ import { BaseShellDetector } from "./baseShellDetector";
 @injectable()
 export class SettingsShellDetector extends BaseShellDetector {
 	constructor(
-        @inject(IWorkspaceService) private readonly workspace: IWorkspaceService,
-        @inject(IPlatformService) private readonly platform: IPlatformService,
-    ) {
-        super(2);
-    }
+		@inject(IWorkspaceService)
+		private readonly workspace: IWorkspaceService,
+		@inject(IPlatformService) private readonly platform: IPlatformService
+	) {
+		super(2);
+	}
 	public getTerminalShellPath(): string | undefined {
 		const shellConfig = this.workspace.getConfiguration(
-			"terminal.integrated.shell",
+			"terminal.integrated.shell"
 		);
 		let osSection = "";
 		switch (this.platform.osType) {
@@ -52,7 +53,7 @@ export class SettingsShellDetector extends BaseShellDetector {
 	}
 	public identify(
 		telemetryProperties: ShellIdentificationTelemetry,
-		_terminal?: Terminal,
+		_terminal?: Terminal
 	): TerminalShellType | undefined {
 		const shellPath = this.getTerminalShellPath();
 		telemetryProperties.hasCustomShell = !!shellPath;

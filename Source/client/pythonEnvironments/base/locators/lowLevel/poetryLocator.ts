@@ -33,7 +33,7 @@ async function getVirtualEnvDirs(root: string): Promise<string[]> {
 }
 
 async function getVirtualEnvKind(
-	interpreterPath: string,
+	interpreterPath: string
 ): Promise<PythonEnvKind> {
 	if (await isPoetryEnvironment(interpreterPath)) {
 		return PythonEnvKind.Poetry;
@@ -58,7 +58,7 @@ export class PoetryLocator extends LazyResourceBasedLocator {
 			const envGenerators = envDirs.map((envDir) => {
 				async function* generator() {
 					traceVerbose(
-						`Searching for poetry virtual envs in: ${envDir}`,
+						`Searching for poetry virtual envs in: ${envDir}`
 					);
 					const filename = await getInterpreterPathFromDir(envDir);
 					if (filename !== undefined) {
@@ -69,12 +69,12 @@ export class PoetryLocator extends LazyResourceBasedLocator {
 							// we can use the kind to determine this anyway.
 							yield { executablePath: filename, kind };
 							traceVerbose(
-								`Poetry Virtual Environment: [added] ${filename}`,
+								`Poetry Virtual Environment: [added] ${filename}`
 							);
 						} catch (ex) {
 							traceError(
 								`Failed to process environment: ${filename}`,
-								ex,
+								ex
 							);
 						}
 					}

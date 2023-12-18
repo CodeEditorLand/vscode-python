@@ -34,7 +34,7 @@ function parseBasename(basename: string): PythonVersion {
 	}
 	if (!basename.startsWith("python")) {
 		throw Error(
-			`not a Python executable (expected "python..", got "${basename}")`,
+			`not a Python executable (expected "python..", got "${basename}")`
 		);
 	}
 	// If we reach here then we expect it to have a version in the name.

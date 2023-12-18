@@ -25,7 +25,7 @@ class OutdatedDebuggerPrompt implements DebugAdapterTracker {
 			const prompts = [Common.moreInfo];
 			showInformationMessage(
 				OutdatedDebugger.outdatedDebuggerMessage,
-				...prompts,
+				...prompts
 			).then((selection) => {
 				if (selection === prompts[0]) {
 					launch("https://aka.ms/migrateToDebugpy");
@@ -78,7 +78,7 @@ export class OutdatedDebuggerPromptFactory
 		this.promptCheck = new OutdatedDebuggerPromptState();
 	}
 	public createDebugAdapterTracker(
-		_session: DebugSession,
+		_session: DebugSession
 	): ProviderResult<DebugAdapterTracker> {
 		return new OutdatedDebuggerPrompt(this.promptCheck);
 	}

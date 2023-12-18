@@ -16,51 +16,51 @@ import { TensorboardExperiment } from "./tensorboarExperiment";
 export function registerTypes(serviceManager: IServiceManager): void {
 	serviceManager.addSingleton<TensorBoardSessionProvider>(
 		TensorBoardSessionProvider,
-		TensorBoardSessionProvider,
+		TensorBoardSessionProvider
 	);
 	serviceManager.addBinding(
 		TensorBoardSessionProvider,
-		IExtensionSingleActivationService,
+		IExtensionSingleActivationService
 	);
 	serviceManager.addSingleton<TensorBoardFileWatcher>(
 		TensorBoardFileWatcher,
-		TensorBoardFileWatcher,
+		TensorBoardFileWatcher
 	);
 	serviceManager.addBinding(
 		TensorBoardFileWatcher,
-		IExtensionSingleActivationService,
+		IExtensionSingleActivationService
 	);
 	serviceManager.addSingleton<TensorBoardPrompt>(
 		TensorBoardPrompt,
-		TensorBoardPrompt,
+		TensorBoardPrompt
 	);
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
-		TensorBoardUsageTracker,
+		TensorBoardUsageTracker
 	);
 	serviceManager.addSingleton<TensorBoardImportCodeLensProvider>(
 		TensorBoardImportCodeLensProvider,
-		TensorBoardImportCodeLensProvider,
+		TensorBoardImportCodeLensProvider
 	);
 	serviceManager.addBinding(
 		TensorBoardImportCodeLensProvider,
-		IExtensionSingleActivationService,
+		IExtensionSingleActivationService
 	);
 	serviceManager.addSingleton<TensorBoardNbextensionCodeLensProvider>(
 		TensorBoardNbextensionCodeLensProvider,
-		TensorBoardNbextensionCodeLensProvider,
+		TensorBoardNbextensionCodeLensProvider
 	);
 	serviceManager.addBinding(
 		TensorBoardNbextensionCodeLensProvider,
-		IExtensionSingleActivationService,
+		IExtensionSingleActivationService
 	);
 	serviceManager.addSingleton(
 		IExtensionSingleActivationService,
-		TerminalWatcher,
+		TerminalWatcher
 	);
 	serviceManager.addSingleton(
 		TensorboardDependencyChecker,
-		TensorboardDependencyChecker,
+		TensorboardDependencyChecker
 	);
 	serviceManager.addSingleton(TensorboardExperiment, TensorboardExperiment);
 }

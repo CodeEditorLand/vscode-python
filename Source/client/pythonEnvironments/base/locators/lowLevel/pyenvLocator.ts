@@ -32,7 +32,7 @@ async function* getPyenvEnvironments(): AsyncIterableIterator<BasicEnvInfo> {
 			} catch (ex) {
 				traceError(
 					`Failed to process environment: ${interpreterPath}`,
-					ex,
+					ex
 				);
 			}
 		}

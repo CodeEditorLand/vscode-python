@@ -16,10 +16,10 @@ abstract class AbstractSystemVariables implements ISystemVariables {
 	public resolve(value: string[]): string[];
 	public resolve(value: IStringDictionary<string>): IStringDictionary<string>;
 	public resolve(
-		value: IStringDictionary<string[]>,
+		value: IStringDictionary<string[]>
 	): IStringDictionary<string[]>;
 	public resolve(
-		value: IStringDictionary<IStringDictionary<string>>,
+		value: IStringDictionary<IStringDictionary<string>>
 	): IStringDictionary<IStringDictionary<string>>;
 
 	public resolve(value: any): any {
@@ -64,9 +64,7 @@ abstract class AbstractSystemVariables implements ISystemVariables {
 	}
 
 	private __resolveLiteral(
-		values: IStringDictionary<
-			string | IStringDictionary<string> | string[]
-		>,
+		values: IStringDictionary<string | IStringDictionary<string> | string[]>
 	): IStringDictionary<string | IStringDictionary<string> | string[]> {
 		const result: IStringDictionary<
 			string | IStringDictionary<string> | string[]
@@ -116,7 +114,7 @@ export class SystemVariables extends AbstractSystemVariables {
 		file: Uri | undefined,
 		rootFolder: string | undefined,
 		workspace?: IWorkspaceService,
-		documentManager?: IDocumentManager,
+		documentManager?: IDocumentManager
 	) {
 		super();
 		const workspaceFolder =
@@ -133,8 +131,8 @@ export class SystemVariables extends AbstractSystemVariables {
 				documentManager.activeTextEditor.document.getText(
 					new Range(
 						documentManager.activeTextEditor.selection.start,
-						documentManager.activeTextEditor.selection.end,
-					),
+						documentManager.activeTextEditor.selection.end
+					)
 				);
 		}
 		this._execPath = process.execPath;

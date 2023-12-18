@@ -11,7 +11,7 @@ const pathToPythonLibDir = path.join(
 	EXTENSION_ROOT_DIR,
 	"pythonFiles",
 	"lib",
-	"python",
+	"python"
 );
 const pathToDebugger = path.join(pathToPythonLibDir, "debugpy");
 
@@ -23,7 +23,7 @@ type RemoteDebugOptions = {
 
 export function getDebugpyLauncherArgs(
 	options: RemoteDebugOptions,
-	debuggerPath: string = pathToDebugger,
+	debuggerPath: string = pathToDebugger
 ) {
 	const waitArgs = options.waitUntilDebuggerAttaches
 		? ["--wait-for-client"]

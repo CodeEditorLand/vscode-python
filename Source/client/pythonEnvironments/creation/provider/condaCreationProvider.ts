@@ -45,7 +45,7 @@ import {
 
 function generateCommandArgs(
 	version?: string,
-	options?: CreateEnvironmentOptions,
+	options?: CreateEnvironmentOptions
 ): string[] {
 	let addGitIgnore = true;
 	let installPackages = true;
@@ -86,7 +86,7 @@ function getCondaEnvFromOutput(output: string): string | undefined {
 			.filter(
 				(s) =>
 					s.startsWith(CONDA_ENV_CREATED_MARKER) ||
-					s.startsWith(CONDA_ENV_EXISTING_MARKER),
+					s.startsWith(CONDA_ENV_EXISTING_MARKER)
 			)[0];
 		if (envPath.includes(CONDA_ENV_CREATED_MARKER)) {
 			return envPath.substring(CONDA_ENV_CREATED_MARKER.length);
@@ -103,7 +103,7 @@ async function createCondaEnv(
 	command: string,
 	args: string[],
 	progress: CreateEnvironmentProgress,
-	token?: CancellationToken,
+	token?: CancellationToken
 ): Promise<string> {
 	progress.report({
 		message: CreateEnv.Conda.creating,
@@ -138,7 +138,7 @@ async function createCondaEnv(
 		async (error) => {
 			traceError(
 				"Error while running conda env creation script: ",
-				error,
+				error
 			);
 			deferred.reject(error);
 		},
@@ -147,16 +147,16 @@ async function createCondaEnv(
 			if (proc?.exitCode !== 0) {
 				traceError(
 					"Error while running venv creation script: ",
-					progressAndTelemetry.getLastError(),
+					progressAndTelemetry.getLastError()
 				);
 				deferred.reject(
 					progressAndTelemetry.getLastError() ||
-						`Conda env creation failed with exitCode: ${proc?.exitCode}`,
+						`Conda env creation failed with exitCode: ${proc?.exitCode}`
 				);
 			} else {
 				deferred.resolve(condaEnvPath);
 			}
-		},
+		}
 	);
 	return deferred.promise;
 }
@@ -176,7 +176,7 @@ function getExecutableCommand(condaBaseEnvPath: string): string {
 }
 
 async function createEnvironment(
-	options?: CreateEnvironmentOptions,
+	options?: CreateEnvironmentOptions
 ): Promise<CreateEnvironmentResult | undefined> {
 	const conda = await getCondaBaseEnv();
 	if (!conda) {
@@ -203,16 +203,16 @@ async function createEnvironment(
 
 			if (workspace === undefined) {
 				traceError(
-					"Workspace was not selected or found for creating conda environment.",
+					"Workspace was not selected or found for creating conda environment."
 				);
 				return MultiStepAction.Cancel;
 			}
 			traceInfo(
-				`Selected workspace ${workspace.uri.fsPath} for creating conda environment.`,
+				`Selected workspace ${workspace.uri.fsPath} for creating conda environment.`
 			);
 			return MultiStepAction.Continue;
 		},
-		undefined,
+		undefined
 	);
 
 	let existingCondaAction: ExistingCondaAction | undefined;
@@ -238,7 +238,7 @@ async function createEnvironment(
 			}
 			return MultiStepAction.Continue;
 		},
-		undefined,
+		undefined
 	);
 	workspaceStep.next = existingEnvStep;
 
@@ -263,12 +263,12 @@ async function createEnvironment(
 				}
 				if (version === undefined) {
 					traceError(
-						"Python version was not selected for creating conda environment.",
+						"Python version was not selected for creating conda environment."
 					);
 					return MultiStepAction.Cancel;
 				}
 				traceInfo(
-					`Selected Python version ${version} for creating conda environment.`,
+					`Selected Python version ${version} for creating conda environment.`
 				);
 			} else if (
 				existingCondaAction === ExistingCondaAction.UseExisting
@@ -280,7 +280,7 @@ async function createEnvironment(
 
 			return MultiStepAction.Continue;
 		},
-		undefined,
+		undefined
 	);
 	existingEnvStep.next = versionStep;
 
@@ -328,7 +328,7 @@ async function createEnvironment(
 		},
 		async (
 			progress: CreateEnvironmentProgress,
-			token: CancellationToken,
+			token: CancellationToken
 		): Promise<CreateEnvironmentResult | undefined> => {
 			progress.report({
 				message: CreateEnv.statusStarting,
@@ -346,7 +346,7 @@ async function createEnvironment(
 						getExecutableCommand(conda),
 						generateCommandArgs(version, options),
 						progress,
-						token,
+						token
 					);
 
 					if (envPath) {
@@ -354,21 +354,21 @@ async function createEnvironment(
 					}
 
 					throw new Error(
-						"Failed to create conda environment. See Output > Python for more info.",
+						"Failed to create conda environment. See Output > Python for more info."
 					);
 				} else {
 					throw new Error(
-						"A workspace is needed to create conda environment",
+						"A workspace is needed to create conda environment"
 					);
 				}
 			} catch (ex) {
 				traceError(ex);
 				showErrorMessageWithLogs(
-					CreateEnv.Conda.errorCreatingEnvironment,
+					CreateEnv.Conda.errorCreatingEnvironment
 				);
 				return { error: ex as Error };
 			}
-		},
+		}
 	);
 }
 

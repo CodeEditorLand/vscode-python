@@ -57,7 +57,7 @@ async function getGlobalVirtualEnvDirs(): Promise<string[]> {
 		];
 		const filtered = await asyncFilter(
 			subDirs.map((d) => path.join(homeDir, d)),
-			pathExists,
+			pathExists
 		);
 		filtered.forEach((d) => venvDirs.push(d));
 	}
@@ -74,7 +74,7 @@ async function getGlobalVirtualEnvDirs(): Promise<string[]> {
  * @param interpreterPath: Absolute path to the interpreter paths.
  */
 async function getVirtualEnvKind(
-	interpreterPath: string,
+	interpreterPath: string
 ): Promise<PythonEnvKind> {
 	if (await isPipenvEnvironment(interpreterPath)) {
 		return PythonEnvKind.Pipenv;
@@ -121,12 +121,12 @@ export class GlobalVirtualEnvironmentLocator extends FSWatchingLocator {
 			const envGenerators = envRootDirs.map((envRootDir) => {
 				async function* generator() {
 					traceVerbose(
-						`Searching for global virtual envs in: ${envRootDir}`,
+						`Searching for global virtual envs in: ${envRootDir}`
 					);
 
 					const executables = findInterpretersInDir(
 						envRootDir,
-						searchDepth,
+						searchDepth
 					);
 
 					for await (const entry of executables) {
@@ -143,17 +143,17 @@ export class GlobalVirtualEnvironmentLocator extends FSWatchingLocator {
 							try {
 								yield { kind, executablePath: filename };
 								traceVerbose(
-									`Global Virtual Environment: [added] ${filename}`,
+									`Global Virtual Environment: [added] ${filename}`
 								);
 							} catch (ex) {
 								traceError(
 									`Failed to process environment: ${filename}`,
-									ex,
+									ex
 								);
 							}
 						} else {
 							traceVerbose(
-								`Global Virtual Environment: [skipped] ${filename}`,
+								`Global Virtual Environment: [skipped] ${filename}`
 							);
 						}
 					}

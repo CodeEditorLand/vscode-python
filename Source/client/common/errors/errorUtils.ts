@@ -6,7 +6,7 @@ import { EOL } from "os";
 export class ErrorUtils {
 	public static outputHasModuleNotInstalledError(
 		moduleName: string,
-		content?: string,
+		content?: string
 	): boolean {
 		return content &&
 			(content!.indexOf(`No module named ${moduleName}`) > 0 ||

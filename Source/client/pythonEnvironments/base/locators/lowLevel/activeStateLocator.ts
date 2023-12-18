@@ -33,7 +33,7 @@ export class ActiveStateLocator extends LazyResourceBasedLocator {
 						traceVerbose(`Looking for Python in: ${project.name}`);
 						for await (const exe of findInterpretersInDir(dir)) {
 							traceVerbose(
-								`Found Python executable: ${exe.filename}`,
+								`Found Python executable: ${exe.filename}`
 							);
 							yield {
 								kind: PythonEnvKind.ActiveState,
@@ -43,9 +43,9 @@ export class ActiveStateLocator extends LazyResourceBasedLocator {
 					} catch (ex) {
 						traceError(
 							`Failed to process State Tool project: ${JSON.stringify(
-								project,
+								project
 							)}`,
-							ex,
+							ex
 						);
 					}
 				}

@@ -21,17 +21,18 @@ import { BaseShellDetector } from "./baseShellDetector";
 @injectable()
 export class UserEnvironmentShellDetector extends BaseShellDetector {
 	constructor(
-        @inject(ICurrentProcess) private readonly currentProcess: ICurrentProcess,
-        @inject(IPlatformService) private readonly platform: IPlatformService,
-    ) {
-        super(1);
-    }
+		@inject(ICurrentProcess)
+		private readonly currentProcess: ICurrentProcess,
+		@inject(IPlatformService) private readonly platform: IPlatformService
+	) {
+		super(1);
+	}
 	public getDefaultPlatformShell(): string {
 		return getDefaultShell(this.platform, this.currentProcess);
 	}
 	public identify(
 		telemetryProperties: ShellIdentificationTelemetry,
-		_terminal?: Terminal,
+		_terminal?: Terminal
 	): TerminalShellType | undefined {
 		const shellPath = this.getDefaultPlatformShell();
 		telemetryProperties.hasShellInEnv = !!shellPath;
@@ -52,7 +53,7 @@ export class UserEnvironmentShellDetector extends BaseShellDetector {
 */
 function getDefaultShell(
 	platform: IPlatformService,
-	currentProcess: ICurrentProcess,
+	currentProcess: ICurrentProcess
 ): string {
 	if (platform.osType === OSType.Windows) {
 		return getTerminalDefaultShellWindows(platform, currentProcess);
@@ -64,11 +65,11 @@ function getDefaultShell(
 }
 function getTerminalDefaultShellWindows(
 	platform: IPlatformService,
-	currentProcess: ICurrentProcess,
+	currentProcess: ICurrentProcess
 ): string {
 	const isAtLeastWindows10 = parseFloat(platform.osRelease) >= 10;
 	const is32ProcessOn64Windows = currentProcess.env.hasOwnProperty(
-		"PROCESSOR_ARCHITEW6432",
+		"PROCESSOR_ARCHITEW6432"
 	);
 	const powerShellPath = `${currentProcess.env.windir}\\${
 		is32ProcessOn64Windows ? "Sysnative" : "System32"

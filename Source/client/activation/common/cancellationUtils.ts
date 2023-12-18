@@ -25,14 +25,14 @@ function getCancellationFolderPath(folderName: string) {
 	return path.join(
 		os.tmpdir(),
 		"python-languageserver-cancellation",
-		folderName,
+		folderName
 	);
 }
 
 function getCancellationFilePath(folderName: string, id: CancellationId) {
 	return path.join(
 		getCancellationFolderPath(folderName),
-		`cancellation-${String(id)}.tmp`,
+		`cancellation-${String(id)}.tmp`
 	);
 }
 
@@ -57,7 +57,7 @@ class FileCancellationSenderStrategy implements CancellationSenderStrategy {
 
 	public cleanup(id: CancellationId): void {
 		tryRun(() =>
-			fs.unlinkSync(getCancellationFilePath(this.folderName, id)),
+			fs.unlinkSync(getCancellationFilePath(this.folderName, id))
 		);
 	}
 

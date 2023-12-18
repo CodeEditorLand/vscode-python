@@ -21,16 +21,18 @@ export class LoadLanguageServerExtension
 	};
 
 	constructor(
-        @inject(ICommandManager) private readonly commandManager: ICommandManager,
-        @inject(IDisposableRegistry) private readonly disposables: IDisposableRegistry,
-    ) {}
+		@inject(ICommandManager)
+		private readonly commandManager: ICommandManager,
+		@inject(IDisposableRegistry)
+		private readonly disposables: IDisposableRegistry
+	) {}
 
 	public activate(): Promise<void> {
 		const disposable = this.commandManager.registerCommand(
 			"python._loadLanguageServerExtension",
 			() => {
 				/** no-op */
-			},
+			}
 		);
 		this.disposables.push(disposable);
 		return Promise.resolve();

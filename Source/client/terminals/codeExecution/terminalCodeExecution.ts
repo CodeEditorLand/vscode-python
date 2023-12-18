@@ -36,18 +36,25 @@ export class TerminalCodeExecutionProvider implements ICodeExecutionService {
 	protected terminalTitle!: string;
 	private replActive?: Promise<boolean>;
 	constructor(
-        @inject(ITerminalServiceFactory) protected readonly terminalServiceFactory: ITerminalServiceFactory,
-        @inject(IConfigurationService) protected readonly configurationService: IConfigurationService,
-        @inject(IWorkspaceService) protected readonly workspace: IWorkspaceService,
-        @inject(IDisposableRegistry) protected readonly disposables: Disposable[],
-        @inject(IPlatformService) protected readonly platformService: IPlatformService,
-        @inject(IInterpreterService) protected readonly interpreterService: IInterpreterService,
-        @inject(ICommandManager) protected readonly commandManager: ICommandManager,
-    ) {}
+		@inject(ITerminalServiceFactory)
+		protected readonly terminalServiceFactory: ITerminalServiceFactory,
+		@inject(IConfigurationService)
+		protected readonly configurationService: IConfigurationService,
+		@inject(IWorkspaceService)
+		protected readonly workspace: IWorkspaceService,
+		@inject(IDisposableRegistry)
+		protected readonly disposables: Disposable[],
+		@inject(IPlatformService)
+		protected readonly platformService: IPlatformService,
+		@inject(IInterpreterService)
+		protected readonly interpreterService: IInterpreterService,
+		@inject(ICommandManager)
+		protected readonly commandManager: ICommandManager
+	) {}
 
 	public async executeFile(
 		file: Uri,
-		options?: { newTerminalPerFile: boolean },
+		options?: { newTerminalPerFile: boolean }
 	) {
 		await this.setCwdForFileExecution(file, options);
 		const { command, args } = await this.getExecuteFileArgs(file, [
@@ -66,16 +73,16 @@ export class TerminalCodeExecutionProvider implements ICodeExecutionService {
 			// If user is trying to smart send deprecated code show warning
 			const selection = await showWarningMessage(
 				Diagnostics.invalidSmartSendMessage,
-				Repl.disableSmartSend,
+				Repl.disableSmartSend
 			);
 			traceInfo(
-				`Selected file contains invalid Python or Deprecated Python 2 code`,
+				`Selected file contains invalid Python or Deprecated Python 2 code`
 			);
 			if (selection === Repl.disableSmartSend) {
 				this.configurationService.updateSetting(
 					"REPL.enableREPLSmartSend",
 					false,
-					resource,
+					resource
 				);
 			}
 		} else {
@@ -92,7 +99,7 @@ export class TerminalCodeExecutionProvider implements ICodeExecutionService {
 			const replCommandArgs = await this.getExecutableInfo(resource);
 			terminalService.sendCommand(
 				replCommandArgs.command,
-				replCommandArgs.args,
+				replCommandArgs.args
 			);
 
 			// Give python repl time to start before we start sending text.
@@ -101,7 +108,7 @@ export class TerminalCodeExecutionProvider implements ICodeExecutionService {
 		this.disposables.push(
 			terminalService.onDidCloseTerminal(() => {
 				this.replActive = undefined;
-			}),
+			})
 		);
 
 		await this.replActive;
@@ -109,7 +116,7 @@ export class TerminalCodeExecutionProvider implements ICodeExecutionService {
 
 	public async getExecutableInfo(
 		resource?: Uri,
-		args: string[] = [],
+		args: string[] = []
 	): Promise<PythonExecInfo> {
 		const pythonSettings = this.configurationService.getSettings(resource);
 		const interpreter =
@@ -125,13 +132,13 @@ export class TerminalCodeExecutionProvider implements ICodeExecutionService {
 	// Overridden in subclasses, see djangoShellCodeExecution.ts
 	public async getExecuteFileArgs(
 		resource?: Uri,
-		executeArgs: string[] = [],
+		executeArgs: string[] = []
 	): Promise<PythonExecInfo> {
 		return this.getExecutableInfo(resource, executeArgs);
 	}
 	private getTerminalService(
 		resource: Resource,
-		options?: { newTerminalPerFile: boolean },
+		options?: { newTerminalPerFile: boolean }
 	): ITerminalService {
 		return this.terminalServiceFactory.getTerminalService({
 			resource,
@@ -141,7 +148,7 @@ export class TerminalCodeExecutionProvider implements ICodeExecutionService {
 	}
 	private async setCwdForFileExecution(
 		file: Uri,
-		options?: { newTerminalPerFile: boolean },
+		options?: { newTerminalPerFile: boolean }
 	) {
 		const pythonSettings = this.configurationService.getSettings(file);
 		if (!pythonSettings.terminal.executeInFileDir) {
@@ -164,12 +171,12 @@ export class TerminalCodeExecutionProvider implements ICodeExecutionService {
 				) {
 					this.hasRanOutsideCurrentDrive = true;
 					await this.getTerminalService(file).sendText(
-						`${fileDrive}:`,
+						`${fileDrive}:`
 					);
 				}
 			}
 			await this.getTerminalService(file, options).sendText(
-				`cd ${fileDirPath.fileToCommandArgumentForPythonExt()}`,
+				`cd ${fileDirPath.fileToCommandArgumentForPythonExt()}`
 			);
 		}
 	}

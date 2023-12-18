@@ -36,22 +36,24 @@ export class LaunchJsonCompletionProvider
 	};
 
 	constructor(
-        @inject(ILanguageService) private readonly languageService: ILanguageService,
-        @inject(IDisposableRegistry) private readonly disposableRegistry: IDisposableRegistry,
-    ) {}
+		@inject(ILanguageService)
+		private readonly languageService: ILanguageService,
+		@inject(IDisposableRegistry)
+		private readonly disposableRegistry: IDisposableRegistry
+	) {}
 
 	public async activate(): Promise<void> {
 		this.disposableRegistry.push(
 			this.languageService.registerCompletionItemProvider(
 				{ language: JsonLanguages.json },
-				this,
-			),
+				this
+			)
 		);
 		this.disposableRegistry.push(
 			this.languageService.registerCompletionItemProvider(
 				{ language: JsonLanguages.jsonWithComments },
-				this,
-			),
+				this
+			)
 		);
 	}
 
@@ -59,12 +61,12 @@ export class LaunchJsonCompletionProvider
 	public async provideCompletionItems(
 		document: TextDocument,
 		position: Position,
-		token: CancellationToken,
+		token: CancellationToken
 	): Promise<CompletionItem[]> {
 		if (
 			!LaunchJsonCompletionProvider.canProvideCompletions(
 				document,
-				position,
+				position
 			)
 		) {
 			return [];
@@ -90,14 +92,14 @@ export class LaunchJsonCompletionProvider
 
 	public static canProvideCompletions(
 		document: TextDocument,
-		position: Position,
+		position: Position
 	): boolean {
 		if (path.basename(document.uri.fsPath) !== "launch.json") {
 			return false;
 		}
 		const location = getLocation(
 			document.getText(),
-			document.offsetAt(position),
+			document.offsetAt(position)
 		);
 		// Cursor must be inside the configurations array and not in any nested items.
 		// Hence path[0] = array, path[1] = array element index.

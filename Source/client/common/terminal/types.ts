@@ -49,7 +49,7 @@ export interface ITerminalService extends IDisposable {
 		command: string,
 		args: string[],
 		cancel?: CancellationToken,
-		swallowExceptions?: boolean,
+		swallowExceptions?: boolean
 	): Promise<void>;
 	sendText(text: string): Promise<void>;
 	show(preserveFocus?: boolean): Promise<void>;
@@ -98,7 +98,7 @@ export interface ITerminalServiceFactory {
 	 * @memberof ITerminalServiceFactory
 	 */
 	getTerminalService(
-		options: TerminalCreationOptions & { newTerminalPerFile?: boolean },
+		options: TerminalCreationOptions & { newTerminalPerFile?: boolean }
 	): ITerminalService;
 	createTerminalService(resource?: Uri, title?: string): ITerminalService;
 }
@@ -111,17 +111,17 @@ export interface ITerminalHelper {
 	buildCommandForTerminal(
 		terminalShellType: TerminalShellType,
 		command: string,
-		args: string[],
+		args: string[]
 	): string;
 	getEnvironmentActivationCommands(
 		terminalShellType: TerminalShellType,
 		resource?: Uri,
-		interpreter?: PythonEnvironment,
+		interpreter?: PythonEnvironment
 	): Promise<string[] | undefined>;
 	getEnvironmentActivationShellCommands(
 		resource: Resource,
 		shell: TerminalShellType,
-		interpreter?: PythonEnvironment,
+		interpreter?: PythonEnvironment
 	): Promise<string[] | undefined>;
 }
 
@@ -140,23 +140,23 @@ export type TerminalActivationOptions = {
 export interface ITerminalActivator {
 	activateEnvironmentInTerminal(
 		terminal: Terminal,
-		options?: TerminalActivationOptions,
+		options?: TerminalActivationOptions
 	): Promise<boolean>;
 }
 
 export const ITerminalActivationCommandProvider = Symbol(
-	"ITerminalActivationCommandProvider",
+	"ITerminalActivationCommandProvider"
 );
 
 export interface ITerminalActivationCommandProvider {
 	isShellSupported(targetShell: TerminalShellType): boolean;
 	getActivationCommands(
 		resource: Uri | undefined,
-		targetShell: TerminalShellType,
+		targetShell: TerminalShellType
 	): Promise<string[] | undefined>;
 	getActivationCommandsForInterpreter(
 		pythonPath: string,
-		targetShell: TerminalShellType,
+		targetShell: TerminalShellType
 	): Promise<string[] | undefined>;
 }
 
@@ -166,7 +166,7 @@ export interface ITerminalActivationHandler {
 		terminal: Terminal,
 		resource: Uri | undefined,
 		preserveFocus: boolean,
-		activated: boolean,
+		activated: boolean
 	): Promise<void>;
 }
 
@@ -191,6 +191,6 @@ export interface IShellDetector {
 	readonly priority: number;
 	identify(
 		telemetryProperties: ShellIdentificationTelemetry,
-		terminal?: Terminal,
+		terminal?: Terminal
 	): TerminalShellType | undefined;
 }

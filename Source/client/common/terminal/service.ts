@@ -40,23 +40,34 @@ export class TerminalService implements ITerminalService, Disposable {
 	private readonly envVarScript = path.join(
 		EXTENSION_ROOT_DIR,
 		"pythonFiles",
-		"pythonrc.py",
+		"pythonrc.py"
 	);
 	public get onDidCloseTerminal(): Event<void> {
 		return this.terminalClosed.event.bind(this.terminalClosed);
 	}
 	constructor(
-        @inject(IServiceContainer) private serviceContainer: IServiceContainer,
-        private readonly options?: TerminalCreationOptions,
-    ) {
-        const disposableRegistry = this.serviceContainer.get<Disposable[]>(IDisposableRegistry);
-        disposableRegistry.push(this);
-        this.terminalHelper = this.serviceContainer.get<ITerminalHelper>(ITerminalHelper);
-        this.terminalManager = this.serviceContainer.get<ITerminalManager>(ITerminalManager);
-        this.terminalAutoActivator = this.serviceContainer.get<ITerminalAutoActivation>(ITerminalAutoActivation);
-        this.terminalManager.onDidCloseTerminal(this.terminalCloseHandler, this, disposableRegistry);
-        this.terminalActivator = this.serviceContainer.get<ITerminalActivator>(ITerminalActivator);
-    }
+		@inject(IServiceContainer) private serviceContainer: IServiceContainer,
+		private readonly options?: TerminalCreationOptions
+	) {
+		const disposableRegistry =
+			this.serviceContainer.get<Disposable[]>(IDisposableRegistry);
+		disposableRegistry.push(this);
+		this.terminalHelper =
+			this.serviceContainer.get<ITerminalHelper>(ITerminalHelper);
+		this.terminalManager =
+			this.serviceContainer.get<ITerminalManager>(ITerminalManager);
+		this.terminalAutoActivator =
+			this.serviceContainer.get<ITerminalAutoActivation>(
+				ITerminalAutoActivation
+			);
+		this.terminalManager.onDidCloseTerminal(
+			this.terminalCloseHandler,
+			this,
+			disposableRegistry
+		);
+		this.terminalActivator =
+			this.serviceContainer.get<ITerminalActivator>(ITerminalActivator);
+	}
 	public dispose() {
 		if (this.terminal) {
 			this.terminal.dispose();
@@ -65,13 +76,13 @@ export class TerminalService implements ITerminalService, Disposable {
 	public async sendCommand(
 		command: string,
 		args: string[],
-		_?: CancellationToken,
+		_?: CancellationToken
 	): Promise<void> {
 		await this.ensureTerminal();
 		const text = this.terminalHelper.buildCommandForTerminal(
 			this.terminalShellType,
 			command,
-			args,
+			args
 		);
 		if (!this.options?.hideFromUser) {
 			this.terminal!.show(true);
@@ -96,7 +107,7 @@ export class TerminalService implements ITerminalService, Disposable {
 			return;
 		}
 		this.terminalShellType = this.terminalHelper.identifyTerminalShell(
-			this.terminal,
+			this.terminal
 		);
 		this.terminal = this.terminalManager.createTerminal({
 			name: this.options?.title || "Python",
@@ -115,7 +126,7 @@ export class TerminalService implements ITerminalService, Disposable {
 				preserveFocus,
 				interpreter: this.options?.interpreter,
 				hideFromUser: this.options?.hideFromUser,
-			},
+			}
 		);
 
 		if (!this.options?.hideFromUser) {

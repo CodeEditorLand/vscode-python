@@ -7,27 +7,27 @@ export interface IPythonPathUpdaterService {
 }
 
 export const IPythonPathUpdaterServiceFactory = Symbol(
-	"IPythonPathUpdaterServiceFactory",
+	"IPythonPathUpdaterServiceFactory"
 );
 export interface IPythonPathUpdaterServiceFactory {
 	getGlobalPythonPathConfigurationService(): IPythonPathUpdaterService;
 	getWorkspacePythonPathConfigurationService(
-		wkspace: Uri,
+		wkspace: Uri
 	): IPythonPathUpdaterService;
 	getWorkspaceFolderPythonPathConfigurationService(
-		workspaceFolder: Uri,
+		workspaceFolder: Uri
 	): IPythonPathUpdaterService;
 }
 
 export const IPythonPathUpdaterServiceManager = Symbol(
-	"IPythonPathUpdaterServiceManager",
+	"IPythonPathUpdaterServiceManager"
 );
 export interface IPythonPathUpdaterServiceManager {
 	updatePythonPath(
 		pythonPath: string | undefined,
 		configTarget: ConfigurationTarget,
 		trigger: "ui" | "shebang" | "load",
-		wkspace?: Uri,
+		wkspace?: Uri
 	): Promise<void>;
 }
 
@@ -35,7 +35,7 @@ export const IInterpreterSelector = Symbol("IInterpreterSelector");
 export interface IInterpreterSelector extends Disposable {
 	getRecommendedSuggestion(
 		suggestions: IInterpreterQuickPickItem[],
-		resource: Resource,
+		resource: Resource
 	): IInterpreterQuickPickItem | undefined;
 	/**
 	 * @deprecated Only exists for old Jupyter integration.
@@ -43,12 +43,12 @@ export interface IInterpreterSelector extends Disposable {
 	getAllSuggestions(resource: Resource): Promise<IInterpreterQuickPickItem[]>;
 	getSuggestions(
 		resource: Resource,
-		useFullDisplayName?: boolean,
+		useFullDisplayName?: boolean
 	): IInterpreterQuickPickItem[];
 	suggestionToQuickPickItem(
 		suggestion: PythonEnvironment,
 		workspaceUri?: Uri | undefined,
-		useDetailedName?: boolean,
+		useDetailedName?: boolean
 	): IInterpreterQuickPickItem;
 }
 
@@ -72,7 +72,7 @@ export interface IInterpreterComparer {
 	compare(a: PythonEnvironment, b: PythonEnvironment): number;
 	getRecommended(
 		interpreters: PythonEnvironment[],
-		resource: Resource,
+		resource: Resource
 	): PythonEnvironment | undefined;
 }
 
@@ -101,6 +101,6 @@ export interface IInterpreterQuickPick {
 	getInterpreterViaQuickPick(
 		workspace: Resource,
 		filter?: (i: PythonEnvironment) => boolean,
-		params?: InterpreterQuickPickParams,
+		params?: InterpreterQuickPickParams
 	): Promise<string | undefined>;
 }

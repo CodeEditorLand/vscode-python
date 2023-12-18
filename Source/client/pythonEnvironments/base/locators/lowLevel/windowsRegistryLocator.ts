@@ -16,7 +16,7 @@ export class WindowsRegistryLocator extends Locator<BasicEnvInfo> {
 	// eslint-disable-next-line class-methods-use-this
 	public iterEnvs(
 		_?: unknown,
-		useWorkerThreads = inExperiment(DiscoveryUsingWorkers.experiment),
+		useWorkerThreads = inExperiment(DiscoveryUsingWorkers.experiment)
 	): IPythonEnvsIterator<BasicEnvInfo> {
 		const iterator = async function* () {
 			traceVerbose("Searching for windows registry interpreters");
@@ -39,12 +39,12 @@ export class WindowsRegistryLocator extends Locator<BasicEnvInfo> {
 				} catch (ex) {
 					traceError(
 						`Failed to process environment: ${interpreter}`,
-						ex,
+						ex
 					);
 				}
 			}
 			traceVerbose(
-				"Finished searching for windows registry interpreters",
+				"Finished searching for windows registry interpreters"
 			);
 		};
 		return iterator();

@@ -18,14 +18,14 @@ export class EnvironmentVariablesService
 {
 	private _pathVariable?: "Path" | "PATH";
 	constructor(
-        // We only use a small portion of either of these interfaces.
-        @inject(IPathUtils) private readonly pathUtils: IPathUtils,
-        @inject(IFileSystem) private readonly fs: IFileSystem,
-    ) {}
+		// We only use a small portion of either of these interfaces.
+		@inject(IPathUtils) private readonly pathUtils: IPathUtils,
+		@inject(IFileSystem) private readonly fs: IFileSystem
+	) {}
 
 	public async parseFile(
 		filePath?: string,
-		baseVars?: EnvironmentVariables,
+		baseVars?: EnvironmentVariables
 	): Promise<EnvironmentVariables | undefined> {
 		if (!filePath || !(await this.fs.pathExists(filePath))) {
 			return;
@@ -33,7 +33,7 @@ export class EnvironmentVariablesService
 		const contents = await this.fs.readFile(filePath).catch((ex) => {
 			traceError(
 				"Custom .env is likely not pointing to a valid file",
-				ex,
+				ex
 			);
 			return undefined;
 		});
@@ -45,7 +45,7 @@ export class EnvironmentVariablesService
 
 	public parseFileSync(
 		filePath?: string,
-		baseVars?: EnvironmentVariables,
+		baseVars?: EnvironmentVariables
 	): EnvironmentVariables | undefined {
 		if (!filePath || !pathExistsSync(filePath)) {
 			return;
@@ -56,7 +56,7 @@ export class EnvironmentVariablesService
 		} catch (ex) {
 			traceError(
 				"Custom .env is likely not pointing to a valid file",
-				ex,
+				ex
 			);
 		}
 		if (!contents) {
@@ -68,7 +68,7 @@ export class EnvironmentVariablesService
 	public mergeVariables(
 		source: EnvironmentVariables,
 		target: EnvironmentVariables,
-		options?: { overwrite?: boolean; mergeAll?: boolean },
+		options?: { overwrite?: boolean; mergeAll?: boolean }
 	) {
 		if (!target) {
 			return;
@@ -131,7 +131,7 @@ export class EnvironmentVariablesService
 	) {
 		const valueToAppend = pathsToAppend
 			.filter(
-				(item) => typeof item === "string" && item.trim().length > 0,
+				(item) => typeof item === "string" && item.trim().length > 0
 			)
 			.map((item) => item.trim())
 			.join(path.delimiter);
@@ -151,7 +151,7 @@ export class EnvironmentVariablesService
 
 export function parseEnvFile(
 	lines: string | Buffer,
-	baseVars?: EnvironmentVariables,
+	baseVars?: EnvironmentVariables
 ): EnvironmentVariables {
 	const globalVars = baseVars ? baseVars : {};
 	const vars: EnvironmentVariables = {};
@@ -201,7 +201,7 @@ function substituteEnvVars(
 	value: string,
 	localVars: EnvironmentVariables,
 	globalVars: EnvironmentVariables,
-	missing = "",
+	missing = ""
 ): string {
 	// Substitution here is inspired a little by dotenv-expand:
 	//   https://github.com/motdotla/dotenv-expand/blob/master/lib/main.js
@@ -219,7 +219,7 @@ function substituteEnvVars(
 				return match;
 			}
 			return localVars[substName] || globalVars[substName] || missing;
-		},
+		}
 	);
 	if (!invalid && replacement !== value) {
 		value = replacement;
@@ -251,7 +251,7 @@ export function restoreKeys(env: EnvironmentVariables) {
 
 export function matchTarget(
 	reference: EnvironmentVariables,
-	target: EnvironmentVariables,
+	target: EnvironmentVariables
 ): void {
 	Object.keys(reference).forEach((key) => {
 		if (target.hasOwnProperty(key)) {

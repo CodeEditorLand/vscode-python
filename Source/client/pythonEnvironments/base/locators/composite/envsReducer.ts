@@ -31,7 +31,7 @@ export class PythonEnvsReducer implements ICompositeLocator<BasicEnvInfo> {
 	constructor(private readonly parentLocator: ILocator<BasicEnvInfo>) {}
 
 	public iterEnvs(
-		query?: PythonLocatorQuery,
+		query?: PythonLocatorQuery
 	): IPythonEnvsIterator<BasicEnvInfo> {
 		const didUpdate = new EventEmitter<
 			PythonEnvUpdatedEvent<BasicEnvInfo> | ProgressNotificationEvent
@@ -47,7 +47,7 @@ async function* iterEnvsIterator(
 	iterator: IPythonEnvsIterator<BasicEnvInfo>,
 	didUpdate: EventEmitter<
 		PythonEnvUpdatedEvent<BasicEnvInfo> | ProgressNotificationEvent
-	>,
+	>
 ): IPythonEnvsIterator<BasicEnvInfo> {
 	const state = {
 		done: false,
@@ -67,7 +67,7 @@ async function* iterEnvsIterator(
 				}
 			} else if (event.update === undefined) {
 				throw new Error(
-					"Unsupported behavior: `undefined` environment updates are not supported from downstream locators in reducer",
+					"Unsupported behavior: `undefined` environment updates are not supported from downstream locators in reducer"
 				);
 			} else if (seen[event.index] !== undefined) {
 				const oldEnv = seen[event.index];
@@ -80,7 +80,7 @@ async function* iterEnvsIterator(
 			} else {
 				// This implies a problem in a downstream locator
 				traceVerbose(
-					`Expected already iterated env, got ${event.old} (#${event.index})`,
+					`Expected already iterated env, got ${event.old} (#${event.index})`
 				);
 			}
 			state.pending -= 1;
@@ -100,7 +100,7 @@ async function* iterEnvsIterator(
 				currEnv,
 				state,
 				didUpdate,
-				seen,
+				seen
 			).ignoreErrors();
 		} else {
 			// We haven't yielded a matching env so yield this one as-is.
@@ -122,7 +122,7 @@ async function resolveDifferencesInBackground(
 	didUpdate: EventEmitter<
 		PythonEnvUpdatedEvent<BasicEnvInfo> | ProgressNotificationEvent
 	>,
-	seen: BasicEnvInfo[],
+	seen: BasicEnvInfo[]
 ) {
 	state.pending += 1;
 	// It's essential we increment the pending call count before any asynchronus calls in this method.
@@ -146,7 +146,7 @@ function checkIfFinishedAndNotify(
 	state: { done: boolean; pending: number },
 	didUpdate: EventEmitter<
 		PythonEnvUpdatedEvent<BasicEnvInfo> | ProgressNotificationEvent
-	>,
+	>
 ) {
 	if (state.done && state.pending === 0) {
 		didUpdate.fire({ stage: ProgressReportStage.discoveryFinished });
@@ -157,7 +157,7 @@ function checkIfFinishedAndNotify(
 
 function resolveEnvCollision(
 	oldEnv: BasicEnvInfo,
-	newEnv: BasicEnvInfo,
+	newEnv: BasicEnvInfo
 ): BasicEnvInfo {
 	const [env] = sortEnvInfoByPriority(oldEnv, newEnv);
 	const merged = cloneDeep(env);
@@ -176,6 +176,6 @@ function sortEnvInfoByPriority(...envs: BasicEnvInfo[]): BasicEnvInfo[] {
 	return envs.sort(
 		(a: BasicEnvInfo, b: BasicEnvInfo) =>
 			envKindByPriority.indexOf(a.kind) -
-			envKindByPriority.indexOf(b.kind),
+			envKindByPriority.indexOf(b.kind)
 	);
 }

@@ -310,7 +310,7 @@ export interface IApplicationShell {
 	showQuickPick(
 		items: string[] | Thenable<string[]>,
 		options?: QuickPickOptions,
-		token?: CancellationToken,
+		token?: CancellationToken
 	): Thenable<string | undefined>;
 
 	/**
@@ -324,7 +324,7 @@ export interface IApplicationShell {
 	showQuickPick<T extends QuickPickItem>(
 		items: T[] | Thenable<T[]>,
 		options?: QuickPickOptions,
-		token?: CancellationToken,
+		token?: CancellationToken
 	): Thenable<T | undefined>;
 
 	/**
@@ -358,7 +358,7 @@ export interface IApplicationShell {
 	 */
 	showInputBox(
 		options?: InputBoxOptions,
-		token?: CancellationToken,
+		token?: CancellationToken
 	): Thenable<string | undefined>;
 
 	/**
@@ -375,7 +375,7 @@ export interface IApplicationShell {
 	showTextDocument(
 		document: TextDocument,
 		column?: ViewColumn,
-		preserveFocus?: boolean,
+		preserveFocus?: boolean
 	): Thenable<TextEditor>;
 
 	/**
@@ -450,7 +450,7 @@ export interface IApplicationShell {
 	createStatusBarItem(
 		alignment?: StatusBarAlignment,
 		priority?: number,
-		id?: string,
+		id?: string
 	): StatusBarItem;
 	/**
 	 * Shows a selection list of [workspace folders](#workspace.workspaceFolders) to pick from.
@@ -460,7 +460,7 @@ export interface IApplicationShell {
 	 * @return A promise that resolves to the workspace folder or `undefined`.
 	 */
 	showWorkspaceFolderPick(
-		options?: WorkspaceFolderPickOptions,
+		options?: WorkspaceFolderPickOptions
 	): Thenable<WorkspaceFolder | undefined>;
 
 	/**
@@ -486,8 +486,8 @@ export interface IApplicationShell {
 		options: ProgressOptions,
 		task: (
 			progress: Progress<{ message?: string; increment?: number }>,
-			token: CancellationToken,
-		) => Thenable<R>,
+			token: CancellationToken
+		) => Thenable<R>
 	): Thenable<R>;
 
 	/**
@@ -516,8 +516,8 @@ export interface IApplicationShell {
 		icon: string,
 		task: (
 			progress: Progress<{ message?: string; increment?: number }>,
-			token: CancellationToken,
-		) => Thenable<R>,
+			token: CancellationToken
+		) => Thenable<R>
 	): Thenable<R>;
 
 	/**
@@ -536,7 +536,7 @@ export interface IApplicationShell {
 	createOutputChannel(name: string): LogOutputChannel;
 	createLanguageStatusItem(
 		id: string,
-		selector: DocumentSelector,
+		selector: DocumentSelector
 	): LanguageStatusItem;
 }
 
@@ -563,7 +563,7 @@ export interface ICommandManager {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		callback: (...args: U) => any,
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		thisArg?: any,
+		thisArg?: any
 	): Disposable;
 
 	/**
@@ -589,7 +589,7 @@ export interface ICommandManager {
 			...args: any[]
 		) => void,
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		thisArg?: any,
+		thisArg?: any
 	): Disposable;
 
 	/**
@@ -610,7 +610,10 @@ export interface ICommandManager {
 		T,
 		E extends keyof ICommandNameArgumentTypeMapping,
 		U extends ICommandNameArgumentTypeMapping[E],
-	>(command: E, ...rest: U): Thenable<T | undefined>;
+	>(
+		command: E,
+		...rest: U
+	): Thenable<T | undefined>;
 
 	/**
 	 * Retrieve the list of all available commands. Commands starting an underscore are
@@ -628,7 +631,7 @@ export interface IContextKeyManager {
 }
 
 export const IJupyterExtensionDependencyManager = Symbol(
-	"IJupyterExtensionDependencyManager",
+	"IJupyterExtensionDependencyManager"
 );
 export interface IJupyterExtensionDependencyManager {
 	readonly isJupyterExtensionInstalled: boolean;
@@ -717,7 +720,7 @@ export interface IDocumentManager {
 	showTextDocument(
 		document: TextDocument,
 		column?: ViewColumn,
-		preserveFocus?: boolean,
+		preserveFocus?: boolean
 	): Thenable<TextEditor>;
 
 	/**
@@ -730,7 +733,7 @@ export interface IDocumentManager {
 	 */
 	showTextDocument(
 		document: TextDocument,
-		options?: TextDocumentShowOptions,
+		options?: TextDocumentShowOptions
 	): Thenable<TextEditor>;
 
 	/**
@@ -744,7 +747,7 @@ export interface IDocumentManager {
 	 */
 	showTextDocument(
 		uri: Uri,
-		options?: TextDocumentShowOptions,
+		options?: TextDocumentShowOptions
 	): Thenable<TextEditor>;
 	/**
 	 * Opens a document. Will return early if this document is already open. Otherwise
@@ -806,7 +809,7 @@ export interface IDocumentManager {
 	 * @return A new decoration type instance.
 	 */
 	createTextEditorDecorationType(
-		options: DecorationRenderOptions,
+		options: DecorationRenderOptions
 	): TextEditorDecorationType;
 }
 
@@ -901,7 +904,7 @@ export interface IWorkspaceService {
 	 */
 	getWorkspaceFolderIdentifier(
 		resource: Uri | undefined,
-		defaultValue?: string,
+		defaultValue?: string
 	): string;
 	/**
 	 * Returns a path that is relative to the workspace folder or folders.
@@ -917,7 +920,7 @@ export interface IWorkspaceService {
 	 */
 	asRelativePath(
 		pathOrUri: string | Uri,
-		includeWorkspaceFolder?: boolean,
+		includeWorkspaceFolder?: boolean
 	): string;
 
 	/**
@@ -939,7 +942,7 @@ export interface IWorkspaceService {
 		globPattern: GlobPattern,
 		ignoreCreateEvents?: boolean,
 		ignoreChangeEvents?: boolean,
-		ignoreDeleteEvents?: boolean,
+		ignoreDeleteEvents?: boolean
 	): FileSystemWatcher;
 
 	/**
@@ -961,7 +964,7 @@ export interface IWorkspaceService {
 		include: GlobPattern,
 		exclude?: GlobPattern,
 		maxResults?: number,
-		token?: CancellationToken,
+		token?: CancellationToken
 	): Thenable<Uri[]>;
 
 	/**
@@ -981,7 +984,7 @@ export interface IWorkspaceService {
 	getConfiguration(
 		section?: string,
 		resource?: Uri,
-		languageSpecific?: boolean,
+		languageSpecific?: boolean
 	): WorkspaceConfiguration;
 
 	/**
@@ -1087,7 +1090,7 @@ export interface IDebugService {
 	 */
 	registerDebugConfigurationProvider(
 		debugType: string,
-		provider: DebugConfigurationProvider,
+		provider: DebugConfigurationProvider
 	): Disposable;
 
 	/**
@@ -1101,7 +1104,7 @@ export interface IDebugService {
 	 */
 	registerDebugAdapterDescriptorFactory(
 		debugType: string,
-		factory: DebugAdapterDescriptorFactory,
+		factory: DebugAdapterDescriptorFactory
 	): Disposable;
 
 	/**
@@ -1113,7 +1116,7 @@ export interface IDebugService {
 	 */
 	registerDebugAdapterTrackerFactory(
 		debugType: string,
-		factory: DebugAdapterTrackerFactory,
+		factory: DebugAdapterTrackerFactory
 	): Disposable;
 
 	/**
@@ -1129,7 +1132,7 @@ export interface IDebugService {
 	startDebugging(
 		folder: WorkspaceFolder | undefined,
 		nameOrConfiguration: string | DebugConfiguration,
-		parentSession?: DebugSession | DebugSessionOptions,
+		parentSession?: DebugSession | DebugSessionOptions
 	): Thenable<boolean>;
 
 	/**

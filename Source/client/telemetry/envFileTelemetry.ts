@@ -16,7 +16,7 @@ let envFileTelemetrySent = false;
 
 export function sendSettingTelemetry(
 	workspaceService: IWorkspaceService,
-	envFileSetting?: string,
+	envFileSetting?: string
 ): void {
 	if (
 		shouldSendTelemetry() &&
@@ -35,16 +35,16 @@ export function sendFileCreationTelemetry(): void {
 export async function sendActivationTelemetry(
 	fileSystem: IFileSystem,
 	workspaceService: IWorkspaceService,
-	resource: Resource,
+	resource: Resource
 ): Promise<void> {
 	if (shouldSendTelemetry()) {
 		const systemVariables = new SystemVariables(
 			resource,
 			undefined,
-			workspaceService,
+			workspaceService
 		);
 		const envFilePath = systemVariables.resolveAny(
-			defaultEnvFileSetting(workspaceService),
+			defaultEnvFileSetting(workspaceService)
 		)!;
 		const envFileExists = await fileSystem.fileExists(envFilePath);
 
@@ -81,7 +81,10 @@ export const EnvFileTelemetryTests = {
 	setState: ({
 		telemetrySent,
 		defaultSetting,
-	}: { telemetrySent?: boolean; defaultSetting?: string }): void => {
+	}: {
+		telemetrySent?: boolean;
+		defaultSetting?: string;
+	}): void => {
 		if (telemetrySent !== undefined) {
 			envFileTelemetrySent = telemetrySent;
 		}

@@ -43,7 +43,7 @@ export class WorkspaceService implements IWorkspaceService {
 	public getConfiguration(
 		section?: string,
 		resource?: Uri,
-		languageSpecific: boolean = false,
+		languageSpecific: boolean = false
 	): WorkspaceConfiguration {
 		if (languageSpecific) {
 			return workspace.getConfiguration(section, {
@@ -59,7 +59,7 @@ export class WorkspaceService implements IWorkspaceService {
 	}
 	public asRelativePath(
 		pathOrUri: string | Uri,
-		includeWorkspaceFolder?: boolean,
+		includeWorkspaceFolder?: boolean
 	): string {
 		return workspace.asRelativePath(pathOrUri, includeWorkspaceFolder);
 	}
@@ -67,20 +67,20 @@ export class WorkspaceService implements IWorkspaceService {
 		globPattern: GlobPattern,
 		ignoreCreateEvents?: boolean,
 		ignoreChangeEvents?: boolean,
-		ignoreDeleteEvents?: boolean,
+		ignoreDeleteEvents?: boolean
 	): FileSystemWatcher {
 		return workspace.createFileSystemWatcher(
 			globPattern,
 			ignoreCreateEvents,
 			ignoreChangeEvents,
-			ignoreDeleteEvents,
+			ignoreDeleteEvents
 		);
 	}
 	public findFiles(
 		include: GlobPattern,
 		exclude?: GlobPattern,
 		maxResults?: number,
-		token?: CancellationToken,
+		token?: CancellationToken
 	): Thenable<Uri[]> {
 		const excludePattern =
 			exclude === undefined ? this.searchExcludes : exclude;
@@ -88,7 +88,7 @@ export class WorkspaceService implements IWorkspaceService {
 	}
 	public getWorkspaceFolderIdentifier(
 		resource: Resource,
-		defaultValue: string = "",
+		defaultValue: string = ""
 	): string {
 		const workspaceFolder = resource
 			? workspace.getWorkspaceFolder(resource)
@@ -97,8 +97,8 @@ export class WorkspaceService implements IWorkspaceService {
 			? path.normalize(
 					getOSType() === OSType.Windows
 						? workspaceFolder.uri.fsPath.toUpperCase()
-						: workspaceFolder.uri.fsPath,
-			  )
+						: workspaceFolder.uri.fsPath
+				)
 			: defaultValue;
 	}
 
@@ -127,7 +127,7 @@ export class WorkspaceService implements IWorkspaceService {
 	private get searchExcludes() {
 		const searchExcludes = this.getConfiguration("search.exclude");
 		const enabledSearchExcludes = Object.keys(searchExcludes).filter(
-			(key) => searchExcludes.get(key) === true,
+			(key) => searchExcludes.get(key) === true
 		);
 		return `{${enabledSearchExcludes.join(",")}}`;
 	}

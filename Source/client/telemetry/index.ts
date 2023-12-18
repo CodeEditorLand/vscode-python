@@ -112,7 +112,7 @@ export function sendTelemetryEvent<
 	eventName: E,
 	measuresOrDurationMs?: Record<string, number> | number,
 	properties?: P[E],
-	ex?: Error,
+	ex?: Error
 ): void {
 	if (isTestExecution() || !isTelemetrySupported() || isTelemetryDisabled()) {
 		return;
@@ -149,7 +149,7 @@ export function sendTelemetryEvent<
 			} catch (exception) {
 				console.error(
 					`Failed to serialize ${prop} for ${String(eventName)}`,
-					exception,
+					exception
 				);
 			}
 		});
@@ -167,7 +167,7 @@ export function sendTelemetryEvent<
 		reporter.sendTelemetryErrorEvent(
 			eventNameSent,
 			customProperties,
-			measures,
+			measures
 		);
 	} else {
 		reporter.sendTelemetryEvent(eventNameSent, customProperties, measures);
@@ -176,8 +176,8 @@ export function sendTelemetryEvent<
 	if (process.env && process.env.VSC_PYTHON_LOG_TELEMETRY) {
 		console.info(
 			`Telemetry Event : ${eventNameSent} Measures: ${JSON.stringify(
-				measures,
-			)} Props: ${JSON.stringify(customProperties)} `,
+				measures
+			)} Props: ${JSON.stringify(customProperties)} `
 		);
 	}
 }
@@ -186,7 +186,7 @@ export function sendTelemetryEvent<
 type TypedMethodDescriptor<T> = (
 	target: unknown,
 	propertyKey: string | symbol,
-	descriptor: TypedPropertyDescriptor<T>,
+	descriptor: TypedPropertyDescriptor<T>
 ) => TypedPropertyDescriptor<T> | void;
 
 // The following code uses "any" in many places, as TS does not have rich support
@@ -219,16 +219,14 @@ export function captureTelemetry<
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	lazyProperties?: (obj: This, result?: any) => P[E],
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	lazyMeasures?: (obj: This, result?: any) => Record<string, number>,
+	lazyMeasures?: (obj: This, result?: any) => Record<string, number>
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): TypedMethodDescriptor<(this: This, ...args: any[]) => any> {
 	return function (
 		_target: unknown,
 		_propertyKey: string | symbol,
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		descriptor: TypedPropertyDescriptor<
-			(this: This, ...args: any[]) => any
-		>,
+		descriptor: TypedPropertyDescriptor<(this: This, ...args: any[]) => any>
 	) {
 		const originalMethod = descriptor.value!;
 
@@ -272,7 +270,7 @@ export function captureTelemetry<
 						sendTelemetryEvent(
 							eventName,
 							getMeasures(data),
-							getProps(data),
+							getProps(data)
 						);
 						return data;
 					})
@@ -285,14 +283,14 @@ export function captureTelemetry<
 							failureEventName || eventName,
 							getMeasures(),
 							failedProps,
-							ex,
+							ex
 						);
 					});
 			} else {
 				sendTelemetryEvent(
 					eventName,
 					getMeasures(result),
-					getProps(result),
+					getProps(result)
 				);
 			}
 
@@ -311,7 +309,7 @@ export function sendTelemetryWhenDone<
 	eventName: E,
 	promise: Promise<unknown> | Thenable<unknown>,
 	stopWatch?: StopWatch,
-	properties?: P[E],
+	properties?: P[E]
 ): void {
 	stopWatch = stopWatch || new StopWatch();
 	if (typeof promise.then === "function") {
@@ -320,7 +318,7 @@ export function sendTelemetryWhenDone<
 				sendTelemetryEvent(
 					eventName,
 					stopWatch!.elapsedTime,
-					properties,
+					properties
 				);
 				return data;
 			},
@@ -329,10 +327,10 @@ export function sendTelemetryWhenDone<
 					eventName,
 					stopWatch!.elapsedTime,
 					properties,
-					ex,
+					ex
 				);
 				return Promise.reject(ex);
-			},
+			}
 		);
 	} else {
 		throw new Error("Method is neither a Promise nor a Theneable");

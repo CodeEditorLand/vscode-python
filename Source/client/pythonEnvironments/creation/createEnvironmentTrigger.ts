@@ -53,7 +53,7 @@ async function createEnvironmentCheckForWorkspace(uri: Uri): Promise<void> {
 		!(await hasRequirementFiles(workspaceFolder));
 
 	const isNonGlobalPythonSelected = async (
-		workspaceFolder: WorkspaceFolder,
+		workspaceFolder: WorkspaceFolder
 	) => !(await isGlobalPythonSelected(workspaceFolder));
 
 	// Skip showing the Create Environment prompt if one of the following is True:
@@ -86,7 +86,7 @@ async function createEnvironmentCheckForWorkspace(uri: Uri): Promise<void> {
 		CreateEnv.Trigger.workspaceTriggerMessage,
 		CreateEnv.Trigger.createEnvironment,
 		CreateEnv.Trigger.disableCheckWorkspace,
-		CreateEnv.Trigger.disableCheck,
+		CreateEnv.Trigger.disableCheck
 	);
 
 	if (selection === CreateEnv.Trigger.createEnvironment) {
@@ -95,7 +95,7 @@ async function createEnvironmentCheckForWorkspace(uri: Uri): Promise<void> {
 		} catch (error) {
 			traceError(
 				"CreateEnv Trigger - Error while creating environment: ",
-				error,
+				error
 			);
 		}
 	} else if (selection === CreateEnv.Trigger.disableCheck) {
@@ -107,7 +107,7 @@ async function createEnvironmentCheckForWorkspace(uri: Uri): Promise<void> {
 
 function runOnceWorkspaceCheck(
 	uri: Uri,
-	options: CreateEnvironmentTriggerOptions = {},
+	options: CreateEnvironmentTriggerOptions = {}
 ): Promise<void> {
 	if (isCreateEnvWorkspaceCheckNotRun() || options?.force) {
 		return createEnvironmentCheckForWorkspace(uri);
@@ -116,14 +116,14 @@ function runOnceWorkspaceCheck(
 		result: "already-ran",
 	});
 	traceVerbose(
-		"CreateEnv Trigger - skipping this because it was already run",
+		"CreateEnv Trigger - skipping this because it was already run"
 	);
 	return Promise.resolve();
 }
 
 async function createEnvironmentCheckForFile(
 	uri: Uri,
-	options?: CreateEnvironmentTriggerOptions,
+	options?: CreateEnvironmentTriggerOptions
 ): Promise<void> {
 	if (await fileContainsInlineDependencies(uri)) {
 		// TODO: Handle create environment for each file here.
@@ -141,7 +141,7 @@ async function createEnvironmentCheckForFile(
 export async function triggerCreateEnvironmentCheck(
 	kind: CreateEnvironmentCheckKind,
 	uri: Resource,
-	options?: CreateEnvironmentTriggerOptions,
+	options?: CreateEnvironmentTriggerOptions
 ): Promise<void> {
 	if (!uri) {
 		sendTelemetryEvent(EventName.ENVIRONMENT_CHECK_RESULT, undefined, {
@@ -168,18 +168,18 @@ export async function triggerCreateEnvironmentCheck(
 export function triggerCreateEnvironmentCheckNonBlocking(
 	kind: CreateEnvironmentCheckKind,
 	uri: Resource,
-	options?: CreateEnvironmentTriggerOptions,
+	options?: CreateEnvironmentTriggerOptions
 ): void {
 	// The Event loop for Node.js runs functions with setTimeout() with lower priority than setImmediate.
 	// This is done to intentionally avoid blocking anything that the user wants to do.
 	setTimeout(
 		() => triggerCreateEnvironmentCheck(kind, uri, options).ignoreErrors(),
-		0,
+		0
 	);
 }
 
 export function registerCreateEnvironmentTriggers(
-	disposables: Disposable[],
+	disposables: Disposable[]
 ): void {
 	disposables.push(
 		registerCommand(Commands.Create_Environment_Check, (file: Resource) => {
@@ -189,8 +189,8 @@ export function registerCreateEnvironmentTriggers(
 			triggerCreateEnvironmentCheckNonBlocking(
 				CreateEnvironmentCheckKind.File,
 				file,
-				{ force: true },
+				{ force: true }
 			);
-		}),
+		})
 	);
 }

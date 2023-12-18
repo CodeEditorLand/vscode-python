@@ -22,7 +22,7 @@ export class ProgressReporting implements Disposable {
 					this.statusBarMessage.dispose();
 				}
 				this.statusBarMessage = window.setStatusBarMessage(m);
-			},
+			}
 		);
 
 		this.languageClient.onNotification("python/beginProgress", (_) => {
@@ -39,7 +39,7 @@ export class ProgressReporting implements Disposable {
 					this.beginProgress();
 				}
 				this.progress!.report({ message: m }); // NOSONAR
-			},
+			}
 		);
 
 		this.languageClient.onNotification("python/endProgress", (_) => {
@@ -68,7 +68,7 @@ export class ProgressReporting implements Disposable {
 			(progress) => {
 				this.progress = progress;
 				return this.progressDeferred!.promise;
-			},
+			}
 		);
 	}
 }

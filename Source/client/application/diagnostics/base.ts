@@ -28,7 +28,7 @@ export abstract class BaseDiagnostic implements IDiagnostic {
 		public readonly scope: DiagnosticScope,
 		public readonly resource: Resource,
 		public readonly shouldShowPrompt = true,
-		public readonly invokeHandler: "always" | "default" = "default",
+		public readonly invokeHandler: "always" | "default" = "default"
 	) {}
 }
 
@@ -39,15 +39,17 @@ export abstract class BaseDiagnosticsService
 	protected static handledDiagnosticCodeKeys: string[] = [];
 	protected readonly filterService: IDiagnosticFilterService;
 	constructor(
-        @unmanaged() private readonly supportedDiagnosticCodes: string[],
-        @unmanaged() protected serviceContainer: IServiceContainer,
-        @unmanaged() protected disposableRegistry: IDisposableRegistry,
-        @unmanaged() public readonly runInBackground: boolean = false,
-        @unmanaged() public readonly runInUntrustedWorkspace: boolean = false,
-    ) {
-        this.filterService = serviceContainer.get<IDiagnosticFilterService>(IDiagnosticFilterService);
-        disposableRegistry.push(this);
-    }
+		@unmanaged() private readonly supportedDiagnosticCodes: string[],
+		@unmanaged() protected serviceContainer: IServiceContainer,
+		@unmanaged() protected disposableRegistry: IDisposableRegistry,
+		@unmanaged() public readonly runInBackground: boolean = false,
+		@unmanaged() public readonly runInUntrustedWorkspace: boolean = false
+	) {
+		this.filterService = serviceContainer.get<IDiagnosticFilterService>(
+			IDiagnosticFilterService
+		);
+		disposableRegistry.push(this);
+	}
 	public abstract diagnose(resource: Resource): Promise<IDiagnostic[]>;
 	public dispose() {
 		// Nothing to do, but can be overidden
@@ -68,14 +70,14 @@ export abstract class BaseDiagnosticsService
 				const key = this.getDiagnosticsKey(item);
 				if (
 					BaseDiagnosticsService.handledDiagnosticCodeKeys.indexOf(
-						key,
+						key
 					) !== -1
 				) {
 					return false;
 				}
 				BaseDiagnosticsService.handledDiagnosticCodeKeys.push(key);
 				return true;
-			},
+			}
 		);
 		await this.onHandle(diagnosticsToHandle);
 	}
@@ -85,7 +87,7 @@ export abstract class BaseDiagnosticsService
 		});
 		return (
 			this.supportedDiagnosticCodes.filter(
-				(item) => item === diagnostic.code,
+				(item) => item === diagnostic.code
 			).length > 0
 		);
 	}

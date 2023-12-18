@@ -18,20 +18,20 @@ export class AttachConfigurationResolver extends BaseConfigurationResolver<Attac
 	public async resolveDebugConfigurationWithSubstitutedVariables(
 		folder: WorkspaceFolder | undefined,
 		debugConfiguration: AttachRequestArguments,
-		_token?: CancellationToken,
+		_token?: CancellationToken
 	): Promise<AttachRequestArguments | undefined> {
 		const workspaceFolder =
 			AttachConfigurationResolver.getWorkspaceFolder(folder);
 
 		await this.provideAttachDefaults(
 			workspaceFolder,
-			debugConfiguration as AttachRequestArguments,
+			debugConfiguration as AttachRequestArguments
 		);
 
 		const dbgConfig = debugConfiguration;
 		if (Array.isArray(dbgConfig.debugOptions)) {
 			dbgConfig.debugOptions = dbgConfig.debugOptions!.filter(
-				(item, pos) => dbgConfig.debugOptions!.indexOf(item) === pos,
+				(item, pos) => dbgConfig.debugOptions!.indexOf(item) === pos
 			);
 		}
 		if (debugConfiguration.clientOS === undefined) {
@@ -43,7 +43,7 @@ export class AttachConfigurationResolver extends BaseConfigurationResolver<Attac
 
 	protected async provideAttachDefaults(
 		workspaceFolder: Uri | undefined,
-		debugConfiguration: AttachRequestArguments,
+		debugConfiguration: AttachRequestArguments
 	): Promise<void> {
 		if (!Array.isArray(debugConfiguration.debugOptions)) {
 			debugConfiguration.debugOptions = [];
@@ -69,25 +69,25 @@ export class AttachConfigurationResolver extends BaseConfigurationResolver<Attac
 		if (!debugConfiguration.justMyCode) {
 			AttachConfigurationResolver.debugOption(
 				debugOptions,
-				DebugOptions.DebugStdLib,
+				DebugOptions.DebugStdLib
 			);
 		}
 		if (debugConfiguration.django) {
 			AttachConfigurationResolver.debugOption(
 				debugOptions,
-				DebugOptions.Django,
+				DebugOptions.Django
 			);
 		}
 		if (debugConfiguration.jinja) {
 			AttachConfigurationResolver.debugOption(
 				debugOptions,
-				DebugOptions.Jinja,
+				DebugOptions.Jinja
 			);
 		}
 		if (debugConfiguration.subProcess === true) {
 			AttachConfigurationResolver.debugOption(
 				debugOptions,
-				DebugOptions.SubProcess,
+				DebugOptions.SubProcess
 			);
 		}
 		if (
@@ -97,7 +97,7 @@ export class AttachConfigurationResolver extends BaseConfigurationResolver<Attac
 		) {
 			AttachConfigurationResolver.debugOption(
 				debugOptions,
-				DebugOptions.Jinja,
+				DebugOptions.Jinja
 			);
 		}
 		if (
@@ -106,19 +106,19 @@ export class AttachConfigurationResolver extends BaseConfigurationResolver<Attac
 		) {
 			AttachConfigurationResolver.debugOption(
 				debugOptions,
-				DebugOptions.RedirectOutput,
+				DebugOptions.RedirectOutput
 			);
 		}
 
 		// We'll need paths to be fixed only in the case where local and remote hosts are the same
 		// I.e. only if hostName === 'localhost' or '127.0.0.1' or ''
 		const isLocalHost = AttachConfigurationResolver.isLocalHost(
-			debugConfiguration.host,
+			debugConfiguration.host
 		);
 		if (getOSType() === OSType.Windows && isLocalHost) {
 			AttachConfigurationResolver.debugOption(
 				debugOptions,
-				DebugOptions.FixFilePathCase,
+				DebugOptions.FixFilePathCase
 			);
 		}
 		if (debugConfiguration.clientOS === undefined) {
@@ -128,7 +128,7 @@ export class AttachConfigurationResolver extends BaseConfigurationResolver<Attac
 		if (debugConfiguration.showReturnValue) {
 			AttachConfigurationResolver.debugOption(
 				debugOptions,
-				DebugOptions.ShowReturnValue,
+				DebugOptions.ShowReturnValue
 			);
 		}
 
@@ -137,7 +137,7 @@ export class AttachConfigurationResolver extends BaseConfigurationResolver<Attac
 			debugConfiguration.host,
 			debugConfiguration.localRoot,
 			debugConfiguration.remoteRoot,
-			workspaceFolder,
+			workspaceFolder
 		);
 		AttachConfigurationResolver.sendTelemetry("attach", debugConfiguration);
 	}
@@ -148,7 +148,7 @@ export class AttachConfigurationResolver extends BaseConfigurationResolver<Attac
 		host?: string,
 		localRoot?: string,
 		remoteRoot?: string,
-		workspaceFolder?: Uri,
+		workspaceFolder?: Uri
 	) {
 		// This is for backwards compatibility.
 		if (localRoot && remoteRoot) {
@@ -161,7 +161,7 @@ export class AttachConfigurationResolver extends BaseConfigurationResolver<Attac
 		if (AttachConfigurationResolver.isLocalHost(host)) {
 			pathMappings = AttachConfigurationResolver.fixUpPathMappings(
 				pathMappings,
-				workspaceFolder ? workspaceFolder.fsPath : "",
+				workspaceFolder ? workspaceFolder.fsPath : ""
 			);
 		}
 		return pathMappings.length > 0 ? pathMappings : undefined;

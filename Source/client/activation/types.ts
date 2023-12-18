@@ -12,7 +12,7 @@ import type { IDisposable, ILogOutputChannel, Resource } from "../common/types";
 import { PythonEnvironment } from "../pythonEnvironments/info";
 
 export const IExtensionActivationManager = Symbol(
-	"IExtensionActivationManager",
+	"IExtensionActivationManager"
 );
 /**
  * Responsible for activation of extension.
@@ -42,7 +42,7 @@ export interface IExtensionActivationManager extends IDisposable {
 }
 
 export const IExtensionActivationService = Symbol(
-	"IExtensionActivationService",
+	"IExtensionActivationService"
 );
 /**
  * Classes implementing this interface will have their `activate` methods
@@ -72,7 +72,7 @@ export const ILanguageServerActivator = Symbol("ILanguageServerActivator");
 export interface ILanguageServerActivator {
 	start(
 		resource: Resource,
-		interpreter: PythonEnvironment | undefined,
+		interpreter: PythonEnvironment | undefined
 	): Promise<void>;
 	activate(): void;
 	deactivate(): void;
@@ -84,17 +84,17 @@ export interface ILanguageClientFactory {
 		resource: Resource,
 		interpreter: PythonEnvironment | undefined,
 		clientOptions: LanguageClientOptions,
-		env?: NodeJS.ProcessEnv,
+		env?: NodeJS.ProcessEnv
 	): Promise<LanguageClient>;
 }
 export const ILanguageServerAnalysisOptions = Symbol(
-	"ILanguageServerAnalysisOptions",
+	"ILanguageServerAnalysisOptions"
 );
 export interface ILanguageServerAnalysisOptions extends IDisposable {
 	readonly onDidChange: Event<void>;
 	initialize(
 		resource: Resource,
-		interpreter: PythonEnvironment | undefined,
+		interpreter: PythonEnvironment | undefined
 	): Promise<void>;
 	getAnalysisOptions(): Promise<LanguageClientOptions>;
 }
@@ -102,7 +102,7 @@ export const ILanguageServerManager = Symbol("ILanguageServerManager");
 export interface ILanguageServerManager extends IDisposable {
 	start(
 		resource: Resource,
-		interpreter: PythonEnvironment | undefined,
+		interpreter: PythonEnvironment | undefined
 	): Promise<void>;
 	connect(): void;
 	disconnect(): void;
@@ -113,7 +113,7 @@ export interface ILanguageServerProxy extends IDisposable {
 	start(
 		resource: Resource,
 		interpreter: PythonEnvironment | undefined,
-		options: LanguageClientOptions,
+		options: LanguageClientOptions
 	): Promise<void>;
 	stop(): Promise<void>;
 	/**
@@ -127,7 +127,7 @@ export interface ILanguageServerProxy extends IDisposable {
 }
 
 export const ILanguageServerOutputChannel = Symbol(
-	"ILanguageServerOutputChannel",
+	"ILanguageServerOutputChannel"
 );
 export interface ILanguageServerOutputChannel {
 	/**
@@ -140,7 +140,7 @@ export interface ILanguageServerOutputChannel {
 }
 
 export const IExtensionSingleActivationService = Symbol(
-	"IExtensionSingleActivationService",
+	"IExtensionSingleActivationService"
 );
 /**
  * Classes implementing this interface will have their `activate` methods

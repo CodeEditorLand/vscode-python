@@ -25,7 +25,7 @@ export function buildApi(reporter: TelemetryReporter): IBrowserExtensionApi {
 					PYTHON_LANGUAGE,
 					"Python Language Server",
 					args[0],
-					args[1],
+					args[1]
 				),
 			start: (client: BaseLanguageClient): Promise<void> =>
 				client.start(),

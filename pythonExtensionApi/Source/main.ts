@@ -30,7 +30,7 @@ export interface PythonExtension {
 		getRemoteLauncherCommand(
 			host: string,
 			port: number,
-			waitUntilDebuggerAttaches: boolean,
+			waitUntilDebuggerAttaches: boolean
 		): Promise<string[]>;
 
 		/**
@@ -62,7 +62,7 @@ export interface PythonExtension {
 		 */
 		updateActiveEnvironmentPath(
 			environment: string | EnvironmentPath | Environment,
-			resource?: Resource,
+			resource?: Resource
 		): Promise<void>;
 		/**
 		 * This event is triggered when the active environment setting changes.
@@ -93,7 +93,7 @@ export interface PythonExtension {
 		 */
 		refreshEnvironments(
 			options?: RefreshOptions,
-			token?: CancellationToken,
+			token?: CancellationToken
 		): Promise<void>;
 		/**
 		 * Returns details for the given environment, or `undefined` if the env is invalid.
@@ -101,7 +101,7 @@ export interface PythonExtension {
 		 * for the environment. Otherwise it can be {@link Environment} or {@link EnvironmentPath} itself.
 		 */
 		resolveEnvironment(
-			environment: Environment | EnvironmentPath | string,
+			environment: Environment | EnvironmentPath | string
 		): Promise<ResolvedEnvironment | undefined>;
 		/**
 		 * Returns the environment variables used by the extension for a resource, which includes the custom

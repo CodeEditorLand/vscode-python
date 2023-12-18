@@ -27,30 +27,30 @@ function logOnLegacyFormatterSetting(): boolean {
 		}
 		const formatter = config.get<string>("defaultFormatter", "");
 		traceInfo(
-			`Default formatter is set to ${formatter} for workspace ${workspace.uri.fsPath}`,
+			`Default formatter is set to ${formatter} for workspace ${workspace.uri.fsPath}`
 		);
 		if (formatter === PVSC_EXTENSION_ID) {
 			usesLegacyFormatter = true;
 			traceError(
-				'The setting "editor.defaultFormatter" for Python is set to "ms-python.python" which is deprecated.',
+				'The setting "editor.defaultFormatter" for Python is set to "ms-python.python" which is deprecated.'
 			);
 			traceError(
-				"Formatting features have been moved to separate formatter extensions.",
+				"Formatting features have been moved to separate formatter extensions."
 			);
 			traceError(
-				"See here for more information: https://code.visualstudio.com/docs/python/formatting",
+				"See here for more information: https://code.visualstudio.com/docs/python/formatting"
 			);
 			traceError(
-				"Please install the formatter extension you prefer and set it as the default formatter.",
+				"Please install the formatter extension you prefer and set it as the default formatter."
 			);
 			traceError(
-				"For `autopep8` use: https://marketplace.visualstudio.com/items?itemName=ms-python.autopep8",
+				"For `autopep8` use: https://marketplace.visualstudio.com/items?itemName=ms-python.autopep8"
 			);
 			traceError(
-				"For `black` use: https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter",
+				"For `black` use: https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter"
 			);
 			traceError(
-				"For `yapf` use: https://marketplace.visualstudio.com/items?itemName=eeyore.yapf",
+				"For `yapf` use: https://marketplace.visualstudio.com/items?itemName=eeyore.yapf"
 			);
 		}
 	});
@@ -85,37 +85,37 @@ function logOnLegacyLinterSetting(): boolean {
 		linters.forEach((linter) => {
 			const linterEnabled = config.get<boolean>(
 				`linting.${linter}Enabled`,
-				false,
+				false
 			);
 			if (linterEnabled) {
 				usesLegacyLinter = true;
 				traceError(
-					`Following setting is deprecated: "python.linting.${linter}Enabled"`,
+					`Following setting is deprecated: "python.linting.${linter}Enabled"`
 				);
 				traceError(
-					`All settings starting with "python.linting." are deprecated and can be removed from settings.`,
+					`All settings starting with "python.linting." are deprecated and can be removed from settings.`
 				);
 				traceError(
-					"Linting features have been moved to separate linter extensions.",
+					"Linting features have been moved to separate linter extensions."
 				);
 				traceError(
-					"See here for more information: https://code.visualstudio.com/docs/python/linting",
+					"See here for more information: https://code.visualstudio.com/docs/python/linting"
 				);
 				if (linter === "pylint" || linter === "flake8") {
 					traceError(
-						`Please install "${linter}" extension: https://marketplace.visualstudio.com/items?itemName=ms-python.${linter}`,
+						`Please install "${linter}" extension: https://marketplace.visualstudio.com/items?itemName=ms-python.${linter}`
 					);
 				} else if (linter === "mypy") {
 					traceError(
-						`Please install "${linter}" extension: https://marketplace.visualstudio.com/items?itemName=ms-python.mypy-type-checker`,
+						`Please install "${linter}" extension: https://marketplace.visualstudio.com/items?itemName=ms-python.mypy-type-checker`
 					);
 				} else if (
 					["pydocstyle", "pylama", "pycodestyle", "bandit"].includes(
-						linter,
+						linter
 					)
 				) {
 					traceError(
-						`Selected linter "${linter}" may be supported by extensions like "Ruff", which include several linter rules: https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff`,
+						`Selected linter "${linter}" may be supported by extensions like "Ruff", which include several linter rules: https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff`
 					);
 				}
 			}
@@ -134,9 +134,9 @@ async function notifyLegacySettings(): Promise<void> {
 	const response = await showWarningMessage(
 		l10n.t(
 			"You have deprecated linting or formatting settings for Python. Please see the [logs](command:{0}) for more details.",
-			Commands.ViewOutput,
+			Commands.ViewOutput
 		),
-		Common.learnMore,
+		Common.learnMore
 	);
 	if (response === Common.learnMore) {
 		executeCommand("vscode.open", "https://aka.ms/AAlgvkb");

@@ -57,7 +57,7 @@ export class ProcessService extends EventEmitter implements IProcessService {
 	public execObservable(
 		file: string,
 		args: string[],
-		options: SpawnOptions = {},
+		options: SpawnOptions = {}
 	): ObservableExecutionResult<string> {
 		const execOptions = { ...options, doNotLog: true };
 		const result = execObservable(
@@ -65,7 +65,7 @@ export class ProcessService extends EventEmitter implements IProcessService {
 			args,
 			execOptions,
 			this.env,
-			this.processesToKill,
+			this.processesToKill
 		);
 		this.emit("exec", file, args, options);
 		return result;
@@ -74,7 +74,7 @@ export class ProcessService extends EventEmitter implements IProcessService {
 	public exec(
 		file: string,
 		args: string[],
-		options: SpawnOptions = {},
+		options: SpawnOptions = {}
 	): Promise<ExecutionResult<string>> {
 		this.emit("exec", file, args, options);
 		if (options.useWorker) {
@@ -86,14 +86,14 @@ export class ProcessService extends EventEmitter implements IProcessService {
 			args,
 			execOptions,
 			this.env,
-			this.processesToKill,
+			this.processesToKill
 		);
 		return promise;
 	}
 
 	public shellExec(
 		command: string,
-		options: ShellOptions = {},
+		options: ShellOptions = {}
 	): Promise<ExecutionResult<string>> {
 		this.emit("exec", command, undefined, options);
 		if (options.useWorker) {
@@ -111,7 +111,7 @@ export class ProcessService extends EventEmitter implements IProcessService {
 						traceError(`Unable to kill process for ${command}`);
 					}
 				});
-			},
+			}
 		);
 	}
 }

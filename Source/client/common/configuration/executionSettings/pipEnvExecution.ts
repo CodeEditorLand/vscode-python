@@ -8,7 +8,10 @@ import { IConfigurationService, IToolExecutionPath } from "../../types";
 
 @injectable()
 export class PipEnvExecutionPath implements IToolExecutionPath {
-	constructor(@inject(IConfigurationService) private readonly configService: IConfigurationService) {}
+	constructor(
+		@inject(IConfigurationService)
+		private readonly configService: IConfigurationService
+	) {}
 
 	public get executable(): string {
 		return this.configService.getSettings().pipenvPath;

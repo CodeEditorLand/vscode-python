@@ -10,8 +10,8 @@ import { getTimeForLogging } from "./util";
 function formatMessage(level?: string, ...data: Arguments): string {
 	return level
 		? `[${level.toUpperCase()} ${getTimeForLogging()}]: ${util.format(
-				...data,
-		  )}\r\n`
+				...data
+			)}\r\n`
 		: `${util.format(...data)}\r\n`;
 }
 

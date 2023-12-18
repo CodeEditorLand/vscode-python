@@ -13,10 +13,12 @@ import { CommandOptions, IDiagnosticsCommandFactory } from "./types";
 
 @injectable()
 export class DiagnosticsCommandFactory implements IDiagnosticsCommandFactory {
-	constructor(@inject(IServiceContainer) private serviceContainer: IServiceContainer) {}
+	constructor(
+		@inject(IServiceContainer) private serviceContainer: IServiceContainer
+	) {}
 	public createCommand(
 		diagnostic: IDiagnostic,
-		options: CommandOptions,
+		options: CommandOptions
 	): IDiagnosticCommand {
 		const commandType = options.type;
 		switch (options.type) {
@@ -24,26 +26,26 @@ export class DiagnosticsCommandFactory implements IDiagnosticsCommandFactory {
 				return new IgnoreDiagnosticCommand(
 					diagnostic,
 					this.serviceContainer,
-					options.options,
+					options.options
 				);
 			}
 			case "launch": {
 				return new LaunchBrowserCommand(
 					diagnostic,
 					this.serviceContainer,
-					options.options,
+					options.options
 				);
 			}
 			case "executeVSCCommand": {
 				return new ExecuteVSCCommand(
 					diagnostic,
 					this.serviceContainer,
-					options.options,
+					options.options
 				);
 			}
 			default: {
 				throw new Error(
-					`Unknown Diagnostic command commandType '${commandType}'`,
+					`Unknown Diagnostic command commandType '${commandType}'`
 				);
 			}
 		}

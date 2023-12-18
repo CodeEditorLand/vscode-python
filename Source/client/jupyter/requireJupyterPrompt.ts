@@ -21,16 +21,17 @@ export class RequireJupyterPrompt implements IExtensionSingleActivationService {
 	};
 
 	constructor(
-        @inject(IApplicationShell) private readonly appShell: IApplicationShell,
-        @inject(ICommandManager) private readonly commandManager: ICommandManager,
-        @inject(IDisposableRegistry) private readonly disposables: IDisposable[],
-    ) {}
+		@inject(IApplicationShell) private readonly appShell: IApplicationShell,
+		@inject(ICommandManager)
+		private readonly commandManager: ICommandManager,
+		@inject(IDisposableRegistry) private readonly disposables: IDisposable[]
+	) {}
 
 	public async activate(): Promise<void> {
 		this.disposables.push(
 			this.commandManager.registerCommand(Commands.InstallJupyter, () =>
-				this._showPrompt(),
-			),
+				this._showPrompt()
+			)
 		);
 	}
 
@@ -39,7 +40,7 @@ export class RequireJupyterPrompt implements IExtensionSingleActivationService {
 		const telemetrySelections: ["Yes", "No"] = ["Yes", "No"];
 		const selection = await this.appShell.showInformationMessage(
 			Interpreters.requireJupyter,
-			...prompts,
+			...prompts
 		);
 		sendTelemetryEvent(EventName.REQUIRE_JUPYTER_PROMPT, undefined, {
 			selection: selection
@@ -53,7 +54,7 @@ export class RequireJupyterPrompt implements IExtensionSingleActivationService {
 			await this.commandManager.executeCommand(
 				"workbench.extensions.installExtension",
 				JUPYTER_EXTENSION_ID,
-				undefined,
+				undefined
 			);
 		}
 	}

@@ -16,7 +16,7 @@ export class ServiceManager implements IServiceManager {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		constructor: new (...args: any[]) => T,
 		name?: string | number | symbol | undefined,
-		bindings?: symbol[],
+		bindings?: symbol[]
 	): void {
 		if (name) {
 			this.container
@@ -36,7 +36,7 @@ export class ServiceManager implements IServiceManager {
 
 	public addFactory<T>(
 		factoryIdentifier: interfaces.ServiceIdentifier<interfaces.Factory<T>>,
-		factoryMethod: interfaces.FactoryCreator<T>,
+		factoryMethod: interfaces.FactoryCreator<T>
 	): void {
 		this.container
 			.bind<interfaces.Factory<T>>(factoryIdentifier)
@@ -53,7 +53,7 @@ export class ServiceManager implements IServiceManager {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		constructor: new (...args: any[]) => T,
 		name?: string | number | symbol | undefined,
-		bindings?: symbol[],
+		bindings?: symbol[]
 	): void {
 		if (name) {
 			this.container
@@ -78,7 +78,7 @@ export class ServiceManager implements IServiceManager {
 	public addSingletonInstance<T>(
 		serviceIdentifier: identifier<T>,
 		instance: T,
-		name?: string | number | symbol | undefined,
+		name?: string | number | symbol | undefined
 	): void {
 		if (name) {
 			this.container
@@ -92,7 +92,7 @@ export class ServiceManager implements IServiceManager {
 
 	public get<T>(
 		serviceIdentifier: identifier<T>,
-		name?: string | number | symbol | undefined,
+		name?: string | number | symbol | undefined
 	): T {
 		return name
 			? this.container.getNamed<T>(serviceIdentifier, name)
@@ -101,7 +101,7 @@ export class ServiceManager implements IServiceManager {
 
 	public tryGet<T>(
 		serviceIdentifier: identifier<T>,
-		name?: string | number | symbol | undefined,
+		name?: string | number | symbol | undefined
 	): T | undefined {
 		try {
 			return name
@@ -116,7 +116,7 @@ export class ServiceManager implements IServiceManager {
 
 	public getAll<T>(
 		serviceIdentifier: identifier<T>,
-		name?: string | number | symbol | undefined,
+		name?: string | number | symbol | undefined
 	): T[] {
 		return name
 			? this.container.getAllNamed<T>(serviceIdentifier, name)
@@ -126,7 +126,7 @@ export class ServiceManager implements IServiceManager {
 	public rebind<T>(
 		serviceIdentifier: interfaces.ServiceIdentifier<T>,
 		constructor: ClassType<T>,
-		name?: string | number | symbol,
+		name?: string | number | symbol
 	): void {
 		if (name) {
 			this.container
@@ -141,7 +141,7 @@ export class ServiceManager implements IServiceManager {
 	public rebindSingleton<T>(
 		serviceIdentifier: interfaces.ServiceIdentifier<T>,
 		constructor: ClassType<T>,
-		name?: string | number | symbol,
+		name?: string | number | symbol
 	): void {
 		if (name) {
 			this.container
@@ -160,7 +160,7 @@ export class ServiceManager implements IServiceManager {
 	public rebindInstance<T>(
 		serviceIdentifier: interfaces.ServiceIdentifier<T>,
 		instance: T,
-		name?: string | number | symbol,
+		name?: string | number | symbol
 	): void {
 		if (name) {
 			this.container

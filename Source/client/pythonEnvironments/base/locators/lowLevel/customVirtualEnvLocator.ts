@@ -62,7 +62,7 @@ async function getCustomVirtualEnvDirs(): Promise<string[]> {
  * @param interpreterPath: Absolute path to the interpreter paths.
  */
 async function getVirtualEnvKind(
-	interpreterPath: string,
+	interpreterPath: string
 ): Promise<PythonEnvKind> {
 	if (await isPipenvEnvironment(interpreterPath)) {
 		return PythonEnvKind.Pipenv;
@@ -101,12 +101,10 @@ export class CustomVirtualEnvironmentLocator extends FSWatchingLocator {
 
 	protected async initResources(): Promise<void> {
 		this.disposables.push(
-			onDidChangePythonSetting(VENVPATH_SETTING_KEY, () => this.fire()),
+			onDidChangePythonSetting(VENVPATH_SETTING_KEY, () => this.fire())
 		);
 		this.disposables.push(
-			onDidChangePythonSetting(VENVFOLDERS_SETTING_KEY, () =>
-				this.fire(),
-			),
+			onDidChangePythonSetting(VENVFOLDERS_SETTING_KEY, () => this.fire())
 		);
 	}
 
@@ -117,12 +115,12 @@ export class CustomVirtualEnvironmentLocator extends FSWatchingLocator {
 			const envGenerators = envRootDirs.map((envRootDir) => {
 				async function* generator() {
 					traceVerbose(
-						`Searching for custom virtual envs in: ${envRootDir}`,
+						`Searching for custom virtual envs in: ${envRootDir}`
 					);
 
 					const executables = findInterpretersInDir(
 						envRootDir,
-						DEFAULT_SEARCH_DEPTH,
+						DEFAULT_SEARCH_DEPTH
 					);
 
 					for await (const entry of executables) {
@@ -139,17 +137,17 @@ export class CustomVirtualEnvironmentLocator extends FSWatchingLocator {
 								const kind = await getVirtualEnvKind(filename);
 								yield { kind, executablePath: filename };
 								traceVerbose(
-									`Custom Virtual Environment: [added] ${filename}`,
+									`Custom Virtual Environment: [added] ${filename}`
 								);
 							} catch (ex) {
 								traceError(
 									`Failed to process environment: ${filename}`,
-									ex,
+									ex
 								);
 							}
 						} else {
 							traceVerbose(
-								`Custom Virtual Environment: [skipped] ${filename}`,
+								`Custom Virtual Environment: [skipped] ${filename}`
 							);
 						}
 					}

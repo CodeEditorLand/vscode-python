@@ -17,13 +17,15 @@ import {
 @injectable()
 export class ProcessServiceFactory implements IProcessServiceFactory {
 	constructor(
-        @inject(IEnvironmentVariablesProvider) private readonly envVarsService: IEnvironmentVariablesProvider,
-        @inject(IProcessLogger) private readonly processLogger: IProcessLogger,
-        @inject(IDisposableRegistry) private readonly disposableRegistry: IDisposableRegistry,
-    ) {}
+		@inject(IEnvironmentVariablesProvider)
+		private readonly envVarsService: IEnvironmentVariablesProvider,
+		@inject(IProcessLogger) private readonly processLogger: IProcessLogger,
+		@inject(IDisposableRegistry)
+		private readonly disposableRegistry: IDisposableRegistry
+	) {}
 	public async create(
 		resource?: Uri,
-		options?: { doNotUseCustomEnvs: boolean },
+		options?: { doNotUseCustomEnvs: boolean }
 	): Promise<IProcessService> {
 		const customEnvVars = options?.doNotUseCustomEnvs
 			? undefined
@@ -32,7 +34,7 @@ export class ProcessServiceFactory implements IProcessServiceFactory {
 		this.disposableRegistry.push(proc);
 		return proc.on(
 			"exec",
-			this.processLogger.logProcess.bind(this.processLogger),
+			this.processLogger.logProcess.bind(this.processLogger)
 		);
 	}
 }

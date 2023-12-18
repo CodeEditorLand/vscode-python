@@ -70,7 +70,7 @@ let activatedServiceContainer: IServiceContainer | undefined;
 // public functions
 
 export async function activate(
-	context: IExtensionContext,
+	context: IExtensionContext
 ): Promise<PythonExtension> {
 	let api: PythonExtension;
 	let ready: Promise<void>;
@@ -81,12 +81,12 @@ export async function activate(
 			workspaceService.onDidGrantWorkspaceTrust(async () => {
 				await deactivate();
 				await activate(context);
-			}),
+			})
 		);
 		[api, ready, serviceContainer] = await activateUnsafe(
 			context,
 			stopWatch,
-			durations,
+			durations
 		);
 	} catch (ex) {
 		// We want to completely handle the error
@@ -108,7 +108,7 @@ export async function deactivate(): Promise<void> {
 	if (activatedServiceContainer) {
 		const disposables =
 			activatedServiceContainer.get<IDisposableRegistry>(
-				IDisposableRegistry,
+				IDisposableRegistry
 			);
 		await disposeAll(disposables);
 		// Remove everything that is already disposed.
@@ -122,7 +122,7 @@ export async function deactivate(): Promise<void> {
 async function activateUnsafe(
 	context: IExtensionContext,
 	startupStopWatch: StopWatch,
-	startupDurations: IStartupDurations,
+	startupDurations: IStartupDurations
 ): Promise<
 	[PythonExtension & ProposedExtensionAPI, Promise<void>, IServiceContainer]
 > {
@@ -169,23 +169,23 @@ async function activateUnsafe(
 		if (activatedServiceContainer) {
 			const workspaceService =
 				activatedServiceContainer.get<IWorkspaceService>(
-					IWorkspaceService,
+					IWorkspaceService
 				);
 			if (workspaceService.isTrusted) {
 				const interpreterManager =
 					activatedServiceContainer.get<IInterpreterService>(
-						IInterpreterService,
+						IInterpreterService
 					);
 				const workspaces = workspaceService.workspaceFolders ?? [];
 				await interpreterManager
 					.refresh(
-						workspaces.length > 0 ? workspaces[0].uri : undefined,
+						workspaces.length > 0 ? workspaces[0].uri : undefined
 					)
 					.catch((ex) =>
 						traceError(
 							"Python Extension: interpreterManager.refresh",
-							ex,
-						),
+							ex
+						)
 					);
 			}
 		}
@@ -197,11 +197,11 @@ async function activateUnsafe(
 		activationPromise,
 		ext.legacyIOC.serviceManager,
 		ext.legacyIOC.serviceContainer,
-		components.pythonEnvs,
+		components.pythonEnvs
 	);
 	const proposedApi = buildProposedApi(
 		components.pythonEnvs,
-		ext.legacyIOC.serviceContainer,
+		ext.legacyIOC.serviceContainer
 	);
 	return [
 		{ ...api, ...proposedApi },
@@ -223,7 +223,7 @@ function displayProgress(promise: Promise<any>) {
 
 async function handleError(ex: Error, startupDurations: IStartupDurations) {
 	notifyUser(
-		"Extension activation failed, run the 'Developer: Toggle Developer Tools' command for more information.",
+		"Extension activation failed, run the 'Developer: Toggle Developer Tools' command for more information."
 	);
 	traceError("extension activation failed", ex);
 
@@ -239,7 +239,7 @@ function notifyUser(msg: string) {
 		let appShell: IAppShell = window as any as IAppShell;
 		if (activatedServiceContainer) {
 			appShell = activatedServiceContainer.get<IApplicationShell>(
-				IApplicationShell,
+				IApplicationShell
 			) as any as IAppShell;
 		}
 		appShell.showErrorMessage(msg).ignoreErrors();

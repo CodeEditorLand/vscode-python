@@ -11,7 +11,7 @@ export class NodeLanguageServerAnalysisOptions extends LanguageServerAnalysisOpt
 	// eslint-disable-next-line @typescript-eslint/no-useless-constructor
 	constructor(
 		lsOutputChannel: ILanguageServerOutputChannel,
-		workspace: IWorkspaceService,
+		workspace: IWorkspaceService
 	) {
 		super(lsOutputChannel, workspace);
 	}

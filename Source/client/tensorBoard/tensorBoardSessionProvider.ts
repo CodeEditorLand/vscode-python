@@ -52,28 +52,38 @@ export class TensorBoardSessionProvider
 	private readonly disposables: IDisposable[] = [];
 
 	constructor(
-        @inject(IInstaller) private readonly installer: IInstaller,
-        @inject(IInterpreterService) private readonly interpreterService: IInterpreterService,
-        @inject(IApplicationShell) private readonly applicationShell: IApplicationShell,
-        @inject(IWorkspaceService) private readonly workspaceService: IWorkspaceService,
-        @inject(ICommandManager) private readonly commandManager: ICommandManager,
-        @inject(IDisposableRegistry) disposables: IDisposableRegistry,
-        @inject(IPythonExecutionFactory) private readonly pythonExecFactory: IPythonExecutionFactory,
-        @inject(IPersistentStateFactory) private stateFactory: IPersistentStateFactory,
-        @inject(IMultiStepInputFactory) private readonly multiStepFactory: IMultiStepInputFactory,
-        @inject(IConfigurationService) private readonly configurationService: IConfigurationService,
-        @inject(TensorboardExperiment) private readonly experiment: TensorboardExperiment,
-    ) {
-        disposables.push(this);
-        this.preferredViewGroupMemento = this.stateFactory.createGlobalPersistentState<ViewColumn>(
-            PREFERRED_VIEWGROUP,
-            ViewColumn.Active,
-        );
-        this.hasActiveTensorBoardSessionContext = new ContextKey(
-            'python.hasActiveTensorBoardSession',
-            this.commandManager,
-        );
-    }
+		@inject(IInstaller) private readonly installer: IInstaller,
+		@inject(IInterpreterService)
+		private readonly interpreterService: IInterpreterService,
+		@inject(IApplicationShell)
+		private readonly applicationShell: IApplicationShell,
+		@inject(IWorkspaceService)
+		private readonly workspaceService: IWorkspaceService,
+		@inject(ICommandManager)
+		private readonly commandManager: ICommandManager,
+		@inject(IDisposableRegistry) disposables: IDisposableRegistry,
+		@inject(IPythonExecutionFactory)
+		private readonly pythonExecFactory: IPythonExecutionFactory,
+		@inject(IPersistentStateFactory)
+		private stateFactory: IPersistentStateFactory,
+		@inject(IMultiStepInputFactory)
+		private readonly multiStepFactory: IMultiStepInputFactory,
+		@inject(IConfigurationService)
+		private readonly configurationService: IConfigurationService,
+		@inject(TensorboardExperiment)
+		private readonly experiment: TensorboardExperiment
+	) {
+		disposables.push(this);
+		this.preferredViewGroupMemento =
+			this.stateFactory.createGlobalPersistentState<ViewColumn>(
+				PREFERRED_VIEWGROUP,
+				ViewColumn.Active
+			);
+		this.hasActiveTensorBoardSessionContext = new ContextKey(
+			"python.hasActiveTensorBoardSession",
+			this.commandManager
+		);
+	}
 
 	public dispose(): void {
 		Disposable.from(...this.disposables).dispose();
@@ -86,27 +96,37 @@ export class TensorBoardSessionProvider
 		this.experiment.disposeOnInstallingTensorboard(this);
 
 		this.disposables.push(
-            this.commandManager.registerCommand(
-                Commands.LaunchTensorBoard,
-                (
-                    entrypoint: TensorBoardEntrypoint = TensorBoardEntrypoint.palette,
-                    trigger: TensorBoardEntrypointTrigger = TensorBoardEntrypointTrigger.palette,
-                ): void => {
-                    sendTelemetryEvent(EventName.TENSORBOARD_SESSION_LAUNCH, undefined, {
-                        trigger,
-                        entrypoint,
-                    });
-                    if (this.experiment.recommendAndUseNewExtension() === 'continueWithPythonExtension') {
-                        void this.createNewSession();
-                    }
-                },
-            ),
-            this.commandManager.registerCommand(Commands.RefreshTensorBoard, () =>
-                this.experiment.recommendAndUseNewExtension() === 'continueWithPythonExtension'
-                    ? this.knownSessions.map((w) => w.refresh())
-                    : undefined,
-            ),
-        );
+			this.commandManager.registerCommand(
+				Commands.LaunchTensorBoard,
+				(
+					entrypoint: TensorBoardEntrypoint = TensorBoardEntrypoint.palette,
+					trigger: TensorBoardEntrypointTrigger = TensorBoardEntrypointTrigger.palette
+				): void => {
+					sendTelemetryEvent(
+						EventName.TENSORBOARD_SESSION_LAUNCH,
+						undefined,
+						{
+							trigger,
+							entrypoint,
+						}
+					);
+					if (
+						this.experiment.recommendAndUseNewExtension() ===
+						"continueWithPythonExtension"
+					) {
+						void this.createNewSession();
+					}
+				}
+			),
+			this.commandManager.registerCommand(
+				Commands.RefreshTensorBoard,
+				() =>
+					this.experiment.recommendAndUseNewExtension() ===
+					"continueWithPythonExtension"
+						? this.knownSessions.map((w) => w.refresh())
+						: undefined
+			)
+		);
 	}
 
 	private async updateTensorBoardSessionContext() {
@@ -117,7 +137,7 @@ export class TensorBoardSessionProvider
 			}
 		});
 		await this.hasActiveTensorBoardSessionContext.set(
-			hasActiveTensorBoardSession,
+			hasActiveTensorBoardSession
 		);
 	}
 
@@ -139,30 +159,30 @@ export class TensorBoardSessionProvider
 				this.applicationShell,
 				this.preferredViewGroupMemento,
 				this.multiStepFactory,
-				this.configurationService,
+				this.configurationService
 			);
 			newSession.onDidChangeViewState(
 				() => this.updateTensorBoardSessionContext(),
 				this,
-				this.disposables,
+				this.disposables
 			);
 			newSession.onDidDispose(
 				(e) => this.didDisposeSession(e),
 				this,
-				this.disposables,
+				this.disposables
 			);
 			this.knownSessions.push(newSession);
 			await newSession.initialize();
 			return newSession;
 		} catch (e) {
 			traceError(
-				`Encountered error while starting new TensorBoard session: ${e}`,
+				`Encountered error while starting new TensorBoard session: ${e}`
 			);
 			await this.applicationShell.showErrorMessage(
 				l10n.t(
 					"We failed to start a TensorBoard session due to the following error: {0}",
-					(e as Error).message,
-				),
+					(e as Error).message
+				)
 			);
 		}
 		return undefined;

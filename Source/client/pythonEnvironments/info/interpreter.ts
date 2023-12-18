@@ -22,7 +22,7 @@ import { copyPythonExecInfo, PythonExecInfo } from "../exec";
  */
 function extractInterpreterInfo(
 	python: string,
-	raw: InterpreterInfoJson,
+	raw: InterpreterInfoJson
 ): InterpreterInformation {
 	let rawVersion = `${raw.versionInfo.slice(0, 3).join(".")}`;
 	// We only need additional version details if the version is 'alpha', 'beta' or 'candidate'.
@@ -68,7 +68,7 @@ type Logger = {
 export async function getInterpreterInfo(
 	python: PythonExecInfo,
 	shellExec: ShellExecFunc,
-	logger?: Logger,
+	logger?: Logger
 ): Promise<InterpreterInformation | undefined> {
 	const [args, parse] = getInterpreterInfoCommand();
 	const info = copyPythonExecInfo(python, args);
@@ -77,7 +77,7 @@ export async function getInterpreterInfo(
 	// Concat these together to make a set of quoted strings
 	const quoted = argv.reduce(
 		(p, c) => (p ? `${p} "${c}"` : `"${replaceAll(c, "\\", "\\\\")}"`),
-		"",
+		""
 	);
 
 	// Try shell execing the command, followed by the arguments. This will make node kill the process if it
@@ -90,7 +90,7 @@ export async function getInterpreterInfo(
 	if (result.stderr) {
 		if (logger) {
 			logger.error(
-				`Failed to parse interpreter information for ${argv} stderr: ${result.stderr}`,
+				`Failed to parse interpreter information for ${argv} stderr: ${result.stderr}`
 			);
 		}
 	}

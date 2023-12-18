@@ -19,7 +19,7 @@ export class SourceMapSupport {
 	constructor(private readonly vscode: VSCode) {
 		this.config = this.vscode.workspace.getConfiguration(
 			"python.diagnostics",
-			null,
+			null
 		);
 	}
 	public async initialize(): Promise<void> {
@@ -47,7 +47,7 @@ export class SourceMapSupport {
 			await this.config.update(
 				setting,
 				false,
-				this.vscode.ConfigurationTarget.Global,
+				this.vscode.ConfigurationTarget.Global
 			);
 		}
 		await this.enableSourceMaps(false);
@@ -57,7 +57,7 @@ export class SourceMapSupport {
 			EXTENSION_ROOT_DIR,
 			"out",
 			"client",
-			"extension.js",
+			"extension.js"
 		);
 		const debuggerSourceFile = path.join(
 			EXTENSION_ROOT_DIR,
@@ -65,7 +65,7 @@ export class SourceMapSupport {
 			"client",
 			"debugger",
 			"debugAdapter",
-			"main.js",
+			"main.js"
 		);
 		await Promise.all([
 			this.enableSourceMap(enable, extensionSourceFile),

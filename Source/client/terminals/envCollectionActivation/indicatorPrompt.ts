@@ -39,17 +39,24 @@ export class TerminalIndicatorPrompt
 	};
 
 	constructor(
-        @inject(IApplicationShell) private readonly appShell: IApplicationShell,
-        @inject(IPersistentStateFactory) private readonly persistentStateFactory: IPersistentStateFactory,
-        @inject(ITerminalManager) private readonly terminalManager: ITerminalManager,
-        @inject(IDisposableRegistry) private readonly disposableRegistry: IDisposableRegistry,
-        @inject(IActiveResourceService) private readonly activeResourceService: IActiveResourceService,
-        @inject(ITerminalEnvVarCollectionService)
-        private readonly terminalEnvVarCollectionService: ITerminalEnvVarCollectionService,
-        @inject(IConfigurationService) private readonly configurationService: IConfigurationService,
-        @inject(IInterpreterService) private readonly interpreterService: IInterpreterService,
-        @inject(IExperimentService) private readonly experimentService: IExperimentService,
-    ) {}
+		@inject(IApplicationShell) private readonly appShell: IApplicationShell,
+		@inject(IPersistentStateFactory)
+		private readonly persistentStateFactory: IPersistentStateFactory,
+		@inject(ITerminalManager)
+		private readonly terminalManager: ITerminalManager,
+		@inject(IDisposableRegistry)
+		private readonly disposableRegistry: IDisposableRegistry,
+		@inject(IActiveResourceService)
+		private readonly activeResourceService: IActiveResourceService,
+		@inject(ITerminalEnvVarCollectionService)
+		private readonly terminalEnvVarCollectionService: ITerminalEnvVarCollectionService,
+		@inject(IConfigurationService)
+		private readonly configurationService: IConfigurationService,
+		@inject(IInterpreterService)
+		private readonly interpreterService: IInterpreterService,
+		@inject(IExperimentService)
+		private readonly experimentService: IExperimentService
+	) {}
 
 	public async activate(): Promise<void> {
 		if (!inTerminalEnvVarExperiment(this.experimentService)) {
@@ -88,14 +95,14 @@ export class TerminalIndicatorPrompt
 				}
 				if (
 					this.terminalEnvVarCollectionService.isTerminalPromptSetCorrectly(
-						resource,
+						resource
 					)
 				) {
 					// No need to show notification if terminal prompt already indicates when env is activated.
 					return;
 				}
 				await this.notifyUsers(resource);
-			}),
+			})
 		);
 	}
 
@@ -103,7 +110,7 @@ export class TerminalIndicatorPrompt
 		const notificationPromptEnabled =
 			this.persistentStateFactory.createGlobalPersistentState(
 				terminalEnvCollectionPromptKey,
-				true,
+				true
 			);
 		if (!notificationPromptEnabled.value) {
 			return;
@@ -122,9 +129,9 @@ export class TerminalIndicatorPrompt
 		const selection = await this.appShell.showInformationMessage(
 			Interpreters.terminalEnvVarCollectionPrompt.format(
 				environmentType,
-				terminalPromptName,
+				terminalPromptName
 			),
-			...prompts,
+			...prompts
 		);
 		if (!selection) {
 			return;

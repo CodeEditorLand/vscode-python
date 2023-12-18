@@ -81,7 +81,7 @@ export namespace PsProcessParser {
 		//   - whitespace
 		//   - args (might be empty)
 		const psEntry: RegExp = new RegExp(
-			`^\\s*([0-9]+)\\s+(.{${secondColumnCharacters - 1}})\\s+(.*)$`,
+			`^\\s*([0-9]+)\\s+(.{${secondColumnCharacters - 1}})\\s+(.*)$`
 		);
 		const matches = psEntry.exec(line);
 

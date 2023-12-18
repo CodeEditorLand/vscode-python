@@ -37,14 +37,17 @@ const ShellIntegrationShells = [
 export class TerminalDeactivateService implements ITerminalDeactivateService {
 	private readonly envVarScript = path.join(
 		_SCRIPTS_DIR,
-		"printEnvVariablesToFile.py",
+		"printEnvVariablesToFile.py"
 	);
 
 	constructor(
-        @inject(ITerminalManager) private readonly terminalManager: ITerminalManager,
-        @inject(IInterpreterService) private readonly interpreterService: IInterpreterService,
-        @inject(ITerminalHelper) private readonly terminalHelper: ITerminalHelper,
-    ) {}
+		@inject(ITerminalManager)
+		private readonly terminalManager: ITerminalManager,
+		@inject(IInterpreterService)
+		private readonly interpreterService: IInterpreterService,
+		@inject(ITerminalHelper)
+		private readonly terminalHelper: ITerminalHelper
+	) {}
 
 	@cache(-1, true)
 	public async initializeScriptParams(shell: string): Promise<void> {
@@ -72,22 +75,22 @@ export class TerminalDeactivateService implements ITerminalDeactivateService {
 		const command = this.terminalHelper.buildCommandForTerminal(
 			shellType,
 			interpreterPath,
-			[this.envVarScript, outputFile],
+			[this.envVarScript, outputFile]
 		);
 		terminal.sendText(command);
 		await waitForCondition(
 			checkIfFileHasBeenCreated,
 			30_000,
-			`"${outputFile}" file not created`,
+			`"${outputFile}" file not created`
 		);
 		traceVerbose(
-			`Time taken to get env vars using terminal is ${stopWatch.elapsedTime}ms`,
+			`Time taken to get env vars using terminal is ${stopWatch.elapsedTime}ms`
 		);
 	}
 
 	public async getScriptLocation(
 		shell: string,
-		resource: Resource,
+		resource: Resource
 	): Promise<string | undefined> {
 		const interpreter =
 			await this.interpreterService.getActiveInterpreter(resource);
@@ -105,7 +108,7 @@ export class TerminalDeactivateService implements ITerminalDeactivateService {
 		return path.join(
 			_SCRIPTS_DIR,
 			"deactivate",
-			this.getShellFolderName(shellType),
+			this.getShellFolderName(shellType)
 		);
 	}
 

@@ -43,21 +43,24 @@ export class ExtensionSurveyPrompt
 		virtualWorkspace: true,
 	};
 	constructor(
-        @inject(IApplicationShell) private appShell: IApplicationShell,
-        @inject(IBrowserService) private browserService: IBrowserService,
-        @inject(IPersistentStateFactory) private persistentState: IPersistentStateFactory,
-        @inject(IRandom) private random: IRandom,
-        @inject(IExperimentService) private experiments: IExperimentService,
-        @inject(IApplicationEnvironment) private appEnvironment: IApplicationEnvironment,
-        @inject(IPlatformService) private platformService: IPlatformService,
-        @optional() private sampleSizePerOneHundredUsers: number = 10,
-        @optional() private waitTimeToShowSurvey: number = WAIT_TIME_TO_SHOW_SURVEY,
-    ) {}
+		@inject(IApplicationShell) private appShell: IApplicationShell,
+		@inject(IBrowserService) private browserService: IBrowserService,
+		@inject(IPersistentStateFactory)
+		private persistentState: IPersistentStateFactory,
+		@inject(IRandom) private random: IRandom,
+		@inject(IExperimentService) private experiments: IExperimentService,
+		@inject(IApplicationEnvironment)
+		private appEnvironment: IApplicationEnvironment,
+		@inject(IPlatformService) private platformService: IPlatformService,
+		@optional() private sampleSizePerOneHundredUsers: number = 10,
+		@optional()
+		private waitTimeToShowSurvey: number = WAIT_TIME_TO_SHOW_SURVEY
+	) {}
 
 	public async activate(): Promise<void> {
 		if (
 			!(await this.experiments.inExperiment(
-				ShowExtensionSurveyPrompt.experiment,
+				ShowExtensionSurveyPrompt.experiment
 			))
 		) {
 			return;
@@ -68,12 +71,12 @@ export class ExtensionSurveyPrompt
 		}
 		setTimeout(
 			() => this.showSurvey().ignoreErrors(),
-			this.waitTimeToShowSurvey,
+			this.waitTimeToShowSurvey
 		);
 	}
 
 	@traceDecoratorError(
-		"Failed to check whether to display prompt for extension survey",
+		"Failed to check whether to display prompt for extension survey"
 	)
 	public shouldShowBanner(): boolean {
 		if (env.uiKind === UIKind?.Web) {
@@ -82,7 +85,7 @@ export class ExtensionSurveyPrompt
 		const doNotShowSurveyAgain =
 			this.persistentState.createGlobalPersistentState(
 				extensionSurveyStateKeys.doNotShowAgain,
-				false,
+				false
 			);
 		if (doNotShowSurveyAgain.value) {
 			return false;
@@ -91,7 +94,7 @@ export class ExtensionSurveyPrompt
 			this.persistentState.createGlobalPersistentState(
 				extensionSurveyStateKeys.disableSurveyForTime,
 				false,
-				timeToDisableSurveyFor,
+				timeToDisableSurveyFor
 			);
 		if (isSurveyDisabledForTimeState.value) {
 			return false;
@@ -115,7 +118,7 @@ export class ExtensionSurveyPrompt
 			["Yes", "Maybe later", "Don't show again"];
 		const selection = await this.appShell.showInformationMessage(
 			ExtensionSurveyBanner.bannerMessage,
-			...prompts,
+			...prompts
 		);
 		sendTelemetryEvent(EventName.EXTENSION_SURVEY_PROMPT, undefined, {
 			selection: selection
@@ -132,7 +135,7 @@ export class ExtensionSurveyPrompt
 				.createGlobalPersistentState(
 					extensionSurveyStateKeys.disableSurveyForTime,
 					false,
-					timeToDisableSurveyFor,
+					timeToDisableSurveyFor
 				)
 				.updateValue(true);
 		} else if (selection === Common.doNotShowAgain) {
@@ -140,7 +143,7 @@ export class ExtensionSurveyPrompt
 			await this.persistentState
 				.createGlobalPersistentState(
 					extensionSurveyStateKeys.doNotShowAgain,
-					false,
+					false
 				)
 				.updateValue(true);
 		}

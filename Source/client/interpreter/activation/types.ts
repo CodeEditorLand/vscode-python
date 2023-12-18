@@ -8,21 +8,21 @@ import { EnvironmentVariables } from "../../common/variables/types";
 import { PythonEnvironment } from "../../pythonEnvironments/info";
 
 export const IEnvironmentActivationService = Symbol(
-	"IEnvironmentActivationService",
+	"IEnvironmentActivationService"
 );
 export interface IEnvironmentActivationService {
 	getProcessEnvironmentVariables(
 		resource: Resource,
-		shell?: string,
+		shell?: string
 	): Promise<EnvironmentVariables>;
 	getActivatedEnvironmentVariables(
 		resource: Resource,
 		interpreter?: PythonEnvironment,
 		allowExceptions?: boolean,
-		shell?: string,
+		shell?: string
 	): Promise<NodeJS.ProcessEnv | undefined>;
 	getEnvironmentActivationShellCommands(
 		resource: Resource,
-		interpreter?: PythonEnvironment,
+		interpreter?: PythonEnvironment
 	): Promise<string[] | undefined>;
 }

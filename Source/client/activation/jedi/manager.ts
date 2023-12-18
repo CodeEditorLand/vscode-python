@@ -45,7 +45,7 @@ export class JediLanguageServerManager implements ILanguageServerManager {
 		private readonly serviceContainer: IServiceContainer,
 		private readonly analysisOptions: ILanguageServerAnalysisOptions,
 		private readonly languageServerProxy: ILanguageServerProxy,
-		commandManager: ICommandManager,
+		commandManager: ICommandManager
 	) {
 		if (JediLanguageServerManager.commandDispose) {
 			JediLanguageServerManager.commandDispose.dispose();
@@ -71,14 +71,14 @@ export class JediLanguageServerManager implements ILanguageServerManager {
 	@traceDecoratorError("Failed to start language server")
 	public async start(
 		resource: Resource,
-		interpreter: PythonEnvironment | undefined,
+		interpreter: PythonEnvironment | undefined
 	): Promise<void> {
 		this.resource = resource;
 		this.interpreter = interpreter;
 		this.analysisOptions.onDidChange(
 			this.restartLanguageServerDebounced,
 			this,
-			this.disposables,
+			this.disposables
 		);
 
 		try {
@@ -88,14 +88,14 @@ export class JediLanguageServerManager implements ILanguageServerManager {
 					EXTENSION_ROOT_DIR,
 					"pythonFiles",
 					"jedilsp_requirements",
-					"requirements.txt",
+					"requirements.txt"
 				),
-				"utf-8",
+				"utf-8"
 			);
 
 			// Search using a regex in the text
 			const match = /jedi-language-server==([0-9\.]*)/.exec(
-				requirementsTxt,
+				requirementsTxt
 			);
 			if (match && match.length === 2) {
 				[, this.lsVersion] = match;
@@ -141,14 +141,14 @@ export class JediLanguageServerManager implements ILanguageServerManager {
 		undefined,
 		true,
 		undefined,
-		JediLanguageServerManager.versionTelemetryProps,
+		JediLanguageServerManager.versionTelemetryProps
 	)
 	@traceDecoratorVerbose("Starting language server")
 	protected async startLanguageServer(): Promise<void> {
 		const options = await this.analysisOptions.getAnalysisOptions();
 		this.middleware = new JediLanguageClientMiddleware(
 			this.serviceContainer,
-			this.lsVersion,
+			this.lsVersion
 		);
 		options.middleware = this.middleware;
 
@@ -161,7 +161,7 @@ export class JediLanguageServerManager implements ILanguageServerManager {
 		await this.languageServerProxy.start(
 			this.resource,
 			this.interpreter,
-			options,
+			options
 		);
 	}
 

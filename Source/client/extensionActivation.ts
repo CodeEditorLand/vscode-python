@@ -72,7 +72,7 @@ import { logAndNotifyOnLegacySettings } from "./logging/settingLogs";
 export async function activateComponents(
 	// `ext` is passed to any extra activation funcs.
 	ext: ExtensionState,
-	components: Components,
+	components: Components
 ): Promise<ActivationResult[]> {
 	// Note that each activation returns a promise that resolves
 	// when that activation completes.  However, it might have started
@@ -104,15 +104,15 @@ export async function activateComponents(
 
 export function activateFeatures(
 	ext: ExtensionState,
-	_components: Components,
+	_components: Components
 ): void {
 	const interpreterQuickPick: IInterpreterQuickPick =
 		ext.legacyIOC.serviceContainer.get<IInterpreterQuickPick>(
-			IInterpreterQuickPick,
+			IInterpreterQuickPick
 		);
 	const interpreterPathService: IInterpreterPathService =
 		ext.legacyIOC.serviceContainer.get<IInterpreterPathService>(
-			IInterpreterPathService,
+			IInterpreterPathService
 		);
 	const pathUtils =
 		ext.legacyIOC.serviceContainer.get<IPathUtils>(IPathUtils);
@@ -120,7 +120,7 @@ export function activateFeatures(
 		ext.disposables,
 		interpreterQuickPick,
 		interpreterPathService,
-		pathUtils,
+		pathUtils
 	);
 }
 
@@ -144,12 +144,12 @@ async function activateLegacy(ext: ExtensionState): Promise<ActivationResult> {
 	await setExtensionInstallTelemetryProperties(fs);
 
 	const applicationEnv = serviceManager.get<IApplicationEnvironment>(
-		IApplicationEnvironment,
+		IApplicationEnvironment
 	);
 	const { enableProposedApi } = applicationEnv.packageJson;
 	serviceManager.addSingletonInstance<boolean>(
 		UseProposedApi,
-		enableProposedApi,
+		enableProposedApi
 	);
 	// Feature specific registrations.
 	unitTestsRegisterTypes(serviceManager);
@@ -182,7 +182,7 @@ async function activateLegacy(ext: ExtensionState): Promise<ActivationResult> {
 
 	languages.setLanguageConfiguration(
 		PYTHON_LANGUAGE,
-		getLanguageConfiguration(),
+		getLanguageConfiguration()
 	);
 	if (workspaceService.isTrusted) {
 		const interpreterManager =
@@ -190,12 +190,12 @@ async function activateLegacy(ext: ExtensionState): Promise<ActivationResult> {
 		interpreterManager.initialize();
 		if (!workspaceService.isVirtualWorkspace) {
 			const handlers = serviceManager.getAll<IDebugSessionEventHandlers>(
-				IDebugSessionEventHandlers,
+				IDebugSessionEventHandlers
 			);
 			const dispatcher = new DebugSessionEventDispatcher(
 				handlers,
 				DebugService.instance,
-				disposables,
+				disposables
 			);
 			dispatcher.registerEventHandlers();
 
@@ -203,14 +203,14 @@ async function activateLegacy(ext: ExtensionState): Promise<ActivationResult> {
 				serviceManager.get<ILogOutputChannel>(ILogOutputChannel);
 			disposables.push(
 				cmdManager.registerCommand(Commands.ViewOutput, () =>
-					outputChannel.show(),
-				),
+					outputChannel.show()
+				)
 			);
 			cmdManager
 				.executeCommand(
 					"setContext",
 					"python.vscode.channel",
-					applicationEnv.channel,
+					applicationEnv.channel
 				)
 				.then(noop, noop);
 
@@ -238,8 +238,8 @@ async function activateLegacy(ext: ExtensionState): Promise<ActivationResult> {
 					disposables.push(
 						debug.registerDebugConfigurationProvider(
 							DebuggerTypeName,
-							debugConfigProvider,
-						),
+							debugConfigProvider
+						)
 					);
 				});
 
@@ -248,10 +248,10 @@ async function activateLegacy(ext: ExtensionState): Promise<ActivationResult> {
 				debug.registerDebugConfigurationProvider(
 					DebuggerTypeName,
 					serviceContainer.get<DynamicPythonDebugConfigurationService>(
-						IDynamicDebugConfigurationService,
+						IDynamicDebugConfigurationService
 					),
-					DebugConfigurationProviderTriggerKind.Dynamic,
-				),
+					DebugConfigurationProviderTriggerKind.Dynamic
+				)
 			);
 
 			logAndNotifyOnLegacySettings();
@@ -263,7 +263,7 @@ async function activateLegacy(ext: ExtensionState): Promise<ActivationResult> {
 	// "activate" everything else
 
 	const manager = serviceContainer.get<IExtensionActivationManager>(
-		IExtensionActivationManager,
+		IExtensionActivationManager
 	);
 	disposables.push(manager);
 

@@ -37,7 +37,7 @@ gulp.task("compileCore", (done) => {
 		})
 		.js.pipe(gulp.dest("out"))
 		.on("finish", () =>
-			failed ? done(new Error("TypeScript compilation errors")) : done(),
+			failed ? done(new Error("TypeScript compilation errors")) : done()
 		);
 });
 
@@ -59,7 +59,7 @@ gulp.task("compileApi", (done) => {
 gulp.task("compile", gulp.series("compileCore", "compileApi"));
 
 gulp.task("precommit", (done) =>
-	run({ exitOnError: true, mode: "staged" }, done),
+	run({ exitOnError: true, mode: "staged" }, done)
 );
 
 gulp.task("output:clean", () => del(["coverage"]));
@@ -81,13 +81,13 @@ const webpackEnv = { NODE_OPTIONS: "--max_old_space_size=9096" };
 
 async function buildWebPackForDevOrProduction(
 	configFile,
-	configNameForProductionBuilds,
+	configNameForProductionBuilds
 ) {
 	if (configNameForProductionBuilds) {
 		await buildWebPack(
 			configNameForProductionBuilds,
 			["--config", configFile],
-			webpackEnv,
+			webpackEnv
 		);
 	} else {
 		await spawnAsync(
@@ -101,7 +101,7 @@ async function buildWebPackForDevOrProduction(
 				"--mode",
 				"production",
 			],
-			webpackEnv,
+			webpackEnv
 		);
 	}
 }
@@ -109,15 +109,15 @@ gulp.task("webpack", async () => {
 	// Build node_modules.
 	await buildWebPackForDevOrProduction(
 		"./build/webpack/webpack.extension.dependencies.config.js",
-		"production",
+		"production"
 	);
 	await buildWebPackForDevOrProduction(
 		"./build/webpack/webpack.extension.config.js",
-		"extension",
+		"extension"
 	);
 	await buildWebPackForDevOrProduction(
 		"./build/webpack/webpack.extension.browser.config.js",
-		"browser",
+		"browser"
 	);
 });
 
@@ -132,16 +132,16 @@ async function addExtensionPackDependencies() {
 	const packageJsonContents = await fsExtra.readFile("package.json", "utf-8");
 	const packageJson = JSON.parse(packageJsonContents);
 	packageJson.extensionPack = ["ms-python.vscode-pylance"].concat(
-		packageJson.extensionPack ? packageJson.extensionPack : [],
+		packageJson.extensionPack ? packageJson.extensionPack : []
 	);
 	// Remove potential duplicates.
 	packageJson.extensionPack = packageJson.extensionPack.filter(
-		(item, index) => packageJson.extensionPack.indexOf(item) === index,
+		(item, index) => packageJson.extensionPack.indexOf(item) === index
 	);
 	await fsExtra.writeFile(
 		"package.json",
 		JSON.stringify(packageJson, null, 4),
-		"utf-8",
+		"utf-8"
 	);
 }
 
@@ -162,7 +162,7 @@ async function updateBuildNumber(args) {
 		// Edit the version number from the package.json
 		const packageJsonContents = await fsExtra.readFile(
 			"package.json",
-			"utf-8",
+			"utf-8"
 		);
 		const packageJson = JSON.parse(packageJsonContents);
 
@@ -182,18 +182,18 @@ async function updateBuildNumber(args) {
 		await fsExtra.writeFile(
 			"package.json",
 			JSON.stringify(packageJson, null, 4),
-			"utf-8",
+			"utf-8"
 		);
 
 		// Update the changelog.md if we are told to (this should happen on the release branch)
 		if (args.updateChangelog) {
 			const changeLogContents = await fsExtra.readFile(
 				"CHANGELOG.md",
-				"utf-8",
+				"utf-8"
 			);
 			const fixedContents = changeLogContents.replace(
 				/##\s*(\d+)\.(\d+)\.(\d+)\s*\(/,
-				`## $1.$2.${buildNumberPortion} (`,
+				`## $1.$2.${buildNumberPortion} (`
 			);
 
 			// Write back to changelog.md
@@ -207,7 +207,7 @@ async function updateBuildNumber(args) {
 async function buildWebPack(webpackConfigName, args, env) {
 	// Remember to perform a case insensitive search.
 	const allowedWarnings = getAllowedWarningsForWebPack(webpackConfigName).map(
-		(item) => item.toLowerCase(),
+		(item) => item.toLowerCase()
 	);
 	const stdOut = await spawnAsync(
 		"npm",
@@ -218,7 +218,7 @@ async function buildWebPack(webpackConfigName, args, env) {
 			...args,
 			...["--mode", "production", "--devtool", "source-map"],
 		],
-		env,
+		env
 	);
 	const stdOutLines = stdOut
 		.split(os.EOL)
@@ -230,20 +230,20 @@ async function buildWebPack(webpackConfigName, args, env) {
 		.filter(
 			(item) =>
 				allowedWarnings.findIndex((allowedWarning) =>
-					item.toLowerCase().startsWith(allowedWarning.toLowerCase()),
-				) === -1,
+					item.toLowerCase().startsWith(allowedWarning.toLowerCase())
+				) === -1
 		);
 	const errors = stdOutLines.some((item) => item.startsWith("ERROR in"));
 	if (errors) {
 		throw new Error(
 			`Errors in ${webpackConfigName}, \n${warnings.join(
-				", ",
-			)}\n\n${stdOut}`,
+				", "
+			)}\n\n${stdOut}`
 		);
 	}
 	if (warnings.length > 0) {
 		throw new Error(
-			`Warnings in ${webpackConfigName}, Check gulpfile.js to see if the warning should be allowed., \n\n${stdOut}`,
+			`Warnings in ${webpackConfigName}, Check gulpfile.js to see if the warning should be allowed., \n\n${stdOut}`
 		);
 	}
 }
@@ -290,7 +290,7 @@ gulp.task("renameSourceMaps", async () => {
 		__dirname,
 		"out",
 		"client",
-		"extension.js.map",
+		"extension.js.map"
 	);
 	await fsExtra.rename(extensionSourceMap, `${extensionSourceMap}.disabled`);
 });
@@ -335,33 +335,31 @@ function spawnAsync(command, args, env, rejectOnStdErr = false) {
 
 function hasNativeDependencies() {
 	let nativeDependencies = nativeDependencyChecker.check(
-		path.join(__dirname, "node_modules"),
+		path.join(__dirname, "node_modules")
 	);
 	if (!Array.isArray(nativeDependencies) || nativeDependencies.length === 0) {
 		return false;
 	}
 	const dependencies = JSON.parse(
-		spawn.sync("npm", ["ls", "--json", "--prod"]).stdout.toString(),
+		spawn.sync("npm", ["ls", "--json", "--prod"]).stdout.toString()
 	);
 	const jsonProperties = Object.keys(flat.flatten(dependencies));
 	nativeDependencies = _.flatMap(nativeDependencies, (item) =>
 		path
 			.dirname(
 				item.substring(
-					item.indexOf("node_modules") + "node_modules".length,
-				),
+					item.indexOf("node_modules") + "node_modules".length
+				)
 			)
-			.split(path.sep),
+			.split(path.sep)
 	)
 		.filter((item) => item.length > 0)
 		.filter((item) => item !== "fsevents")
 		.filter(
 			(item) =>
 				jsonProperties.findIndex((flattenedDependency) =>
-					flattenedDependency.endsWith(
-						`dependencies.${item}.version`,
-					),
-				) >= 0,
+					flattenedDependency.endsWith(`dependencies.${item}.version`)
+				) >= 0
 		);
 	if (nativeDependencies.length > 0) {
 		console.error("Native dependencies detected", nativeDependencies);

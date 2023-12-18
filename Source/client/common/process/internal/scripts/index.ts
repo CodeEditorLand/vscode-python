@@ -40,7 +40,7 @@ export type InterpreterInfoJson = {
 
 export const OUTPUT_MARKER_SCRIPT = path.join(
 	_SCRIPTS_DIR,
-	"get_output_via_markers.py",
+	"get_output_via_markers.py"
 );
 
 export function interpreterInfo(): [
@@ -99,7 +99,7 @@ export function printEnvVariables(): [
 export function shell_exec(
 	command: string,
 	lockfile: string,
-	shellArgs: string[],
+	shellArgs: string[]
 ): string[] {
 	const script = path.join(SCRIPTS_DIR, "shell_exec.py");
 	// We don't bother with a "parse" function since the output
@@ -127,7 +127,7 @@ export function pytestlauncher(testArgs: string[]): string[] {
 	const script = path.join(
 		SCRIPTS_DIR,
 		"vscode_pytest",
-		"run_pytest_script.py",
+		"run_pytest_script.py"
 	);
 	// There is no output to parse, so we do not return a function.
 	return [script, ...testArgs];

@@ -15,12 +15,15 @@ import { identifyShellFromShellPath } from "../terminal/shellDetectors/baseShell
 
 @injectable()
 export class ProcessLogger implements IProcessLogger {
-	constructor(@inject(IWorkspaceService) private readonly workspaceService: IWorkspaceService) {}
+	constructor(
+		@inject(IWorkspaceService)
+		private readonly workspaceService: IWorkspaceService
+	) {}
 
 	public logProcess(
 		fileOrCommand: string,
 		args?: string[],
-		options?: SpawnOptions,
+		options?: SpawnOptions
 	) {
 		if (
 			!isTestExecution() &&
@@ -61,7 +64,7 @@ export class ProcessLogger implements IProcessLogger {
 			command = replaceMatchesWithCharacter(
 				command,
 				this.workspaceService.workspaceFolders[0].uri.fsPath,
-				".",
+				"."
 			);
 		}
 		const home = getUserHomeDir();
@@ -78,7 +81,7 @@ export class ProcessLogger implements IProcessLogger {
 function replaceMatchesWithCharacter(
 	original: string,
 	match: string,
-	character: string,
+	character: string
 ): string {
 	// Backslashes, plus signs, brackets and other characters have special meaning in regexes,
 	// we need to escape using an extra backlash so it's not considered special.

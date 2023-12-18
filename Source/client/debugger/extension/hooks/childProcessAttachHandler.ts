@@ -26,12 +26,13 @@ export class ChildProcessAttachEventHandler
 	implements IDebugSessionEventHandlers
 {
 	constructor(
-        @inject(IChildProcessAttachService) private readonly childProcessAttachService: IChildProcessAttachService,
-    ) {}
+		@inject(IChildProcessAttachService)
+		private readonly childProcessAttachService: IChildProcessAttachService
+	) {}
 
 	@swallowExceptions("Handle child process launch")
 	public async handleCustomEvent(
-		event: DebugSessionCustomEvent,
+		event: DebugSessionCustomEvent
 	): Promise<void> {
 		if (!event || event.session.configuration.type !== DebuggerTypeName) {
 			return;

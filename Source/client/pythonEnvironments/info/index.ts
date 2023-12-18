@@ -93,7 +93,7 @@ export type PythonEnvironment = InterpreterInformation & {
  * Convert the Python environment type to a user-facing name.
  */
 export function getEnvironmentTypeName(
-	environmentType: EnvironmentType,
+	environmentType: EnvironmentType
 ): string {
 	switch (environmentType) {
 		case EnvironmentType.Conda: {

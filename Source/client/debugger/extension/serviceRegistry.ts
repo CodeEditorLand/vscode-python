@@ -42,31 +42,31 @@ import {
 export function registerTypes(serviceManager: IServiceManager): void {
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
-		LaunchJsonCompletionProvider,
+		LaunchJsonCompletionProvider
 	);
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
-		InterpreterPathCommand,
+		InterpreterPathCommand
 	);
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
-		LaunchJsonUpdaterService,
+		LaunchJsonUpdaterService
 	);
 	serviceManager.addSingleton<IDebugConfigurationService>(
 		IDebugConfigurationService,
-		PythonDebugConfigurationService,
+		PythonDebugConfigurationService
 	);
 	serviceManager.addSingleton<IDynamicDebugConfigurationService>(
 		IDynamicDebugConfigurationService,
-		DynamicPythonDebugConfigurationService,
+		DynamicPythonDebugConfigurationService
 	);
 	serviceManager.addSingleton<IChildProcessAttachService>(
 		IChildProcessAttachService,
-		ChildProcessAttachService,
+		ChildProcessAttachService
 	);
 	serviceManager.addSingleton<IDebugSessionEventHandlers>(
 		IDebugSessionEventHandlers,
-		ChildProcessAttachEventHandler,
+		ChildProcessAttachEventHandler
 	);
 	serviceManager.addSingleton<
 		IDebugConfigurationResolver<LaunchRequestArguments>
@@ -76,30 +76,30 @@ export function registerTypes(serviceManager: IServiceManager): void {
 	>(IDebugConfigurationResolver, AttachConfigurationResolver, "attach");
 	serviceManager.addSingleton<IDebugEnvironmentVariablesService>(
 		IDebugEnvironmentVariablesService,
-		DebugEnvironmentVariablesHelper,
+		DebugEnvironmentVariablesHelper
 	);
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
-		DebugAdapterActivator,
+		DebugAdapterActivator
 	);
 	serviceManager.addSingleton<IDebugAdapterDescriptorFactory>(
 		IDebugAdapterDescriptorFactory,
-		DebugAdapterDescriptorFactory,
+		DebugAdapterDescriptorFactory
 	);
 	serviceManager.addSingleton<IDebugSessionLoggingFactory>(
 		IDebugSessionLoggingFactory,
-		DebugSessionLoggingFactory,
+		DebugSessionLoggingFactory
 	);
 	serviceManager.addSingleton<IOutdatedDebuggerPromptFactory>(
 		IOutdatedDebuggerPromptFactory,
-		OutdatedDebuggerPromptFactory,
+		OutdatedDebuggerPromptFactory
 	);
 	serviceManager.addSingleton<IAttachProcessProviderFactory>(
 		IAttachProcessProviderFactory,
-		AttachProcessProviderFactory,
+		AttachProcessProviderFactory
 	);
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
-		DebugCommands,
+		DebugCommands
 	);
 }

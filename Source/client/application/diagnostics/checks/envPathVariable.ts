@@ -39,7 +39,7 @@ class InvalidEnvironmentPathVariableDiagnostic extends BaseDiagnostic {
 			message,
 			DiagnosticSeverity.Warning,
 			DiagnosticScope.Global,
-			resource,
+			resource
 		);
 	}
 }
@@ -55,14 +55,14 @@ export class EnvironmentPathVariableDiagnosticsService extends BaseDiagnosticsSe
 
 	constructor(
 		@inject(IServiceContainer) serviceContainer: IServiceContainer,
-		@inject(IDisposableRegistry) disposableRegistry: IDisposableRegistry,
+		@inject(IDisposableRegistry) disposableRegistry: IDisposableRegistry
 	) {
 		super(
 			[DiagnosticCodes.InvalidEnvironmentPathVariableDiagnostic],
 			serviceContainer,
 			disposableRegistry,
 			true,
-			true,
+			true
 		);
 		this.platform =
 			this.serviceContainer.get<IPlatformService>(IPlatformService);
@@ -77,11 +77,11 @@ export class EnvironmentPathVariableDiagnosticsService extends BaseDiagnosticsSe
 			this.doesPathVariableHaveInvalidEntries()
 		) {
 			const env = this.serviceContainer.get<IApplicationEnvironment>(
-				IApplicationEnvironment,
+				IApplicationEnvironment
 			);
 			const message = InvalidEnvPathVariableMessage.format(
 				this.platform.pathVariableName,
-				env.extensionName,
+				env.extensionName
 			);
 			return [
 				new InvalidEnvironmentPathVariableDiagnostic(message, resource),
@@ -101,7 +101,7 @@ export class EnvironmentPathVariableDiagnosticsService extends BaseDiagnosticsSe
 		}
 		const commandFactory =
 			this.serviceContainer.get<IDiagnosticsCommandFactory>(
-				IDiagnosticsCommandFactory,
+				IDiagnosticsCommandFactory
 			);
 		const options = [
 			{

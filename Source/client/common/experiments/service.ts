@@ -55,47 +55,53 @@ export class ExperimentService implements IExperimentService {
 	private readonly experimentationService?: IExperimentationService;
 
 	constructor(
-        @inject(IWorkspaceService) readonly workspaceService: IWorkspaceService,
-        @inject(IApplicationEnvironment) private readonly appEnvironment: IApplicationEnvironment,
-        @inject(IPersistentStateFactory) private readonly persistentState: IPersistentStateFactory,
-    ) {
-        const settings = this.workspaceService.getConfiguration('python');
-        // Users can only opt in or out of experiment groups, not control groups.
-        const optInto = settings.get<string[]>('experiments.optInto') || [];
-        const optOutFrom = settings.get<string[]>('experiments.optOutFrom') || [];
-        this._optInto = optInto.filter((exp) => !exp.endsWith('control'));
-        this._optOutFrom = optOutFrom.filter((exp) => !exp.endsWith('control'));
+		@inject(IWorkspaceService) readonly workspaceService: IWorkspaceService,
+		@inject(IApplicationEnvironment)
+		private readonly appEnvironment: IApplicationEnvironment,
+		@inject(IPersistentStateFactory)
+		private readonly persistentState: IPersistentStateFactory
+	) {
+		const settings = this.workspaceService.getConfiguration("python");
+		// Users can only opt in or out of experiment groups, not control groups.
+		const optInto = settings.get<string[]>("experiments.optInto") || [];
+		const optOutFrom =
+			settings.get<string[]>("experiments.optOutFrom") || [];
+		this._optInto = optInto.filter((exp) => !exp.endsWith("control"));
+		this._optOutFrom = optOutFrom.filter((exp) => !exp.endsWith("control"));
 
-        // If users opt out of all experiments we treat it as disabling them.
-        // The `experiments.enabled` setting also needs to be explicitly disabled, default to true otherwise.
-        if (this._optOutFrom.includes('All') || settings.get<boolean>('experiments.enabled') === false) {
-            this.enabled = false;
-        } else {
-            this.enabled = true;
-        }
+		// If users opt out of all experiments we treat it as disabling them.
+		// The `experiments.enabled` setting also needs to be explicitly disabled, default to true otherwise.
+		if (
+			this._optOutFrom.includes("All") ||
+			settings.get<boolean>("experiments.enabled") === false
+		) {
+			this.enabled = false;
+		} else {
+			this.enabled = true;
+		}
 
-        if (!this.enabled) {
-            return;
-        }
+		if (!this.enabled) {
+			return;
+		}
 
-        let targetPopulation: TargetPopulation;
+		let targetPopulation: TargetPopulation;
 
-        if (this.appEnvironment.extensionChannel === 'insiders') {
-            targetPopulation = TargetPopulation.Insiders;
-        } else {
-            targetPopulation = TargetPopulation.Public;
-        }
+		if (this.appEnvironment.extensionChannel === "insiders") {
+			targetPopulation = TargetPopulation.Insiders;
+		} else {
+			targetPopulation = TargetPopulation.Public;
+		}
 
-        const telemetryReporter = new ExperimentationTelemetry();
+		const telemetryReporter = new ExperimentationTelemetry();
 
-        this.experimentationService = getExperimentationService(
-            PVSC_EXTENSION_ID,
-            this.appEnvironment.packageJson.version!,
-            targetPopulation,
-            telemetryReporter,
-            this.experiments.storage,
-        );
-    }
+		this.experimentationService = getExperimentationService(
+			PVSC_EXTENSION_ID,
+			this.appEnvironment.packageJson.version!,
+			targetPopulation,
+			telemetryReporter,
+			this.experiments.storage
+		);
+	}
 
 	public async activate(): Promise<void> {
 		if (this.experimentationService) {
@@ -116,7 +122,7 @@ export class ExperimentService implements IExperimentService {
 				await this.experimentationService.initialFetch;
 				sendTelemetryEvent(
 					EventName.PYTHON_EXPERIMENTS_INIT_PERFORMANCE,
-					Date.now() - initStart,
+					Date.now() - initStart
 				);
 			}
 			this.logExperiments();
@@ -124,7 +130,7 @@ export class ExperimentService implements IExperimentService {
 		sendOptInOptOutTelemetry(
 			this._optInto,
 			this._optOutFrom,
-			this.appEnvironment.packageJson,
+			this.appEnvironment.packageJson
 		);
 	}
 
@@ -155,7 +161,7 @@ export class ExperimentService implements IExperimentService {
 			// synced with the experiment server.
 			this.experimentationService.getTreatmentVariable(
 				EXP_CONFIG_ID,
-				experiment,
+				experiment
 			);
 			return true;
 		}
@@ -165,14 +171,14 @@ export class ExperimentService implements IExperimentService {
 		const treatmentVariable =
 			this.experimentationService.getTreatmentVariable(
 				EXP_CONFIG_ID,
-				experiment,
+				experiment
 			);
 
 		return treatmentVariable === true;
 	}
 
 	public async getExperimentValue<T extends boolean | number | string>(
-		experiment: string,
+		experiment: string
 	): Promise<T | undefined> {
 		if (
 			!this.experimentationService ||
@@ -184,7 +190,7 @@ export class ExperimentService implements IExperimentService {
 
 		return this.experimentationService.getTreatmentVariable<T>(
 			EXP_CONFIG_ID,
-			experiment,
+			experiment
 		);
 	}
 
@@ -210,7 +216,7 @@ export class ExperimentService implements IExperimentService {
 
 		if (experimentsDisabled) {
 			traceLog(
-				"Experiments are disabled, only manually opted experiments are active.",
+				"Experiments are disabled, only manually opted experiments are active."
 			);
 		}
 
@@ -235,8 +241,7 @@ export class ExperimentService implements IExperimentService {
 		// Log experiments that users manually opt out, these are experiments which are added using the exp framework.
 		this._optOutFrom
 			.filter(
-				(exp) =>
-					exp !== "All" && exp.toLowerCase().startsWith("python"),
+				(exp) => exp !== "All" && exp.toLowerCase().startsWith("python")
 			)
 			.forEach((exp) => {
 				traceLog(l10n.t("Experiment '{0}' is inactive", exp));
@@ -245,8 +250,7 @@ export class ExperimentService implements IExperimentService {
 		// Log experiments that users manually opt into, these are experiments which are added using the exp framework.
 		this._optInto
 			.filter(
-				(exp) =>
-					exp !== "All" && exp.toLowerCase().startsWith("python"),
+				(exp) => exp !== "All" && exp.toLowerCase().startsWith("python")
 			)
 			.forEach((exp) => {
 				traceLog(l10n.t("Experiment '{0}' is active", exp));
@@ -283,7 +287,7 @@ export class ExperimentService implements IExperimentService {
  */
 function readEnumValues(
 	setting: string,
-	packageJson: Record<string, unknown>,
+	packageJson: Record<string, unknown>
 ): string[] {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const settingProperties = (packageJson.contributes as any).configuration
@@ -307,22 +311,22 @@ function readEnumValues(
 function sendOptInOptOutTelemetry(
 	optedIn: string[],
 	optedOut: string[],
-	packageJson: Record<string, unknown>,
+	packageJson: Record<string, unknown>
 ): void {
 	const optedInEnumValues = readEnumValues(
 		"python.experiments.optInto",
-		packageJson,
+		packageJson
 	);
 	const optedOutEnumValues = readEnumValues(
 		"python.experiments.optOutFrom",
-		packageJson,
+		packageJson
 	);
 
 	const sanitizedOptedIn = optedIn.filter((exp) =>
-		optedInEnumValues.includes(exp),
+		optedInEnumValues.includes(exp)
 	);
 	const sanitizedOptedOut = optedOut.filter((exp) =>
-		optedOutEnumValues.includes(exp),
+		optedOutEnumValues.includes(exp)
 	);
 
 	JSON.stringify(sanitizedOptedIn.sort());
@@ -333,6 +337,6 @@ function sendOptInOptOutTelemetry(
 		{
 			optedInto: JSON.stringify(sanitizedOptedIn.sort()),
 			optedOutFrom: JSON.stringify(sanitizedOptedOut.sort()),
-		},
+		}
 	);
 }

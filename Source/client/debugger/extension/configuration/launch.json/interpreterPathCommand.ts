@@ -21,20 +21,21 @@ export class InterpreterPathCommand
 	};
 
 	constructor(
-        @inject(IInterpreterService) private readonly interpreterService: IInterpreterService,
-        @inject(IDisposableRegistry) private readonly disposables: IDisposable[],
-    ) {}
+		@inject(IInterpreterService)
+		private readonly interpreterService: IInterpreterService,
+		@inject(IDisposableRegistry) private readonly disposables: IDisposable[]
+	) {}
 
 	public async activate(): Promise<void> {
 		this.disposables.push(
 			registerCommand(Commands.GetSelectedInterpreterPath, (args) =>
-				this._getSelectedInterpreterPath(args),
-			),
+				this._getSelectedInterpreterPath(args)
+			)
 		);
 	}
 
 	public async _getSelectedInterpreterPath(
-		args: { workspaceFolder: string } | string[],
+		args: { workspaceFolder: string } | string[]
 	): Promise<string> {
 		// If `launch.json` is launching this command, `args.workspaceFolder` carries the workspaceFolder
 		// If `tasks.json` is launching this command, `args[1]` carries the workspaceFolder
@@ -60,7 +61,7 @@ export class InterpreterPathCommand
 		return (
 			(
 				await this.interpreterService.getActiveInterpreter(
-					workspaceFolderUri,
+					workspaceFolderUri
 				)
 			)?.path ?? "python"
 		);

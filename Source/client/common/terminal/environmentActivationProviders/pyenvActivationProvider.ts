@@ -17,7 +17,10 @@ import {
 export class PyEnvActivationCommandProvider
 	implements ITerminalActivationCommandProvider
 {
-	constructor(@inject(IServiceContainer) private readonly serviceContainer: IServiceContainer) {}
+	constructor(
+		@inject(IServiceContainer)
+		private readonly serviceContainer: IServiceContainer
+	) {}
 
 	// eslint-disable-next-line class-methods-use-this
 	public isShellSupported(_targetShell: TerminalShellType): boolean {
@@ -26,7 +29,7 @@ export class PyEnvActivationCommandProvider
 
 	public async getActivationCommands(
 		resource: Uri | undefined,
-		_: TerminalShellType,
+		_: TerminalShellType
 	): Promise<string[] | undefined> {
 		const interpreter = await this.serviceContainer
 			.get<IInterpreterService>(IInterpreterService)
@@ -46,7 +49,7 @@ export class PyEnvActivationCommandProvider
 
 	public async getActivationCommandsForInterpreter(
 		pythonPath: string,
-		_targetShell: TerminalShellType,
+		_targetShell: TerminalShellType
 	): Promise<string[] | undefined> {
 		const interpreter = await this.serviceContainer
 			.get<IInterpreterService>(IInterpreterService)

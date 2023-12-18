@@ -27,7 +27,7 @@ const PS_ERROR_SCREEN_BOGUS =
 
 function getDefaultOptions<T extends ShellOptions | SpawnOptions>(
 	options: T,
-	defaultEnv?: EnvironmentVariables,
+	defaultEnv?: EnvironmentVariables
 ): T {
 	const defaultOptions = { ...options };
 	const execOptions = defaultOptions as SpawnOptions;
@@ -68,7 +68,7 @@ export function shellExec(
 	command: string,
 	options: ShellOptions & { doNotLog?: boolean } = {},
 	defaultEnv?: EnvironmentVariables,
-	disposables?: Set<IDisposable>,
+	disposables?: Set<IDisposable>
 ): Promise<ExecutionResult<string>> {
 	const shellOptions = getDefaultOptions(options, defaultEnv);
 	if (!options.doNotLog) {
@@ -126,7 +126,7 @@ export function plainExec(
 	args: string[],
 	options: SpawnOptions & { doNotLog?: boolean } = {},
 	defaultEnv?: EnvironmentVariables,
-	disposables?: Set<IDisposable>,
+	disposables?: Set<IDisposable>
 ): Promise<ExecutionResult<string>> {
 	const spawnOptions = getDefaultOptions(options, defaultEnv);
 	const encoding = spawnOptions.encoding ? spawnOptions.encoding : "utf8";
@@ -167,7 +167,7 @@ export function plainExec(
 
 	if (options.token) {
 		internalDisposables.push(
-			options.token.onCancellationRequested(disposable.dispose),
+			options.token.onCancellationRequested(disposable.dispose)
 		);
 	}
 
@@ -247,7 +247,7 @@ export function execObservable(
 	args: string[],
 	options: SpawnOptions & { doNotLog?: boolean } = {},
 	defaultEnv?: EnvironmentVariables,
-	disposables?: Set<IDisposable>,
+	disposables?: Set<IDisposable>
 ): ObservableExecutionResult<string> {
 	const spawnOptions = getDefaultOptions(options, defaultEnv);
 	const encoding = spawnOptions.encoding ? spawnOptions.encoding : "utf8";
@@ -293,7 +293,7 @@ export function execObservable(
 						}
 						procExited = true;
 					}
-				}),
+				})
 			);
 		}
 

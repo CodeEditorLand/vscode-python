@@ -19,7 +19,7 @@ export const CREATE_ENV_TRIGGER_SETTING_PART = "createEnvironment.trigger";
 export const CREATE_ENV_TRIGGER_SETTING = `python.${CREATE_ENV_TRIGGER_SETTING_PART}`;
 
 export async function fileContainsInlineDependencies(
-	_uri: Uri,
+	_uri: Uri
 ): Promise<boolean> {
 	// This is a placeholder for the real implementation of inline dependencies support
 	// For now we don't detect anything. Once PEP-722/PEP-723 are accepted we can implement
@@ -28,7 +28,7 @@ export async function fileContainsInlineDependencies(
 }
 
 export async function hasRequirementFiles(
-	workspace: WorkspaceFolder,
+	workspace: WorkspaceFolder
 ): Promise<boolean> {
 	const files = await getPipRequirementsFiles(workspace);
 	const found = (files?.length ?? 0) > 0;
@@ -39,7 +39,7 @@ export async function hasRequirementFiles(
 }
 
 export async function hasKnownFiles(
-	workspace: WorkspaceFolder,
+	workspace: WorkspaceFolder
 ): Promise<boolean> {
 	const filePaths: string[] = [
 		"poetry.lock",
@@ -59,7 +59,7 @@ export async function hasKnownFiles(
 }
 
 export async function isGlobalPythonSelected(
-	workspace: WorkspaceFolder,
+	workspace: WorkspaceFolder
 ): Promise<boolean> {
 	const extension = getExtension<PythonExtension>(PVSC_EXTENSION_ID);
 	if (!extension) {
@@ -67,14 +67,14 @@ export async function isGlobalPythonSelected(
 	}
 	const extensionApi: PythonExtension = extension.exports as PythonExtension;
 	const interpreter = extensionApi.environments.getActiveEnvironmentPath(
-		workspace.uri,
+		workspace.uri
 	);
 	const details =
 		await extensionApi.environments.resolveEnvironment(interpreter);
 	const isGlobal = details?.environment === undefined;
 	if (isGlobal) {
 		traceVerbose(
-			`Selected python for [${workspace.uri.fsPath}] is [global] type: ${interpreter.path}`,
+			`Selected python for [${workspace.uri.fsPath}] is [global] type: ${interpreter.path}`
 		);
 	}
 	return isGlobal;
@@ -91,7 +91,7 @@ export function shouldPromptToCreateEnv(): boolean {
 	if (config) {
 		const value = config.get<string>(
 			CREATE_ENV_TRIGGER_SETTING_PART,
-			"off",
+			"off"
 		);
 		return value !== "off";
 	}
@@ -111,7 +111,7 @@ export function disableCreateEnvironmentTrigger(): void {
 		config.update(
 			"createEnvironment.trigger",
 			"off",
-			ConfigurationTarget.Global,
+			ConfigurationTarget.Global
 		);
 	}
 }

@@ -84,7 +84,7 @@ function getResolvers(): Map<
  * returned could still be invalid.
  */
 export async function resolveBasicEnv(
-	env: BasicEnvInfo,
+	env: BasicEnvInfo
 ): Promise<PythonEnvInfo> {
 	const { kind, source } = env;
 	const resolvers = getResolvers();
@@ -128,7 +128,7 @@ function getSearchLocation(env: PythonEnvInfo): Uri | undefined {
 	const isRootedEnv = folders.some(
 		(f) =>
 			isParentPath(env.executable.filename, f) ||
-			isParentPath(env.location, f),
+			isParentPath(env.location, f)
 	);
 	if (isRootedEnv) {
 		// For environments inside roots, we need to set search location so they can be queried accordingly.
@@ -149,12 +149,12 @@ async function updateEnvUsingRegistry(env: PythonEnvInfo): Promise<void> {
 	let interpreters = getRegistryInterpretersSync();
 	if (!interpreters) {
 		traceError(
-			"Expected registry interpreter cache to be initialized already",
+			"Expected registry interpreter cache to be initialized already"
 		);
 		interpreters = await getRegistryInterpreters(true);
 	}
 	const data = interpreters.find((i) =>
-		arePathsSame(i.interpreterPath, env.executable.filename),
+		arePathsSame(i.interpreterPath, env.executable.filename)
 	);
 	if (data) {
 		const versionStr =
@@ -180,13 +180,13 @@ async function updateEnvUsingRegistry(env: PythonEnvInfo): Promise<void> {
 		env.source = uniq(env.source.concat(PythonEnvSource.WindowsRegistry));
 	} else {
 		traceWarn(
-			"Expected registry to find the interpreter as source was set",
+			"Expected registry to find the interpreter as source was set"
 		);
 	}
 }
 
 async function resolveGloballyInstalledEnv(
-	env: BasicEnvInfo,
+	env: BasicEnvInfo
 ): Promise<PythonEnvInfo> {
 	const { executablePath } = env;
 	let version;
@@ -222,7 +222,7 @@ async function resolveCondaEnv(env: BasicEnvInfo): Promise<PythonEnvInfo> {
 	const conda = await Conda.getConda();
 	if (conda === undefined) {
 		traceWarn(
-			`${executablePath} identified as Conda environment even though Conda is not found`,
+			`${executablePath} identified as Conda environment even though Conda is not found`
 		);
 		// Environment could still be valid, resolve as a simple env.
 		env.kind = PythonEnvKind.Unknown;
@@ -302,7 +302,7 @@ async function resolvePyenvEnv(env: BasicEnvInfo): Promise<PythonEnvInfo> {
 		// without running python itself.
 		version: await getPythonVersionFromPath(
 			executablePath,
-			versionStrings?.pythonVer,
+			versionStrings?.pythonVer
 		),
 		org:
 			versionStrings && versionStrings.distro
@@ -319,7 +319,7 @@ async function resolvePyenvEnv(env: BasicEnvInfo): Promise<PythonEnvInfo> {
 }
 
 async function resolveActiveStateEnv(
-	env: BasicEnvInfo,
+	env: BasicEnvInfo
 ): Promise<PythonEnvInfo> {
 	const info = buildEnvInfo({
 		kind: env.kind,
@@ -349,7 +349,7 @@ async function isBaseCondaPyenvEnvironment(executablePath: string) {
 }
 
 async function resolveMicrosoftStoreEnv(
-	env: BasicEnvInfo,
+	env: BasicEnvInfo
 ): Promise<PythonEnvInfo> {
 	const { executablePath } = env;
 	return buildEnvInfo({

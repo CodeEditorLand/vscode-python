@@ -6,22 +6,22 @@ import { Event, Uri } from "vscode";
 export type EnvironmentVariables = Object & Record<string, string | undefined>;
 
 export const IEnvironmentVariablesService = Symbol(
-	"IEnvironmentVariablesService",
+	"IEnvironmentVariablesService"
 );
 
 export interface IEnvironmentVariablesService {
 	parseFile(
 		filePath?: string,
-		baseVars?: EnvironmentVariables,
+		baseVars?: EnvironmentVariables
 	): Promise<EnvironmentVariables | undefined>;
 	parseFileSync(
 		filePath?: string,
-		baseVars?: EnvironmentVariables,
+		baseVars?: EnvironmentVariables
 	): EnvironmentVariables | undefined;
 	mergeVariables(
 		source: EnvironmentVariables,
 		target: EnvironmentVariables,
-		options?: { overwrite?: boolean; mergeAll?: boolean },
+		options?: { overwrite?: boolean; mergeAll?: boolean }
 	): void;
 	appendPythonPath(
 		vars: EnvironmentVariables,
@@ -44,7 +44,7 @@ export interface ISystemVariables {
 	resolve(value: IStringDictionary<string>): IStringDictionary<string>;
 	resolve(value: IStringDictionary<string[]>): IStringDictionary<string[]>;
 	resolve(
-		value: IStringDictionary<IStringDictionary<string>>,
+		value: IStringDictionary<IStringDictionary<string>>
 	): IStringDictionary<IStringDictionary<string>>;
 	resolveAny<T>(value: T): T;
 
@@ -52,7 +52,7 @@ export interface ISystemVariables {
 }
 
 export const IEnvironmentVariablesProvider = Symbol(
-	"IEnvironmentVariablesProvider",
+	"IEnvironmentVariablesProvider"
 );
 
 export interface IEnvironmentVariablesProvider {

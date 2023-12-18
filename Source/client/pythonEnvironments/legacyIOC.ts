@@ -47,7 +47,7 @@ const convertedKinds = new Map(
 		[PythonEnvKind.Venv]: EnvironmentType.Venv,
 		[PythonEnvKind.VirtualEnvWrapper]: EnvironmentType.VirtualEnvWrapper,
 		[PythonEnvKind.ActiveState]: EnvironmentType.ActiveState,
-	}),
+	})
 );
 
 function convertEnvInfo(info: PythonEnvInfo): PythonEnvironment {
@@ -99,7 +99,7 @@ class ComponentAdapter implements IComponentAdapter {
 
 	constructor(
 		// The adapter only wraps one thing: the component API.
-		private readonly api: IDiscoveryAPI,
+		private readonly api: IDiscoveryAPI
 	) {
 		this.api.onChanged((event) => {
 			this.changed.fire({
@@ -113,7 +113,7 @@ class ComponentAdapter implements IComponentAdapter {
 
 	public triggerRefresh(
 		query?: PythonLocatorQuery,
-		options?: TriggerRefreshOptions,
+		options?: TriggerRefreshOptions
 	): Promise<void> {
 		return this.api.triggerRefresh(query, options);
 	}
@@ -135,7 +135,7 @@ class ComponentAdapter implements IComponentAdapter {
 	// Call callback if an environment gets created within the resource provided.
 	public onDidCreate(
 		resource: Resource,
-		callback: () => void,
+		callback: () => void
 	): vscode.Disposable {
 		const workspaceFolder = resource
 			? vscode.workspace.getWorkspaceFolder(resource)
@@ -145,13 +145,13 @@ class ComponentAdapter implements IComponentAdapter {
 				return;
 			}
 			traceVerbose(
-				`Received event ${JSON.stringify(e)} file change event`,
+				`Received event ${JSON.stringify(e)} file change event`
 			);
 			if (
 				e.type === FileChangeType.Created &&
 				isParentPath(
 					e.searchLocation.fsPath,
-					workspaceFolder.uri.fsPath,
+					workspaceFolder.uri.fsPath
 				)
 			) {
 				callback();
@@ -161,7 +161,7 @@ class ComponentAdapter implements IComponentAdapter {
 
 	// Implements IInterpreterHelper
 	public async getInterpreterInformation(
-		pythonPath: string,
+		pythonPath: string
 	): Promise<Partial<PythonEnvironment> | undefined> {
 		const env = await this.api.resolveEnv(pythonPath);
 		return env ? convertEnvInfo(env) : undefined;
@@ -180,7 +180,7 @@ class ComponentAdapter implements IComponentAdapter {
 
 	// We use the same getInterpreters() here as for IInterpreterLocatorService.
 	public async getInterpreterDetails(
-		pythonPath: string,
+		pythonPath: string
 	): Promise<PythonEnvironment | undefined> {
 		const env = await this.api.resolveEnv(pythonPath);
 		if (!env) {
@@ -201,7 +201,7 @@ class ComponentAdapter implements IComponentAdapter {
 	}
 
 	public async getCondaEnvironment(
-		interpreterPath: string,
+		interpreterPath: string
 	): Promise<CondaEnvironmentInfo | undefined> {
 		if (!(await isCondaEnvironment(interpreterPath))) {
 			// Undefined is expected here when the env is not Conda env.
@@ -221,7 +221,7 @@ class ComponentAdapter implements IComponentAdapter {
 
 	// eslint-disable-next-line class-methods-use-this
 	public async isMicrosoftStoreInterpreter(
-		pythonPath: string,
+		pythonPath: string
 	): Promise<boolean> {
 		// Eventually we won't be calling 'isMicrosoftStoreInterpreter' in the component adapter, so we won't
 		// need to use 'isMicrosoftStoreEnvironment' directly here. This is just a temporary implementation.
@@ -230,7 +230,7 @@ class ComponentAdapter implements IComponentAdapter {
 
 	// Implements IInterpreterLocatorService
 	public async hasInterpreters(
-		filter: (e: PythonEnvironment) => Promise<boolean> = async () => true,
+		filter: (e: PythonEnvironment) => Promise<boolean> = async () => true
 	): Promise<boolean> {
 		const onAddedToCollection = createDeferred();
 		// Watch for collection changed events.
@@ -242,7 +242,7 @@ class ComponentAdapter implements IComponentAdapter {
 			}
 		});
 		const initialEnvs = await asyncFilter(this.api.getEnvs(), (e) =>
-			filter(convertEnvInfo(e)),
+			filter(convertEnvInfo(e))
 		);
 		if (initialEnvs.length > 0) {
 			return true;
@@ -255,14 +255,14 @@ class ComponentAdapter implements IComponentAdapter {
 			this.api.getRefreshPromise(),
 		]);
 		const envs = await asyncFilter(this.api.getEnvs(), (e) =>
-			filter(convertEnvInfo(e)),
+			filter(convertEnvInfo(e))
 		);
 		return envs.length > 0;
 	}
 
 	public getInterpreters(
 		resource?: vscode.Uri,
-		source?: PythonEnvSource[],
+		source?: PythonEnvSource[]
 	): PythonEnvironment[] {
 		const query: PythonLocatorQuery = {};
 		let roots: vscode.Uri[] = [];
@@ -290,7 +290,7 @@ class ComponentAdapter implements IComponentAdapter {
 		let envs = this.api.getEnvs(query);
 		if (source) {
 			envs = envs.filter(
-				(env) => intersection(source, env.source).length > 0,
+				(env) => intersection(source, env.source).length > 0
 			);
 		}
 
@@ -299,7 +299,7 @@ class ComponentAdapter implements IComponentAdapter {
 
 	public async getWorkspaceVirtualEnvInterpreters(
 		resource: vscode.Uri,
-		options?: { ignoreCache?: boolean },
+		options?: { ignoreCache?: boolean }
 	): Promise<PythonEnvironment[]> {
 		const workspaceFolder = vscode.workspace.getWorkspaceFolder(resource);
 		if (!workspaceFolder) {
@@ -322,11 +322,11 @@ class ComponentAdapter implements IComponentAdapter {
 
 export function registerNewDiscoveryForIOC(
 	serviceManager: IServiceManager,
-	api: IDiscoveryAPI,
+	api: IDiscoveryAPI
 ): void {
 	serviceManager.addSingleton<ICondaService>(ICondaService, CondaService);
 	serviceManager.addSingletonInstance<IComponentAdapter>(
 		IComponentAdapter,
-		new ComponentAdapter(api),
+		new ComponentAdapter(api)
 	);
 }

@@ -40,7 +40,7 @@ export abstract class BaseConfigurationResolver<T extends DebugConfiguration>
 
 	constructor(
 		protected readonly configurationService: IConfigurationService,
-		protected readonly interpreterService: IInterpreterService,
+		protected readonly interpreterService: IInterpreterService
 	) {}
 
 	// This is a legacy hook used solely for backwards-compatible manual substitution
@@ -55,7 +55,7 @@ export abstract class BaseConfigurationResolver<T extends DebugConfiguration>
 	public async resolveDebugConfiguration(
 		_folder: WorkspaceFolder | undefined,
 		debugConfiguration: DebugConfiguration,
-		_token?: CancellationToken,
+		_token?: CancellationToken
 	): Promise<T | undefined> {
 		if (debugConfiguration.clientOS === undefined) {
 			debugConfiguration.clientOS =
@@ -67,11 +67,11 @@ export abstract class BaseConfigurationResolver<T extends DebugConfiguration>
 	public abstract resolveDebugConfigurationWithSubstitutedVariables(
 		folder: WorkspaceFolder | undefined,
 		debugConfiguration: DebugConfiguration,
-		token?: CancellationToken,
+		token?: CancellationToken
 	): Promise<T | undefined>;
 
 	protected static getWorkspaceFolder(
-		folder: WorkspaceFolder | undefined,
+		folder: WorkspaceFolder | undefined
 	): Uri | undefined {
 		if (folder) {
 			return folder.uri;
@@ -96,21 +96,21 @@ export abstract class BaseConfigurationResolver<T extends DebugConfiguration>
 
 	protected async resolveAndUpdatePaths(
 		workspaceFolder: Uri | undefined,
-		debugConfiguration: LaunchRequestArguments,
+		debugConfiguration: LaunchRequestArguments
 	): Promise<void> {
 		BaseConfigurationResolver.resolveAndUpdateEnvFilePath(
 			workspaceFolder,
-			debugConfiguration,
+			debugConfiguration
 		);
 		await this.resolveAndUpdatePythonPath(
 			workspaceFolder,
-			debugConfiguration,
+			debugConfiguration
 		);
 	}
 
 	protected static resolveAndUpdateEnvFilePath(
 		workspaceFolder: Uri | undefined,
-		debugConfiguration: LaunchRequestArguments,
+		debugConfiguration: LaunchRequestArguments
 	): void {
 		if (!debugConfiguration) {
 			return;
@@ -123,14 +123,14 @@ export abstract class BaseConfigurationResolver<T extends DebugConfiguration>
 				debugConfiguration.envFile,
 				(workspaceFolder ? workspaceFolder.fsPath : undefined) ||
 					debugConfiguration.cwd,
-				undefined,
+				undefined
 			);
 		}
 	}
 
 	protected async resolveAndUpdatePythonPath(
 		workspaceFolder: Uri | undefined,
-		debugConfiguration: LaunchRequestArguments,
+		debugConfiguration: LaunchRequestArguments
 	): Promise<void> {
 		if (!debugConfiguration) {
 			return;
@@ -143,7 +143,7 @@ export abstract class BaseConfigurationResolver<T extends DebugConfiguration>
 			const interpreterPath =
 				(
 					await this.interpreterService.getActiveInterpreter(
-						workspaceFolder,
+						workspaceFolder
 					)
 				)?.path ??
 				this.configurationService.getSettings(workspaceFolder)
@@ -155,7 +155,7 @@ export abstract class BaseConfigurationResolver<T extends DebugConfiguration>
 					? debugConfiguration.pythonPath
 					: undefined,
 				workspaceFolder?.fsPath,
-				undefined,
+				undefined
 			);
 		}
 
@@ -164,7 +164,7 @@ export abstract class BaseConfigurationResolver<T extends DebugConfiguration>
 			const interpreterPath =
 				(
 					await this.interpreterService.getActiveInterpreter(
-						workspaceFolder,
+						workspaceFolder
 					)
 				)?.path ??
 				this.configurationService.getSettings(workspaceFolder)
@@ -178,7 +178,7 @@ export abstract class BaseConfigurationResolver<T extends DebugConfiguration>
 			debugConfiguration.python = resolveVariables(
 				debugConfiguration.python ?? debugConfiguration.pythonPath,
 				workspaceFolder?.fsPath,
-				undefined,
+				undefined
 			);
 		}
 
@@ -204,7 +204,7 @@ export abstract class BaseConfigurationResolver<T extends DebugConfiguration>
 
 	protected static debugOption(
 		debugOptions: DebugOptions[],
-		debugOption: DebugOptions,
+		debugOption: DebugOptions
 	): void {
 		if (debugOptions.indexOf(debugOption) >= 0) {
 			return;
@@ -220,7 +220,7 @@ export abstract class BaseConfigurationResolver<T extends DebugConfiguration>
 	protected static fixUpPathMappings(
 		pathMappings: PathMapping[],
 		defaultLocalRoot?: string,
-		defaultRemoteRoot?: string,
+		defaultRemoteRoot?: string
 	): PathMapping[] {
 		if (!defaultLocalRoot) {
 			return [];
@@ -243,14 +243,14 @@ export abstract class BaseConfigurationResolver<T extends DebugConfiguration>
 					const resolvedLocalRoot = resolveVariables(
 						mappedLocalRoot,
 						defaultLocalRoot,
-						undefined,
+						undefined
 					);
 					return {
 						localRoot: resolvedLocalRoot || "",
 						// TODO: Apply to remoteRoot too?
 						remoteRoot,
 					};
-				},
+				}
 			);
 		}
 
@@ -263,11 +263,11 @@ export abstract class BaseConfigurationResolver<T extends DebugConfiguration>
 					let localRoot = windowsLocalRoot;
 					if (windowsLocalRoot.match(/^[A-Z]:/)) {
 						localRoot = `${windowsLocalRoot[0].toLowerCase()}${windowsLocalRoot.substr(
-							1,
+							1
 						)}`;
 					}
 					return { localRoot, remoteRoot };
-				},
+				}
 			);
 		}
 
@@ -277,7 +277,7 @@ export abstract class BaseConfigurationResolver<T extends DebugConfiguration>
 	protected static isDebuggingFastAPI(
 		debugConfiguration: Partial<
 			LaunchRequestArguments & AttachRequestArguments
-		>,
+		>
 	): boolean {
 		return !!(
 			debugConfiguration.module &&
@@ -288,7 +288,7 @@ export abstract class BaseConfigurationResolver<T extends DebugConfiguration>
 	protected static isDebuggingFlask(
 		debugConfiguration: Partial<
 			LaunchRequestArguments & AttachRequestArguments
-		>,
+		>
 	): boolean {
 		return !!(
 			debugConfiguration.module &&
@@ -300,7 +300,7 @@ export abstract class BaseConfigurationResolver<T extends DebugConfiguration>
 		trigger: "launch" | "attach" | "test",
 		debugConfiguration: Partial<
 			LaunchRequestArguments & AttachRequestArguments
-		>,
+		>
 	): void {
 		const name = debugConfiguration.name || "";
 		const moduleName = debugConfiguration.module || "";
@@ -313,16 +313,16 @@ export abstract class BaseConfigurationResolver<T extends DebugConfiguration>
 			django: !!debugConfiguration.django,
 			fastapi:
 				BaseConfigurationResolver.isDebuggingFastAPI(
-					debugConfiguration,
+					debugConfiguration
 				),
 			flask: BaseConfigurationResolver.isDebuggingFlask(
-				debugConfiguration,
+				debugConfiguration
 			),
 			hasArgs:
 				Array.isArray(debugConfiguration.args) &&
 				debugConfiguration.args.length > 0,
 			isLocalhost: BaseConfigurationResolver.isLocalHost(
-				debugConfiguration.host,
+				debugConfiguration.host
 			),
 			isModule: moduleName.length > 0,
 			isSudo: !!debugConfiguration.sudo,

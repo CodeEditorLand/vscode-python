@@ -22,9 +22,11 @@ export class CondaInstaller extends ModuleInstaller {
 	// Unfortunately inversify requires the number of args in constructor to be explictly
 	// specified as more than its base class. So we need the constructor.
 	// eslint-disable-next-line @typescript-eslint/no-useless-constructor
-	constructor(@inject(IServiceContainer) serviceContainer: IServiceContainer) {
-        super(serviceContainer);
-    }
+	constructor(
+		@inject(IServiceContainer) serviceContainer: IServiceContainer
+	) {
+		super(serviceContainer);
+	}
 
 	public get name(): string {
 		return "Conda";
@@ -70,7 +72,7 @@ export class CondaInstaller extends ModuleInstaller {
 	protected async getExecutionInfo(
 		moduleName: string,
 		resource?: InterpreterUri,
-		flags: ModuleInstallFlags = 0,
+		flags: ModuleInstallFlags = 0
 	): Promise<ExecutionInfo> {
 		const condaService =
 			this.serviceContainer.get<ICondaService>(ICondaService);
@@ -130,7 +132,7 @@ export class CondaInstaller extends ModuleInstaller {
 	 * Is the provided interprter a conda environment
 	 */
 	private async isCurrentEnvironmentACondaEnvironment(
-		resource?: InterpreterUri,
+		resource?: InterpreterUri
 	): Promise<boolean> {
 		const condaService =
 			this.serviceContainer.get<IComponentAdapter>(IComponentAdapter);

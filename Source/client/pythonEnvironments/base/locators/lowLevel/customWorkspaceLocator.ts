@@ -23,7 +23,7 @@ export class CustomWorkspaceLocator extends FSWatchingLocator {
 	constructor(private readonly root: string) {
 		super(
 			() => [],
-			async () => PythonEnvKind.Unknown,
+			async () => PythonEnvKind.Unknown
 		);
 	}
 
@@ -32,8 +32,8 @@ export class CustomWorkspaceLocator extends FSWatchingLocator {
 			onDidChangePythonSetting(
 				DEFAULT_INTERPRETER_PATH_SETTING_KEY,
 				() => this.fire(),
-				this.root,
-			),
+				this.root
+			)
 		);
 	}
 
@@ -43,7 +43,7 @@ export class CustomWorkspaceLocator extends FSWatchingLocator {
 			traceVerbose("Searching for custom workspace envs");
 			const filename = getPythonSetting<string>(
 				DEFAULT_INTERPRETER_PATH_SETTING_KEY,
-				root,
+				root
 			);
 			if (!filename || filename === DEFAULT_INTERPRETER_SETTING) {
 				// If the user has not set a custom interpreter, our job is done.

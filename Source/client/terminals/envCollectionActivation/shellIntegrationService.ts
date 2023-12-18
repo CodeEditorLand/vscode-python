@@ -29,17 +29,19 @@ const ShellIntegrationShells = [
 @injectable()
 export class ShellIntegrationService implements IShellIntegrationService {
 	constructor(
-        @inject(ITerminalManager) private readonly terminalManager: ITerminalManager,
-        @inject(IApplicationShell) private readonly appShell: IApplicationShell,
-        @inject(IWorkspaceService) private readonly workspaceService: IWorkspaceService,
-    ) {}
+		@inject(ITerminalManager)
+		private readonly terminalManager: ITerminalManager,
+		@inject(IApplicationShell) private readonly appShell: IApplicationShell,
+		@inject(IWorkspaceService)
+		private readonly workspaceService: IWorkspaceService
+	) {}
 
 	public async isWorking(shell: string): Promise<boolean> {
 		return this._isWorking(shell).catch((ex) => {
 			traceError(
 				`Failed to determine if shell supports shell integration`,
 				shell,
-				ex,
+				ex
 			);
 			return false;
 		});
@@ -92,7 +94,7 @@ export class ShellIntegrationService implements IShellIntegrationService {
 		} catch (ex) {
 			traceVerbose(
 				`Proposed API is not available, failed to subscribe to onDidExecuteTerminalCommand`,
-				ex,
+				ex
 			);
 			// Proposed API is not available, assume shell integration is working at this point.
 			return true;

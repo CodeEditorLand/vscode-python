@@ -28,49 +28,54 @@ export class DebugAdapterActivator
 		virtualWorkspace: false,
 	};
 	constructor(
-        @inject(IDebugService) private readonly debugService: IDebugService,
-        @inject(IConfigurationService) private readonly configSettings: IConfigurationService,
-        @inject(ICommandManager) private commandManager: ICommandManager,
-        @inject(IDebugAdapterDescriptorFactory) private descriptorFactory: IDebugAdapterDescriptorFactory,
-        @inject(IDebugSessionLoggingFactory) private debugSessionLoggingFactory: IDebugSessionLoggingFactory,
-        @inject(IOutdatedDebuggerPromptFactory) private debuggerPromptFactory: IOutdatedDebuggerPromptFactory,
-        @inject(IDisposableRegistry) private readonly disposables: IDisposableRegistry,
-        @inject(IAttachProcessProviderFactory)
-        private readonly attachProcessProviderFactory: IAttachProcessProviderFactory,
-    ) {}
+		@inject(IDebugService) private readonly debugService: IDebugService,
+		@inject(IConfigurationService)
+		private readonly configSettings: IConfigurationService,
+		@inject(ICommandManager) private commandManager: ICommandManager,
+		@inject(IDebugAdapterDescriptorFactory)
+		private descriptorFactory: IDebugAdapterDescriptorFactory,
+		@inject(IDebugSessionLoggingFactory)
+		private debugSessionLoggingFactory: IDebugSessionLoggingFactory,
+		@inject(IOutdatedDebuggerPromptFactory)
+		private debuggerPromptFactory: IOutdatedDebuggerPromptFactory,
+		@inject(IDisposableRegistry)
+		private readonly disposables: IDisposableRegistry,
+		@inject(IAttachProcessProviderFactory)
+		private readonly attachProcessProviderFactory: IAttachProcessProviderFactory
+	) {}
 	public async activate(): Promise<void> {
 		this.attachProcessProviderFactory.registerCommands();
 
 		this.disposables.push(
 			this.debugService.registerDebugAdapterTrackerFactory(
 				DebuggerTypeName,
-				this.debugSessionLoggingFactory,
-			),
+				this.debugSessionLoggingFactory
+			)
 		);
 		this.disposables.push(
 			this.debugService.registerDebugAdapterTrackerFactory(
 				DebuggerTypeName,
-				this.debuggerPromptFactory,
-			),
+				this.debuggerPromptFactory
+			)
 		);
 
 		this.disposables.push(
 			this.debugService.registerDebugAdapterDescriptorFactory(
 				DebuggerTypeName,
-				this.descriptorFactory,
-			),
+				this.descriptorFactory
+			)
 		);
 		this.disposables.push(
 			this.debugService.onDidStartDebugSession((debugSession) => {
 				if (
 					this.shouldTerminalFocusOnStart(
-						debugSession.workspaceFolder?.uri,
+						debugSession.workspaceFolder?.uri
 					)
 				)
 					this.commandManager.executeCommand(
-						"workbench.action.terminal.focus",
+						"workbench.action.terminal.focus"
 					);
-			}),
+			})
 		);
 	}
 

@@ -14,7 +14,7 @@ import { EXTENSION_ROOT_DIR } from "../constants";
  *
  */
 export async function setExtensionInstallTelemetryProperties(
-	fs: IFileSystem,
+	fs: IFileSystem
 ): Promise<void> {
 	// Look for PythonCodingPack file under `%USERPROFILE%/.vscode/extensions`
 	// folder. If that file exists treat this extension as installed from coding
@@ -27,7 +27,7 @@ export async function setExtensionInstallTelemetryProperties(
 	// end up looking at the wrong place, with respect to the extension that was launched.
 	const fileToCheck = path.join(
 		path.dirname(EXTENSION_ROOT_DIR),
-		"PythonCodingPack",
+		"PythonCodingPack"
 	);
 	if (await fs.fileExists(fileToCheck)) {
 		setSharedProperty("installSource", "pythonCodingPack");

@@ -27,14 +27,14 @@ export abstract class LanguageServerAnalysisOptionsBase
 
 	protected constructor(
 		lsOutputChannel: ILanguageServerOutputChannel,
-		protected readonly workspace: IWorkspaceService,
+		protected readonly workspace: IWorkspaceService
 	) {
 		this.output = lsOutputChannel.channel;
 	}
 
 	public async initialize(
 		_resource: Resource,
-		_interpreter: PythonEnvironment | undefined,
+		_interpreter: PythonEnvironment | undefined
 	) {}
 
 	public get onDidChange(): Event<void> {
@@ -67,7 +67,7 @@ export abstract class LanguageServerAnalysisOptionsBase
 	}
 
 	protected getDocumentFilters(
-		_workspaceFolder?: WorkspaceFolder,
+		_workspaceFolder?: WorkspaceFolder
 	): DocumentFilter[] {
 		return this.workspace.isVirtualWorkspace
 			? [{ language: PYTHON_LANGUAGE }]
@@ -90,18 +90,18 @@ export abstract class LanguageServerAnalysisOptionsWithEnv extends LanguageServe
 	protected constructor(
 		private readonly envVarsProvider: IEnvironmentVariablesProvider,
 		lsOutputChannel: ILanguageServerOutputChannel,
-		workspace: IWorkspaceService,
+		workspace: IWorkspaceService
 	) {
 		super(lsOutputChannel, workspace);
 	}
 
 	public async initialize(
 		_resource: Resource,
-		_interpreter: PythonEnvironment | undefined,
+		_interpreter: PythonEnvironment | undefined
 	) {
 		const disposable = this.envVarsProvider.onDidEnvironmentVariablesChange(
 			this.onEnvVarChange,
-			this,
+			this
 		);
 		this.disposables.push(disposable);
 	}

@@ -16,7 +16,10 @@ export class CodeActionProviderService
 		virtualWorkspace: false,
 	};
 
-	constructor(@inject(IDisposableRegistry) private disposableRegistry: IDisposableRegistry) {}
+	constructor(
+		@inject(IDisposableRegistry)
+		private disposableRegistry: IDisposableRegistry
+	) {}
 
 	public async activate(): Promise<void> {
 		// eslint-disable-next-line global-require
@@ -32,8 +35,8 @@ export class CodeActionProviderService
 				new LaunchJsonCodeActionProvider(),
 				{
 					providedCodeActionKinds: [vscode.CodeActionKind.QuickFix],
-				},
-			),
+				}
+			)
 		);
 	}
 }

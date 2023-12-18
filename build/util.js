@@ -15,7 +15,7 @@ function getListOfFiles(filename) {
 	const data = fs.readFileSync(filename).toString();
 	const files = JSON.parse(data);
 	return files.map((file) =>
-		path.join(exports.ExtensionRootDir, file.replace(/\//g, path.sep)),
+		path.join(exports.ExtensionRootDir, file.replace(/\//g, path.sep))
 	);
 }
 exports.getListOfFiles = getListOfFiles;

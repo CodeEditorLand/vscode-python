@@ -20,7 +20,7 @@ import { PythonEnvsWatchers } from "./watchers";
  * Combine the `onUpdated` event of the given iterators into a single event.
  */
 export function combineIterators<I>(
-	iterators: IPythonEnvsIterator<I>[],
+	iterators: IPythonEnvsIterator<I>[]
 ): IPythonEnvsIterator<I> {
 	const result: IPythonEnvsIterator<I> = chain(iterators);
 	const events = iterators.map((it) => it.onUpdated).filter((v) => v);
@@ -32,8 +32,8 @@ export function combineIterators<I>(
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	result.onUpdated = (
 		handleEvent: (
-			e: PythonEnvUpdatedEvent<I> | ProgressNotificationEvent,
-		) => any,
+			e: PythonEnvUpdatedEvent<I> | ProgressNotificationEvent
+		) => any
 	) => {
 		const disposables = new Disposables();
 		let numActive = events.length;
@@ -56,7 +56,7 @@ export function combineIterators<I>(
 					} else {
 						handleEvent(e);
 					}
-				},
+				}
 			);
 			disposables.push(disposable);
 		});
@@ -78,7 +78,7 @@ export class Locators<I = PythonEnvInfo>
 
 	constructor(
 		// The locators will be watched as well as iterated.
-		private readonly locators: ReadonlyArray<ILocator<I>>,
+		private readonly locators: ReadonlyArray<ILocator<I>>
 	) {
 		super(locators);
 		this.providerId = locators.map((loc) => loc.providerId).join("+");

@@ -19,7 +19,7 @@ const workspaceFolderToken = "${workspaceFolder}";
 
 export async function buildDjangoLaunchDebugConfiguration(
 	input: MultiStepInput<DebugConfigurationState>,
-	state: DebugConfigurationState,
+	state: DebugConfigurationState
 ): Promise<void> {
 	const program = await getManagePyPath(state.folder);
 	let manuallyEnteredAValue: boolean | undefined;
@@ -59,7 +59,7 @@ export async function buildDjangoLaunchDebugConfiguration(
 export async function validateManagePy(
 	folder: vscode.WorkspaceFolder | undefined,
 	defaultValue: string,
-	selected?: string,
+	selected?: string
 ): Promise<string | undefined> {
 	const error = DebugConfigStrings.django.enterManagePyPath.invalid;
 	if (!selected || selected.trim().length === 0) {
@@ -78,7 +78,7 @@ export async function validateManagePy(
 }
 
 export async function getManagePyPath(
-	folder: vscode.WorkspaceFolder | undefined,
+	folder: vscode.WorkspaceFolder | undefined
 ): Promise<string | undefined> {
 	if (!folder) {
 		return undefined;

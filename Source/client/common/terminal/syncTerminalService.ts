@@ -30,7 +30,7 @@ class ExecutionState implements Disposable {
 	constructor(
 		public readonly lockFile: string,
 		private readonly fs: IFileSystem,
-		private readonly command: string[],
+		private readonly command: string[]
 	) {
 		this.registerStateUpdate();
 		this._completed.promise.finally(() => this.dispose()).ignoreErrors();
@@ -50,8 +50,8 @@ class ExecutionState implements Disposable {
 			if (state !== this.state) {
 				traceVerbose(
 					`Command state changed to ${state}. ${this.command.join(
-						" ",
-					)}`,
+						" "
+					)}`
 				);
 			}
 			this.state = state;
@@ -62,9 +62,9 @@ class ExecutionState implements Disposable {
 				this._completed.reject(
 					new Error(
 						`Command failed with errors, check the terminal for details. Command: ${this.command.join(
-							" ",
-						)}\n${errorContents}`,
-					),
+							" "
+						)}\n${errorContents}`
+					)
 				);
 			} else if (state & State.completed) {
 				this._completed.resolve();
@@ -112,11 +112,12 @@ export class SynchronousTerminalService
 		return this.terminalService.onDidCloseTerminal;
 	}
 	constructor(
-        @inject(IFileSystem) private readonly fs: IFileSystem,
-        @inject(IInterpreterService) private readonly interpreter: IInterpreterService,
-        public readonly terminalService: TerminalService,
-        private readonly pythonInterpreter?: PythonEnvironment,
-    ) {}
+		@inject(IFileSystem) private readonly fs: IFileSystem,
+		@inject(IInterpreterService)
+		private readonly interpreter: IInterpreterService,
+		public readonly terminalService: TerminalService,
+		private readonly pythonInterpreter?: PythonEnvironment
+	) {}
 	public dispose() {
 		this.terminalService.dispose();
 		while (this.disposables.length) {
@@ -136,7 +137,7 @@ export class SynchronousTerminalService
 		command: string,
 		args: string[],
 		cancel?: CancellationToken,
-		swallowExceptions: boolean = true,
+		swallowExceptions: boolean = true
 	): Promise<void> {
 		if (!cancel) {
 			return this.terminalService.sendCommand(command, args);
@@ -153,11 +154,11 @@ export class SynchronousTerminalService
 			const sendArgs = internalScripts.shell_exec(
 				command,
 				lockFile.filePath,
-				args,
+				args
 			);
 			await this.terminalService.sendCommand(
 				pythonExec?.path || "python",
-				sendArgs,
+				sendArgs
 			);
 			const promise = swallowExceptions
 				? state.completed

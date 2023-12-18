@@ -35,13 +35,14 @@ export class TensorBoardFileWatcher
 	private readonly disposables: IDisposable[] = [];
 
 	constructor(
-        @inject(IWorkspaceService) private workspaceService: IWorkspaceService,
-        @inject(TensorBoardPrompt) private tensorBoardPrompt: TensorBoardPrompt,
-        @inject(IDisposableRegistry) disposables: IDisposableRegistry,
-        @inject(TensorboardExperiment) private readonly experiment: TensorboardExperiment,
-    ) {
-        disposables.push(this);
-    }
+		@inject(IWorkspaceService) private workspaceService: IWorkspaceService,
+		@inject(TensorBoardPrompt) private tensorBoardPrompt: TensorBoardPrompt,
+		@inject(IDisposableRegistry) disposables: IDisposableRegistry,
+		@inject(TensorboardExperiment)
+		private readonly experiment: TensorboardExperiment
+	) {
+		disposables.push(this);
+	}
 
 	public dispose(): void {
 		Disposable.from(...this.disposables).dispose();
@@ -69,8 +70,8 @@ export class TensorBoardFileWatcher
 		// If workspace folders change, ensure we update our FileSystemWatchers
 		this.disposables.push(
 			this.workspaceService.onDidChangeWorkspaceFolders((e) =>
-				this.updateFileSystemWatchers(e),
-			),
+				this.updateFileSystemWatchers(e)
+			)
 		);
 	}
 
@@ -82,7 +83,7 @@ export class TensorBoardFileWatcher
 			const fileSystemWatchers = this.fileSystemWatchers.get(removed);
 			if (fileSystemWatchers) {
 				fileSystemWatchers.forEach((fileWatcher) =>
-					fileWatcher.dispose(),
+					fileWatcher.dispose()
 				);
 				this.fileSystemWatchers.delete(removed);
 			}
@@ -100,16 +101,16 @@ export class TensorBoardFileWatcher
 			this.disposables.push(
 				fileSystemWatcher.onDidCreate(() =>
 					this.tensorBoardPrompt.showNativeTensorBoardPrompt(
-						TensorBoardEntrypointTrigger.tfeventfiles,
-					),
-				),
+						TensorBoardEntrypointTrigger.tfeventfiles
+					)
+				)
 			);
 			this.disposables.push(
 				fileSystemWatcher.onDidChange(() =>
 					this.tensorBoardPrompt.showNativeTensorBoardPrompt(
-						TensorBoardEntrypointTrigger.tfeventfiles,
-					),
-				),
+						TensorBoardEntrypointTrigger.tfeventfiles
+					)
+				)
 			);
 			this.disposables.push(fileSystemWatcher);
 			fileWatchers.push(fileSystemWatcher);

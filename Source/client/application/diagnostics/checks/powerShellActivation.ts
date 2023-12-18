@@ -31,7 +31,7 @@ import {
 } from "../types";
 
 const PowershellActivationNotSupportedWithBatchFilesMessage = l10n.t(
-	"Activation of the selected Python environment is not supported in PowerShell. Consider changing your shell to Command Prompt.",
+	"Activation of the selected Python environment is not supported in PowerShell. Consider changing your shell to Command Prompt."
 );
 
 export class PowershellActivationNotAvailableDiagnostic extends BaseDiagnostic {
@@ -43,7 +43,7 @@ export class PowershellActivationNotAvailableDiagnostic extends BaseDiagnostic {
 			DiagnosticScope.Global,
 			resource,
 			undefined,
-			"always",
+			"always"
 		);
 	}
 }
@@ -57,7 +57,7 @@ export class PowerShellActivationHackDiagnosticsService extends BaseDiagnosticsS
 
 	constructor(
 		@inject(IServiceContainer) serviceContainer: IServiceContainer,
-		@inject(IDisposableRegistry) disposableRegistry: IDisposableRegistry,
+		@inject(IDisposableRegistry) disposableRegistry: IDisposableRegistry
 	) {
 		super(
 			[
@@ -65,7 +65,7 @@ export class PowerShellActivationHackDiagnosticsService extends BaseDiagnosticsS
 			],
 			serviceContainer,
 			disposableRegistry,
-			true,
+			true
 		);
 		this.messageService = serviceContainer.get<
 			IDiagnosticHandlerService<MessageCommandPrompt>
@@ -88,13 +88,13 @@ export class PowerShellActivationHackDiagnosticsService extends BaseDiagnosticsS
 		}
 		const commandFactory =
 			this.serviceContainer.get<IDiagnosticsCommandFactory>(
-				IDiagnosticsCommandFactory,
+				IDiagnosticsCommandFactory
 			);
 		const currentProcess =
 			this.serviceContainer.get<ICurrentProcess>(ICurrentProcess);
 		const configurationService =
 			this.serviceContainer.get<IConfigurationService>(
-				IConfigurationService,
+				IConfigurationService
 			);
 		const options = [
 			{
@@ -108,16 +108,16 @@ export class PowerShellActivationHackDiagnosticsService extends BaseDiagnosticsS
 							undefined,
 							{
 								action: "switchToCommandPrompt",
-							},
+							}
 						);
 						useCommandPromptAsDefaultShell(
 							currentProcess,
-							configurationService,
+							configurationService
 						).catch((ex) =>
 							traceError(
 								"Use Command Prompt as default shell",
-								ex,
-							),
+								ex
+							)
 						);
 					},
 				},

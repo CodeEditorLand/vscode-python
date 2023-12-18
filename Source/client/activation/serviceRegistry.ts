@@ -20,39 +20,39 @@ import { LspNotebooksExperiment } from "./node/lspNotebooksExperiment";
 export function registerTypes(serviceManager: IServiceManager): void {
 	serviceManager.addSingleton<IExtensionActivationService>(
 		IExtensionActivationService,
-		PartialModeStatusItem,
+		PartialModeStatusItem
 	);
 	serviceManager.add<IExtensionActivationManager>(
 		IExtensionActivationManager,
-		ExtensionActivationManager,
+		ExtensionActivationManager
 	);
 	serviceManager.addSingleton<ILanguageServerOutputChannel>(
 		ILanguageServerOutputChannel,
-		LanguageServerOutputChannel,
+		LanguageServerOutputChannel
 	);
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
-		ExtensionSurveyPrompt,
+		ExtensionSurveyPrompt
 	);
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
-		LoadLanguageServerExtension,
+		LoadLanguageServerExtension
 	);
 
 	serviceManager.addSingleton<ILanguageServerWatcher>(
 		ILanguageServerWatcher,
-		LanguageServerWatcher,
+		LanguageServerWatcher
 	);
 	serviceManager.addBinding(
 		ILanguageServerWatcher,
-		IExtensionActivationService,
+		IExtensionActivationService
 	);
 	serviceManager.addSingleton<LspNotebooksExperiment>(
 		LspNotebooksExperiment,
-		LspNotebooksExperiment,
+		LspNotebooksExperiment
 	);
 	serviceManager.addBinding(
 		LspNotebooksExperiment,
-		IExtensionSingleActivationService,
+		IExtensionSingleActivationService
 	);
 }

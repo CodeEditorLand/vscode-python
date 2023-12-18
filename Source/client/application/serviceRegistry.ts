@@ -11,7 +11,7 @@ import { ISourceMapSupportService } from "./diagnostics/types";
 export function registerTypes(serviceManager: IServiceManager) {
 	serviceManager.addSingleton<ISourceMapSupportService>(
 		ISourceMapSupportService,
-		SourceMapSupportService,
+		SourceMapSupportService
 	);
 	diagnosticsRegisterTypes(serviceManager);
 }

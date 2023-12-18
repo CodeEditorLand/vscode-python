@@ -37,14 +37,17 @@ export class DebugAdapterDescriptorFactory
 	implements IDebugAdapterDescriptorFactory
 {
 	constructor(
-        @inject(ICommandManager) private readonly commandManager: ICommandManager,
-        @inject(IInterpreterService) private readonly interpreterService: IInterpreterService,
-        @inject(IPersistentStateFactory) private persistentState: IPersistentStateFactory,
-    ) {}
+		@inject(ICommandManager)
+		private readonly commandManager: ICommandManager,
+		@inject(IInterpreterService)
+		private readonly interpreterService: IInterpreterService,
+		@inject(IPersistentStateFactory)
+		private persistentState: IPersistentStateFactory
+	) {}
 
 	public async createDebugAdapterDescriptor(
 		session: DebugSession,
-		_executable: DebugAdapterExecutable | undefined,
+		_executable: DebugAdapterExecutable | undefined
 	): Promise<DebugAdapterDescriptor> {
 		const configuration = session.configuration as
 			| LaunchRequestArguments
@@ -66,35 +69,35 @@ export class DebugAdapterDescriptorFactory
 				traceLog(
 					`Connecting to DAP Server at:  ${
 						configuration.connect.host ?? "127.0.0.1"
-					}:${configuration.connect.port}`,
+					}:${configuration.connect.port}`
 				);
 				return new DebugAdapterServer(
 					configuration.connect.port,
-					configuration.connect.host ?? "127.0.0.1",
+					configuration.connect.host ?? "127.0.0.1"
 				);
 			} else if (configuration.port !== undefined) {
 				traceLog(
 					`Connecting to DAP Server at:  ${
 						configuration.host ?? "127.0.0.1"
-					}:${configuration.port}`,
+					}:${configuration.port}`
 				);
 				return new DebugAdapterServer(
 					configuration.port,
-					configuration.host ?? "127.0.0.1",
+					configuration.host ?? "127.0.0.1"
 				);
 			} else if (
 				configuration.listen === undefined &&
 				configuration.processId === undefined
 			) {
 				throw new Error(
-					'"request":"attach" requires either "connect", "listen", or "processId"',
+					'"request":"attach" requires either "connect", "listen", or "processId"'
 				);
 			}
 		}
 
 		const command = await this.getDebugAdapterPython(
 			configuration,
-			session.workspaceFolder,
+			session.workspaceFolder
 		);
 		if (command.length !== 0) {
 			if (
@@ -119,8 +122,8 @@ export class DebugAdapterDescriptorFactory
 				]);
 				traceLog(
 					`DAP Server launched with command: ${executable} ${args.join(
-						" ",
-					)}`,
+						" "
+					)}`
 				);
 				return new DebugAdapterExecutable(executable, args);
 			}
@@ -131,19 +134,19 @@ export class DebugAdapterDescriptorFactory
 				"lib",
 				"python",
 				"debugpy",
-				"adapter",
+				"adapter"
 			);
 
 			const args = command.concat([debuggerAdapterPathToUse, ...logArgs]);
 			traceLog(
 				`DAP Server launched with command: ${executable} ${args.join(
-					" ",
-				)}`,
+					" "
+				)}`
 			);
 			sendTelemetryEvent(
 				EventName.DEBUG_ADAPTER_USING_WHEELS_PATH,
 				undefined,
-				{ usingWheels: true },
+				{ usingWheels: true }
 			);
 			return new DebugAdapterExecutable(executable, args);
 		}
@@ -165,19 +168,19 @@ export class DebugAdapterDescriptorFactory
 	 */
 	private async getDebugAdapterPython(
 		configuration: LaunchRequestArguments | AttachRequestArguments,
-		workspaceFolder?: WorkspaceFolder,
+		workspaceFolder?: WorkspaceFolder
 	): Promise<string[]> {
 		if (configuration.debugAdapterPython !== undefined) {
 			return this.getExecutableCommand(
 				await this.interpreterService.getInterpreterDetails(
-					configuration.debugAdapterPython,
-				),
+					configuration.debugAdapterPython
+				)
 			);
 		} else if (configuration.pythonPath) {
 			return this.getExecutableCommand(
 				await this.interpreterService.getInterpreterDetails(
-					configuration.pythonPath,
-				),
+					configuration.pythonPath
+				)
 			);
 		}
 
@@ -186,7 +189,7 @@ export class DebugAdapterDescriptorFactory
 			await this.interpreterService.getActiveInterpreter(resourceUri);
 		if (interpreter) {
 			traceVerbose(
-				`Selecting active interpreter as Python Executable for DA '${interpreter.path}'`,
+				`Selecting active interpreter as Python Executable for DA '${interpreter.path}'`
 			);
 			return this.getExecutableCommand(interpreter);
 		}
@@ -200,7 +203,7 @@ export class DebugAdapterDescriptorFactory
 		}
 
 		traceVerbose(
-			`Picking first available interpreter to launch the DA '${interpreters[0].path}'`,
+			`Picking first available interpreter to launch the DA '${interpreters[0].path}'`
 		);
 		return this.getExecutableCommand(interpreters[0]);
 	}
@@ -209,7 +212,7 @@ export class DebugAdapterDescriptorFactory
 		const notificationPromptEnabled =
 			this.persistentState.createGlobalPersistentState(
 				debugStateKeys.doNotShowAgain,
-				false,
+				false
 			);
 		if (notificationPromptEnabled.value) {
 			return;
@@ -220,10 +223,10 @@ export class DebugAdapterDescriptorFactory
 		];
 		const selection = await showErrorMessage(
 			l10n.t(
-				"The debugger in the python extension no longer supports python versions minor than 3.7.",
+				"The debugger in the python extension no longer supports python versions minor than 3.7."
 			),
 			{ modal: true },
-			...prompts,
+			...prompts
 		);
 		if (!selection) {
 			return;
@@ -236,14 +239,14 @@ export class DebugAdapterDescriptorFactory
 			await this.persistentState
 				.createGlobalPersistentState(
 					debugStateKeys.doNotShowAgain,
-					false,
+					false
 				)
 				.updateValue(true);
 		}
 	}
 
 	private async getExecutableCommand(
-		interpreter: PythonEnvironment | undefined,
+		interpreter: PythonEnvironment | undefined
 	): Promise<string[]> {
 		if (interpreter) {
 			if (
@@ -269,8 +272,8 @@ export class DebugAdapterDescriptorFactory
 	private async notifySelectInterpreter() {
 		await showErrorMessage(
 			l10n.t(
-				"Install Python or select a Python Interpreter to use the debugger.",
-			),
+				"Install Python or select a Python Interpreter to use the debugger."
+			)
 		);
 	}
 }

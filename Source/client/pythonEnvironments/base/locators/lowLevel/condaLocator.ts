@@ -19,14 +19,14 @@ export class CondaEnvironmentLocator extends FSWatchingLocator {
 		super(
 			() => getCondaEnvironmentsTxt(),
 			async () => PythonEnvKind.Conda,
-			{ isFile: true },
+			{ isFile: true }
 		);
 	}
 
 	// eslint-disable-next-line class-methods-use-this
 	public async *doIterEnvs(
 		_: unknown,
-		useWorkerThreads = inExperiment(DiscoveryUsingWorkers.experiment),
+		useWorkerThreads = inExperiment(DiscoveryUsingWorkers.experiment)
 	): IPythonEnvsIterator<BasicEnvInfo> {
 		const conda = await Conda.getConda(undefined, useWorkerThreads);
 		if (conda === undefined) {
@@ -40,8 +40,8 @@ export class CondaEnvironmentLocator extends FSWatchingLocator {
 			try {
 				traceVerbose(
 					`Looking into conda env for executable: ${JSON.stringify(
-						env,
-					)}`,
+						env
+					)}`
 				);
 				const executablePath =
 					await conda.getInterpreterPathForEnvironment(env);
@@ -54,7 +54,7 @@ export class CondaEnvironmentLocator extends FSWatchingLocator {
 			} catch (ex) {
 				traceError(
 					`Failed to process conda env: ${JSON.stringify(env)}`,
-					ex,
+					ex
 				);
 			}
 		}

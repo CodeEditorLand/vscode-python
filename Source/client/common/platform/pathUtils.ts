@@ -14,7 +14,7 @@ export class PathUtils implements IPathUtils {
 	private readonly utils: FileSystemPathUtils;
 	constructor(
 		// "true" if targeting a Windows host.
-		@inject(IsWindows) isWindows: boolean,
+		@inject(IsWindows) isWindows: boolean
 	) {
 		const osType = isWindows ? OSType.Windows : OSType.Unknown;
 		// We cannot just use FileSystemPathUtils.withDefaults() because
@@ -23,7 +23,7 @@ export class PathUtils implements IPathUtils {
 			untildify("~"),
 			FileSystemPaths.withDefaults(),
 			new Executables(path.delimiter, osType),
-			path,
+			path
 		);
 	}
 

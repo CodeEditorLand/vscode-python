@@ -11,7 +11,7 @@ export function getWorkspaceFolders():
 }
 
 export function getWorkspaceFolder(
-	uri: Resource,
+	uri: Resource
 ): vscode.WorkspaceFolder | undefined {
 	return uri ? vscode.workspace.getWorkspaceFolder(uri) : undefined;
 }
@@ -22,7 +22,7 @@ export function getWorkspaceFolderPaths(): string[] {
 
 export function getConfiguration(
 	section?: string,
-	scope?: vscode.ConfigurationScope | null,
+	scope?: vscode.ConfigurationScope | null
 ): vscode.WorkspaceConfiguration {
 	return vscode.workspace.getConfiguration(section, scope);
 }
@@ -35,19 +35,19 @@ export function findFiles(
 	include: vscode.GlobPattern,
 	exclude?: vscode.GlobPattern | null,
 	maxResults?: number,
-	token?: vscode.CancellationToken,
+	token?: vscode.CancellationToken
 ): Thenable<vscode.Uri[]> {
 	return vscode.workspace.findFiles(include, exclude, maxResults, token);
 }
 
 export function onDidCloseTextDocument(
-	handler: (e: vscode.TextDocument) => unknown,
+	handler: (e: vscode.TextDocument) => unknown
 ): vscode.Disposable {
 	return vscode.workspace.onDidCloseTextDocument(handler);
 }
 
 export function onDidSaveTextDocument(
-	handler: (e: vscode.TextDocument) => unknown,
+	handler: (e: vscode.TextDocument) => unknown
 ): vscode.Disposable {
 	return vscode.workspace.onDidSaveTextDocument(handler);
 }
@@ -57,19 +57,19 @@ export function getOpenTextDocuments(): readonly vscode.TextDocument[] {
 }
 
 export function onDidOpenTextDocument(
-	handler: (doc: vscode.TextDocument) => unknown,
+	handler: (doc: vscode.TextDocument) => unknown
 ): vscode.Disposable {
 	return vscode.workspace.onDidOpenTextDocument(handler);
 }
 
 export function onDidChangeTextDocument(
-	handler: (e: vscode.TextDocumentChangeEvent) => unknown,
+	handler: (e: vscode.TextDocumentChangeEvent) => unknown
 ): vscode.Disposable {
 	return vscode.workspace.onDidChangeTextDocument(handler);
 }
 
 export function onDidChangeConfiguration(
-	handler: (e: vscode.ConfigurationChangeEvent) => unknown,
+	handler: (e: vscode.ConfigurationChangeEvent) => unknown
 ): vscode.Disposable {
 	return vscode.workspace.onDidChangeConfiguration(handler);
 }

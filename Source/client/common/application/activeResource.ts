@@ -14,9 +14,11 @@ import {
 @injectable()
 export class ActiveResourceService implements IActiveResourceService {
 	constructor(
-        @inject(IDocumentManager) private readonly documentManager: IDocumentManager,
-        @inject(IWorkspaceService) private readonly workspaceService: IWorkspaceService,
-    ) {}
+		@inject(IDocumentManager)
+		private readonly documentManager: IDocumentManager,
+		@inject(IWorkspaceService)
+		private readonly workspaceService: IWorkspaceService
+	) {}
 
 	public getActiveResource(): Resource {
 		const editor = this.documentManager.activeTextEditor;

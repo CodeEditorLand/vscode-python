@@ -21,7 +21,7 @@ export async function sendStartupTelemetry(
 	activatedPromise: Promise<any>,
 	durations: IStartupDurations,
 	stopWatch: IStopWatch,
-	serviceContainer: IServiceContainer,
+	serviceContainer: IServiceContainer
 ) {
 	if (isTestExecution()) {
 		return;
@@ -41,7 +41,7 @@ export async function sendStartupTelemetry(
 export async function sendErrorTelemetry(
 	ex: Error,
 	durations: IStartupDurations,
-	serviceContainer?: IServiceContainer,
+	serviceContainer?: IServiceContainer
 ) {
 	try {
 		let props: any = {};
@@ -60,10 +60,10 @@ export async function sendErrorTelemetry(
 
 function isUsingGlobalInterpreterInWorkspace(
 	currentPythonPath: string,
-	serviceContainer: IServiceContainer,
+	serviceContainer: IServiceContainer
 ): boolean {
 	const service = serviceContainer.get<IInterpreterAutoSelectionService>(
-		IInterpreterAutoSelectionService,
+		IInterpreterAutoSelectionService
 	);
 	const globalInterpreter = service.getAutoSelectedInterpreter(undefined);
 	if (!globalInterpreter) {
@@ -74,7 +74,7 @@ function isUsingGlobalInterpreterInWorkspace(
 
 export function hasUserDefinedPythonPath(
 	resource: Resource,
-	serviceContainer: IServiceContainer,
+	serviceContainer: IServiceContainer
 ) {
 	const interpreterPathService =
 		serviceContainer.get<IInterpreterPathService>(IInterpreterPathService);
@@ -88,7 +88,7 @@ export function hasUserDefinedPythonPath(
 }
 
 async function getActivationTelemetryProps(
-	serviceContainer: IServiceContainer,
+	serviceContainer: IServiceContainer
 ): Promise<EditorLoadTelemetry> {
 	// TODO: Not all of this data is showing up in the database...
 
@@ -111,7 +111,7 @@ async function getActivationTelemetryProps(
 		? workspaceService.workspaceFolders[0].uri
 		: undefined;
 	const hasPythonThree = await interpreterService.hasInterpreters(
-		async (item) => item.version?.major === 3,
+		async (item) => item.version?.major === 3
 	);
 	// If an unknown type environment can be found from windows registry or path env var,
 	// consider them as global type instead of unknown. Such types can only be known after
@@ -130,7 +130,7 @@ async function getActivationTelemetryProps(
 	if (interpreterType === EnvironmentType.Unknown) {
 		traceError(
 			"Active interpreter type is detected as Unknown",
-			JSON.stringify(interpreter),
+			JSON.stringify(interpreter)
 		);
 	}
 	let condaVersion = undefined;
@@ -143,13 +143,13 @@ async function getActivationTelemetryProps(
 	}
 	const usingUserDefinedInterpreter = hasUserDefinedPythonPath(
 		mainWorkspaceUri,
-		serviceContainer,
+		serviceContainer
 	);
 	const usingGlobalInterpreter = interpreter
 		? isUsingGlobalInterpreterInWorkspace(
 				interpreter.path,
-				serviceContainer,
-		  )
+				serviceContainer
+			)
 		: false;
 
 	return {

@@ -42,12 +42,14 @@ export class PoetryInstaller extends ModuleInstaller {
 	}
 
 	constructor(
-        @inject(IServiceContainer) serviceContainer: IServiceContainer,
-        @inject(IWorkspaceService) private readonly workspaceService: IWorkspaceService,
-        @inject(IConfigurationService) private readonly configurationService: IConfigurationService,
-    ) {
-        super(serviceContainer);
-    }
+		@inject(IServiceContainer) serviceContainer: IServiceContainer,
+		@inject(IWorkspaceService)
+		private readonly workspaceService: IWorkspaceService,
+		@inject(IConfigurationService)
+		private readonly configurationService: IConfigurationService
+	) {
+		super(serviceContainer);
+	}
 
 	public async isSupported(resource?: InterpreterUri): Promise<boolean> {
 		if (!resource) {
@@ -73,16 +75,16 @@ export class PoetryInstaller extends ModuleInstaller {
 		return isPoetryEnvironmentRelatedToFolder(
 			interpreter.path,
 			workspaceFolder.uri.fsPath,
-			this.configurationService.getSettings(resource).poetryPath,
+			this.configurationService.getSettings(resource).poetryPath
 		);
 	}
 
 	protected async getExecutionInfo(
 		moduleName: string,
-		resource?: InterpreterUri,
+		resource?: InterpreterUri
 	): Promise<ExecutionInfo> {
 		const execPath = this.configurationService.getSettings(
-			isResource(resource) ? resource : undefined,
+			isResource(resource) ? resource : undefined
 		).poetryPath;
 		const args = ["add", "--group", "dev", moduleName];
 		return {

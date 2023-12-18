@@ -29,12 +29,14 @@ import { getWorkspaceFolders } from "../../../common/vscodeApis/workspaceApis";
  */
 @injectable()
 export class ChildProcessAttachService implements IChildProcessAttachService {
-	constructor(@inject(IDebugService) private readonly debugService: IDebugService) {}
+	constructor(
+		@inject(IDebugService) private readonly debugService: IDebugService
+	) {}
 
 	@captureTelemetry(EventName.DEBUGGER_ATTACH_TO_CHILD_PROCESS)
 	public async attach(
 		data: AttachRequestArguments & DebugConfiguration,
-		parentSession: DebugSession,
+		parentSession: DebugSession
 	): Promise<void> {
 		const debugConfig: AttachRequestArguments & DebugConfiguration = data;
 		const folder = this.getRelatedWorkspaceFolder(debugConfig);
@@ -45,20 +47,20 @@ export class ChildProcessAttachService implements IChildProcessAttachService {
 		const launched = await this.debugService.startDebugging(
 			folder,
 			debugConfig,
-			debugSessionOption,
+			debugSessionOption
 		);
 		if (!launched) {
 			showErrorMessage(
 				l10n.t(
 					"Failed to launch debugger for child process {0}",
-					debugConfig.subProcessId!,
-				),
+					debugConfig.subProcessId!
+				)
 			).then(noop, noop);
 		}
 	}
 
 	private getRelatedWorkspaceFolder(
-		config: AttachRequestArguments & DebugConfiguration,
+		config: AttachRequestArguments & DebugConfiguration
 	): WorkspaceFolder | undefined {
 		const workspaceFolder = config.workspaceFolder;
 
@@ -67,7 +69,7 @@ export class ChildProcessAttachService implements IChildProcessAttachService {
 			return;
 		}
 		return getWorkspaceFolders()!.find(
-			(ws) => ws.uri.fsPath === workspaceFolder,
+			(ws) => ws.uri.fsPath === workspaceFolder
 		);
 	}
 }

@@ -102,7 +102,7 @@ export class EnvironmentActivationServiceCache {
 	}
 
 	public get(
-		key: string,
+		key: string
 	): InMemoryCache<NodeJS.ProcessEnv | undefined> | undefined {
 		if (EnvironmentActivationServiceCache.useStatic) {
 			return EnvironmentActivationServiceCache.staticMap.get(key);
@@ -112,7 +112,7 @@ export class EnvironmentActivationServiceCache {
 
 	public set(
 		key: string,
-		value: InMemoryCache<NodeJS.ProcessEnv | undefined>,
+		value: InMemoryCache<NodeJS.ProcessEnv | undefined>
 	): void {
 		if (EnvironmentActivationServiceCache.useStatic) {
 			EnvironmentActivationServiceCache.staticMap.set(key, value);
@@ -147,20 +147,23 @@ export class EnvironmentActivationService
 		new EnvironmentActivationServiceCache();
 
 	constructor(
-        @inject(ITerminalHelper) private readonly helper: ITerminalHelper,
-        @inject(IPlatformService) private readonly platform: IPlatformService,
-        @inject(IProcessServiceFactory) private processServiceFactory: IProcessServiceFactory,
-        @inject(ICurrentProcess) private currentProcess: ICurrentProcess,
-        @inject(IWorkspaceService) private workspace: IWorkspaceService,
-        @inject(IInterpreterService) private interpreterService: IInterpreterService,
-        @inject(IEnvironmentVariablesProvider) private readonly envVarsService: IEnvironmentVariablesProvider,
-    ) {
-        this.envVarsService.onDidEnvironmentVariablesChange(
-            () => this.activatedEnvVariablesCache.clear(),
-            this,
-            this.disposables,
-        );
-    }
+		@inject(ITerminalHelper) private readonly helper: ITerminalHelper,
+		@inject(IPlatformService) private readonly platform: IPlatformService,
+		@inject(IProcessServiceFactory)
+		private processServiceFactory: IProcessServiceFactory,
+		@inject(ICurrentProcess) private currentProcess: ICurrentProcess,
+		@inject(IWorkspaceService) private workspace: IWorkspaceService,
+		@inject(IInterpreterService)
+		private interpreterService: IInterpreterService,
+		@inject(IEnvironmentVariablesProvider)
+		private readonly envVarsService: IEnvironmentVariablesProvider
+	) {
+		this.envVarsService.onDidEnvironmentVariablesChange(
+			() => this.activatedEnvVariablesCache.clear(),
+			this,
+			this.disposables
+		);
+	}
 
 	public dispose(): void {
 		this.disposables.forEach((d) => d.dispose());
@@ -168,13 +171,13 @@ export class EnvironmentActivationService
 
 	@traceDecoratorVerbose(
 		"getActivatedEnvironmentVariables",
-		TraceOptions.Arguments,
+		TraceOptions.Arguments
 	)
 	public async getActivatedEnvironmentVariables(
 		resource: Resource,
 		interpreter?: PythonEnvironment,
 		allowExceptions?: boolean,
-		shell?: string,
+		shell?: string
 	): Promise<NodeJS.ProcessEnv | undefined> {
 		const stopWatch = new StopWatch();
 		// Cache key = resource + interpreter.
@@ -194,13 +197,13 @@ export class EnvironmentActivationService
 
 		// Cache only if successful, else keep trying & failing if necessary.
 		const memCache = new InMemoryCache<NodeJS.ProcessEnv | undefined>(
-			CACHE_DURATION,
+			CACHE_DURATION
 		);
 		return this.getActivatedEnvironmentVariablesImpl(
 			resource,
 			interpreter,
 			allowExceptions,
-			shell,
+			shell
 		)
 			.then((vars) => {
 				memCache.data = vars;
@@ -208,7 +211,7 @@ export class EnvironmentActivationService
 				sendTelemetryEvent(
 					EventName.PYTHON_INTERPRETER_ACTIVATION_ENVIRONMENT_VARIABLES,
 					stopWatch.elapsedTime,
-					{ failed: false },
+					{ failed: false }
 				);
 				return vars;
 			})
@@ -216,7 +219,7 @@ export class EnvironmentActivationService
 				sendTelemetryEvent(
 					EventName.PYTHON_INTERPRETER_ACTIVATION_ENVIRONMENT_VARIABLES,
 					stopWatch.elapsedTime,
-					{ failed: true },
+					{ failed: true }
 				);
 				throw ex;
 			});
@@ -225,7 +228,7 @@ export class EnvironmentActivationService
 	@cache(-1, true)
 	public async getProcessEnvironmentVariables(
 		resource: Resource,
-		shell?: string,
+		shell?: string
 	): Promise<EnvironmentVariables> {
 		// Try to get the process environment variables using Python by printing variables, that can be little different
 		// from `process.env` and is preferred when calculating diff.
@@ -244,7 +247,7 @@ export class EnvironmentActivationService
 			const command = `${interpreterPath} ${args.join(" ")}`;
 			const processService = await this.processServiceFactory.create(
 				resource,
-				{ doNotUseCustomEnvs: true },
+				{ doNotUseCustomEnvs: true }
 			);
 			const result = await processService.shellExec(command, {
 				shell,
@@ -254,7 +257,7 @@ export class EnvironmentActivationService
 			});
 			const returnedEnv = this.parseEnvironmentOutput(
 				result.stdout,
-				parse,
+				parse
 			);
 			return returnedEnv ?? process.env;
 		} catch (ex) {
@@ -264,7 +267,7 @@ export class EnvironmentActivationService
 
 	public async getEnvironmentActivationShellCommands(
 		resource: Resource,
-		interpreter?: PythonEnvironment,
+		interpreter?: PythonEnvironment
 	): Promise<string[] | undefined> {
 		const shellInfo = defaultShells[this.platform.osType];
 		if (!shellInfo) {
@@ -273,7 +276,7 @@ export class EnvironmentActivationService
 		return this.helper.getEnvironmentActivationShellCommands(
 			resource,
 			shellInfo.shellType,
-			interpreter,
+			interpreter
 		);
 	}
 
@@ -281,7 +284,7 @@ export class EnvironmentActivationService
 		resource: Resource,
 		interpreter?: PythonEnvironment,
 		allowExceptions?: boolean,
-		shell?: string,
+		shell?: string
 	): Promise<NodeJS.ProcessEnv | undefined> {
 		let shellInfo = defaultShells[this.platform.osType];
 		if (!shellInfo) {
@@ -325,10 +328,10 @@ export class EnvironmentActivationService
 					await this.helper.getEnvironmentActivationShellCommands(
 						resource,
 						shellInfo.shellType,
-						interpreter,
+						interpreter
 					);
 				traceVerbose(
-					`Activation Commands received ${activationCommands} for shell ${shellInfo.shell}, resource ${resource?.fsPath} and interpreter ${interpreter?.path}`,
+					`Activation Commands received ${activationCommands} for shell ${shellInfo.shell}, resource ${resource?.fsPath} and interpreter ${interpreter?.path}`
 				);
 				if (
 					!activationCommands ||
@@ -338,7 +341,7 @@ export class EnvironmentActivationService
 					if (
 						interpreter &&
 						[EnvironmentType.Venv, EnvironmentType.Pyenv].includes(
-							interpreter?.envType,
+							interpreter?.envType
 						)
 					) {
 						const key = getSearchPathEnvVarNames()[0];
@@ -362,12 +365,12 @@ export class EnvironmentActivationService
 					: "&&";
 				// Run the activate command collect the environment from it.
 				const activationCommand = fixActivationCommands(
-					activationCommands,
+					activationCommands
 				).join(` ${commandSeparator} `);
 				// In order to make sure we know where the environment output is,
 				// put in a dummy echo we can look for
 				command = `${activationCommand} ${commandSeparator} echo '${ENVIRONMENT_PREFIX}' ${commandSeparator} python ${args.join(
-					" ",
+					" "
 				)}`;
 			}
 
@@ -377,7 +380,7 @@ export class EnvironmentActivationService
 			env[PYTHON_WARNINGS] = "ignore";
 
 			traceVerbose(
-				`Activating Environment to capture Environment variables, ${command}`,
+				`Activating Environment to capture Environment variables, ${command}`
 			);
 
 			// Do some wrapping of the call. For two reasons:
@@ -408,7 +411,7 @@ export class EnvironmentActivationService
 						// If variables are available, then ignore errors (but log them).
 						returnedEnv = this.parseEnvironmentOutput(
 							result.stdout,
-							parse,
+							parse
 						);
 					} catch (ex) {
 						if (!result.stderr) {
@@ -420,23 +423,23 @@ export class EnvironmentActivationService
 							traceWarn(
 								"Got env variables but with errors",
 								result.stderr,
-								returnedEnv,
+								returnedEnv
 							);
 							if (
 								result.stderr.includes(
-									"running scripts is disabled",
+									"running scripts is disabled"
 								) ||
 								result.stderr.includes(
-									"FullyQualifiedErrorId : UnauthorizedAccess",
+									"FullyQualifiedErrorId : UnauthorizedAccess"
 								)
 							) {
 								throw new Error(
-									`Skipping returned result when powershell execution is disabled, stderr ${result.stderr} for ${command}`,
+									`Skipping returned result when powershell execution is disabled, stderr ${result.stderr} for ${command}`
 								);
 							}
 						} else {
 							throw new Error(
-								`StdErr from ShellExec, ${result.stderr} for ${command}`,
+								`StdErr from ShellExec, ${result.stderr} for ${command}`
 							);
 						}
 					}
@@ -474,7 +477,7 @@ export class EnvironmentActivationService
 					isPossiblyCondaEnv:
 						interpreter?.envType === EnvironmentType.Conda,
 					terminal: shellInfo.shellType,
-				},
+				}
 			);
 
 			// Some callers want this to bubble out, others don't
@@ -490,13 +493,13 @@ export class EnvironmentActivationService
 	// eslint-disable-next-line class-methods-use-this
 	private parseEnvironmentOutput(
 		output: string,
-		parse: (out: string) => NodeJS.ProcessEnv | undefined,
+		parse: (out: string) => NodeJS.ProcessEnv | undefined
 	) {
 		if (output.indexOf(ENVIRONMENT_PREFIX) === -1) {
 			return parse(output);
 		}
 		output = output.substring(
-			output.indexOf(ENVIRONMENT_PREFIX) + ENVIRONMENT_PREFIX.length,
+			output.indexOf(ENVIRONMENT_PREFIX) + ENVIRONMENT_PREFIX.length
 		);
 		const js = output.substring(output.indexOf("{")).trim();
 		return parse(js);

@@ -66,12 +66,12 @@ export interface IPersistentStateFactory {
 	createGlobalPersistentState<T>(
 		key: string,
 		defaultValue?: T,
-		expiryDurationMs?: number,
+		expiryDurationMs?: number
 	): IPersistentState<T>;
 	createWorkspacePersistentState<T>(
 		key: string,
 		defaultValue?: T,
-		expiryDurationMs?: number,
+		expiryDurationMs?: number
 	): IPersistentState<T>;
 }
 
@@ -119,20 +119,20 @@ export interface IInstaller {
 		product: Product,
 		resource?: InterpreterUri,
 		cancel?: CancellationToken,
-		flags?: ModuleInstallFlags,
+		flags?: ModuleInstallFlags
 	): Promise<InstallerResponse>;
 	install(
 		product: Product,
 		resource?: InterpreterUri,
 		cancel?: CancellationToken,
 		flags?: ModuleInstallFlags,
-		options?: InstallOptions,
+		options?: InstallOptions
 	): Promise<InstallerResponse>;
 	isInstalled(product: Product, resource?: InterpreterUri): Promise<boolean>;
 	isProductVersionCompatible(
 		product: Product,
 		semVerRequirement: string,
-		resource?: InterpreterUri,
+		resource?: InterpreterUri
 	): Promise<ProductInstallStatus>;
 	translateProductToModuleName(product: Product): string;
 }
@@ -242,14 +242,14 @@ export interface IConfigurationService {
 		setting: string,
 		value?: unknown,
 		resource?: Uri,
-		configTarget?: ConfigurationTarget,
+		configTarget?: ConfigurationTarget
 	): Promise<void>;
 	updateSectionSetting(
 		section: string,
 		setting: string,
 		value?: unknown,
 		resource?: Uri,
-		configTarget?: ConfigurationTarget,
+		configTarget?: ConfigurationTarget
 	): Promise<void>;
 }
 
@@ -353,7 +353,7 @@ export interface IExperimentService {
 	inExperiment(experimentName: string): Promise<boolean>;
 	inExperimentSync(experimentName: string): boolean;
 	getExperimentValue<T extends boolean | number | string>(
-		experimentName: string,
+		experimentName: string
 	): Promise<T | undefined>;
 }
 
@@ -378,7 +378,7 @@ export interface IInterpreterPathService {
 	update(
 		resource: Resource,
 		configTarget: ConfigurationTarget,
-		value: string | undefined,
+		value: string | undefined
 	): Promise<void>;
 	copyOldInterpreterStorageValuesToNew(resource: Resource): Promise<void>;
 }

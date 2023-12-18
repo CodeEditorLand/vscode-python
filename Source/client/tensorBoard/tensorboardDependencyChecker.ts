@@ -27,24 +27,33 @@ export class TensorboardDependencyChecker {
 	private preferredViewGroupMemento: IPersistentState<ViewColumn>;
 
 	constructor(
-        @inject(IInstaller) private readonly installer: IInstaller,
-        @inject(IInterpreterService) private readonly interpreterService: IInterpreterService,
-        @inject(IApplicationShell) private readonly applicationShell: IApplicationShell,
-        @inject(IWorkspaceService) private readonly workspaceService: IWorkspaceService,
-        @inject(ICommandManager) private readonly commandManager: ICommandManager,
-        @inject(IPythonExecutionFactory) private readonly pythonExecFactory: IPythonExecutionFactory,
-        @inject(IPersistentStateFactory) private stateFactory: IPersistentStateFactory,
-        @inject(IMultiStepInputFactory) private readonly multiStepFactory: IMultiStepInputFactory,
-        @inject(IConfigurationService) private readonly configurationService: IConfigurationService,
-    ) {
-        this.preferredViewGroupMemento = this.stateFactory.createGlobalPersistentState<ViewColumn>(
-            PREFERRED_VIEWGROUP,
-            ViewColumn.Active,
-        );
-    }
+		@inject(IInstaller) private readonly installer: IInstaller,
+		@inject(IInterpreterService)
+		private readonly interpreterService: IInterpreterService,
+		@inject(IApplicationShell)
+		private readonly applicationShell: IApplicationShell,
+		@inject(IWorkspaceService)
+		private readonly workspaceService: IWorkspaceService,
+		@inject(ICommandManager)
+		private readonly commandManager: ICommandManager,
+		@inject(IPythonExecutionFactory)
+		private readonly pythonExecFactory: IPythonExecutionFactory,
+		@inject(IPersistentStateFactory)
+		private stateFactory: IPersistentStateFactory,
+		@inject(IMultiStepInputFactory)
+		private readonly multiStepFactory: IMultiStepInputFactory,
+		@inject(IConfigurationService)
+		private readonly configurationService: IConfigurationService
+	) {
+		this.preferredViewGroupMemento =
+			this.stateFactory.createGlobalPersistentState<ViewColumn>(
+				PREFERRED_VIEWGROUP,
+				ViewColumn.Active
+			);
+	}
 
 	public async ensureDependenciesAreInstalled(
-		resource?: Uri,
+		resource?: Uri
 	): Promise<boolean> {
 		const disposables: IDisposable[] = [];
 		const newSession = new TensorBoardSession(
@@ -57,7 +66,7 @@ export class TensorboardDependencyChecker {
 			this.applicationShell,
 			this.preferredViewGroupMemento,
 			this.multiStepFactory,
-			this.configurationService,
+			this.configurationService
 		);
 		const result =
 			await newSession.ensurePrerequisitesAreInstalled(resource);

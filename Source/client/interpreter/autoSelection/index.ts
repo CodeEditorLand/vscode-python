@@ -52,16 +52,22 @@ export class InterpreterAutoSelectionService
 	>(preferredGlobalInterpreter, undefined);
 
 	constructor(
-        @inject(IWorkspaceService) private readonly workspaceService: IWorkspaceService,
-        @inject(IPersistentStateFactory) private readonly stateFactory: IPersistentStateFactory,
-        @inject(IFileSystem) private readonly fs: IFileSystem,
-        @inject(IInterpreterService) private readonly interpreterService: IInterpreterService,
-        @inject(IInterpreterComparer) private readonly envTypeComparer: IInterpreterComparer,
-        @inject(IInterpreterAutoSelectionProxyService) proxy: IInterpreterAutoSelectionProxyService,
-        @inject(IInterpreterHelper) private readonly interpreterHelper: IInterpreterHelper,
-    ) {
-        proxy.registerInstance!(this);
-    }
+		@inject(IWorkspaceService)
+		private readonly workspaceService: IWorkspaceService,
+		@inject(IPersistentStateFactory)
+		private readonly stateFactory: IPersistentStateFactory,
+		@inject(IFileSystem) private readonly fs: IFileSystem,
+		@inject(IInterpreterService)
+		private readonly interpreterService: IInterpreterService,
+		@inject(IInterpreterComparer)
+		private readonly envTypeComparer: IInterpreterComparer,
+		@inject(IInterpreterAutoSelectionProxyService)
+		proxy: IInterpreterAutoSelectionProxyService,
+		@inject(IInterpreterHelper)
+		private readonly interpreterHelper: IInterpreterHelper
+	) {
+		proxy.registerInstance!(this);
+	}
 
 	/**
 	 * Auto-select a Python environment from the list returned by environment discovery.
@@ -88,7 +94,7 @@ export class InterpreterAutoSelectionService
 			undefined,
 			{
 				useCachedInterpreter,
-			},
+			}
 		);
 
 		return this.autoSelectedWorkspacePromises.get(key)!.promise;
@@ -99,7 +105,7 @@ export class InterpreterAutoSelectionService
 	}
 
 	public getAutoSelectedInterpreter(
-		resource: Resource,
+		resource: Resource
 	): PythonEnvironment | undefined {
 		// Do not execute anycode other than fetching fromm a property.
 		// This method gets invoked from settings class, and this class in turn uses classes that relies on settings.
@@ -112,7 +118,7 @@ export class InterpreterAutoSelectionService
 		const workspaceFolderPath = this.getWorkspacePathKey(resource);
 		if (this.autoSelectedInterpreterByWorkspace.has(workspaceFolderPath)) {
 			return this.autoSelectedInterpreterByWorkspace.get(
-				workspaceFolderPath,
+				workspaceFolderPath
 			);
 		}
 
@@ -121,19 +127,19 @@ export class InterpreterAutoSelectionService
 
 	public async setWorkspaceInterpreter(
 		resource: Uri,
-		interpreter: PythonEnvironment | undefined,
+		interpreter: PythonEnvironment | undefined
 	): Promise<void> {
 		await this.storeAutoSelectedInterpreter(resource, interpreter);
 	}
 
 	public async setGlobalInterpreter(
-		interpreter: PythonEnvironment,
+		interpreter: PythonEnvironment
 	): Promise<void> {
 		await this.storeAutoSelectedInterpreter(undefined, interpreter);
 	}
 
 	protected async clearWorkspaceStoreIfInvalid(
-		resource: Resource,
+		resource: Resource
 	): Promise<void> {
 		const stateStore = this.getWorkspaceState(resource);
 		if (
@@ -147,7 +153,7 @@ export class InterpreterAutoSelectionService
 
 	protected async storeAutoSelectedInterpreter(
 		resource: Resource,
-		interpreter: PythonEnvironment | undefined,
+		interpreter: PythonEnvironment | undefined
 	): Promise<void> {
 		const workspaceFolderPath = this.getWorkspacePathKey(resource);
 		if (workspaceFolderPath === workspacePathNameForGlobalWorkspaces) {
@@ -159,7 +165,7 @@ export class InterpreterAutoSelectionService
 				interpreter.version &&
 				compareSemVerLikeVersions(
 					this.globallyPreferredInterpreter.value.version,
-					interpreter.version,
+					interpreter.version
 				) > 0
 			) {
 				return;
@@ -169,7 +175,7 @@ export class InterpreterAutoSelectionService
 			await this.globallyPreferredInterpreter.updateValue(interpreter);
 			this.autoSelectedInterpreterByWorkspace.set(
 				workspaceFolderPath,
-				interpreter,
+				interpreter
 			);
 		} else {
 			const workspaceState = this.getWorkspaceState(resource);
@@ -178,7 +184,7 @@ export class InterpreterAutoSelectionService
 			}
 			this.autoSelectedInterpreterByWorkspace.set(
 				workspaceFolderPath,
-				interpreter,
+				interpreter
 			);
 		}
 	}
@@ -202,7 +208,7 @@ export class InterpreterAutoSelectionService
 		if (
 			this.globallyPreferredInterpreter.value &&
 			!(await this.fs.fileExists(
-				this.globallyPreferredInterpreter.value.path,
+				this.globallyPreferredInterpreter.value.path
 			))
 		) {
 			await this.globallyPreferredInterpreter.updateValue(undefined);
@@ -212,12 +218,12 @@ export class InterpreterAutoSelectionService
 	private getWorkspacePathKey(resource: Resource): string {
 		return this.workspaceService.getWorkspaceFolderIdentifier(
 			resource,
-			workspacePathNameForGlobalWorkspaces,
+			workspacePathNameForGlobalWorkspaces
 		);
 	}
 
 	private getWorkspaceState(
-		resource: Resource,
+		resource: Resource
 	): undefined | IPersistentState<PythonEnvironment | undefined> {
 		const workspaceUri =
 			this.interpreterHelper.getActiveWorkspaceUri(resource);
@@ -225,14 +231,14 @@ export class InterpreterAutoSelectionService
 			const key = `autoSelectedWorkspacePythonInterpreter-${workspaceUri.folderUri.fsPath}`;
 			return this.stateFactory.createWorkspacePersistentState(
 				key,
-				undefined,
+				undefined
 			);
 		}
 		return undefined;
 	}
 
 	private getAutoSelectionInterpretersQueryState(
-		resource: Resource,
+		resource: Resource
 	): IPersistentState<boolean | undefined> {
 		const workspaceUri =
 			this.interpreterHelper.getActiveWorkspaceUri(resource);
@@ -260,7 +266,7 @@ export class InterpreterAutoSelectionService
 	 * As such, we can sort interpreters based on what it returns.
 	 */
 	private async autoselectInterpreterWithLocators(
-		resource: Resource,
+		resource: Resource
 	): Promise<void> {
 		// Do not perform a full interpreter search if we already have cached interpreters for this workspace.
 		const queriedState =
@@ -286,7 +292,7 @@ export class InterpreterAutoSelectionService
 
 		const recommendedInterpreter = this.envTypeComparer.getRecommended(
 			interpreters,
-			workspaceUri?.folderUri,
+			workspaceUri?.folderUri
 		);
 		if (!recommendedInterpreter) {
 			return;
@@ -294,7 +300,7 @@ export class InterpreterAutoSelectionService
 		if (workspaceUri) {
 			this.setWorkspaceInterpreter(
 				workspaceUri.folderUri,
-				recommendedInterpreter,
+				recommendedInterpreter
 			);
 		} else {
 			this.setGlobalInterpreter(recommendedInterpreter);

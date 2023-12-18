@@ -23,7 +23,7 @@ import { isParentPath } from "../platform/fs-paths";
 
 async function doesEnvironmentContainPython(
 	serviceContainer: IServiceContainer,
-	resource: InterpreterUri,
+	resource: InterpreterUri
 ) {
 	const interpreterService =
 		serviceContainer.get<IInterpreterService>(IInterpreterService);
@@ -62,14 +62,16 @@ export class PipInstaller extends ModuleInstaller {
 	public get priority(): number {
 		return 0;
 	}
-	constructor(@inject(IServiceContainer) serviceContainer: IServiceContainer) {
-        super(serviceContainer);
-    }
+	constructor(
+		@inject(IServiceContainer) serviceContainer: IServiceContainer
+	) {
+		super(serviceContainer);
+	}
 	public async isSupported(resource?: InterpreterUri): Promise<boolean> {
 		if (
 			(await doesEnvironmentContainPython(
 				this.serviceContainer,
-				resource,
+				resource
 			)) === false
 		) {
 			return false;
@@ -79,14 +81,14 @@ export class PipInstaller extends ModuleInstaller {
 	protected async getExecutionInfo(
 		moduleName: string,
 		resource?: InterpreterUri,
-		flags: ModuleInstallFlags = 0,
+		flags: ModuleInstallFlags = 0
 	): Promise<ExecutionInfo> {
 		if (moduleName === translateProductToModule(Product.pip)) {
 			const version = isResource(resource)
 				? ""
 				: `${resource.version?.major || ""}.${
 						resource.version?.minor || ""
-				  }.${resource.version?.patch || ""}`;
+					}.${resource.version?.patch || ""}`;
 			const envType = isResource(resource) ? undefined : resource.envType;
 
 			sendTelemetryEvent(EventName.PYTHON_INSTALL_PACKAGE, undefined, {
@@ -117,7 +119,7 @@ export class PipInstaller extends ModuleInstaller {
 			// Return script to install pip.
 			const interpreterService =
 				this.serviceContainer.get<IInterpreterService>(
-					IInterpreterService,
+					IInterpreterService
 				);
 			const interpreter = isResource(resource)
 				? await interpreterService.getActiveInterpreter(resource)
@@ -150,7 +152,7 @@ export class PipInstaller extends ModuleInstaller {
 	private isPipAvailable(info?: InterpreterUri): Promise<boolean> {
 		const pythonExecutionFactory =
 			this.serviceContainer.get<IPythonExecutionFactory>(
-				IPythonExecutionFactory,
+				IPythonExecutionFactory
 			);
 		const resource = isResource(info) ? info : undefined;
 		const pythonPath = isResource(info) ? undefined : info.path;

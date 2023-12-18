@@ -35,7 +35,7 @@ type DeactivateShellInfo = {
 const untildify: (value: string) => string = require("untildify");
 
 export function getDeactivateShellInfo(
-	shellType: TerminalShellType,
+	shellType: TerminalShellType
 ): DeactivateShellInfo | undefined {
 	switch (shellType) {
 		case TerminalShellType.bash:
@@ -45,7 +45,7 @@ export function getDeactivateShellInfo(
 					displayName: "~/.bashrc",
 					path: "~/.bashrc",
 				},
-				`source {0}`,
+				`source {0}`
 			);
 		case TerminalShellType.powershellCore:
 		case TerminalShellType.powershell:
@@ -55,7 +55,7 @@ export function getDeactivateShellInfo(
 					displayName: "Powershell Profile",
 					path: "$Profile",
 				},
-				`& "{0}"`,
+				`& "{0}"`
 			);
 		case TerminalShellType.zsh:
 			return buildInfo(
@@ -64,7 +64,7 @@ export function getDeactivateShellInfo(
 					displayName: "~/.zshrc",
 					path: "~/.zshrc",
 				},
-				`source {0}`,
+				`source {0}`
 			);
 		case TerminalShellType.fish:
 			return buildInfo(
@@ -73,7 +73,7 @@ export function getDeactivateShellInfo(
 					displayName: "config.fish",
 					path: "$__fish_config_dir/config.fish",
 				},
-				`source {0}`,
+				`source {0}`
 			);
 		case TerminalShellType.cshell:
 			return buildInfo(
@@ -82,7 +82,7 @@ export function getDeactivateShellInfo(
 					displayName: "~/.cshrc",
 					path: "~/.cshrc",
 				},
-				`source {0}`,
+				`source {0}`
 			);
 		default:
 			return undefined;
@@ -95,7 +95,7 @@ function buildInfo(
 		path: string;
 		displayName: string;
 	},
-	scriptCommandFormat: string,
+	scriptCommandFormat: string
 ) {
 	const scriptPath = path.join("~", ".vscode-python", deactivate);
 	return {

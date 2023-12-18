@@ -47,20 +47,35 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
 	// @ts-expect-error TS6133: 'configSettings' is declared but its value is never read.
 	private readonly configSettings: IConfigurationService;
 
-	constructor(@inject(IServiceContainer) private readonly serviceContainer: IServiceContainer) {
-        this.documentManager = serviceContainer.get<IDocumentManager>(IDocumentManager);
-        this.applicationShell = serviceContainer.get<IApplicationShell>(IApplicationShell);
-        this.processServiceFactory = serviceContainer.get<IProcessServiceFactory>(IProcessServiceFactory);
-        this.interpreterService = serviceContainer.get<IInterpreterService>(IInterpreterService);
-        this.configSettings = serviceContainer.get<IConfigurationService>(IConfigurationService);
-        this.commandManager = serviceContainer.get<ICommandManager>(ICommandManager);
-        this.activeResourceService = this.serviceContainer.get<IActiveResourceService>(IActiveResourceService);
-    }
+	constructor(
+		@inject(IServiceContainer)
+		private readonly serviceContainer: IServiceContainer
+	) {
+		this.documentManager =
+			serviceContainer.get<IDocumentManager>(IDocumentManager);
+		this.applicationShell =
+			serviceContainer.get<IApplicationShell>(IApplicationShell);
+		this.processServiceFactory =
+			serviceContainer.get<IProcessServiceFactory>(
+				IProcessServiceFactory
+			);
+		this.interpreterService =
+			serviceContainer.get<IInterpreterService>(IInterpreterService);
+		this.configSettings = serviceContainer.get<IConfigurationService>(
+			IConfigurationService
+		);
+		this.commandManager =
+			serviceContainer.get<ICommandManager>(ICommandManager);
+		this.activeResourceService =
+			this.serviceContainer.get<IActiveResourceService>(
+				IActiveResourceService
+			);
+	}
 
 	public async normalizeLines(
 		code: string,
 		wholeFileContent?: string,
-		resource?: Uri,
+		resource?: Uri
 	): Promise<string> {
 		try {
 			if (code.trim().length === 0) {
@@ -82,7 +97,7 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
 				args,
 				{
 					throwOnStdErr: true,
-				},
+				}
 			);
 			const normalizeOutput = createDeferred<string>();
 
@@ -110,16 +125,16 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
 			const endLineVal = activeEditor?.selection?.end.line ?? 0;
 			const emptyHighlightVal = activeEditor?.selection?.isEmpty ?? true;
 			const smartSendExperimentEnabledVal = pythonSmartSendEnabled(
-				this.serviceContainer,
+				this.serviceContainer
 			);
 			let smartSendSettingsEnabledVal = false;
 			const configuration =
 				this.serviceContainer.get<IConfigurationService>(
-					IConfigurationService,
+					IConfigurationService
 				);
 			if (configuration) {
 				const pythonSettings = configuration.getSettings(
-					this.activeResourceService.getActiveResource(),
+					this.activeResourceService.getActiveResource()
 				);
 				smartSendSettingsEnabledVal =
 					pythonSettings.REPL.enableREPLSmartSend;
@@ -158,7 +173,7 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
 		} catch (ex) {
 			traceError(
 				ex,
-				"Python: Failed to normalize code for execution in terminal",
+				"Python: Failed to normalize code for execution in terminal"
 			);
 			return code;
 		}
@@ -176,7 +191,7 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
 	// eslint-disable-next-line class-methods-use-this
 	private async moveToNextBlock(
 		lineOffset: number,
-		activeEditor?: TextEditor,
+		activeEditor?: TextEditor
 	): Promise<void> {
 		if (pythonSmartSendEnabled(this.serviceContainer)) {
 			if (activeEditor?.selection?.isEmpty) {
@@ -195,21 +210,19 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
 		const activeEditor = this.documentManager.activeTextEditor;
 		if (!activeEditor) {
 			this.applicationShell.showErrorMessage(
-				l10n.t("No open file to run in terminal"),
+				l10n.t("No open file to run in terminal")
 			);
 			return undefined;
 		}
 		if (activeEditor.document.isUntitled) {
 			this.applicationShell.showErrorMessage(
-				l10n.t(
-					"The active file needs to be saved before it can be run",
-				),
+				l10n.t("The active file needs to be saved before it can be run")
 			);
 			return undefined;
 		}
 		if (activeEditor.document.languageId !== PYTHON_LANGUAGE) {
 			this.applicationShell.showErrorMessage(
-				l10n.t("The active file is not a Python source file"),
+				l10n.t("The active file is not a Python source file")
 			);
 			return undefined;
 		}
@@ -222,7 +235,7 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
 
 	// eslint-disable-next-line class-methods-use-this
 	public async getSelectedTextToExecute(
-		textEditor: TextEditor,
+		textEditor: TextEditor
 	): Promise<string | undefined> {
 		if (!textEditor) {
 			return undefined;
@@ -244,7 +257,7 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
 
 	public async saveFileIfDirty(file: Uri): Promise<Resource> {
 		const docs = this.documentManager.textDocuments.filter(
-			(d) => d.uri.path === file.path,
+			(d) => d.uri.path === file.path
 		);
 		if (docs.length === 1 && (docs[0].isDirty || docs[0].isUntitled)) {
 			const workspaceService =
@@ -291,8 +304,8 @@ function getMultiLineSelectionText(textEditor: TextEditor): string {
 		new Position(selection.start.line, 0),
 		new Position(
 			selection.end.line,
-			textEditor.document.lineAt(selection.end.line).text.length,
-		),
+			textEditor.document.lineAt(selection.end.line).text.length
+		)
 	);
 	const fullText = textEditor.document.getText(fullTextRange);
 
@@ -318,14 +331,14 @@ function getMultiLineSelectionText(textEditor: TextEditor): string {
 	}
 
 	const fullStartLineText = textEditor.document.lineAt(
-		selection.start.line,
+		selection.start.line
 	).text;
 	const selectionFirstLineRange = new Range(
 		selection.start,
-		new Position(selection.start.line, fullStartLineText.length),
+		new Position(selection.start.line, fullStartLineText.length)
 	);
 	const selectionFirstLineText = textEditor.document.getText(
-		selectionFirstLineRange,
+		selectionFirstLineRange
 	);
 
 	// This handles case where:

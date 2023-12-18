@@ -35,18 +35,18 @@ export class PosixKnownPathsLocator extends Locator<BasicEnvInfo> {
 				// the binaries specified in .python-version file in the cwd. We should not be reporting
 				// those binaries as environments.
 				const knownDirs = (await commonPosixBinPaths()).filter(
-					(dirname) => !isPyenvShimDir(dirname),
+					(dirname) => !isPyenvShimDir(dirname)
 				);
 				let pythonBinaries =
 					await getPythonBinFromPosixPaths(knownDirs);
 				traceVerbose(
-					`Found ${pythonBinaries.length} python binaries in posix paths`,
+					`Found ${pythonBinaries.length} python binaries in posix paths`
 				);
 
 				// Filter out MacOS system installs of Python 2 if necessary.
 				if (isMacPython2Deprecated) {
 					pythonBinaries = pythonBinaries.filter(
-						(binary) => !isMacDefaultPythonPath(binary),
+						(binary) => !isMacDefaultPythonPath(binary)
 					);
 				}
 
@@ -65,7 +65,7 @@ export class PosixKnownPathsLocator extends Locator<BasicEnvInfo> {
 				traceError("Failed to process posix paths", ex);
 			}
 			traceVerbose(
-				"Finished searching for interpreters in posix paths locator",
+				"Finished searching for interpreters in posix paths locator"
 			);
 		};
 		return iterator(this.kind);

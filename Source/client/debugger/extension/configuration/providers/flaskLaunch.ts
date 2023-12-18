@@ -16,7 +16,7 @@ import { DebugConfigurationState, DebugConfigurationType } from "../../types";
 
 export async function buildFlaskLaunchDebugConfiguration(
 	input: MultiStepInput<DebugConfigurationState>,
-	state: DebugConfigurationState,
+	state: DebugConfigurationState
 ): Promise<void> {
 	const application = await getApplicationPath(state.folder);
 	let manuallyEnteredAValue: boolean | undefined;
@@ -44,7 +44,7 @@ export async function buildFlaskLaunchDebugConfiguration(
 					value && value.trim().length > 0
 						? undefined
 						: DebugConfigStrings.flask.enterAppPathOrNamePath
-								.invalid,
+								.invalid
 				),
 		});
 		if (selectedApp) {
@@ -61,7 +61,7 @@ export async function buildFlaskLaunchDebugConfiguration(
 	Object.assign(state.config, config);
 }
 export async function getApplicationPath(
-	folder: WorkspaceFolder | undefined,
+	folder: WorkspaceFolder | undefined
 ): Promise<string | undefined> {
 	if (!folder) {
 		return undefined;

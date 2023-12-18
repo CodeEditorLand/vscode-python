@@ -15,13 +15,17 @@ import { IProductPathService } from "./types";
 export abstract class BaseProductPathsService implements IProductPathService {
 	protected readonly configService: IConfigurationService;
 	protected readonly productInstaller: IInstaller;
-	constructor(@inject(IServiceContainer) protected serviceContainer: IServiceContainer) {
-        this.configService = serviceContainer.get<IConfigurationService>(IConfigurationService);
-        this.productInstaller = serviceContainer.get<IInstaller>(IInstaller);
-    }
+	constructor(
+		@inject(IServiceContainer) protected serviceContainer: IServiceContainer
+	) {
+		this.configService = serviceContainer.get<IConfigurationService>(
+			IConfigurationService
+		);
+		this.productInstaller = serviceContainer.get<IInstaller>(IInstaller);
+	}
 	public abstract getExecutableNameFromSettings(
 		product: Product,
-		resource?: Uri,
+		resource?: Uri
 	): string;
 	public isExecutableAModule(product: Product, resource?: Uri): boolean {
 		let moduleName: string | undefined;
@@ -33,7 +37,7 @@ export abstract class BaseProductPathsService implements IProductPathService {
 		// User may have customized the module name or provided the fully qualifieid path.
 		const executableName = this.getExecutableNameFromSettings(
 			product,
-			resource,
+			resource
 		);
 
 		return (
@@ -46,12 +50,14 @@ export abstract class BaseProductPathsService implements IProductPathService {
 
 @injectable()
 export class TestFrameworkProductPathService extends BaseProductPathsService {
-	constructor(@inject(IServiceContainer) serviceContainer: IServiceContainer) {
-        super(serviceContainer);
-    }
+	constructor(
+		@inject(IServiceContainer) serviceContainer: IServiceContainer
+	) {
+		super(serviceContainer);
+	}
 	public getExecutableNameFromSettings(
 		product: Product,
-		resource?: Uri,
+		resource?: Uri
 	): string {
 		const testHelper =
 			this.serviceContainer.get<ITestingService>(ITestingService);
@@ -67,9 +73,11 @@ export class TestFrameworkProductPathService extends BaseProductPathsService {
 
 @injectable()
 export class DataScienceProductPathService extends BaseProductPathsService {
-	constructor(@inject(IServiceContainer) serviceContainer: IServiceContainer) {
-        super(serviceContainer);
-    }
+	constructor(
+		@inject(IServiceContainer) serviceContainer: IServiceContainer
+	) {
+		super(serviceContainer);
+	}
 	public getExecutableNameFromSettings(product: Product, _?: Uri): string {
 		return this.productInstaller.translateProductToModuleName(product);
 	}

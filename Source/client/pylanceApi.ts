@@ -11,12 +11,12 @@ export interface TelemetryReporter {
 	sendTelemetryEvent(
 		eventName: string,
 		properties?: TelemetryEventProperties,
-		measurements?: TelemetryEventMeasurements,
+		measurements?: TelemetryEventMeasurements
 	): void;
 	sendTelemetryErrorEvent(
 		eventName: string,
 		properties?: TelemetryEventProperties,
-		measurements?: TelemetryEventMeasurements,
+		measurements?: TelemetryEventMeasurements
 	): void;
 }
 

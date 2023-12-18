@@ -29,52 +29,52 @@ import { TerminalDeactivateService } from "./envCollectionActivation/deactivateS
 export function registerTypes(serviceManager: IServiceManager): void {
 	serviceManager.addSingleton<ICodeExecutionHelper>(
 		ICodeExecutionHelper,
-		CodeExecutionHelper,
+		CodeExecutionHelper
 	);
 
 	serviceManager.addSingleton<ICodeExecutionManager>(
 		ICodeExecutionManager,
-		CodeExecutionManager,
+		CodeExecutionManager
 	);
 
 	serviceManager.addSingleton<ICodeExecutionService>(
 		ICodeExecutionService,
 		DjangoShellCodeExecutionProvider,
-		"djangoShell",
+		"djangoShell"
 	);
 	serviceManager.addSingleton<ICodeExecutionService>(
 		ICodeExecutionService,
 		TerminalCodeExecutionProvider,
-		"standard",
+		"standard"
 	);
 	serviceManager.addSingleton<ICodeExecutionService>(
 		ICodeExecutionService,
 		ReplProvider,
-		"repl",
+		"repl"
 	);
 
 	serviceManager.addSingleton<ITerminalAutoActivation>(
 		ITerminalAutoActivation,
-		TerminalAutoActivation,
+		TerminalAutoActivation
 	);
 	serviceManager.addSingleton<ITerminalEnvVarCollectionService>(
 		ITerminalEnvVarCollectionService,
-		TerminalEnvVarCollectionService,
+		TerminalEnvVarCollectionService
 	);
 	serviceManager.addSingleton<ITerminalDeactivateService>(
 		ITerminalDeactivateService,
-		TerminalDeactivateService,
+		TerminalDeactivateService
 	);
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
-		TerminalIndicatorPrompt,
+		TerminalIndicatorPrompt
 	);
 	serviceManager.addSingleton<IShellIntegrationService>(
 		IShellIntegrationService,
-		ShellIntegrationService,
+		ShellIntegrationService
 	);
 	serviceManager.addBinding(
 		ITerminalEnvVarCollectionService,
-		IExtensionActivationService,
+		IExtensionActivationService
 	);
 }

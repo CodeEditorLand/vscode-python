@@ -43,7 +43,7 @@ export abstract class SocketCallbackHandler extends EventEmitter {
 
 	private HandleIncomingData(
 		buffer: Buffer,
-		socket: net.Socket,
+		socket: net.Socket
 	): boolean | undefined {
 		if (!this._stream) {
 			this._stream = new SocketStream(socket, buffer);

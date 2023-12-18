@@ -27,14 +27,19 @@ export class CondaInheritEnvPrompt implements IExtensionActivationService {
 		virtualWorkspace: true,
 	};
 	constructor(
-        @inject(IInterpreterService) private readonly interpreterService: IInterpreterService,
-        @inject(IWorkspaceService) private readonly workspaceService: IWorkspaceService,
-        @inject(IApplicationShell) private readonly appShell: IApplicationShell,
-        @inject(IPersistentStateFactory) private readonly persistentStateFactory: IPersistentStateFactory,
-        @inject(IPlatformService) private readonly platformService: IPlatformService,
-        @inject(IApplicationEnvironment) private readonly appEnvironment: IApplicationEnvironment,
-        @optional() public hasPromptBeenShownInCurrentSession: boolean = false,
-    ) {}
+		@inject(IInterpreterService)
+		private readonly interpreterService: IInterpreterService,
+		@inject(IWorkspaceService)
+		private readonly workspaceService: IWorkspaceService,
+		@inject(IApplicationShell) private readonly appShell: IApplicationShell,
+		@inject(IPersistentStateFactory)
+		private readonly persistentStateFactory: IPersistentStateFactory,
+		@inject(IPlatformService)
+		private readonly platformService: IPlatformService,
+		@inject(IApplicationEnvironment)
+		private readonly appEnvironment: IApplicationEnvironment,
+		@optional() public hasPromptBeenShownInCurrentSession: boolean = false
+	) {}
 
 	public async activate(resource: Uri): Promise<void> {
 		this.initializeInBackground(resource).ignoreErrors();
@@ -54,7 +59,7 @@ export class CondaInheritEnvPrompt implements IExtensionActivationService {
 		const notificationPromptEnabled =
 			this.persistentStateFactory.createGlobalPersistentState(
 				condaInheritEnvPromptKey,
-				true,
+				true
 			);
 		if (!notificationPromptEnabled.value) {
 			return;
@@ -63,7 +68,7 @@ export class CondaInheritEnvPrompt implements IExtensionActivationService {
 		const telemetrySelections: ["Allow", "Close"] = ["Allow", "Close"];
 		const selection = await this.appShell.showInformationMessage(
 			Interpreters.condaInheritEnvMessage,
-			...prompts,
+			...prompts
 		);
 		sendTelemetryEvent(EventName.CONDA_INHERIT_ENV_PROMPT, undefined, {
 			selection: selection
@@ -79,7 +84,7 @@ export class CondaInheritEnvPrompt implements IExtensionActivationService {
 				.update(
 					"integrated.inheritEnv",
 					false,
-					ConfigurationTarget.Global,
+					ConfigurationTarget.Global
 				);
 		} else if (selection === prompts[1]) {
 			await notificationPromptEnabled.updateValue(false);
@@ -87,7 +92,7 @@ export class CondaInheritEnvPrompt implements IExtensionActivationService {
 	}
 
 	@traceDecoratorError(
-		"Failed to check whether to display prompt for conda inherit env setting",
+		"Failed to check whether to display prompt for conda inherit env setting"
 	)
 	public async shouldShowPrompt(resource: Uri): Promise<boolean> {
 		if (this.hasPromptBeenShownInCurrentSession) {
@@ -111,7 +116,7 @@ export class CondaInheritEnvPrompt implements IExtensionActivationService {
 			.inspect<boolean>("integrated.inheritEnv");
 		if (!setting) {
 			traceError(
-				"WorkspaceConfiguration.inspect returns `undefined` for setting `terminal.integrated.inheritEnv`",
+				"WorkspaceConfiguration.inspect returns `undefined` for setting `terminal.integrated.inheritEnv`"
 			);
 			return false;
 		}

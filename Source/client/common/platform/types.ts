@@ -26,13 +26,13 @@ export interface IRegistry {
 	getKeys(
 		key: string,
 		hive: RegistryHive,
-		arch?: Architecture,
+		arch?: Architecture
 	): Promise<string[]>;
 	getValue(
 		key: string,
 		hive: RegistryHive,
 		arch?: Architecture,
-		name?: string,
+		name?: string
 	): Promise<string | undefined | null>;
 }
 
@@ -217,7 +217,7 @@ export interface IFileSystem {
 	writeFile(
 		filePath: string,
 		text: string | Buffer,
-		options?: string | fsextra.WriteFileOptions,
+		options?: string | fsextra.WriteFileOptions
 	): Promise<void>;
 	appendFile(filename: string, text: string | Buffer): Promise<void>;
 	copyFile(src: string, dest: string): Promise<void>;
@@ -240,7 +240,7 @@ export interface IFileSystem {
 	search(globPattern: string, cwd?: string, dot?: boolean): Promise<string[]>;
 	createTemporaryFile(
 		extension: string,
-		mode?: number,
+		mode?: number
 	): Promise<TemporaryFile>;
 	isDirReadonly(dirname: string): Promise<boolean>;
 }

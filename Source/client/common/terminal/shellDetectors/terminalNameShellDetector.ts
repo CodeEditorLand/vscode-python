@@ -23,14 +23,14 @@ export class TerminalNameShellDetector extends BaseShellDetector {
 	}
 	public identify(
 		telemetryProperties: ShellIdentificationTelemetry,
-		terminal?: Terminal,
+		terminal?: Terminal
 	): TerminalShellType | undefined {
 		if (!terminal) {
 			return;
 		}
 		const shell = this.identifyShellFromShellPath(terminal.name);
 		traceVerbose(
-			`Terminal name '${terminal.name}' identified as shell '${shell}'`,
+			`Terminal name '${terminal.name}' identified as shell '${shell}'`
 		);
 		telemetryProperties.shellIdentificationSource =
 			shell === TerminalShellType.other

@@ -49,12 +49,12 @@ export class JediLanguageServerProxy implements ILanguageServerProxy {
 		undefined,
 		true,
 		undefined,
-		JediLanguageServerProxy.versionTelemetryProps,
+		JediLanguageServerProxy.versionTelemetryProps
 	)
 	public async start(
 		resource: Resource,
 		interpreter: PythonEnvironment | undefined,
-		options: LanguageClientOptions,
+		options: LanguageClientOptions
 	): Promise<void> {
 		this.lsVersion =
 			(options.middleware
@@ -66,7 +66,7 @@ export class JediLanguageServerProxy implements ILanguageServerProxy {
 			const client = await this.factory.createLanguageClient(
 				resource,
 				interpreter,
-				options,
+				options
 			);
 			this.registerHandlers(client);
 			await client.start();
@@ -74,7 +74,7 @@ export class JediLanguageServerProxy implements ILanguageServerProxy {
 		} catch (ex) {
 			traceError("Failed to start language server:", ex);
 			throw new Error(
-				"Launching Jedi language server using python failed, see output.",
+				"Launching Jedi language server using python failed, see output."
 			);
 		}
 	}
@@ -121,7 +121,7 @@ export class JediLanguageServerProxy implements ILanguageServerProxy {
 		undefined,
 		true,
 		undefined,
-		JediLanguageServerProxy.versionTelemetryProps,
+		JediLanguageServerProxy.versionTelemetryProps
 	)
 	private registerHandlers(client: LanguageClient) {
 		const progressReporting = new ProgressReporting(client);

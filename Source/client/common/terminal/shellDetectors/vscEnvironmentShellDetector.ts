@@ -18,12 +18,15 @@ import { BaseShellDetector } from "./baseShellDetector";
  * @extends {BaseShellDetector}
  */
 export class VSCEnvironmentShellDetector extends BaseShellDetector {
-	constructor(@inject(IApplicationEnvironment) private readonly appEnv: IApplicationEnvironment) {
-        super(3);
-    }
+	constructor(
+		@inject(IApplicationEnvironment)
+		private readonly appEnv: IApplicationEnvironment
+	) {
+		super(3);
+	}
 	public identify(
 		telemetryProperties: ShellIdentificationTelemetry,
-		terminal?: Terminal,
+		terminal?: Terminal
 	): TerminalShellType | undefined {
 		const shellPath =
 			terminal?.creationOptions &&
@@ -36,7 +39,7 @@ export class VSCEnvironmentShellDetector extends BaseShellDetector {
 		}
 		const shell = this.identifyShellFromShellPath(shellPath);
 		traceVerbose(
-			`Terminal shell path '${shellPath}' identified as shell '${shell}'`,
+			`Terminal shell path '${shellPath}' identified as shell '${shell}'`
 		);
 		telemetryProperties.shellIdentificationSource =
 			shell === TerminalShellType.other

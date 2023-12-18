@@ -17,21 +17,21 @@ export class PythonPathUpdaterService
 	implements IPythonPathUpdaterServiceManager
 {
 	constructor(
-        @inject(IPythonPathUpdaterServiceFactory)
-        private readonly pythonPathSettingsUpdaterFactory: IPythonPathUpdaterServiceFactory,
-        @inject(IComponentAdapter) private readonly pyenvs: IComponentAdapter,
-    ) {}
+		@inject(IPythonPathUpdaterServiceFactory)
+		private readonly pythonPathSettingsUpdaterFactory: IPythonPathUpdaterServiceFactory,
+		@inject(IComponentAdapter) private readonly pyenvs: IComponentAdapter
+	) {}
 
 	public async updatePythonPath(
 		pythonPath: string | undefined,
 		configTarget: ConfigurationTarget,
 		trigger: "ui" | "shebang" | "load",
-		wkspace?: Uri,
+		wkspace?: Uri
 	): Promise<void> {
 		const stopWatch = new StopWatch();
 		const pythonPathUpdater = this.getPythonUpdaterService(
 			configTarget,
-			wkspace,
+			wkspace
 		);
 		let failed = false;
 		try {
@@ -44,7 +44,7 @@ export class PythonPathUpdaterService
 					? (reason.message as string)
 					: "";
 			window.showErrorMessage(
-				l10n.t("Failed to set interpreter path. Error: {0}", message),
+				l10n.t("Failed to set interpreter path. Error: {0}", message)
 			);
 			traceError(reason);
 		}
@@ -54,7 +54,7 @@ export class PythonPathUpdaterService
 			failed,
 			trigger,
 			pythonPath,
-			wkspace,
+			wkspace
 		).catch((ex) => traceError("Python Extension: sendTelemetry", ex));
 	}
 
@@ -63,7 +63,7 @@ export class PythonPathUpdaterService
 		failed: boolean,
 		trigger: "ui" | "shebang" | "load",
 		pythonPath: string | undefined,
-		wkspace?: Uri,
+		wkspace?: Uri
 	) {
 		const telemetryProperties: PythonInterpreterTelemetry = {
 			failed,
@@ -72,10 +72,10 @@ export class PythonPathUpdaterService
 		if (!failed && pythonPath) {
 			const systemVariables = new SystemVariables(
 				undefined,
-				wkspace?.fsPath,
+				wkspace?.fsPath
 			);
 			const interpreterInfo = await this.pyenvs.getInterpreterInformation(
-				systemVariables.resolveAny(pythonPath),
+				systemVariables.resolveAny(pythonPath)
 			);
 			if (interpreterInfo) {
 				telemetryProperties.pythonVersion =
@@ -86,13 +86,13 @@ export class PythonPathUpdaterService
 		sendTelemetryEvent(
 			EventName.PYTHON_INTERPRETER,
 			duration,
-			telemetryProperties,
+			telemetryProperties
 		);
 	}
 
 	private getPythonUpdaterService(
 		configTarget: ConfigurationTarget,
-		wkspace?: Uri,
+		wkspace?: Uri
 	) {
 		switch (configTarget) {
 			case ConfigurationTarget.Global: {
@@ -104,7 +104,7 @@ export class PythonPathUpdaterService
 				}
 
 				return this.pythonPathSettingsUpdaterFactory.getWorkspacePythonPathConfigurationService(
-					wkspace!,
+					wkspace!
 				);
 			}
 			default: {
@@ -113,7 +113,7 @@ export class PythonPathUpdaterService
 				}
 
 				return this.pythonPathSettingsUpdaterFactory.getWorkspaceFolderPythonPathConfigurationService(
-					wkspace!,
+					wkspace!
 				);
 			}
 		}

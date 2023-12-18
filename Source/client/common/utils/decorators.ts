@@ -55,7 +55,7 @@ export function makeDebounceDecorator(wait?: number) {
 	return function (
 		_target: any,
 		_propertyName: string,
-		descriptor: TypedPropertyDescriptor<VoidFunction>,
+		descriptor: TypedPropertyDescriptor<VoidFunction>
 	) {
 		// We could also make use of _debounce() options.  For instance,
 		// the following causes the original method to be called
@@ -75,7 +75,7 @@ export function makeDebounceDecorator(wait?: number) {
 				return originalMethod.apply(this, arguments as any);
 			},
 			wait,
-			options,
+			options
 		);
 		(descriptor as any).value = debounced;
 	};
@@ -85,7 +85,7 @@ export function makeDebounceAsyncDecorator(wait?: number) {
 	return function (
 		_target: any,
 		_propertyName: string,
-		descriptor: TypedPropertyDescriptor<AsyncVoidFunction>,
+		descriptor: TypedPropertyDescriptor<AsyncVoidFunction>
 	) {
 		type StateInformation = {
 			started: boolean;
@@ -117,22 +117,19 @@ export function makeDebounceAsyncDecorator(wait?: number) {
 				clearTimeout(state.timer as any);
 			}
 
-			state.timer = setTimeout(
-				async () => {
-					state.started = true;
-					originalMethod
-						.apply(this)
-						.then((r) => {
-							state.started = false;
-							deferred.resolve(r);
-						})
-						.catch((ex) => {
-							state.started = false;
-							deferred.reject(ex);
-						});
-				},
-				wait || 0,
-			);
+			state.timer = setTimeout(async () => {
+				state.started = true;
+				originalMethod
+					.apply(this)
+					.then((r) => {
+						state.started = false;
+						deferred.resolve(r);
+					})
+					.catch((ex) => {
+						state.started = false;
+						deferred.reject(ex);
+					});
+			}, wait || 0);
 			return deferred.promise;
 		};
 	};
@@ -161,12 +158,12 @@ const moduleLoadWatch = new StopWatch();
 export function cache(
 	expiryDurationMs: number,
 	cachePromise = false,
-	expiryDurationAfterStartUpMs?: number,
+	expiryDurationAfterStartUpMs?: number
 ) {
 	return function (
 		target: Object,
 		propertyName: string,
-		descriptor: TypedPropertyDescriptor<PromiseFunctionWithAnyArgs>,
+		descriptor: TypedPropertyDescriptor<PromiseFunctionWithAnyArgs>
 	) {
 		const originalMethod = descriptor.value!;
 		const className =
@@ -185,7 +182,7 @@ export function cache(
 				traceError(
 					"Error while creating key for keyPrefix:",
 					keyPrefix,
-					ex,
+					ex
 				);
 				return originalMethod.apply(this, args) as Promise<any>;
 			}
@@ -213,7 +210,7 @@ export function cache(
 						cacheStoreForMethods.set(key, {
 							data: result,
 							expiry: Date.now() + expiryMs,
-						}),
+						})
 					)
 					.ignoreErrors();
 			}
@@ -233,7 +230,7 @@ export function swallowExceptions(scopeName?: string) {
 	return function (
 		_target: any,
 		propertyName: string,
-		descriptor: TypedPropertyDescriptor<any>,
+		descriptor: TypedPropertyDescriptor<any>
 	) {
 		const originalMethod = descriptor.value!;
 		const errorMessage = `Python Extension (Error in ${

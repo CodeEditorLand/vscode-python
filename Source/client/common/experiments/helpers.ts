@@ -10,7 +10,7 @@ import { isTestExecution } from "../constants";
 import { traceInfo } from "../../logging";
 
 export function inTerminalEnvVarExperiment(
-	experimentService: IExperimentService,
+	experimentService: IExperimentService
 ): boolean {
 	if (
 		!isTestExecution() &&
@@ -20,7 +20,7 @@ export function inTerminalEnvVarExperiment(
 	) {
 		// TODO: Remove this if statement once https://github.com/microsoft/vscode/issues/180486 is fixed.
 		traceInfo(
-			"Not enabling terminal env var experiment in multiroot remote workspaces",
+			"Not enabling terminal env var experiment in multiroot remote workspaces"
 		);
 		return false;
 	}

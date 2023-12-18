@@ -27,7 +27,7 @@ export interface IRegistryValue {
 
 export async function readRegistryValues(
 	options: Options,
-	useWorkerThreads: boolean,
+	useWorkerThreads: boolean
 ): Promise<IRegistryValue[]> {
 	if (!useWorkerThreads) {
 		// eslint-disable-next-line global-require
@@ -44,13 +44,13 @@ export async function readRegistryValues(
 	}
 	return executeWorkerFile(
 		path.join(__dirname, "registryValues.worker.js"),
-		options,
+		options
 	);
 }
 
 export async function readRegistryKeys(
 	options: Options,
-	useWorkerThreads: boolean,
+	useWorkerThreads: boolean
 ): Promise<IRegistryKey[]> {
 	if (!useWorkerThreads) {
 		// eslint-disable-next-line global-require
@@ -67,6 +67,6 @@ export async function readRegistryKeys(
 	}
 	return executeWorkerFile(
 		path.join(__dirname, "registryKeys.worker.js"),
-		options,
+		options
 	);
 }

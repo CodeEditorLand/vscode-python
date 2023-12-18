@@ -19,7 +19,7 @@ const workspaceFolderToken = "${workspaceFolder}";
 
 export async function buildPyramidLaunchConfiguration(
 	input: MultiStepInput<DebugConfigurationState>,
-	state: DebugConfigurationState,
+	state: DebugConfigurationState
 ): Promise<void> {
 	const iniPath = await getDevelopmentIniPath(state.folder);
 	const defaultIni = `${workspaceFolderToken}${path.sep}development.ini`;
@@ -42,13 +42,13 @@ export async function buildPyramidLaunchConfiguration(
 			value: defaultIni,
 			prompt: l10n.t(
 				"Enter the path to development.ini ({0} points to the root of the current workspace folder)",
-				workspaceFolderToken,
+				workspaceFolderToken
 			),
 			validate: (value) =>
 				validateIniPath(
 					state ? state.folder : undefined,
 					defaultIni,
-					value,
+					value
 				),
 		});
 		if (selectedIniPath) {
@@ -68,7 +68,7 @@ export async function buildPyramidLaunchConfiguration(
 export async function validateIniPath(
 	folder: WorkspaceFolder | undefined,
 	defaultValue: string,
-	selected?: string,
+	selected?: string
 ): Promise<string | undefined> {
 	if (!folder) {
 		return undefined;
@@ -90,14 +90,14 @@ export async function validateIniPath(
 }
 
 export async function getDevelopmentIniPath(
-	folder: WorkspaceFolder | undefined,
+	folder: WorkspaceFolder | undefined
 ): Promise<string | undefined> {
 	if (!folder) {
 		return undefined;
 	}
 	const defaultLocationOfManagePy = path.join(
 		folder.uri.fsPath,
-		"development.ini",
+		"development.ini"
 	);
 	if (await fs.pathExists(defaultLocationOfManagePy)) {
 		return `${workspaceFolderToken}${path.sep}development.ini`;

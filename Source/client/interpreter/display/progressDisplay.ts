@@ -30,10 +30,10 @@ export class InterpreterLocatorProgressStatubarHandler
 	private isFirstTimeLoadingInterpreters = true;
 
 	constructor(
-        @inject(IApplicationShell) private readonly shell: IApplicationShell,
-        @inject(IDisposableRegistry) private readonly disposables: Disposable[],
-        @inject(IComponentAdapter) private readonly pyenvs: IComponentAdapter,
-    ) {}
+		@inject(IApplicationShell) private readonly shell: IApplicationShell,
+		@inject(IDisposableRegistry) private readonly disposables: Disposable[],
+		@inject(IComponentAdapter) private readonly pyenvs: IComponentAdapter
+	) {}
 
 	public async activate(): Promise<void> {
 		this.pyenvs.onProgress(
@@ -47,7 +47,7 @@ export class InterpreterLocatorProgressStatubarHandler
 				}
 			},
 			this,
-			this.disposables,
+			this.disposables
 		);
 	}
 

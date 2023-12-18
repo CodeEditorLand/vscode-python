@@ -15,7 +15,7 @@ try {
 } catch (ex) {
 	traceWarn(
 		"Failed to decorate EventEmitter for DI (possibly already decorated by another Extension)",
-		ex,
+		ex
 	);
 }
 
@@ -25,7 +25,7 @@ export class ServiceContainer implements IServiceContainer {
 
 	public get<T>(
 		serviceIdentifier: interfaces.ServiceIdentifier<T>,
-		name?: string | number | symbol,
+		name?: string | number | symbol
 	): T {
 		return name
 			? this.container.getNamed<T>(serviceIdentifier, name)
@@ -34,7 +34,7 @@ export class ServiceContainer implements IServiceContainer {
 
 	public getAll<T>(
 		serviceIdentifier: string | symbol | Newable<T> | Abstract<T>,
-		name?: string | number | symbol | undefined,
+		name?: string | number | symbol | undefined
 	): T[] {
 		return name
 			? this.container.getAllNamed<T>(serviceIdentifier, name)
@@ -43,7 +43,7 @@ export class ServiceContainer implements IServiceContainer {
 
 	public tryGet<T>(
 		serviceIdentifier: interfaces.ServiceIdentifier<T>,
-		name?: string | number | symbol | undefined,
+		name?: string | number | symbol | undefined
 	): T | undefined {
 		try {
 			return name

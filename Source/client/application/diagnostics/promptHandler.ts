@@ -31,18 +31,21 @@ export class DiagnosticCommandPromptHandlerService
 	implements IDiagnosticHandlerService<MessageCommandPrompt>
 {
 	private readonly appShell: IApplicationShell;
-	constructor(@inject(IServiceContainer) serviceContainer: IServiceContainer) {
-        this.appShell = serviceContainer.get<IApplicationShell>(IApplicationShell);
-    }
+	constructor(
+		@inject(IServiceContainer) serviceContainer: IServiceContainer
+	) {
+		this.appShell =
+			serviceContainer.get<IApplicationShell>(IApplicationShell);
+	}
 	public async handle(
 		diagnostic: IDiagnostic,
-		options: MessageCommandPrompt = { commandPrompts: [] },
+		options: MessageCommandPrompt = { commandPrompts: [] }
 	): Promise<void> {
 		const prompts = options.commandPrompts.map((option) => option.prompt);
 		const response = await this.displayMessage(
 			options.message ? options.message : diagnostic.message,
 			diagnostic.severity,
-			prompts,
+			prompts
 		);
 		if (options.onClose) {
 			options.onClose(response);
@@ -51,7 +54,7 @@ export class DiagnosticCommandPromptHandlerService
 			return;
 		}
 		const selectedOption = options.commandPrompts.find(
-			(option) => option.prompt === response,
+			(option) => option.prompt === response
 		);
 		if (selectedOption && selectedOption.command) {
 			await selectedOption.command.invoke();
@@ -60,7 +63,7 @@ export class DiagnosticCommandPromptHandlerService
 	private async displayMessage(
 		message: string,
 		severity: DiagnosticSeverity,
-		prompts: string[],
+		prompts: string[]
 	): Promise<string | undefined> {
 		switch (severity) {
 			case DiagnosticSeverity.Error: {
@@ -72,7 +75,7 @@ export class DiagnosticCommandPromptHandlerService
 			default: {
 				return this.appShell.showInformationMessage(
 					message,
-					...prompts,
+					...prompts
 				);
 			}
 		}

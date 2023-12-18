@@ -46,34 +46,40 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 	private readonly fileSystem: IFileSystem;
 
 	constructor(
-        @inject(IServiceContainer) private serviceContainer: IServiceContainer,
-        @inject(IEnvironmentActivationService) private readonly activationHelper: IEnvironmentActivationService,
-        @inject(IProcessServiceFactory) private readonly processServiceFactory: IProcessServiceFactory,
-        @inject(IConfigurationService) private readonly configService: IConfigurationService,
-        @inject(IComponentAdapter) private readonly pyenvs: IComponentAdapter,
-        @inject(IInterpreterAutoSelectionService) private readonly autoSelection: IInterpreterAutoSelectionService,
-        @inject(IInterpreterPathService) private readonly interpreterPathExpHelper: IInterpreterPathService,
-    ) {
-        // Acquire other objects here so that if we are called during dispose they are available.
-        this.disposables = this.serviceContainer.get<IDisposableRegistry>(IDisposableRegistry);
-        this.logger = this.serviceContainer.get<IProcessLogger>(IProcessLogger);
-        this.fileSystem = this.serviceContainer.get<IFileSystem>(IFileSystem);
-    }
+		@inject(IServiceContainer) private serviceContainer: IServiceContainer,
+		@inject(IEnvironmentActivationService)
+		private readonly activationHelper: IEnvironmentActivationService,
+		@inject(IProcessServiceFactory)
+		private readonly processServiceFactory: IProcessServiceFactory,
+		@inject(IConfigurationService)
+		private readonly configService: IConfigurationService,
+		@inject(IComponentAdapter) private readonly pyenvs: IComponentAdapter,
+		@inject(IInterpreterAutoSelectionService)
+		private readonly autoSelection: IInterpreterAutoSelectionService,
+		@inject(IInterpreterPathService)
+		private readonly interpreterPathExpHelper: IInterpreterPathService
+	) {
+		// Acquire other objects here so that if we are called during dispose they are available.
+		this.disposables =
+			this.serviceContainer.get<IDisposableRegistry>(IDisposableRegistry);
+		this.logger = this.serviceContainer.get<IProcessLogger>(IProcessLogger);
+		this.fileSystem = this.serviceContainer.get<IFileSystem>(IFileSystem);
+	}
 
 	public async create(
-		options: ExecutionFactoryCreationOptions,
+		options: ExecutionFactoryCreationOptions
 	): Promise<IPythonExecutionService> {
 		let { pythonPath } = options;
 		if (!pythonPath || pythonPath === "python") {
 			const activatedEnvLaunch =
 				this.serviceContainer.get<IActivatedEnvironmentLaunch>(
-					IActivatedEnvironmentLaunch,
+					IActivatedEnvironmentLaunch
 				);
 			await activatedEnvLaunch.selectIfLaunchedViaActivatedEnv();
 			// If python path wasn't passed in, we need to auto select it and then read it
 			// from the configuration.
 			const interpreterPath = this.interpreterPathExpHelper.get(
-				options.resource,
+				options.resource
 			);
 			if (!interpreterPath || interpreterPath === "python") {
 				// Block on autoselection if no interpreter selected.
@@ -89,12 +95,12 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 				]);
 				if (!success) {
 					traceError(
-						"Autoselection timeout out, this is likely a issue with how consumer called execution factory API. Using default python to execute.",
+						"Autoselection timeout out, this is likely a issue with how consumer called execution factory API. Using default python to execute."
 					);
 				}
 			}
 			pythonPath = this.configService.getSettings(
-				options.resource,
+				options.resource
 			).pythonPath;
 		}
 		const processService: IProcessService =
@@ -102,7 +108,7 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 
 		const condaExecutionService = await this.createCondaExecutionService(
 			pythonPath,
-			processService,
+			processService
 		);
 		if (condaExecutionService) {
 			return condaExecutionService;
@@ -119,19 +125,19 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 	}
 
 	public async createActivatedEnvironment(
-		options: ExecutionFactoryCreateWithEnvironmentOptions,
+		options: ExecutionFactoryCreateWithEnvironmentOptions
 	): Promise<IPythonExecutionService> {
 		const envVars =
 			await this.activationHelper.getActivatedEnvironmentVariables(
 				options.resource,
 				options.interpreter,
-				options.allowEnvironmentFetchExceptions,
+				options.allowEnvironmentFetchExceptions
 			);
 		const hasEnvVars = envVars && Object.keys(envVars).length > 0;
 		sendTelemetryEvent(
 			EventName.PYTHON_INTERPRETER_ACTIVATION_ENVIRONMENT_VARIABLES,
 			undefined,
-			{ hasEnvVars },
+			{ hasEnvVars }
 		);
 		if (!hasEnvVars) {
 			return this.create({
@@ -152,7 +158,7 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 
 		const condaExecutionService = await this.createCondaExecutionService(
 			pythonPath,
-			processService,
+			processService
 		);
 		if (condaExecutionService) {
 			return condaExecutionService;
@@ -160,14 +166,14 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 		const env = createPythonEnv(
 			pythonPath,
 			processService,
-			this.fileSystem,
+			this.fileSystem
 		);
 		return createPythonService(processService, env);
 	}
 
 	public async createCondaExecutionService(
 		pythonPath: string,
-		processService: IProcessService,
+		processService: IProcessService
 	): Promise<IPythonExecutionService | undefined> {
 		const condaLocatorService =
 			this.serviceContainer.get<IComponentAdapter>(IComponentAdapter);
@@ -180,7 +186,7 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 		const env = await createCondaEnv(
 			condaEnvironment,
 			processService,
-			this.fileSystem,
+			this.fileSystem
 		);
 		if (!env) {
 			return undefined;
@@ -191,7 +197,7 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 
 function createPythonService(
 	procService: IProcessService,
-	env: IPythonEnvironment,
+	env: IPythonEnvironment
 ): IPythonExecutionService {
 	const procs = createPythonProcessService(procService, env);
 	return {

@@ -31,25 +31,28 @@ export class VirtualEnvironmentPrompt implements IExtensionActivationService {
 	};
 
 	constructor(
-        @inject(IPersistentStateFactory) private readonly persistentStateFactory: IPersistentStateFactory,
-        @inject(IInterpreterHelper) private readonly helper: IInterpreterHelper,
-        @inject(IPythonPathUpdaterServiceManager)
-        private readonly pythonPathUpdaterService: IPythonPathUpdaterServiceManager,
-        @inject(IDisposableRegistry) private readonly disposableRegistry: Disposable[],
-        @inject(IApplicationShell) private readonly appShell: IApplicationShell,
-        @inject(IComponentAdapter) private readonly pyenvs: IComponentAdapter,
-        @inject(IInterpreterService) private readonly interpreterService: IInterpreterService,
-    ) {}
+		@inject(IPersistentStateFactory)
+		private readonly persistentStateFactory: IPersistentStateFactory,
+		@inject(IInterpreterHelper) private readonly helper: IInterpreterHelper,
+		@inject(IPythonPathUpdaterServiceManager)
+		private readonly pythonPathUpdaterService: IPythonPathUpdaterServiceManager,
+		@inject(IDisposableRegistry)
+		private readonly disposableRegistry: Disposable[],
+		@inject(IApplicationShell) private readonly appShell: IApplicationShell,
+		@inject(IComponentAdapter) private readonly pyenvs: IComponentAdapter,
+		@inject(IInterpreterService)
+		private readonly interpreterService: IInterpreterService
+	) {}
 
 	public async activate(resource: Uri): Promise<void> {
 		const disposable = this.pyenvs.onDidCreate(resource, () =>
-			this.handleNewEnvironment(resource),
+			this.handleNewEnvironment(resource)
 		);
 		this.disposableRegistry.push(disposable);
 	}
 
 	@traceDecoratorError(
-		"Error in event handler for detection of new environment",
+		"Error in event handler for detection of new environment"
 	)
 	protected async handleNewEnvironment(resource: Uri): Promise<void> {
 		if (isCreatingEnvironment()) {
@@ -75,12 +78,12 @@ export class VirtualEnvironmentPrompt implements IExtensionActivationService {
 
 	protected async notifyUser(
 		interpreter: PythonEnvironment,
-		resource: Uri,
+		resource: Uri
 	): Promise<void> {
 		const notificationPromptEnabled =
 			this.persistentStateFactory.createWorkspacePersistentState(
 				doNotDisplayPromptStateKey,
-				true,
+				true
 			);
 		if (!notificationPromptEnabled.value) {
 			return;
@@ -97,7 +100,7 @@ export class VirtualEnvironmentPrompt implements IExtensionActivationService {
 		];
 		const selection = await this.appShell.showInformationMessage(
 			Interpreters.environmentPromptMessage,
-			...prompts,
+			...prompts
 		);
 		sendTelemetryEvent(
 			EventName.PYTHON_INTERPRETER_ACTIVATE_ENVIRONMENT_PROMPT,
@@ -106,7 +109,7 @@ export class VirtualEnvironmentPrompt implements IExtensionActivationService {
 				selection: selection
 					? telemetrySelections[prompts.indexOf(selection)]
 					: undefined,
-			},
+			}
 		);
 		if (!selection) {
 			return;
@@ -116,7 +119,7 @@ export class VirtualEnvironmentPrompt implements IExtensionActivationService {
 				interpreter.path,
 				ConfigurationTarget.WorkspaceFolder,
 				"ui",
-				resource,
+				resource
 			);
 		} else if (selection === prompts[2]) {
 			await notificationPromptEnabled.updateValue(false);

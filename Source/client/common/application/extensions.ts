@@ -57,7 +57,7 @@ export class Extensions implements IExtensions {
 		if (stack) {
 			const pythonExtRoot = path.join(
 				EXTENSION_ROOT_DIR.toLowerCase(),
-				path.sep,
+				path.sep
 			);
 			const frames = stack
 				.split("\n")
@@ -70,15 +70,15 @@ export class Extensions implements IExtensions {
 				})
 				.filter(
 					(item) =>
-						item && !item.toLowerCase().startsWith(pythonExtRoot),
+						item && !item.toLowerCase().startsWith(pythonExtRoot)
 				)
 				.filter((item) =>
 					// Use cached list of extensions as we need this to be fast.
 					this.cachedExtensions.some(
 						(ext) =>
 							item!.includes(ext.extensionUri.path) ||
-							item!.includes(ext.extensionUri.fsPath),
-					),
+							item!.includes(ext.extensionUri.fsPath)
+					)
 				) as string[];
 			stacktrace.parse(new Error("Ex")).forEach((item) => {
 				const fileName = item.getFileName();
@@ -96,7 +96,7 @@ export class Extensions implements IExtensions {
 				while (dirName && dirName.length < last.length) {
 					const possiblePackageJson = path.join(
 						dirName,
-						"package.json",
+						"package.json"
 					);
 					if (await this.fs.pathExists(possiblePackageJson)) {
 						const text =

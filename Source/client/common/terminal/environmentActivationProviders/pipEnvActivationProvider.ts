@@ -18,12 +18,14 @@ export class PipEnvActivationCommandProvider
 	implements ITerminalActivationCommandProvider
 {
 	constructor(
-        @inject(IInterpreterService) private readonly interpreterService: IInterpreterService,
-        @inject(IToolExecutionPath)
-        @named(ToolExecutionPath.pipenv)
-        private readonly pipEnvExecution: IToolExecutionPath,
-        @inject(IWorkspaceService) private readonly workspaceService: IWorkspaceService,
-    ) {}
+		@inject(IInterpreterService)
+		private readonly interpreterService: IInterpreterService,
+		@inject(IToolExecutionPath)
+		@named(ToolExecutionPath.pipenv)
+		private readonly pipEnvExecution: IToolExecutionPath,
+		@inject(IWorkspaceService)
+		private readonly workspaceService: IWorkspaceService
+	) {}
 
 	// eslint-disable-next-line class-methods-use-this
 	public isShellSupported(): boolean {
@@ -31,7 +33,7 @@ export class PipEnvActivationCommandProvider
 	}
 
 	public async getActivationCommands(
-		resource: Uri | undefined,
+		resource: Uri | undefined
 	): Promise<string[] | undefined> {
 		const interpreter =
 			await this.interpreterService.getActiveInterpreter(resource);
@@ -46,7 +48,7 @@ export class PipEnvActivationCommandProvider
 			if (
 				!(await isPipenvEnvironmentRelatedToFolder(
 					interpreter.path,
-					workspaceFolder?.uri.fsPath,
+					workspaceFolder?.uri.fsPath
 				))
 			) {
 				return undefined;
@@ -57,7 +59,7 @@ export class PipEnvActivationCommandProvider
 	}
 
 	public async getActivationCommandsForInterpreter(
-		pythonPath: string,
+		pythonPath: string
 	): Promise<string[] | undefined> {
 		const interpreter =
 			await this.interpreterService.getInterpreterDetails(pythonPath);

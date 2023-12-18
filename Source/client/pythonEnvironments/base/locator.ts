@@ -78,7 +78,7 @@ export type ProgressNotificationEvent = {
 };
 
 export function isProgressEvent<I = PythonEnvInfo>(
-	event: PythonEnvUpdatedEvent<I> | ProgressNotificationEvent,
+	event: PythonEnvUpdatedEvent<I> | ProgressNotificationEvent
 ): event is ProgressNotificationEvent {
 	return "stage" in event;
 }
@@ -235,14 +235,14 @@ export interface IDiscoveryAPI {
 	 * discovered. Carries `undefined` if there is no refresh currently going on.
 	 */
 	getRefreshPromise(
-		options?: GetRefreshEnvironmentsOptions,
+		options?: GetRefreshEnvironmentsOptions
 	): Promise<void> | undefined;
 	/**
 	 * Triggers a new refresh for query if there isn't any already running.
 	 */
 	triggerRefresh(
 		query?: PythonLocatorQuery,
-		options?: TriggerRefreshOptions,
+		options?: TriggerRefreshOptions
 	): Promise<void>;
 	/**
 	 * Get current list of known environments.

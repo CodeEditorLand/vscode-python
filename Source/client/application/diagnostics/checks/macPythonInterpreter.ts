@@ -32,21 +32,21 @@ import { Common } from "../../../common/utils/localize";
 
 const messages = {
 	[DiagnosticCodes.MacInterpreterSelected]: l10n.t(
-		"The selected macOS system install of Python is not recommended, some functionality in the extension will be limited. [Install another version of Python](https://www.python.org/downloads) or select a different interpreter for the best experience. [Learn more](https://aka.ms/AA7jfor).",
+		"The selected macOS system install of Python is not recommended, some functionality in the extension will be limited. [Install another version of Python](https://www.python.org/downloads) or select a different interpreter for the best experience. [Learn more](https://aka.ms/AA7jfor)."
 	),
 };
 
 export class InvalidMacPythonInterpreterDiagnostic extends BaseDiagnostic {
 	constructor(
 		code: DiagnosticCodes.MacInterpreterSelected,
-		resource: Resource,
+		resource: Resource
 	) {
 		super(
 			code,
 			messages[code],
 			DiagnosticSeverity.Error,
 			DiagnosticScope.WorkspaceFolder,
-			resource,
+			resource
 		);
 	}
 }
@@ -61,14 +61,19 @@ export class InvalidMacPythonInterpreterService extends BaseDiagnosticsService {
 	private timeOut?: NodeJS.Timer | number;
 
 	constructor(
-        @inject(IServiceContainer) serviceContainer: IServiceContainer,
-        @inject(IDisposableRegistry) disposableRegistry: IDisposableRegistry,
-        @inject(IPlatformService) private readonly platform: IPlatformService,
-        @inject(IInterpreterHelper) private readonly helper: IInterpreterHelper,
-    ) {
-        super([DiagnosticCodes.MacInterpreterSelected], serviceContainer, disposableRegistry, true);
-        this.addPythonPathChangedHandler();
-    }
+		@inject(IServiceContainer) serviceContainer: IServiceContainer,
+		@inject(IDisposableRegistry) disposableRegistry: IDisposableRegistry,
+		@inject(IPlatformService) private readonly platform: IPlatformService,
+		@inject(IInterpreterHelper) private readonly helper: IInterpreterHelper
+	) {
+		super(
+			[DiagnosticCodes.MacInterpreterSelected],
+			serviceContainer,
+			disposableRegistry,
+			true
+		);
+		this.addPythonPathChangedHandler();
+	}
 
 	public dispose(): void {
 		if (this.timeOut && typeof this.timeOut !== "number") {
@@ -83,7 +88,7 @@ export class InvalidMacPythonInterpreterService extends BaseDiagnosticsService {
 		}
 		const configurationService =
 			this.serviceContainer.get<IConfigurationService>(
-				IConfigurationService,
+				IConfigurationService
 			);
 		const settings = configurationService.getSettings(resource);
 		if (!(await this.helper.isMacDefaultPythonPath(settings.pythonPath))) {
@@ -92,7 +97,7 @@ export class InvalidMacPythonInterpreterService extends BaseDiagnosticsService {
 		return [
 			new InvalidMacPythonInterpreterDiagnostic(
 				DiagnosticCodes.MacInterpreterSelected,
-				resource,
+				resource
 			),
 		];
 	}
@@ -109,7 +114,7 @@ export class InvalidMacPythonInterpreterService extends BaseDiagnosticsService {
 				const canHandle = await this.canHandle(diagnostic);
 				const shouldIgnore =
 					await this.filterService.shouldIgnoreDiagnostic(
-						diagnostic.code,
+						diagnostic.code
 					);
 				if (!canHandle || shouldIgnore) {
 					return;
@@ -119,7 +124,7 @@ export class InvalidMacPythonInterpreterService extends BaseDiagnosticsService {
 					commandPrompts,
 					message: diagnostic.message,
 				});
-			}),
+			})
 		);
 	}
 
@@ -128,17 +133,17 @@ export class InvalidMacPythonInterpreterService extends BaseDiagnosticsService {
 			this.serviceContainer.get<IDisposableRegistry>(IDisposableRegistry);
 		const interpreterPathService =
 			this.serviceContainer.get<IInterpreterPathService>(
-				IInterpreterPathService,
+				IInterpreterPathService
 			);
 		disposables.push(
 			interpreterPathService.onDidChange((i) =>
-				this.onDidChangeConfiguration(i),
-			),
+				this.onDidChangeConfiguration(i)
+			)
 		);
 	}
 
 	protected async onDidChangeConfiguration(
-		interpreterConfigurationScope: InterpreterConfigurationScope,
+		interpreterConfigurationScope: InterpreterConfigurationScope
 	): Promise<void> {
 		const workspaceUri = interpreterConfigurationScope.uri;
 		// Lets wait, for more changes, dirty simple throttling.
@@ -155,11 +160,11 @@ export class InvalidMacPythonInterpreterService extends BaseDiagnosticsService {
 	}
 
 	private getCommandPrompts(
-		diagnostic: IDiagnostic,
+		diagnostic: IDiagnostic
 	): { prompt: string; command?: IDiagnosticCommand }[] {
 		const commandFactory =
 			this.serviceContainer.get<IDiagnosticsCommandFactory>(
-				IDiagnosticsCommandFactory,
+				IDiagnosticsCommandFactory
 			);
 		switch (diagnostic.code) {
 			case DiagnosticCodes.MacInterpreterSelected: {
@@ -182,7 +187,7 @@ export class InvalidMacPythonInterpreterService extends BaseDiagnosticsService {
 			}
 			default: {
 				throw new Error(
-					"Invalid diagnostic for 'InvalidMacPythonInterpreterService'",
+					"Invalid diagnostic for 'InvalidMacPythonInterpreterService'"
 				);
 			}
 		}

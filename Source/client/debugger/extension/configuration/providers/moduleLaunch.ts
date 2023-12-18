@@ -13,7 +13,7 @@ import { DebugConfigurationState, DebugConfigurationType } from "../../types";
 
 export async function buildModuleLaunchConfiguration(
 	input: MultiStepInput<DebugConfigurationState>,
-	state: DebugConfigurationState,
+	state: DebugConfigurationState
 ): Promise<void> {
 	let manuallyEnteredAValue: boolean | undefined;
 	const config: Partial<LaunchRequestArguments> = {
@@ -31,7 +31,7 @@ export async function buildModuleLaunchConfiguration(
 			Promise.resolve(
 				value && value.trim().length > 0
 					? undefined
-					: DebugConfigStrings.module.enterModule.invalid,
+					: DebugConfigStrings.module.enterModule.invalid
 			),
 	});
 	if (selectedModule) {

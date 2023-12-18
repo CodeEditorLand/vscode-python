@@ -28,7 +28,7 @@ export class SwitchToDefaultLanguageServerDiagnostic extends BaseDiagnostic {
 			message,
 			DiagnosticSeverity.Warning,
 			DiagnosticScope.Global,
-			resource,
+			resource
 		);
 	}
 }
@@ -39,15 +39,22 @@ export const SwitchToDefaultLanguageServerDiagnosticServiceId =
 @injectable()
 export class SwitchToDefaultLanguageServerDiagnosticService extends BaseDiagnosticsService {
 	constructor(
-        @inject(IServiceContainer) serviceContainer: IServiceContainer,
-        @inject(IWorkspaceService) private readonly workspaceService: IWorkspaceService,
-        @inject(IDiagnosticHandlerService)
-        @named(DiagnosticCommandPromptHandlerServiceId)
-        protected readonly messageService: IDiagnosticHandlerService<MessageCommandPrompt>,
-        @inject(IDisposableRegistry) disposableRegistry: IDisposableRegistry,
-    ) {
-        super([DiagnosticCodes.JediPython27NotSupportedDiagnostic], serviceContainer, disposableRegistry, true, true);
-    }
+		@inject(IServiceContainer) serviceContainer: IServiceContainer,
+		@inject(IWorkspaceService)
+		private readonly workspaceService: IWorkspaceService,
+		@inject(IDiagnosticHandlerService)
+		@named(DiagnosticCommandPromptHandlerServiceId)
+		protected readonly messageService: IDiagnosticHandlerService<MessageCommandPrompt>,
+		@inject(IDisposableRegistry) disposableRegistry: IDisposableRegistry
+	) {
+		super(
+			[DiagnosticCodes.JediPython27NotSupportedDiagnostic],
+			serviceContainer,
+			disposableRegistry,
+			true,
+			true
+		);
+	}
 
 	public diagnose(resource: Resource): Promise<IDiagnostic[]> {
 		let changed = false;
@@ -57,7 +64,7 @@ export class SwitchToDefaultLanguageServerDiagnosticService extends BaseDiagnost
 			config.update(
 				"languageServer",
 				"Default",
-				ConfigurationTarget.Workspace,
+				ConfigurationTarget.Workspace
 			);
 			changed = true;
 		}
@@ -66,7 +73,7 @@ export class SwitchToDefaultLanguageServerDiagnosticService extends BaseDiagnost
 			config.update(
 				"languageServer",
 				"Default",
-				ConfigurationTarget.Global,
+				ConfigurationTarget.Global
 			);
 			changed = true;
 		}
@@ -76,10 +83,10 @@ export class SwitchToDefaultLanguageServerDiagnosticService extends BaseDiagnost
 				? [
 						new SwitchToDefaultLanguageServerDiagnostic(
 							SwitchToDefaultLS.bannerMessage,
-							resource,
+							resource
 						),
-				  ]
-				: [],
+					]
+				: []
 		);
 	}
 

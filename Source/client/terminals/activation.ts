@@ -20,15 +20,16 @@ export class TerminalAutoActivation implements ITerminalAutoActivation {
 	private readonly terminalsNotToAutoActivate = new WeakSet<Terminal>();
 
 	constructor(
-        @inject(ITerminalManager)
-        private readonly terminalManager: ITerminalManager,
-        @inject(IDisposableRegistry) disposableRegistry: IDisposableRegistry,
-        @inject(ITerminalActivator) private readonly activator: ITerminalActivator,
-        @inject(IActiveResourceService)
-        private readonly activeResourceService: IActiveResourceService,
-    ) {
-        disposableRegistry.push(this);
-    }
+		@inject(ITerminalManager)
+		private readonly terminalManager: ITerminalManager,
+		@inject(IDisposableRegistry) disposableRegistry: IDisposableRegistry,
+		@inject(ITerminalActivator)
+		private readonly activator: ITerminalActivator,
+		@inject(IActiveResourceService)
+		private readonly activeResourceService: IActiveResourceService
+	) {
+		disposableRegistry.push(this);
+	}
 
 	public dispose(): void {
 		if (this.handler) {
@@ -43,7 +44,7 @@ export class TerminalAutoActivation implements ITerminalAutoActivation {
 		}
 		this.handler = this.terminalManager.onDidOpenTerminal(
 			this.activateTerminal,
-			this,
+			this
 		);
 	}
 

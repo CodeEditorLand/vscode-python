@@ -30,11 +30,11 @@ export class SocketServer extends EventEmitter implements ISocketServer {
 	}
 
 	public Start(
-		options: { port?: number; host?: string } = {},
+		options: { port?: number; host?: string } = {}
 	): Promise<number> {
 		const def = createDeferred<number>();
 		this.socketServer = net.createServer(
-			this.connectionListener.bind(this),
+			this.connectionListener.bind(this)
 		);
 
 		const port = typeof options.port === "number" ? options.port! : 0;

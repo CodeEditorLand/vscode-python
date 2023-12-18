@@ -20,11 +20,14 @@ export class LspNotebooksExperiment
 	private isJupyterInstalled = false;
 
 	constructor(
-        @inject(IServiceContainer) private readonly serviceContainer: IServiceContainer,
-        @inject(IJupyterExtensionDependencyManager) jupyterDependencyManager: IJupyterExtensionDependencyManager,
-    ) {
-        this.isJupyterInstalled = jupyterDependencyManager.isJupyterExtensionInstalled;
-    }
+		@inject(IServiceContainer)
+		private readonly serviceContainer: IServiceContainer,
+		@inject(IJupyterExtensionDependencyManager)
+		jupyterDependencyManager: IJupyterExtensionDependencyManager
+	) {
+		this.isJupyterInstalled =
+			jupyterDependencyManager.isJupyterExtensionInstalled;
+	}
 
 	// eslint-disable-next-line class-methods-use-this
 	public activate(): Promise<void> {
@@ -44,7 +47,7 @@ export class LspNotebooksExperiment
 	private async waitForJupyterToRegisterPythonPathFunction(): Promise<void> {
 		const jupyterExtensionIntegration =
 			this.serviceContainer.get<JupyterExtensionIntegration>(
-				JupyterExtensionIntegration,
+				JupyterExtensionIntegration
 			);
 
 		let success = false;
@@ -53,7 +56,7 @@ export class LspNotebooksExperiment
 				jupyterExtensionIntegration.getJupyterPythonPathFunction();
 			if (jupyterPythonPathFunction) {
 				traceVerbose(
-					`Jupyter called registerJupyterPythonPathFunction`,
+					`Jupyter called registerJupyterPythonPathFunction`
 				);
 				success = true;
 				break;
@@ -64,7 +67,7 @@ export class LspNotebooksExperiment
 
 		if (!success) {
 			traceVerbose(
-				`Timed out waiting for Jupyter to call registerJupyterPythonPathFunction`,
+				`Timed out waiting for Jupyter to call registerJupyterPythonPathFunction`
 			);
 		}
 	}

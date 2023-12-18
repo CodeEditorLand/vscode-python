@@ -52,7 +52,7 @@ export async function* findInterpretersInDir(
 	root: string,
 	recurseLevel?: number,
 	filterSubDir?: FileFilterFunc,
-	ignoreErrors = true,
+	ignoreErrors = true
 ): AsyncIterableIterator<DirEntry> {
 	// "checkBin" is a local variable rather than global
 	// so we can stub out getOSType() during unit testing.
@@ -86,7 +86,7 @@ export async function* iterPythonExecutablesInDir(
 	dirname: string,
 	opts: {
 		ignoreErrors: boolean;
-	} = { ignoreErrors: true },
+	} = { ignoreErrors: true }
 ): AsyncIterableIterator<DirEntry> {
 	const readDirOpts = {
 		...opts,
@@ -111,7 +111,7 @@ async function* walkSubTree(
 		filterSubDir: FileFilterFunc | undefined;
 		maxDepth: number;
 		ignoreErrors: boolean;
-	},
+	}
 ): AsyncIterableIterator<DirEntry> {
 	const entries = await readDirEntries(subRoot, cfg);
 	for (const entry of entries) {
@@ -133,7 +133,7 @@ async function readDirEntries(
 	opts: {
 		filterFilename?: FileFilterFunc;
 		ignoreErrors: boolean;
-	} = { ignoreErrors: true },
+	} = { ignoreErrors: true }
 ): Promise<DirEntry[]> {
 	const ignoreErrors = opts.ignoreErrors || false;
 	if (opts.filterFilename && getOSType() === OSType.Windows) {
@@ -162,7 +162,7 @@ async function readDirEntries(
 				const filetype =
 					(await getFileType(filename, opts)) || FileType.Unknown;
 				return { filename, filetype };
-			}),
+			})
 		);
 	}
 
@@ -198,7 +198,7 @@ async function readDirEntries(
 	});
 	if (opts.filterFilename) {
 		return entries.filter((e) =>
-			matchFile(e.filename, opts.filterFilename, ignoreErrors),
+			matchFile(e.filename, opts.filterFilename, ignoreErrors)
 		);
 	}
 	return entries;
@@ -209,7 +209,7 @@ function matchFile(
 	filterFile: FileFilterFunc | undefined,
 	// If "ignoreErrors" is true then we treat a failed filter
 	// as though it returned `false`.
-	ignoreErrors = true,
+	ignoreErrors = true
 ): boolean {
 	if (filterFile === undefined) {
 		return true;
@@ -230,7 +230,7 @@ function matchFile(
  * @param interpreterPath
  */
 async function getPythonVersionFromNearByFiles(
-	interpreterPath: string,
+	interpreterPath: string
 ): Promise<PythonVersion> {
 	const root = path.dirname(interpreterPath);
 	let version = UNKNOWN_PYTHON_VERSION;
@@ -256,7 +256,7 @@ async function getPythonVersionFromNearByFiles(
  */
 export async function getPythonVersionFromPath(
 	interpreterPath: string,
-	hint?: string,
+	hint?: string
 ): Promise<PythonVersion> {
 	let versionA;
 	try {
@@ -289,7 +289,7 @@ async function checkPythonExecutable(
 	opts: {
 		matchFilename?: (f: string) => boolean;
 		filterFile?: (f: string | DirEntry) => Promise<boolean>;
-	},
+	}
 ): Promise<boolean> {
 	const matchFilename = opts.matchFilename || matchStandardPythonBinFilename;
 	const filename =
@@ -330,7 +330,7 @@ const filterGlobalExecutable = getFileFilter({
  * For global envs, symlinks are ignored.
  */
 export async function looksLikeBasicGlobalPython(
-	executable: string | DirEntry,
+	executable: string | DirEntry
 ): Promise<boolean> {
 	// "matchBasic" is a local variable rather than global
 	// so we can stub out getOSType() during unit testing.
@@ -358,7 +358,7 @@ export async function looksLikeBasicGlobalPython(
  * For global envs, symlinks are ignored.
  */
 export async function looksLikeBasicVirtualPython(
-	executable: string | DirEntry,
+	executable: string | DirEntry
 ): Promise<boolean> {
 	// "matchBasic" is a local variable rather than global
 	// so we can stub out getOSType() during unit testing.
@@ -384,7 +384,7 @@ export async function getInterpreterPathFromDir(
 	opts: {
 		global?: boolean;
 		ignoreErrors?: boolean;
-	} = {},
+	} = {}
 ): Promise<string | undefined> {
 	const recurseLevel = 2;
 
@@ -402,7 +402,7 @@ export async function getInterpreterPathFromDir(
 		envDir,
 		recurseLevel,
 		filterDir,
-		opts.ignoreErrors,
+		opts.ignoreErrors
 	);
 	for await (const entry of executables) {
 		if (await matchExecutable(entry)) {

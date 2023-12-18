@@ -7,7 +7,7 @@ import * as vscode from "vscode";
 import { PVSC_EXTENSION_ID } from "../constants";
 
 export function getExtension<T = unknown>(
-	extensionId: string,
+	extensionId: string
 ): vscode.Extension<T> | undefined {
 	return vscode.extensions.getExtension(extensionId);
 }

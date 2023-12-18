@@ -11,7 +11,7 @@ const common = require("./common");
 
 const configFileName = path.join(
 	constants.ExtensionRootDir,
-	"tsconfig.extension.json",
+	"tsconfig.extension.json"
 );
 // Some modules will be pre-genearted and stored in out/.. dir and they'll be referenced via
 // NormalModuleReplacementPlugin. We need to ensure they do not get bundled into the output
@@ -44,7 +44,7 @@ const config = {
 						loader: path.join(
 							__dirname,
 							"loaders",
-							"externalizeDependencies.js",
+							"externalizeDependencies.js"
 						),
 					},
 				],

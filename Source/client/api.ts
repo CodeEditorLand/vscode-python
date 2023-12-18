@@ -33,31 +33,31 @@ export function buildApi(
 	ready: Promise<void>,
 	serviceManager: IServiceManager,
 	serviceContainer: IServiceContainer,
-	discoveryApi: IDiscoveryAPI,
+	discoveryApi: IDiscoveryAPI
 ): PythonExtension {
 	const configurationService = serviceContainer.get<IConfigurationService>(
-		IConfigurationService,
+		IConfigurationService
 	);
 	const interpreterService =
 		serviceContainer.get<IInterpreterService>(IInterpreterService);
 	serviceManager.addSingleton<JupyterExtensionIntegration>(
 		JupyterExtensionIntegration,
-		JupyterExtensionIntegration,
+		JupyterExtensionIntegration
 	);
 	serviceManager.addSingleton<TensorboardExtensionIntegration>(
 		TensorboardExtensionIntegration,
-		TensorboardExtensionIntegration,
+		TensorboardExtensionIntegration
 	);
 	const jupyterIntegration =
 		serviceContainer.get<JupyterExtensionIntegration>(
-			JupyterExtensionIntegration,
+			JupyterExtensionIntegration
 		);
 	const tensorboardIntegration =
 		serviceContainer.get<TensorboardExtensionIntegration>(
-			TensorboardExtensionIntegration,
+			TensorboardExtensionIntegration
 		);
 	const outputChannel = serviceContainer.get<ILanguageServerOutputChannel>(
-		ILanguageServerOutputChannel,
+		ILanguageServerOutputChannel
 	);
 
 	const api: PythonExtension & {
@@ -131,7 +131,7 @@ export function buildApi(
 			async getRemoteLauncherCommand(
 				host: string,
 				port: number,
-				waitUntilDebuggerAttaches = true,
+				waitUntilDebuggerAttaches = true
 			): Promise<string[]> {
 				return getDebugpyLauncherArgs({
 					host,
@@ -167,7 +167,7 @@ export function buildApi(
 					PYTHON_LANGUAGE,
 					PYLANCE_NAME,
 					args[0],
-					clientOptions,
+					clientOptions
 				);
 			},
 			start: (client: BaseLanguageClient): Promise<void> =>

@@ -33,15 +33,17 @@ export abstract class BaseInterpreterSelectorCommand
 	};
 	protected disposables: Disposable[] = [];
 	constructor(
-        @unmanaged() protected readonly pythonPathUpdaterService: IPythonPathUpdaterServiceManager,
-        @unmanaged() protected readonly commandManager: ICommandManager,
-        @unmanaged() protected readonly applicationShell: IApplicationShell,
-        @unmanaged() protected readonly workspaceService: IWorkspaceService,
-        @unmanaged() protected readonly pathUtils: IPathUtils,
-        @unmanaged() protected readonly configurationService: IConfigurationService,
-    ) {
-        this.disposables.push(this);
-    }
+		@unmanaged()
+		protected readonly pythonPathUpdaterService: IPythonPathUpdaterServiceManager,
+		@unmanaged() protected readonly commandManager: ICommandManager,
+		@unmanaged() protected readonly applicationShell: IApplicationShell,
+		@unmanaged() protected readonly workspaceService: IWorkspaceService,
+		@unmanaged() protected readonly pathUtils: IPathUtils,
+		@unmanaged()
+		protected readonly configurationService: IConfigurationService
+	) {
+		this.disposables.push(this);
+	}
 
 	public dispose() {
 		this.disposables.forEach((disposable) => disposable.dispose());
@@ -84,18 +86,18 @@ export abstract class BaseInterpreterSelectorCommand
 						{
 							label: Common.clearAll,
 						},
-				  ]
+					]
 				: [];
 		quickPickItems.push(
 			...workspaceFolders.map((w) => {
 				const selectedInterpreter = this.pathUtils.getDisplayName(
 					this.configurationService.getSettings(w.uri).pythonPath,
-					w.uri.fsPath,
+					w.uri.fsPath
 				);
 				return {
 					label: w.name,
 					description: this.pathUtils.getDisplayName(
-						path.dirname(w.uri.fsPath),
+						path.dirname(w.uri.fsPath)
 					),
 					uri: w.uri,
 					detail: selectedInterpreter,
@@ -106,7 +108,7 @@ export abstract class BaseInterpreterSelectorCommand
 					? Interpreters.clearAtWorkspace
 					: Interpreters.entireWorkspace,
 				uri: workspaceFolders[0].uri,
-			},
+			}
 		);
 
 		const selection = await this.applicationShell.showQuickPick(
@@ -115,7 +117,7 @@ export abstract class BaseInterpreterSelectorCommand
 				placeHolder: options?.resetTarget
 					? "Select the workspace folder to clear the interpreter for"
 					: "Select the workspace folder to set the interpreter",
-			},
+			}
 		);
 
 		if (selection?.label === Common.clearAll) {
@@ -137,19 +139,19 @@ export abstract class BaseInterpreterSelectorCommand
 
 		return selection
 			? selection.label === Interpreters.entireWorkspace ||
-			  selection.label === Interpreters.clearAtWorkspace
+				selection.label === Interpreters.clearAtWorkspace
 				? [
 						{
 							folderUri: selection.uri,
 							configTarget: ConfigurationTarget.Workspace,
 						},
-				  ]
+					]
 				: [
 						{
 							folderUri: selection.uri,
 							configTarget: ConfigurationTarget.WorkspaceFolder,
 						},
-				  ]
+					]
 			: undefined;
 	}
 }

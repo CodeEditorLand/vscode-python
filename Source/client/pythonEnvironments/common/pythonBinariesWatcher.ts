@@ -28,7 +28,7 @@ const [executable, binName] =
 export function watchLocationForPythonBinaries(
 	baseDir: string,
 	callback: (type: FileChangeType, absPath: string) => void,
-	executableGlob: string = executable,
+	executableGlob: string = executable
 ): IDisposable {
 	const resolvedGlob = path.posix.normalize(executableGlob);
 	const [baseGlob] = resolvedGlob.split("/").slice(-1);
@@ -38,7 +38,7 @@ export function watchLocationForPythonBinaries(
 			type,
 			JSON.stringify(e),
 			"for baseglob",
-			baseGlob,
+			baseGlob
 		);
 		const isMatch = minimatch(path.basename(e), baseGlob, {
 			nocase: getOSType() === OSType.Windows,
@@ -64,7 +64,7 @@ export enum PythonEnvStructure {
 export function resolvePythonExeGlobs(
 	basenameGlob = executable,
 	// Be default we always expect a "standard" structure.
-	structure = PythonEnvStructure.Standard,
+	structure = PythonEnvStructure.Standard
 ): string[] {
 	if (path.posix.normalize(basenameGlob).includes("/")) {
 		throw Error(`invalid basename glob "${basenameGlob}"`);
@@ -77,7 +77,7 @@ export function resolvePythonExeGlobs(
 			// Check in all subdirectories.
 			`*/${basenameGlob}`,
 			// Check in the "bin" directory of all subdirectories.
-			`*/${binName}/${basenameGlob}`,
+			`*/${binName}/${basenameGlob}`
 		);
 	} else if (structure === PythonEnvStructure.Flat) {
 		// Check only the directory.

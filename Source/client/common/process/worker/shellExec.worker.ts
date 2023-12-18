@@ -4,7 +4,7 @@ import { _workerShellExecImpl } from "./workerRawProcessApis";
 _workerShellExecImpl(
 	workerData.command,
 	workerData.options,
-	workerData.defaultEnv,
+	workerData.defaultEnv
 )
 	.then((res) => {
 		if (!parentPort) {

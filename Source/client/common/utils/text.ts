@@ -8,7 +8,7 @@ import { isNumber } from "./sysTypes";
 
 export function getWindowsLineEndingCount(
 	document: TextDocument,
-	offset: number,
+	offset: number
 ): number {
 	// const eolPattern = new RegExp('\r\n', 'g');
 	const eolPattern = /\r\n/g;

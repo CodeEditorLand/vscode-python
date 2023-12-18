@@ -40,7 +40,7 @@ export class PythonEnvsResolver implements IResolvingLocator {
 
 	constructor(
 		private readonly parentLocator: ICompositeLocator<BasicEnvInfo>,
-		private readonly environmentInfoService: IEnvironmentInfoService,
+		private readonly environmentInfoService: IEnvironmentInfoService
 	) {
 		this.parentLocator.onChanged((event) => {
 			if (event.type && event.searchLocation !== undefined) {
@@ -64,8 +64,8 @@ export class PythonEnvsResolver implements IResolvingLocator {
 			await this.environmentInfoService.getEnvironmentInfo(environment);
 		traceVerbose(
 			`Environment resolver resolved ${path} for ${JSON.stringify(
-				environment,
-			)} to ${JSON.stringify(info)}`,
+				environment
+			)} to ${JSON.stringify(info)}`
 		);
 		if (!info) {
 			return undefined;
@@ -87,7 +87,7 @@ export class PythonEnvsResolver implements IResolvingLocator {
 		iterator: IPythonEnvsIterator<BasicEnvInfo>,
 		didUpdate: EventEmitter<
 			PythonEnvUpdatedEvent | ProgressNotificationEvent
-		>,
+		>
 	): IPythonEnvsIterator {
 		const environmentKinds = new Map<string, PythonEnvKind>();
 		const state = {
@@ -111,7 +111,7 @@ export class PythonEnvsResolver implements IResolvingLocator {
 					}
 				} else if (event.update === undefined) {
 					throw new Error(
-						"Unsupported behavior: `undefined` environment updates are not supported from downstream locators in resolver",
+						"Unsupported behavior: `undefined` environment updates are not supported from downstream locators in resolver"
 					);
 				} else if (seen[event.index] !== undefined) {
 					const old = seen[event.index];
@@ -126,12 +126,12 @@ export class PythonEnvsResolver implements IResolvingLocator {
 						event.index,
 						state,
 						didUpdate,
-						seen,
+						seen
 					).ignoreErrors();
 				} else {
 					// This implies a problem in a downstream locator
 					traceVerbose(
-						`Expected already iterated env, got ${event.old} (#${event.index})`,
+						`Expected already iterated env, got ${event.old} (#${event.index})`
 					);
 				}
 				state.pending -= 1;
@@ -152,7 +152,7 @@ export class PythonEnvsResolver implements IResolvingLocator {
 				seen.indexOf(currEnv),
 				state,
 				didUpdate,
-				seen,
+				seen
 			).ignoreErrors();
 			result = await iterator.next();
 		}
@@ -168,13 +168,13 @@ export class PythonEnvsResolver implements IResolvingLocator {
 		didUpdate: EventEmitter<
 			PythonEnvUpdatedEvent | ProgressNotificationEvent
 		>,
-		seen: PythonEnvInfo[],
+		seen: PythonEnvInfo[]
 	) {
 		state.pending += 1;
 		// It's essential we increment the pending call count before any asynchronus calls in this method.
 		// We want this to be run even when `resolveInBackground` is called in background.
 		const info = await this.environmentInfoService.getEnvironmentInfo(
-			seen[envIndex],
+			seen[envIndex]
 		);
 		const old = seen[envIndex];
 		if (info) {
@@ -192,7 +192,7 @@ export class PythonEnvsResolver implements IResolvingLocator {
 
 async function setKind(
 	env: BasicEnvInfo,
-	environmentKinds: Map<string, PythonEnvKind>,
+	environmentKinds: Map<string, PythonEnvKind>
 ) {
 	const { path } = getEnvPath(env.executablePath, env.envPath);
 	let kind = environmentKinds.get(path);
@@ -210,7 +210,7 @@ async function setKind(
  */
 function checkIfFinishedAndNotify(
 	state: { done: boolean; pending: number },
-	didUpdate: EventEmitter<PythonEnvUpdatedEvent | ProgressNotificationEvent>,
+	didUpdate: EventEmitter<PythonEnvUpdatedEvent | ProgressNotificationEvent>
 ) {
 	if (state.done && state.pending === 0) {
 		didUpdate.fire({ stage: ProgressReportStage.discoveryFinished });
@@ -221,7 +221,7 @@ function checkIfFinishedAndNotify(
 
 function getResolvedEnv(
 	interpreterInfo: InterpreterInformation,
-	environment: PythonEnvInfo,
+	environment: PythonEnvInfo
 ) {
 	// Deep copy into a new object
 	const resolvedEnv = cloneDeep(environment);

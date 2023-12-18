@@ -23,14 +23,14 @@ import { noop } from "./utils/misc";
 let _workspaceState: Memento | undefined;
 const _workspaceKeys: string[] = [];
 export function initializePersistentStateForTriggers(
-	context: IExtensionContext,
+	context: IExtensionContext
 ) {
 	_workspaceState = context.workspaceState;
 }
 
 export function getWorkspaceStateValue<T>(
 	key: string,
-	defaultValue?: T,
+	defaultValue?: T
 ): T | undefined {
 	if (!_workspaceState) {
 		throw new Error("Workspace state not initialized");
@@ -43,7 +43,7 @@ export function getWorkspaceStateValue<T>(
 
 export async function updateWorkspaceStateValue<T>(
 	key: string,
-	value: T,
+	value: T
 ): Promise<void> {
 	if (!_workspaceState) {
 		throw new Error("Workspace state not initialized");
@@ -60,7 +60,7 @@ export async function updateWorkspaceStateValue<T>(
 	} catch (ex) {
 		traceError(
 			`Error while updating workspace state for key [${key}]:`,
-			ex,
+			ex
 		);
 	}
 }
@@ -69,8 +69,8 @@ async function clearWorkspaceState(): Promise<void> {
 	if (_workspaceState !== undefined) {
 		await Promise.all(
 			_workspaceKeys.map((key) =>
-				updateWorkspaceStateValue(key, undefined),
-			),
+				updateWorkspaceStateValue(key, undefined)
+			)
 		);
 	}
 }
@@ -80,14 +80,14 @@ export class PersistentState<T> implements IPersistentState<T> {
 		public readonly storage: Memento,
 		private key: string,
 		private defaultValue?: T,
-		private expiryDurationMs?: number,
+		private expiryDurationMs?: number
 	) {}
 
 	public get value(): T {
 		if (this.expiryDurationMs) {
 			const cachedData = this.storage.get<{ data?: T; expiry?: number }>(
 				this.key,
-				{ data: this.defaultValue! },
+				{ data: this.defaultValue! }
 			);
 			if (
 				!cachedData ||
@@ -123,14 +123,14 @@ export class PersistentState<T> implements IPersistentState<T> {
 				traceVerbose(
 					"Storage update failed for key",
 					this.key,
-					" retrying by resetting first",
+					" retrying by resetting first"
 				);
 				await this.updateValue(undefined as any, false);
 				await this.updateValue(newValue, false);
 				if (JSON.stringify(this.value) != JSON.stringify(newValue)) {
 					traceWarn(
 						"Retry failed, storage update failed for key",
-						this.key,
+						this.key
 					);
 				}
 			}
@@ -161,18 +161,20 @@ export class PersistentStateFactory
 	public readonly _globalKeysStorage = new PersistentState<KeysStorage[]>(
 		this.globalState,
 		GLOBAL_PERSISTENT_KEYS,
-		[],
+		[]
 	);
 	public readonly _workspaceKeysStorage = new PersistentState<KeysStorage[]>(
 		this.workspaceState,
 		WORKSPACE_PERSISTENT_KEYS,
-		[],
+		[]
 	);
 	constructor(
-        @inject(IMemento) @named(GLOBAL_MEMENTO) private globalState: Memento,
-        @inject(IMemento) @named(WORKSPACE_MEMENTO) private workspaceState: Memento,
-        @inject(ICommandManager) private cmdManager?: ICommandManager,
-    ) {}
+		@inject(IMemento) @named(GLOBAL_MEMENTO) private globalState: Memento,
+		@inject(IMemento)
+		@named(WORKSPACE_MEMENTO)
+		private workspaceState: Memento,
+		@inject(ICommandManager) private cmdManager?: ICommandManager
+	) {}
 
 	public async activate(): Promise<void> {
 		this.cmdManager?.registerCommand(Commands.ClearStorage, async () => {
@@ -181,12 +183,12 @@ export class PersistentStateFactory
 		});
 		const globalKeysStorageDeprecated = this.createGlobalPersistentState(
 			GLOBAL_PERSISTENT_KEYS_DEPRECATED,
-			[],
+			[]
 		);
 		const workspaceKeysStorageDeprecated =
 			this.createWorkspacePersistentState(
 				WORKSPACE_PERSISTENT_KEYS_DEPRECATED,
-				[],
+				[]
 			);
 		// Old storages have grown to be unusually large due to https://github.com/microsoft/vscode-python/issues/17488,
 		// so reset them. This line can be removed after a while.
@@ -201,28 +203,28 @@ export class PersistentStateFactory
 	public createGlobalPersistentState<T>(
 		key: string,
 		defaultValue?: T,
-		expiryDurationMs?: number,
+		expiryDurationMs?: number
 	): IPersistentState<T> {
 		this.addKeyToStorage("global", key, defaultValue).ignoreErrors();
 		return new PersistentState<T>(
 			this.globalState,
 			key,
 			defaultValue,
-			expiryDurationMs,
+			expiryDurationMs
 		);
 	}
 
 	public createWorkspacePersistentState<T>(
 		key: string,
 		defaultValue?: T,
-		expiryDurationMs?: number,
+		expiryDurationMs?: number
 	): IPersistentState<T> {
 		this.addKeyToStorage("workspace", key, defaultValue).ignoreErrors();
 		return new PersistentState<T>(
 			this.workspaceState,
 			key,
 			defaultValue,
-			expiryDurationMs,
+			expiryDurationMs
 		);
 	}
 
@@ -234,7 +236,7 @@ export class PersistentStateFactory
 	private async addKeyToStorage<T>(
 		keyStorageType: KeysStorageType,
 		key: string,
-		defaultValue?: T,
+		defaultValue?: T
 	) {
 		const storage =
 			keyStorageType === "global"
@@ -253,18 +255,18 @@ export class PersistentStateFactory
 		await Promise.all(
 			this._globalKeysStorage.value.map(async (keyContent) => {
 				const storage = this.createGlobalPersistentState(
-					keyContent.key,
+					keyContent.key
 				);
 				await storage.updateValue(keyContent.defaultValue);
-			}),
+			})
 		);
 		await Promise.all(
 			this._workspaceKeysStorage.value.map(async (keyContent) => {
 				const storage = this.createWorkspacePersistentState(
-					keyContent.key,
+					keyContent.key
 				);
 				await storage.updateValue(keyContent.defaultValue);
-			}),
+			})
 		);
 		await this._globalKeysStorage.updateValue([]);
 		await this._workspaceKeysStorage.updateValue([]);
@@ -289,12 +291,12 @@ export interface IPersistentStorage<T> {
 export function getGlobalStorage<T>(
 	context: IExtensionContext,
 	key: string,
-	defaultValue?: T,
+	defaultValue?: T
 ): IPersistentStorage<T> {
 	const globalKeysStorage = new PersistentState<KeysStorage[]>(
 		context.globalState,
 		GLOBAL_PERSISTENT_KEYS,
-		[],
+		[]
 	);
 	const found = globalKeysStorage.value.find((value) => value.key === key);
 	if (!found) {

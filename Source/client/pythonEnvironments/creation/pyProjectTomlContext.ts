@@ -20,7 +20,7 @@ async function setPyProjectTomlContextKey(doc: TextDocument): Promise<void> {
 }
 
 export function registerPyProjectTomlFeatures(
-	disposables: IDisposableRegistry,
+	disposables: IDisposableRegistry
 ): void {
 	disposables.push(
 		onDidOpenTextDocument(async (doc: TextDocument) => {
@@ -32,13 +32,13 @@ export function registerPyProjectTomlFeatures(
 			if (doc.fileName.endsWith("pyproject.toml")) {
 				await setPyProjectTomlContextKey(doc);
 			}
-		}),
+		})
 	);
 
 	const docs = getOpenTextDocuments().filter(
 		(doc) =>
 			doc.fileName.endsWith("pyproject.toml") &&
-			isPipInstallableToml(doc.getText()),
+			isPipInstallableToml(doc.getText())
 	);
 	if (docs.length > 0) {
 		executeCommand("setContext", "pipInstallableToml", true);

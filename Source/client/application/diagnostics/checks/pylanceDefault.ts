@@ -33,7 +33,7 @@ export class PylanceDefaultDiagnostic extends BaseDiagnostic {
 			message,
 			DiagnosticSeverity.Information,
 			DiagnosticScope.Global,
-			resource,
+			resource
 		);
 	}
 }
@@ -45,17 +45,25 @@ export class PylanceDefaultDiagnosticService extends BaseDiagnosticsService {
 	public initialMementoValue: string | undefined = undefined;
 
 	constructor(
-        @inject(IServiceContainer) serviceContainer: IServiceContainer,
-        @inject(IExtensionContext) private readonly context: IExtensionContext,
-        @inject(IDiagnosticHandlerService)
-        @named(DiagnosticCommandPromptHandlerServiceId)
-        protected readonly messageService: IDiagnosticHandlerService<MessageCommandPrompt>,
-        @inject(IDisposableRegistry) disposableRegistry: IDisposableRegistry,
-    ) {
-        super([DiagnosticCodes.PylanceDefaultDiagnostic], serviceContainer, disposableRegistry, true, true);
+		@inject(IServiceContainer) serviceContainer: IServiceContainer,
+		@inject(IExtensionContext) private readonly context: IExtensionContext,
+		@inject(IDiagnosticHandlerService)
+		@named(DiagnosticCommandPromptHandlerServiceId)
+		protected readonly messageService: IDiagnosticHandlerService<MessageCommandPrompt>,
+		@inject(IDisposableRegistry) disposableRegistry: IDisposableRegistry
+	) {
+		super(
+			[DiagnosticCodes.PylanceDefaultDiagnostic],
+			serviceContainer,
+			disposableRegistry,
+			true,
+			true
+		);
 
-        this.initialMementoValue = this.context.globalState.get(EXTENSION_VERSION_MEMENTO);
-    }
+		this.initialMementoValue = this.context.globalState.get(
+			EXTENSION_VERSION_MEMENTO
+		);
+	}
 
 	public async diagnose(resource: Resource): Promise<IDiagnostic[]> {
 		if (!(await this.shouldShowPrompt())) {
@@ -65,7 +73,7 @@ export class PylanceDefaultDiagnosticService extends BaseDiagnosticsService {
 		return [
 			new PylanceDefaultDiagnostic(
 				Diagnostics.pylanceDefaultMessage,
-				resource,
+				resource
 			),
 		];
 	}
@@ -95,7 +103,7 @@ export class PylanceDefaultDiagnosticService extends BaseDiagnosticsService {
 	private async shouldShowPrompt(): Promise<boolean> {
 		const savedVersion: string | undefined = this.initialMementoValue;
 		const promptShown: boolean | undefined = this.context.globalState.get(
-			PYLANCE_PROMPT_MEMENTO,
+			PYLANCE_PROMPT_MEMENTO
 		);
 
 		// savedVersion being undefined means that this is the first time the user activates the extension,

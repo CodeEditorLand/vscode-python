@@ -11,7 +11,7 @@ import { traceInfo } from "../../../logging";
 export async function switchSelectedPython(
 	interpreter: string,
 	uri: Uri,
-	purpose: string,
+	purpose: string
 ): Promise<void> {
 	let dispose: Disposable | undefined;
 	try {
@@ -22,11 +22,11 @@ export async function switchSelectedPython(
 			async (e) => {
 				if (path.normalize(e.path) === path.normalize(interpreter)) {
 					traceInfo(
-						`Switched to interpreter ${purpose}: ${interpreter}`,
+						`Switched to interpreter ${purpose}: ${interpreter}`
 					);
 					deferred.resolve();
 				}
-			},
+			}
 		);
 		api.environments.updateActiveEnvironmentPath(interpreter, uri);
 		traceInfo(`Switching interpreter ${purpose}: ${interpreter}`);

@@ -14,7 +14,7 @@ import { isPyenvShimDir } from "./pyenv";
  * @returns {boolean} : Returns true if the interpreter belongs to a venv environment.
  */
 export async function isGloballyInstalledEnv(
-	executablePath: string,
+	executablePath: string
 ): Promise<boolean> {
 	// Identifying this type is not important, as the extension treats `Global` and `Unknown`
 	// types the same way. This is only required for telemetry. As windows registry is known
@@ -39,7 +39,7 @@ async function isFoundInPathEnvVar(executablePath: string): Promise<boolean> {
 	// the binaries specified in .python-version file in the cwd. We should not be reporting
 	// those binaries as environments.
 	searchPathEntries = searchPathEntries.filter(
-		(dirname) => !isPyenvShimDir(dirname),
+		(dirname) => !isPyenvShimDir(dirname)
 	);
 	for (const searchPath of searchPathEntries) {
 		if (isParentPath(executablePath, searchPath)) {

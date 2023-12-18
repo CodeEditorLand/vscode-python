@@ -23,7 +23,7 @@ function isString(str: any): str is string {
 export function resolveVariables(
 	value: string | undefined,
 	rootFolder: string | undefined,
-	folder: WorkspaceFolder | undefined,
+	folder: WorkspaceFolder | undefined
 ): string | undefined {
 	if (value) {
 		const workspaceFolder = folder

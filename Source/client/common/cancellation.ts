@@ -80,7 +80,7 @@ export namespace Cancellation {
 	 */
 	export function race<T>(
 		work: (token?: CancellationToken) => Promise<T>,
-		token?: CancellationToken,
+		token?: CancellationToken
 	): Promise<T> {
 		if (token) {
 			// Use a deferred promise. Resolves when the work finishes

@@ -49,16 +49,17 @@ export class TensorBoardNbextensionCodeLensProvider
 			{
 				trigger: TensorBoardEntrypointTrigger.nbextension,
 				entrypoint: TensorBoardEntrypoint.codelens,
-			},
-		),
+			}
+		)
 	);
 
 	constructor(
-        @inject(IDisposableRegistry) disposables: IDisposableRegistry,
-        @inject(TensorboardExperiment) private readonly experiment: TensorboardExperiment,
-    ) {
-        disposables.push(this);
-    }
+		@inject(IDisposableRegistry) disposables: IDisposableRegistry,
+		@inject(TensorboardExperiment)
+		private readonly experiment: TensorboardExperiment
+	) {
+		disposables.push(this);
+	}
 
 	public dispose(): void {
 		Disposable.from(...this.disposables).dispose();
@@ -79,14 +80,14 @@ export class TensorBoardNbextensionCodeLensProvider
 					{ scheme: NotebookCellScheme, language: PYTHON_LANGUAGE },
 					{ scheme: "vscode-notebook", language: PYTHON_LANGUAGE },
 				],
-				this,
-			),
+				this
+			)
 		);
 	}
 
 	public provideCodeLenses(
 		document: TextDocument,
-		cancelToken: CancellationToken,
+		cancelToken: CancellationToken
 	): CodeLens[] {
 		const command: Command = {
 			title: TensorBoard.launchNativeTensorBoardSessionCodeLens,
@@ -107,7 +108,7 @@ export class TensorBoardNbextensionCodeLensProvider
 			if (containsNotebookExtension([line.text])) {
 				const range = new Range(
 					new Position(line.lineNumber, 0),
-					new Position(line.lineNumber, 1),
+					new Position(line.lineNumber, 1)
 				);
 				codelenses.push(new CodeLens(range, command));
 				this.sendTelemetryOnce();

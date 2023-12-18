@@ -18,9 +18,10 @@ import {
 @injectable()
 export class AttachPicker implements IAttachPicker {
 	constructor(
-        @inject(IApplicationShell) private readonly applicationShell: IApplicationShell,
-        private readonly attachItemsProvider: IAttachProcessProvider,
-    ) {}
+		@inject(IApplicationShell)
+		private readonly applicationShell: IApplicationShell,
+		private readonly attachItemsProvider: IAttachProcessProvider
+	) {}
 
 	public showQuickPick(): Promise<string> {
 		return new Promise<string>(async (resolve, reject) => {
@@ -53,7 +54,7 @@ export class AttachPicker implements IAttachPicker {
 					quickPick.busy = false;
 				},
 				this,
-				disposables,
+				disposables
 			);
 
 			quickPick.onDidAccept(
@@ -70,7 +71,7 @@ export class AttachPicker implements IAttachPicker {
 					resolve(selectedId);
 				},
 				undefined,
-				disposables,
+				disposables
 			);
 
 			quickPick.onDidHide(
@@ -81,7 +82,7 @@ export class AttachPicker implements IAttachPicker {
 					reject(new Error(AttachProcess.noProcessSelected));
 				},
 				undefined,
-				disposables,
+				disposables
 			);
 
 			quickPick.show();

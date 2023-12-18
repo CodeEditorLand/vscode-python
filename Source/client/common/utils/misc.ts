@@ -76,7 +76,7 @@ export function getURIFilter(
 	opts: {
 		checkParent?: boolean;
 		checkChild?: boolean;
-	} = { checkParent: true },
+	} = { checkParent: true }
 ): (u: Uri) => boolean {
 	let uriPath = uri.path;
 	while (uriPath.endsWith("/")) {

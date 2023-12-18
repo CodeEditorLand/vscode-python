@@ -39,12 +39,12 @@ export async function getCondaBaseEnv(): Promise<string | undefined> {
 	if (!conda) {
 		const response = await showErrorMessage(
 			CreateEnv.Conda.condaMissing,
-			Common.learnMore,
+			Common.learnMore
 		);
 		if (response === Common.learnMore) {
 			await executeCommand(
 				"vscode.open",
-				Uri.parse("https://docs.anaconda.com/anaconda/install/"),
+				Uri.parse("https://docs.anaconda.com/anaconda/install/")
 			);
 		}
 		return undefined;
@@ -57,7 +57,7 @@ export async function getCondaBaseEnv(): Promise<string | undefined> {
 	if (envs.length > 1) {
 		traceLog(
 			"Multiple conda base envs detected: ",
-			envs.map((e) => e.prefix),
+			envs.map((e) => e.prefix)
 		);
 		return undefined;
 	}
@@ -66,7 +66,7 @@ export async function getCondaBaseEnv(): Promise<string | undefined> {
 }
 
 export async function pickPythonVersion(
-	token?: CancellationToken,
+	token?: CancellationToken
 ): Promise<string | undefined> {
 	const items: QuickPickItem[] = ["3.11", "3.12", "3.10", "3.9", "3.8"].map(
 		(v) => ({
@@ -75,7 +75,7 @@ export async function pickPythonVersion(
 					? `${Octicons.Star} Python`
 					: "Python",
 			description: v,
-		}),
+		})
 	);
 	const selection = await showQuickPickWithBack(
 		items,
@@ -84,7 +84,7 @@ export async function pickPythonVersion(
 			matchOnDescription: true,
 			ignoreFocusOut: true,
 		},
-		token,
+		token
 	);
 
 	if (selection) {
@@ -95,7 +95,7 @@ export async function pickPythonVersion(
 }
 
 export function getPathEnvVariableForConda(
-	condaBasePythonPath: string,
+	condaBasePythonPath: string
 ): string {
 	const pathEnv =
 		getEnvironmentVariable("PATH") || getEnvironmentVariable("Path") || "";
@@ -112,7 +112,7 @@ export function getPathEnvVariableForConda(
 		const libPath4 = path.join(root, "bin");
 		const libPath5 = path.join(root, "Scripts");
 		const libPath = [libPath1, libPath2, libPath3, libPath4, libPath5].join(
-			path.delimiter,
+			path.delimiter
 		);
 		return `${libPath}${path.delimiter}${pathEnv}`;
 	}
@@ -121,7 +121,7 @@ export function getPathEnvVariableForConda(
 
 export async function deleteEnvironment(
 	workspaceFolder: WorkspaceFolder,
-	interpreter: string,
+	interpreter: string
 ): Promise<boolean> {
 	const condaEnvPath = getPrefixCondaEnvPath(workspaceFolder);
 	return withProgress<boolean>(
@@ -134,8 +134,8 @@ export async function deleteEnvironment(
 			deleteCondaEnvironment(
 				workspaceFolder,
 				interpreter,
-				getPathEnvVariableForConda(interpreter),
-			),
+				getPathEnvVariableForConda(interpreter)
+			)
 	);
 }
 
@@ -146,7 +146,7 @@ export enum ExistingCondaAction {
 }
 
 export async function pickExistingCondaAction(
-	workspaceFolder: WorkspaceFolder | undefined,
+	workspaceFolder: WorkspaceFolder | undefined
 ): Promise<ExistingCondaAction> {
 	if (workspaceFolder) {
 		if (await hasPrefixCondaEnv(workspaceFolder)) {
@@ -168,7 +168,7 @@ export async function pickExistingCondaAction(
 						CreateEnv.Conda.existingCondaQuickPickPlaceholder,
 					ignoreFocusOut: true,
 				},
-				undefined,
+				undefined
 			)) as QuickPickItem | undefined;
 
 			if (selection?.label === CreateEnv.Conda.recreate) {

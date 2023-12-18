@@ -37,7 +37,7 @@ function getIdentifiers(): Map<
 	identifier.set(PythonEnvKind.Venv, isVenvEnvironment);
 	identifier.set(
 		PythonEnvKind.VirtualEnvWrapper,
-		isVirtualEnvWrapperEnvironment,
+		isVirtualEnvWrapperEnvironment
 	);
 	identifier.set(PythonEnvKind.VirtualEnv, isVirtualEnvEnvironment);
 	identifier.set(PythonEnvKind.ActiveState, isActiveStateEnvironment);
@@ -52,7 +52,7 @@ function getIdentifiers(): Map<
  * @returns {PythonEnvKind}
  */
 export async function identifyEnvironment(
-	path: string,
+	path: string
 ): Promise<PythonEnvKind> {
 	const identifiers = getIdentifiers();
 	const prioritizedEnvTypes = getPrioritizedEnvKinds();

@@ -22,7 +22,7 @@ import {
 
 export function isInterpreterLocatedInWorkspace(
 	interpreter: PythonEnvironment,
-	activeWorkspaceUri: Uri,
+	activeWorkspaceUri: Uri
 ): boolean {
 	const fileSystemPaths = FileSystemPaths.withDefaults();
 	const interpreterPath = fileSystemPaths.normCase(interpreter.path);
@@ -34,7 +34,7 @@ export function isInterpreterLocatedInWorkspace(
  * Build a version-sorted list from the given one, with lowest first.
  */
 function sortInterpreters(
-	interpreters: PythonEnvironment[],
+	interpreters: PythonEnvironment[]
 ): PythonEnvironment[] {
 	if (interpreters.length === 0) {
 		return [];
@@ -46,7 +46,7 @@ function sortInterpreters(
 	sorted.sort((a, b) =>
 		a.version && b.version
 			? compareSemVerLikeVersions(a.version, b.version)
-			: 0,
+			: 0
 	);
 	return sorted;
 }
@@ -54,12 +54,12 @@ function sortInterpreters(
 @injectable()
 export class InterpreterHelper implements IInterpreterHelper {
 	constructor(
-        @inject(IServiceContainer) private serviceContainer: IServiceContainer,
-        @inject(IComponentAdapter) private readonly pyenvs: IComponentAdapter,
-    ) {}
+		@inject(IServiceContainer) private serviceContainer: IServiceContainer,
+		@inject(IComponentAdapter) private readonly pyenvs: IComponentAdapter
+	) {}
 
 	public getActiveWorkspaceUri(
-		resource: Resource,
+		resource: Resource
 	): WorkspacePythonPath | undefined {
 		const workspaceService =
 			this.serviceContainer.get<IWorkspaceService>(IWorkspaceService);
@@ -93,7 +93,7 @@ export class InterpreterHelper implements IInterpreterHelper {
 
 		if (documentManager.activeTextEditor) {
 			const workspaceFolder = workspaceService.getWorkspaceFolder(
-				documentManager.activeTextEditor.document.uri,
+				documentManager.activeTextEditor.document.uri
 			);
 			if (workspaceFolder) {
 				return {
@@ -105,7 +105,7 @@ export class InterpreterHelper implements IInterpreterHelper {
 	}
 
 	public async getInterpreterInformation(
-		pythonPath: string,
+		pythonPath: string
 	): Promise<undefined | Partial<PythonEnvironment>> {
 		return this.pyenvs.getInterpreterInformation(pythonPath);
 	}
@@ -118,7 +118,7 @@ export class InterpreterHelper implements IInterpreterHelper {
 	> {
 		const interpreters = await this.pyenvs.getInterpreters(
 			resource,
-			source,
+			source
 		);
 		return sortInterpreters(interpreters);
 	}
@@ -138,13 +138,13 @@ export class InterpreterHelper implements IInterpreterHelper {
 	}
 
 	public getInterpreterTypeDisplayName(
-		interpreterType: EnvironmentType,
+		interpreterType: EnvironmentType
 	): string {
 		return getEnvironmentTypeName(interpreterType);
 	}
 
 	public getBestInterpreter(
-		interpreters?: PythonEnvironment[],
+		interpreters?: PythonEnvironment[]
 	): PythonEnvironment | undefined {
 		if (!Array.isArray(interpreters) || interpreters.length === 0) {
 			return;

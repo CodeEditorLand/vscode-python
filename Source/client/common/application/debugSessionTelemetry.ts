@@ -82,10 +82,10 @@ export class DebugSessionTelemetry
 	};
 	constructor(
 		@inject(IDisposableRegistry) disposableRegistry: IDisposableRegistry,
-		@inject(IDebugService) debugService: IDebugService,
+		@inject(IDebugService) debugService: IDebugService
 	) {
 		disposableRegistry.push(
-			debugService.registerDebugAdapterTrackerFactory("python", this),
+			debugService.registerDebugAdapterTrackerFactory("python", this)
 		);
 	}
 
@@ -94,7 +94,7 @@ export class DebugSessionTelemetry
 	}
 
 	public createDebugAdapterTracker(
-		session: DebugSession,
+		session: DebugSession
 	): ProviderResult<DebugAdapterTracker> {
 		return new TelemetryTracker(session);
 	}

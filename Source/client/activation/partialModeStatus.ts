@@ -23,9 +23,11 @@ export class PartialModeStatusItem
 	};
 
 	constructor(
-        @inject(IWorkspaceService) private readonly workspace: IWorkspaceService,
-        @inject(IDisposableRegistry) private readonly disposables: IDisposableRegistry,
-    ) {}
+		@inject(IWorkspaceService)
+		private readonly workspace: IWorkspaceService,
+		@inject(IDisposableRegistry)
+		private readonly disposables: IDisposableRegistry
+	) {}
 
 	public async activate(): Promise<void> {
 		const { isTrusted, isVirtualWorkspace } = this.workspace;
@@ -46,7 +48,7 @@ export class PartialModeStatusItem
 				"python.projectStatus",
 				{
 					language: "python",
-				},
+				}
 			);
 			statusItem.name = LanguageService.statusItem.name;
 			statusItem.severity = vscode.LanguageStatusSeverity.Warning;

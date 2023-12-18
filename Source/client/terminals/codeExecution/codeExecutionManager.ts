@@ -38,13 +38,14 @@ import {
 export class CodeExecutionManager implements ICodeExecutionManager {
 	private eventEmitter: EventEmitter<string> = new EventEmitter<string>();
 	constructor(
-        @inject(ICommandManager) private commandManager: ICommandManager,
-        @inject(IDocumentManager) private documentManager: IDocumentManager,
-        @inject(IDisposableRegistry) private disposableRegistry: Disposable[],
-        @inject(IFileSystem) private fileSystem: IFileSystem,
-        @inject(IConfigurationService) private readonly configSettings: IConfigurationService,
-        @inject(IServiceContainer) private serviceContainer: IServiceContainer,
-    ) {}
+		@inject(ICommandManager) private commandManager: ICommandManager,
+		@inject(IDocumentManager) private documentManager: IDocumentManager,
+		@inject(IDisposableRegistry) private disposableRegistry: Disposable[],
+		@inject(IFileSystem) private fileSystem: IFileSystem,
+		@inject(IConfigurationService)
+		private readonly configSettings: IConfigurationService,
+		@inject(IServiceContainer) private serviceContainer: IServiceContainer
+	) {}
 
 	public get onExecutedCode(): Event<string> {
 		return this.eventEmitter.event;
@@ -62,7 +63,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 					async (file: Resource) => {
 						const interpreterService =
 							this.serviceContainer.get<IInterpreterService>(
-								IInterpreterService,
+								IInterpreterService
 							);
 						const interpreter =
 							await interpreterService.getActiveInterpreter(file);
@@ -70,7 +71,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 							this.commandManager
 								.executeCommand(
 									Commands.TriggerEnvironmentSelection,
-									file,
+									file
 								)
 								.then(noop, noop);
 							return;
@@ -80,11 +81,11 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 							undefined,
 							{
 								trigger: "run-in-terminal",
-							},
+							}
 						);
 						triggerCreateEnvironmentCheckNonBlocking(
 							CreateEnvironmentCheckKind.File,
-							file,
+							file
 						);
 						const trigger =
 							cmd === Commands.Exec_In_Terminal
@@ -97,17 +98,17 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 							.then(() => {
 								if (this.shouldTerminalFocusOnStart(file))
 									this.commandManager.executeCommand(
-										"workbench.action.terminal.focus",
+										"workbench.action.terminal.focus"
 									);
 							})
 							.catch((ex) =>
 								traceError(
 									"Failed to execute file in terminal",
-									ex,
-								),
+									ex
+								)
 							);
-					},
-				),
+					}
+				)
 			);
 		});
 		this.disposableRegistry.push(
@@ -116,7 +117,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 				async (file: Resource) => {
 					const interpreterService =
 						this.serviceContainer.get<IInterpreterService>(
-							IInterpreterService,
+							IInterpreterService
 						);
 					const interpreter =
 						await interpreterService.getActiveInterpreter(file);
@@ -124,7 +125,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 						this.commandManager
 							.executeCommand(
 								Commands.TriggerEnvironmentSelection,
-								file,
+								file
 							)
 							.then(noop, noop);
 						return;
@@ -132,20 +133,20 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 					sendTelemetryEvent(
 						EventName.ENVIRONMENT_CHECK_TRIGGER,
 						undefined,
-						{ trigger: "run-selection" },
+						{ trigger: "run-selection" }
 					);
 					triggerCreateEnvironmentCheckNonBlocking(
 						CreateEnvironmentCheckKind.File,
-						file,
+						file
 					);
 					await this.executeSelectionInTerminal().then(() => {
 						if (this.shouldTerminalFocusOnStart(file))
 							this.commandManager.executeCommand(
-								"workbench.action.terminal.focus",
+								"workbench.action.terminal.focus"
 							);
 					});
-				},
-			),
+				}
+			)
 		);
 		this.disposableRegistry.push(
 			this.commandManager.registerCommand(
@@ -153,7 +154,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 				async (file: Resource) => {
 					const interpreterService =
 						this.serviceContainer.get<IInterpreterService>(
-							IInterpreterService,
+							IInterpreterService
 						);
 					const interpreter =
 						await interpreterService.getActiveInterpreter(file);
@@ -161,7 +162,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 						this.commandManager
 							.executeCommand(
 								Commands.TriggerEnvironmentSelection,
-								file,
+								file
 							)
 							.then(noop, noop);
 						return;
@@ -169,26 +170,26 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 					sendTelemetryEvent(
 						EventName.ENVIRONMENT_CHECK_TRIGGER,
 						undefined,
-						{ trigger: "run-selection" },
+						{ trigger: "run-selection" }
 					);
 					triggerCreateEnvironmentCheckNonBlocking(
 						CreateEnvironmentCheckKind.File,
-						file,
+						file
 					);
 					await this.executeSelectionInDjangoShell().then(() => {
 						if (this.shouldTerminalFocusOnStart(file))
 							this.commandManager.executeCommand(
-								"workbench.action.terminal.focus",
+								"workbench.action.terminal.focus"
 							);
 					});
-				},
-			),
+				}
+			)
 		);
 	}
 	private async executeFileInTerminal(
 		file: Resource,
 		trigger: "command" | "icon",
-		options?: { newTerminalPerFile: boolean },
+		options?: { newTerminalPerFile: boolean }
 	): Promise<void> {
 		sendTelemetryEvent(EventName.EXECUTION_CODE, undefined, {
 			scope: "file",
@@ -197,7 +198,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 		});
 		const codeExecutionHelper =
 			this.serviceContainer.get<ICodeExecutionHelper>(
-				ICodeExecutionHelper,
+				ICodeExecutionHelper
 			);
 		file = file instanceof Uri ? file : undefined;
 		let fileToExecute = file
@@ -214,7 +215,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 
 		try {
 			const contents = await this.fileSystem.readFile(
-				fileToExecute.fsPath,
+				fileToExecute.fsPath
 			);
 			this.eventEmitter.fire(contents);
 		} catch {
@@ -226,7 +227,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 		const executionService =
 			this.serviceContainer.get<ICodeExecutionService>(
 				ICodeExecutionService,
-				"standard",
+				"standard"
 			);
 		await executionService.executeFile(fileToExecute, options);
 	}
@@ -236,7 +237,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 		const executionService =
 			this.serviceContainer.get<ICodeExecutionService>(
 				ICodeExecutionService,
-				"standard",
+				"standard"
 			);
 
 		await this.executeSelection(executionService);
@@ -247,13 +248,13 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 		const executionService =
 			this.serviceContainer.get<ICodeExecutionService>(
 				ICodeExecutionService,
-				"djangoShell",
+				"djangoShell"
 			);
 		await this.executeSelection(executionService);
 	}
 
 	private async executeSelection(
-		executionService: ICodeExecutionService,
+		executionService: ICodeExecutionService
 	): Promise<void> {
 		const activeEditor = this.documentManager.activeTextEditor;
 		if (!activeEditor) {
@@ -261,7 +262,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 		}
 		const codeExecutionHelper =
 			this.serviceContainer.get<ICodeExecutionHelper>(
-				ICodeExecutionHelper,
+				ICodeExecutionHelper
 			);
 		const codeToExecute =
 			await codeExecutionHelper.getSelectedTextToExecute(activeEditor!);
@@ -271,7 +272,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 		}
 		const normalizedCode = await codeExecutionHelper.normalizeLines(
 			codeToExecute!,
-			wholeFileContent,
+			wholeFileContent
 		);
 		if (!normalizedCode || normalizedCode.trim().length === 0) {
 			return;
@@ -287,7 +288,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 
 		await executionService.execute(
 			normalizedCode,
-			activeEditor!.document.uri,
+			activeEditor!.document.uri
 		);
 	}
 

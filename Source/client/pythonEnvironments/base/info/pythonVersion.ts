@@ -49,7 +49,7 @@ export function parseVersion(versionStr: string): PythonVersion {
 }
 
 export function parseRelease(
-	text: string,
+	text: string
 ): [PythonVersionRelease | undefined, string] {
 	let after: string;
 
@@ -102,7 +102,7 @@ export function parseBasicVersion(versionStr: string): [PythonVersion, string] {
 	// We set a prefix (which will be ignored) to make sure "plain"
 	// versions are fully parsed.
 	const parsed = basic.parseBasicVersionInfo<PythonVersion>(
-		`ignored-${versionStr}`,
+		`ignored-${versionStr}`
 	);
 	if (!parsed) {
 		if (versionStr === "") {
@@ -185,7 +185,7 @@ export function getShortVersionString(ver: PythonVersion): string {
  */
 export function areIdenticalVersion(
 	left: PythonVersion,
-	right: PythonVersion,
+	right: PythonVersion
 ): boolean {
 	return basic.areIdenticalVersion(left, right, compareVersionRelease);
 }
@@ -199,7 +199,7 @@ export function areIdenticalVersion(
  */
 export function areSimilarVersions(
 	left: PythonVersion,
-	right: PythonVersion,
+	right: PythonVersion
 ): boolean {
 	if (!basic.areSimilarVersions(left, right, compareVersionRelease)) {
 		return false;
@@ -212,7 +212,7 @@ export function areSimilarVersions(
 
 function compareVersionRelease(
 	left: PythonVersion,
-	right: PythonVersion,
+	right: PythonVersion
 ): [number, string] {
 	if (left.release === undefined) {
 		if (right.release === undefined) {
@@ -291,7 +291,7 @@ export function toSemverLikeVersion(version: PythonVersion): {
  */
 export function compareSemVerLikeVersions(
 	v1: { major: number; minor: number; patch: number },
-	v2: { major: number; minor: number; patch: number },
+	v2: { major: number; minor: number; patch: number }
 ): 1 | 0 | -1 {
 	if (v1.major === v2.major) {
 		if (v1.minor === v2.minor) {

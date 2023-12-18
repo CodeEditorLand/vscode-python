@@ -20,7 +20,7 @@ export interface IDebugConfigurationService
 	extends DebugConfigurationProvider {}
 
 export const IDynamicDebugConfigurationService = Symbol(
-	"IDynamicDebugConfigurationService",
+	"IDynamicDebugConfigurationService"
 );
 export interface IDynamicDebugConfigurationService
 	extends DebugConfigurationProvider {}
@@ -48,20 +48,20 @@ export enum PythonPathSource {
 }
 
 export const IDebugAdapterDescriptorFactory = Symbol(
-	"IDebugAdapterDescriptorFactory",
+	"IDebugAdapterDescriptorFactory"
 );
 export interface IDebugAdapterDescriptorFactory
 	extends DebugAdapterDescriptorFactory {}
 
 export const IDebugSessionLoggingFactory = Symbol(
-	"IDebugSessionLoggingFactory",
+	"IDebugSessionLoggingFactory"
 );
 
 export interface IDebugSessionLoggingFactory
 	extends DebugAdapterTrackerFactory {}
 
 export const IOutdatedDebuggerPromptFactory = Symbol(
-	"IOutdatedDebuggerPromptFactory",
+	"IOutdatedDebuggerPromptFactory"
 );
 
 export interface IOutdatedDebuggerPromptFactory

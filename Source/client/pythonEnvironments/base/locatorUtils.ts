@@ -19,7 +19,7 @@ import {
  * Create a filter function to match the given query.
  */
 export function getQueryFilter(
-	query: PythonLocatorQuery,
+	query: PythonLocatorQuery
 ): (env: PythonEnvInfo) => boolean {
 	const kinds =
 		query.kinds !== undefined && query.kinds.length > 0
@@ -58,7 +58,7 @@ export function getQueryFilter(
 }
 
 function getSearchLocationFilters(
-	query: PythonLocatorQuery,
+	query: PythonLocatorQuery
 ): ((u: Uri) => boolean)[] | undefined {
 	if (query.searchLocations === undefined) {
 		return undefined;
@@ -69,7 +69,7 @@ function getSearchLocationFilters(
 	return query.searchLocations.roots.map((loc) =>
 		getURIFilter(loc, {
 			checkParent: true,
-		}),
+		})
 	);
 }
 
@@ -79,7 +79,7 @@ function getSearchLocationFilters(
  * This includes applying any received updates.
  */
 export async function getEnvs<I = PythonEnvInfo>(
-	iterator: IPythonEnvsIterator<I>,
+	iterator: IPythonEnvsIterator<I>
 ): Promise<I[]> {
 	const envs: (I | undefined)[] = [];
 
@@ -100,13 +100,13 @@ export async function getEnvs<I = PythonEnvInfo>(
 					if (envs[index] === undefined) {
 						const json = JSON.stringify(update);
 						traceVerbose(
-							`Updates sent for an env which was classified as invalid earlier, currently not expected, ${json}`,
+							`Updates sent for an env which was classified as invalid earlier, currently not expected, ${json}`
 						);
 					}
 					// We don't worry about if envs[index] is set already.
 					envs[index] = update;
 				}
-			},
+			}
 		);
 	}
 

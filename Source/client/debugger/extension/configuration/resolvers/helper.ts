@@ -15,12 +15,12 @@ import { getActiveTextEditor } from "../../../../common/vscodeApis/windowApis";
 import { getSearchPathEnvVarNames } from "../../../../common/utils/exec";
 
 export const IDebugEnvironmentVariablesService = Symbol(
-	"IDebugEnvironmentVariablesService",
+	"IDebugEnvironmentVariablesService"
 );
 export interface IDebugEnvironmentVariablesService {
 	getEnvironmentVariables(
 		args: LaunchRequestArguments,
-		baseVars?: EnvironmentVariables,
+		baseVars?: EnvironmentVariables
 	): Promise<EnvironmentVariables>;
 }
 
@@ -29,13 +29,14 @@ export class DebugEnvironmentVariablesHelper
 	implements IDebugEnvironmentVariablesService
 {
 	constructor(
-        @inject(IEnvironmentVariablesService) private envParser: IEnvironmentVariablesService,
-        @inject(ICurrentProcess) private process: ICurrentProcess,
-    ) {}
+		@inject(IEnvironmentVariablesService)
+		private envParser: IEnvironmentVariablesService,
+		@inject(ICurrentProcess) private process: ICurrentProcess
+	) {}
 
 	public async getEnvironmentVariables(
 		args: LaunchRequestArguments,
-		baseVars?: EnvironmentVariables,
+		baseVars?: EnvironmentVariables
 	): Promise<EnvironmentVariables> {
 		const pathVariableName = getSearchPathEnvVarNames()[0];
 
@@ -46,7 +47,7 @@ export class DebugEnvironmentVariablesHelper
 				: ({} as Record<string, string>);
 		const envFileVars = await this.envParser.parseFile(
 			args.envFile,
-			debugLaunchEnvVars,
+			debugLaunchEnvVars
 		);
 		const env = envFileVars ? { ...envFileVars } : {};
 
@@ -63,7 +64,7 @@ export class DebugEnvironmentVariablesHelper
 		this.envParser.appendPath(
 			env,
 			debugLaunchEnvVars[pathVariableName] ??
-				debugLaunchEnvVars[pathVariableName.toUpperCase()],
+				debugLaunchEnvVars[pathVariableName.toUpperCase()]
 		);
 		this.envParser.appendPythonPath(env, debugLaunchEnvVars.PYTHONPATH);
 

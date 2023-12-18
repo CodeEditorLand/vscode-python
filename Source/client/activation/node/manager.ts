@@ -41,7 +41,7 @@ export class NodeLanguageServerManager implements ILanguageServerManager {
 		private readonly analysisOptions: ILanguageServerAnalysisOptions,
 		private readonly languageServerProxy: NodeLanguageServerProxy,
 		commandManager: ICommandManager,
-		private readonly extensions: IExtensions,
+		private readonly extensions: IExtensions
 	) {
 		if (NodeLanguageServerManager.commandDispose) {
 			NodeLanguageServerManager.commandDispose.dispose();
@@ -51,7 +51,7 @@ export class NodeLanguageServerManager implements ILanguageServerManager {
 				sendTelemetryEvent(
 					EventName.LANGUAGE_SERVER_RESTART,
 					undefined,
-					{ reason: "command" },
+					{ reason: "command" }
 				);
 				this.restartLanguageServer().ignoreErrors();
 			});
@@ -72,7 +72,7 @@ export class NodeLanguageServerManager implements ILanguageServerManager {
 	@traceDecoratorError("Failed to start language server")
 	public async start(
 		resource: Resource,
-		interpreter: PythonEnvironment | undefined,
+		interpreter: PythonEnvironment | undefined
 	): Promise<void> {
 		if (this.started) {
 			throw new Error("Language server already started");
@@ -82,7 +82,7 @@ export class NodeLanguageServerManager implements ILanguageServerManager {
 		this.analysisOptions.onDidChange(
 			this.restartLanguageServerDebounced,
 			this,
-			this.disposables,
+			this.disposables
 		);
 
 		const extension = this.extensions.getExtension(PYLANCE_EXTENSION_ID);
@@ -128,7 +128,7 @@ export class NodeLanguageServerManager implements ILanguageServerManager {
 		undefined,
 		true,
 		undefined,
-		NodeLanguageServerManager.versionTelemetryProps,
+		NodeLanguageServerManager.versionTelemetryProps
 	)
 	@traceDecoratorVerbose("Starting language server")
 	protected async startLanguageServer(): Promise<void> {
@@ -136,7 +136,7 @@ export class NodeLanguageServerManager implements ILanguageServerManager {
 		this.middleware = new NodeLanguageClientMiddleware(
 			this.serviceContainer,
 			() => this.languageServerProxy.languageClient,
-			this.lsVersion,
+			this.lsVersion
 		);
 		options.middleware = this.middleware;
 
@@ -149,7 +149,7 @@ export class NodeLanguageServerManager implements ILanguageServerManager {
 		await this.languageServerProxy.start(
 			this.resource,
 			this.interpreter,
-			options,
+			options
 		);
 	}
 

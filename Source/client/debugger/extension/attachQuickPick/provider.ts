@@ -18,47 +18,54 @@ import { WmicProcessParser } from "./wmicProcessParser";
 @injectable()
 export class AttachProcessProvider implements IAttachProcessProvider {
 	constructor(
-        @inject(IPlatformService) private readonly platformService: IPlatformService,
-        @inject(IProcessServiceFactory) private readonly processServiceFactory: IProcessServiceFactory,
-    ) {}
+		@inject(IPlatformService)
+		private readonly platformService: IPlatformService,
+		@inject(IProcessServiceFactory)
+		private readonly processServiceFactory: IProcessServiceFactory
+	) {}
 
 	public getAttachItems(): Promise<IAttachItem[]> {
 		return this._getInternalProcessEntries().then((processEntries) => {
 			processEntries.sort(
-                (
-                    { processName: aprocessName, commandLine: aCommandLine },
-                    { processName: bProcessName, commandLine: bCommandLine },
-                ) => {
-                    const compare = (aString: string, bString: string): number => {
-                        // localeCompare is significantly slower than < and > (2000 ms vs 80 ms for 10,000 elements)
-                        // We can change to localeCompare if this becomes an issue
-                        const aLower = aString.toLowerCase();
-                        const bLower = bString.toLowerCase();
+				(
+					{ processName: aprocessName, commandLine: aCommandLine },
+					{ processName: bProcessName, commandLine: bCommandLine }
+				) => {
+					const compare = (
+						aString: string,
+						bString: string
+					): number => {
+						// localeCompare is significantly slower than < and > (2000 ms vs 80 ms for 10,000 elements)
+						// We can change to localeCompare if this becomes an issue
+						const aLower = aString.toLowerCase();
+						const bLower = bString.toLowerCase();
 
-                        if (aLower === bLower) {
-                            return 0;
-                        }
+						if (aLower === bLower) {
+							return 0;
+						}
 
-                        return aLower < bLower ? -1 : 1;
-                    };
+						return aLower < bLower ? -1 : 1;
+					};
 
-                    const aPython = aprocessName.startsWith('python');
-                    const bPython = bProcessName.startsWith('python');
+					const aPython = aprocessName.startsWith("python");
+					const bPython = bProcessName.startsWith("python");
 
-                    if (aPython || bPython) {
-                        if (aPython && !bPython) {
-                            return -1;
-                        }
-                        if (bPython && !aPython) {
-                            return 1;
-                        }
+					if (aPython || bPython) {
+						if (aPython && !bPython) {
+							return -1;
+						}
+						if (bPython && !aPython) {
+							return 1;
+						}
 
-                        return aPython ? compare(aCommandLine!, bCommandLine!) : compare(bCommandLine!, aCommandLine!);
-                    }
+						return aPython
+							? compare(aCommandLine!, bCommandLine!)
+							: compare(bCommandLine!, aCommandLine!);
+					}
 
-                    return compare(aprocessName, bProcessName);
-                },
-            );
+					return compare(aprocessName, bProcessName);
+				}
+			);
 
 			return processEntries;
 		});
@@ -76,8 +83,8 @@ export class AttachProcessProvider implements IAttachProcessProvider {
 			throw new Error(
 				l10n.t(
 					"Operating system '{0}' not supported.",
-					this.platformService.osType,
-				),
+					this.platformService.osType
+				)
 			);
 		}
 
@@ -85,7 +92,7 @@ export class AttachProcessProvider implements IAttachProcessProvider {
 		const output = await processService.exec(
 			processCmd.command,
 			processCmd.args,
-			{ throwOnStdErr: true },
+			{ throwOnStdErr: true }
 		);
 
 		return this.platformService.isWindows

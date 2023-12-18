@@ -60,74 +60,74 @@ import {
 export function registerTypes(serviceManager: IServiceManager): void {
 	serviceManager.addSingleton<IDiagnosticFilterService>(
 		IDiagnosticFilterService,
-		DiagnosticFilterService,
+		DiagnosticFilterService
 	);
 	serviceManager.addSingleton<
 		IDiagnosticHandlerService<MessageCommandPrompt>
 	>(
 		IDiagnosticHandlerService,
 		DiagnosticCommandPromptHandlerService,
-		DiagnosticCommandPromptHandlerServiceId,
+		DiagnosticCommandPromptHandlerServiceId
 	);
 	serviceManager.addSingleton<IDiagnosticsService>(
 		IDiagnosticsService,
 		EnvironmentPathVariableDiagnosticsService,
-		EnvironmentPathVariableDiagnosticsServiceId,
+		EnvironmentPathVariableDiagnosticsServiceId
 	);
 	serviceManager.addSingleton<IDiagnosticsService>(
 		IDiagnosticsService,
 		InvalidLaunchJsonDebuggerService,
-		InvalidLaunchJsonDebuggerServiceId,
+		InvalidLaunchJsonDebuggerServiceId
 	);
 	serviceManager.addSingleton<IDiagnosticsService>(
 		IDiagnosticsService,
 		InvalidPythonInterpreterService,
-		InvalidPythonInterpreterServiceId,
+		InvalidPythonInterpreterServiceId
 	);
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
-		InvalidPythonInterpreterService,
+		InvalidPythonInterpreterService
 	);
 	serviceManager.addSingleton<IDiagnosticsService>(
 		IDiagnosticsService,
 		InvalidPythonPathInDebuggerService,
-		InvalidPythonPathInDebuggerServiceId,
+		InvalidPythonPathInDebuggerServiceId
 	);
 	serviceManager.addSingleton<IDiagnosticsService>(
 		IDiagnosticsService,
 		PowerShellActivationHackDiagnosticsService,
-		PowerShellActivationHackDiagnosticsServiceId,
+		PowerShellActivationHackDiagnosticsServiceId
 	);
 	serviceManager.addSingleton<IDiagnosticsService>(
 		IDiagnosticsService,
 		InvalidMacPythonInterpreterService,
-		InvalidMacPythonInterpreterServiceId,
+		InvalidMacPythonInterpreterServiceId
 	);
 
 	serviceManager.addSingleton<IDiagnosticsService>(
 		IDiagnosticsService,
 		PylanceDefaultDiagnosticService,
-		PylanceDefaultDiagnosticServiceId,
+		PylanceDefaultDiagnosticServiceId
 	);
 
 	serviceManager.addSingleton<IDiagnosticsService>(
 		IDiagnosticsService,
 		JediPython27NotSupportedDiagnosticService,
-		JediPython27NotSupportedDiagnosticServiceId,
+		JediPython27NotSupportedDiagnosticServiceId
 	);
 
 	serviceManager.addSingleton<IDiagnosticsService>(
 		IDiagnosticsService,
 		SwitchToDefaultLanguageServerDiagnosticService,
-		SwitchToDefaultLanguageServerDiagnosticServiceId,
+		SwitchToDefaultLanguageServerDiagnosticServiceId
 	);
 
 	serviceManager.addSingleton<IDiagnosticsCommandFactory>(
 		IDiagnosticsCommandFactory,
-		DiagnosticsCommandFactory,
+		DiagnosticsCommandFactory
 	);
 	serviceManager.addSingleton<IApplicationDiagnostics>(
 		IApplicationDiagnostics,
-		ApplicationDiagnostics,
+		ApplicationDiagnostics
 	);
 }

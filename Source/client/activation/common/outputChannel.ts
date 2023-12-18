@@ -22,15 +22,17 @@ export class LanguageServerOutputChannel
 	private registered = false;
 
 	constructor(
-        @inject(IApplicationShell) private readonly appShell: IApplicationShell,
-        @inject(ICommandManager) private readonly commandManager: ICommandManager,
-        @inject(IDisposableRegistry) private readonly disposable: IDisposableRegistry,
-    ) {}
+		@inject(IApplicationShell) private readonly appShell: IApplicationShell,
+		@inject(ICommandManager)
+		private readonly commandManager: ICommandManager,
+		@inject(IDisposableRegistry)
+		private readonly disposable: IDisposableRegistry
+	) {}
 
 	public get channel(): ILogOutputChannel {
 		if (!this.output) {
 			this.output = this.appShell.createOutputChannel(
-				OutputChannelNames.languageServer,
+				OutputChannelNames.languageServer
 			);
 			this.disposable.push(this.output);
 			this.registerCommand().ignoreErrors();
@@ -48,13 +50,13 @@ export class LanguageServerOutputChannel
 		await this.commandManager.executeCommand(
 			"setContext",
 			"python.hasLanguageServerOutputChannel",
-			true,
+			true
 		);
 		this.disposable.push(
 			this.commandManager.registerCommand(
 				"python.viewLanguageServerOutput",
-				() => this.output?.show(true),
-			),
+				() => this.output?.show(true)
+			)
 		);
 		this.disposable.push({
 			dispose: () => {

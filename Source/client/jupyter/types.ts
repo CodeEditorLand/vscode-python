@@ -22,7 +22,7 @@ export interface IJupyterUriProvider {
 	getQuickPickEntryItems(): QuickPickItem[];
 	handleQuickPick(
 		item: QuickPickItem,
-		backEnabled: boolean,
+		backEnabled: boolean
 	): Promise<JupyterServerUriHandle | "back" | undefined>;
 	getServerUri(handle: JupyterServerUriHandle): Promise<IJupyterServerUri>;
 }

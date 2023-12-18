@@ -32,7 +32,7 @@ export type ProjectInfo = {
 };
 
 export async function isActiveStateEnvironment(
-	interpreterPath: string,
+	interpreterPath: string
 ): Promise<boolean> {
 	const execDir = path.dirname(interpreterPath);
 	const runtimeDir = path.dirname(execDir);
@@ -97,7 +97,7 @@ export class ActiveState {
 				`${stateCommand} projects -o editor`,
 				{
 					timeout: STATE_GENERAL_TIMEOUT,
-				},
+				}
 			);
 			if (!result) {
 				return undefined;
@@ -133,7 +133,7 @@ export class ActiveState {
 
 export function isActiveStateEnvironmentForWorkspace(
 	interpreterPath: string,
-	workspacePath: string,
+	workspacePath: string
 ): boolean {
 	const interpreterDir = dirname(interpreterPath);
 	for (const project of ActiveState.getCachedProjectInfo()) {

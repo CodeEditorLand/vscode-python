@@ -24,13 +24,13 @@ class DebugSessionLoggingTracker implements DebugAdapterTracker {
 
 	constructor(
 		private readonly session: DebugSession,
-		fileSystem: IFileSystem,
+		fileSystem: IFileSystem
 	) {
 		this.enabled = this.session.configuration.logToFile as boolean;
 		if (this.enabled) {
 			const fileName = `debugger.vscode_${this.session.id}.log`;
 			this.stream = fileSystem.createWriteStream(
-				path.join(EXTENSION_ROOT_DIR, fileName),
+				path.join(EXTENSION_ROOT_DIR, fileName)
 			);
 		}
 	}
@@ -38,9 +38,7 @@ class DebugSessionLoggingTracker implements DebugAdapterTracker {
 	public onWillStartSession() {
 		this.timer.reset();
 		this.log(
-			`Starting Session:\n${this.stringify(
-				this.session.configuration,
-			)}\n`,
+			`Starting Session:\n${this.stringify(this.session.configuration)}\n`
 		);
 	}
 
@@ -64,7 +62,7 @@ class DebugSessionLoggingTracker implements DebugAdapterTracker {
 		this.log(
 			`Exit:\nExit-Code: ${code ? code : 0}\nSignal: ${
 				signal ? signal : "none"
-			}\n`,
+			}\n`
 		);
 		this.stream?.close();
 	}
@@ -76,7 +74,7 @@ class DebugSessionLoggingTracker implements DebugAdapterTracker {
 	}
 
 	private stringify(
-		data: DebugProtocol.Message | Error | DebugConfiguration,
+		data: DebugProtocol.Message | Error | DebugConfiguration
 	) {
 		return JSON.stringify(data, null, 4);
 	}
@@ -84,10 +82,12 @@ class DebugSessionLoggingTracker implements DebugAdapterTracker {
 
 @injectable()
 export class DebugSessionLoggingFactory implements DebugAdapterTrackerFactory {
-	constructor(@inject(IFileSystem) private readonly fileSystem: IFileSystem) {}
+	constructor(
+		@inject(IFileSystem) private readonly fileSystem: IFileSystem
+	) {}
 
 	public createDebugAdapterTracker(
-		session: DebugSession,
+		session: DebugSession
 	): ProviderResult<DebugAdapterTracker> {
 		return new DebugSessionLoggingTracker(session, this.fileSystem);
 	}

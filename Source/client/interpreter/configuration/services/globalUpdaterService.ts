@@ -6,10 +6,10 @@ export class GlobalPythonPathUpdaterService
 	implements IPythonPathUpdaterService
 {
 	constructor(
-		private readonly interpreterPathService: IInterpreterPathService,
+		private readonly interpreterPathService: IInterpreterPathService
 	) {}
 	public async updatePythonPath(
-		pythonPath: string | undefined,
+		pythonPath: string | undefined
 	): Promise<void> {
 		const pythonPathValue = this.interpreterPathService.inspect(undefined);
 
@@ -19,7 +19,7 @@ export class GlobalPythonPathUpdaterService
 		await this.interpreterPathService.update(
 			undefined,
 			ConfigurationTarget.Global,
-			pythonPath,
+			pythonPath
 		);
 	}
 }

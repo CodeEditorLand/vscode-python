@@ -31,7 +31,7 @@ declare interface String {
  * @param {String} value.
  */
 String.prototype.toCommandArgumentForPythonExt = function (
-	this: string,
+	this: string
 ): string {
 	if (!this) {
 		return this;
@@ -51,7 +51,7 @@ String.prototype.toCommandArgumentForPythonExt = function (
  * E.g. if an argument contains a space, then it will be enclosed within double quotes.
  */
 String.prototype.fileToCommandArgumentForPythonExt = function (
-	this: string,
+	this: string
 ): string {
 	if (!this) {
 		return this;
@@ -88,7 +88,7 @@ if (!String.prototype.format) {
 	String.prototype.format = function (this: string) {
 		const args = arguments;
 		return this.replace(/{(\d+)}/g, (match, number) =>
-			args[number] === undefined ? match : args[number],
+			args[number] === undefined ? match : args[number]
 		);
 	};
 }

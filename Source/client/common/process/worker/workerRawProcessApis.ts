@@ -23,7 +23,7 @@ const PS_ERROR_SCREEN_BOGUS =
 
 function getDefaultOptions<T extends ShellOptions | SpawnOptions>(
 	options: T,
-	defaultEnv?: EnvironmentVariables,
+	defaultEnv?: EnvironmentVariables
 ): T {
 	const defaultOptions = { ...options };
 	const execOptions = defaultOptions as SpawnOptions;
@@ -64,7 +64,7 @@ export function _workerShellExecImpl(
 	command: string,
 	options: ShellOptions,
 	defaultEnv?: EnvironmentVariables,
-	disposables?: Set<IDisposable>,
+	disposables?: Set<IDisposable>
 ): Promise<ExecutionResult<string>> {
 	const shellOptions = getDefaultOptions(options, defaultEnv);
 	return new Promise((resolve, reject) => {
@@ -118,7 +118,7 @@ export function _workerPlainExecImpl(
 	args: string[],
 	options: SpawnOptions & { doNotLog?: boolean } = {},
 	defaultEnv?: EnvironmentVariables,
-	disposables?: Set<IDisposable>,
+	disposables?: Set<IDisposable>
 ): Promise<ExecutionResult<string>> {
 	const spawnOptions = getDefaultOptions(options, defaultEnv);
 	const encoding = spawnOptions.encoding ? spawnOptions.encoding : "utf8";

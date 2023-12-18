@@ -26,15 +26,17 @@ import { TerminalCodeExecutionProvider } from "./terminalCodeExecution";
 @injectable()
 export class DjangoShellCodeExecutionProvider extends TerminalCodeExecutionProvider {
 	constructor(
-		@inject(ITerminalServiceFactory) terminalServiceFactory: ITerminalServiceFactory,
-		@inject(IConfigurationService) configurationService: IConfigurationService,
+		@inject(ITerminalServiceFactory)
+		terminalServiceFactory: ITerminalServiceFactory,
+		@inject(IConfigurationService)
+		configurationService: IConfigurationService,
 		@inject(IWorkspaceService) workspace: IWorkspaceService,
 		@inject(IDocumentManager) documentManager: IDocumentManager,
 		@inject(IPlatformService) platformService: IPlatformService,
 		@inject(ICommandManager) commandManager: ICommandManager,
 		@inject(IFileSystem) fileSystem: IFileSystem,
 		@inject(IDisposableRegistry) disposableRegistry: Disposable[],
-		@inject(IInterpreterService) interpreterService: IInterpreterService,
+		@inject(IInterpreterService) interpreterService: IInterpreterService
 	) {
 		super(
 			terminalServiceFactory,
@@ -43,7 +45,7 @@ export class DjangoShellCodeExecutionProvider extends TerminalCodeExecutionProvi
 			disposableRegistry,
 			platformService,
 			interpreterService,
-			commandManager,
+			commandManager
 		);
 		this.terminalTitle = "Django Shell";
 		disposableRegistry.push(
@@ -51,14 +53,14 @@ export class DjangoShellCodeExecutionProvider extends TerminalCodeExecutionProvi
 				documentManager,
 				workspace,
 				fileSystem,
-				commandManager,
-			),
+				commandManager
+			)
 		);
 	}
 
 	public async getExecutableInfo(
 		resource?: Uri,
-		args: string[] = [],
+		args: string[] = []
 	): Promise<PythonExecInfo> {
 		const info = await super.getExecutableInfo(resource, args);
 
@@ -86,7 +88,7 @@ export class DjangoShellCodeExecutionProvider extends TerminalCodeExecutionProvi
 
 	public async getExecuteFileArgs(
 		resource?: Uri,
-		executeArgs: string[] = [],
+		executeArgs: string[] = []
 	): Promise<PythonExecInfo> {
 		// We need the executable info but not the 'manage.py shell' args
 		const info = await super.getExecutableInfo(resource);

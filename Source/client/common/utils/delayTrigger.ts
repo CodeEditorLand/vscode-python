@@ -38,7 +38,7 @@ export class DelayedTrigger implements IDelayedTrigger, Disposable {
 	constructor(
 		private readonly callback: (...args: any[]) => void,
 		private readonly ms: number,
-		private readonly name: string,
+		private readonly name: string
 	) {}
 
 	public trigger(...args: unknown[]): void {
@@ -50,7 +50,7 @@ export class DelayedTrigger implements IDelayedTrigger, Disposable {
 		this.timerId = setTimeout(() => {
 			this.calledCounter += 1;
 			traceVerbose(
-				`Delay Trigger[${this.name}]: triggered=${this.triggeredCounter}, called=${this.calledCounter}`,
+				`Delay Trigger[${this.name}]: triggered=${this.triggeredCounter}, called=${this.calledCounter}`
 			);
 			this.callback(...args);
 		}, this.ms);

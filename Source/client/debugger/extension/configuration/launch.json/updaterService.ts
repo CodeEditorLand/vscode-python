@@ -20,20 +20,22 @@ export class LaunchJsonUpdaterService
 	};
 
 	constructor(
-        @inject(IDisposableRegistry) private readonly disposableRegistry: IDisposableRegistry,
-        @inject(IDebugConfigurationService) private readonly configurationProvider: IDebugConfigurationService,
-    ) {}
+		@inject(IDisposableRegistry)
+		private readonly disposableRegistry: IDisposableRegistry,
+		@inject(IDebugConfigurationService)
+		private readonly configurationProvider: IDebugConfigurationService
+	) {}
 
 	public async activate(): Promise<void> {
 		const handler = new LaunchJsonUpdaterServiceHelper(
-			this.configurationProvider,
+			this.configurationProvider
 		);
 		this.disposableRegistry.push(
 			registerCommand(
 				"python.SelectAndInsertDebugConfiguration",
 				handler.selectAndInsertDebugConfig,
-				handler,
-			),
+				handler
+			)
 		);
 	}
 }

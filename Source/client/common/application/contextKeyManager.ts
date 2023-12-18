@@ -9,11 +9,14 @@ import { ICommandManager, IContextKeyManager } from "./types";
 export class ContextKeyManager implements IContextKeyManager {
 	private values: Map<ExtensionContextKey, boolean> = new Map();
 
-	constructor(@inject(ICommandManager) private readonly commandManager: ICommandManager) {}
+	constructor(
+		@inject(ICommandManager)
+		private readonly commandManager: ICommandManager
+	) {}
 
 	public async setContext(
 		key: ExtensionContextKey,
-		value: boolean,
+		value: boolean
 	): Promise<void> {
 		if (this.values.get(key) === value) {
 			return Promise.resolve();

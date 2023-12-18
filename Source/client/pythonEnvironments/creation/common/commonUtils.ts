@@ -13,7 +13,7 @@ export async function showErrorMessageWithLogs(message: string): Promise<void> {
 	const result = await showErrorMessage(
 		message,
 		Common.openOutputPanel,
-		Common.selectPythonInterpreter,
+		Common.selectPythonInterpreter
 	);
 	if (result === Common.openOutputPanel) {
 		await executeCommand(Commands.ViewOutput);
@@ -27,7 +27,7 @@ export function getVenvPath(workspaceFolder: WorkspaceFolder): string {
 }
 
 export async function hasVenv(
-	workspaceFolder: WorkspaceFolder,
+	workspaceFolder: WorkspaceFolder
 ): Promise<boolean> {
 	return fs.pathExists(getVenvPath(workspaceFolder));
 }
@@ -40,13 +40,13 @@ export function getVenvExecutable(workspaceFolder: WorkspaceFolder): string {
 }
 
 export function getPrefixCondaEnvPath(
-	workspaceFolder: WorkspaceFolder,
+	workspaceFolder: WorkspaceFolder
 ): string {
 	return path.join(workspaceFolder.uri.fsPath, ".conda");
 }
 
 export async function hasPrefixCondaEnv(
-	workspaceFolder: WorkspaceFolder,
+	workspaceFolder: WorkspaceFolder
 ): Promise<boolean> {
 	return fs.pathExists(getPrefixCondaEnvPath(workspaceFolder));
 }

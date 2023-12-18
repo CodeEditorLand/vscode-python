@@ -23,6 +23,6 @@ export const IDiagnosticsCommandFactory = Symbol("IDiagnosticsCommandFactory");
 export interface IDiagnosticsCommandFactory {
 	createCommand(
 		diagnostic: IDiagnostic,
-		options: CommandOptions,
+		options: CommandOptions
 	): IDiagnosticCommand;
 }

@@ -15,8 +15,8 @@ interface IRawTempFS {
 			err: any,
 			path: string,
 			fd: number,
-			cleanupCallback: () => void,
-		) => void,
+			cleanupCallback: () => void
+		) => void
 	): void;
 }
 
@@ -24,12 +24,12 @@ interface IRawTempFS {
 export class TemporaryFileSystem implements ITempFileSystem {
 	constructor(
 		// (effectively) the third-party "tmp" module to use
-		private readonly raw: IRawTempFS,
+		private readonly raw: IRawTempFS
 	) {}
 	public static withDefaults(): TemporaryFileSystem {
 		return new TemporaryFileSystem(
 			// Use the actual "tmp" module.
-			tmp,
+			tmp
 		);
 	}
 

@@ -21,20 +21,21 @@ export class ReloadVSCodeCommandHandler
 		virtualWorkspace: true,
 	};
 	constructor(
-        @inject(ICommandManager) private readonly commandManager: ICommandManager,
-        @inject(IApplicationShell) private readonly appShell: IApplicationShell,
-    ) {}
+		@inject(ICommandManager)
+		private readonly commandManager: ICommandManager,
+		@inject(IApplicationShell) private readonly appShell: IApplicationShell
+	) {}
 	public async activate(): Promise<void> {
 		this.commandManager.registerCommand(
 			"python.reloadVSCode",
 			this.onReloadVSCode,
-			this,
+			this
 		);
 	}
 	private async onReloadVSCode(message: string) {
 		const item = await this.appShell.showInformationMessage(
 			message,
-			Common.reload,
+			Common.reload
 		);
 		if (item === Common.reload) {
 			this.commandManager

@@ -34,7 +34,7 @@ export class JediPython27NotSupportedDiagnostic extends BaseDiagnostic {
 			message,
 			DiagnosticSeverity.Warning,
 			DiagnosticScope.Global,
-			resource,
+			resource
 		);
 	}
 }
@@ -44,17 +44,25 @@ export const JediPython27NotSupportedDiagnosticServiceId =
 
 export class JediPython27NotSupportedDiagnosticService extends BaseDiagnosticsService {
 	constructor(
-        @inject(IServiceContainer) serviceContainer: IServiceContainer,
-        @inject(IInterpreterService) private readonly interpreterService: IInterpreterService,
-        @inject(IWorkspaceService) private readonly workspaceService: IWorkspaceService,
-        @inject(IConfigurationService) private readonly configurationService: IConfigurationService,
-        @inject(IDiagnosticHandlerService)
-        @named(DiagnosticCommandPromptHandlerServiceId)
-        protected readonly messageService: IDiagnosticHandlerService<MessageCommandPrompt>,
-        @inject(IDisposableRegistry) disposableRegistry: IDisposableRegistry,
-    ) {
-        super([DiagnosticCodes.JediPython27NotSupportedDiagnostic], serviceContainer, disposableRegistry, true);
-    }
+		@inject(IServiceContainer) serviceContainer: IServiceContainer,
+		@inject(IInterpreterService)
+		private readonly interpreterService: IInterpreterService,
+		@inject(IWorkspaceService)
+		private readonly workspaceService: IWorkspaceService,
+		@inject(IConfigurationService)
+		private readonly configurationService: IConfigurationService,
+		@inject(IDiagnosticHandlerService)
+		@named(DiagnosticCommandPromptHandlerServiceId)
+		protected readonly messageService: IDiagnosticHandlerService<MessageCommandPrompt>,
+		@inject(IDisposableRegistry) disposableRegistry: IDisposableRegistry
+	) {
+		super(
+			[DiagnosticCodes.JediPython27NotSupportedDiagnostic],
+			serviceContainer,
+			disposableRegistry,
+			true
+		);
+	}
 
 	public async diagnose(resource: Resource): Promise<IDiagnostic[]> {
 		const interpreter =
@@ -74,7 +82,7 @@ export class JediPython27NotSupportedDiagnosticService extends BaseDiagnosticsSe
 			return [
 				new JediPython27NotSupportedDiagnostic(
 					Python27Support.jediMessage,
-					resource,
+					resource
 				),
 			];
 		}
@@ -93,7 +101,7 @@ export class JediPython27NotSupportedDiagnosticService extends BaseDiagnosticsSe
 
 		const commandFactory =
 			this.serviceContainer.get<IDiagnosticsCommandFactory>(
-				IDiagnosticsCommandFactory,
+				IDiagnosticsCommandFactory
 			);
 		const options = [
 			{
@@ -114,7 +122,7 @@ export class JediPython27NotSupportedDiagnosticService extends BaseDiagnosticsSe
 	}
 
 	private async updateLanguageServerSetting(
-		resource: Resource,
+		resource: Resource
 	): Promise<void | undefined> {
 		// Update settings.json value to Jedi if it's JediLSP.
 		const settings = this.workspaceService
@@ -135,7 +143,7 @@ export class JediPython27NotSupportedDiagnosticService extends BaseDiagnosticsSe
 			"languageServer",
 			LanguageServerType.Jedi,
 			resource,
-			configTarget,
+			configTarget
 		);
 	}
 }

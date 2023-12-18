@@ -21,7 +21,7 @@ export class DynamicPythonDebugConfigurationService
 	// eslint-disable-next-line class-methods-use-this
 	public async provideDebugConfigurations(
 		folder: WorkspaceFolder,
-		_token?: CancellationToken,
+		_token?: CancellationToken
 	): Promise<DebugConfiguration[] | undefined> {
 		const providers = [];
 
@@ -71,7 +71,7 @@ export class DynamicPythonDebugConfigurationService
 			fastApiPath = replaceAll(
 				path.relative(folder.uri.fsPath, fastApiPath),
 				path.sep,
-				".",
+				"."
 			).replace(".py", "");
 			providers.push({
 				name: "Python: FastAPI",
@@ -93,7 +93,7 @@ export class DynamicPythonDebugConfigurationService
 			await DynamicPythonDebugConfigurationService.getPossiblePaths(
 				folder,
 				["manage.py", "*/manage.py", "app.py", "*/app.py"],
-				regExpression,
+				regExpression
 			);
 		return possiblePaths.length
 			? path.relative(folder.uri.fsPath, possiblePaths[0])
@@ -113,7 +113,7 @@ export class DynamicPythonDebugConfigurationService
 					"*/*/main.py",
 					"*/*/app.py",
 				],
-				regExpression,
+				regExpression
 			);
 
 		return fastApiPaths.length ? fastApiPaths[0] : null;
@@ -133,7 +133,7 @@ export class DynamicPythonDebugConfigurationService
 					"*/app.py",
 					"*/wsgi.py",
 				],
-				regExpression,
+				regExpression
 			);
 
 		return flaskPaths.length ? flaskPaths[0] : null;
@@ -142,24 +142,24 @@ export class DynamicPythonDebugConfigurationService
 	private static async getPossiblePaths(
 		folder: WorkspaceFolder,
 		globPatterns: string[],
-		regex: RegExp,
+		regex: RegExp
 	): Promise<string[]> {
 		const foundPathsPromises = (await Promise.allSettled(
 			globPatterns.map(
 				async (pattern): Promise<string[]> =>
 					(await fs.pathExists(path.join(folder.uri.fsPath, pattern)))
 						? [path.join(folder.uri.fsPath, pattern)]
-						: [],
-			),
+						: []
+			)
 		)) as { status: string; value: [] }[];
 		const possiblePaths: string[] = [];
 		foundPathsPromises.forEach((result) =>
-			possiblePaths.push(...result.value),
+			possiblePaths.push(...result.value)
 		);
 		const finalPaths = await asyncFilter(
 			possiblePaths,
 			async (possiblePath) =>
-				regex.exec((await fs.readFile(possiblePath)).toString()),
+				regex.exec((await fs.readFile(possiblePath)).toString())
 		);
 
 		return finalPaths;

@@ -82,7 +82,7 @@ export class SocketStream {
 			return;
 		}
 		const newBuffer = Buffer.alloc(
-			this.buffer.length + additionalData.length,
+			this.buffer.length + additionalData.length
 		);
 		this.buffer.copy(newBuffer);
 		additionalData.copy(newBuffer, this.buffer.length);
@@ -119,7 +119,7 @@ export class SocketStream {
 
 		if (byteRead < 0) {
 			throw new Error(
-				"IOException() - Socket.ReadString failed to read string type;",
+				"IOException() - Socket.ReadString failed to read string type;"
 			);
 		}
 
@@ -137,7 +137,7 @@ export class SocketStream {
 			}
 			default: {
 				throw new Error(
-					`IOException(); Socket.ReadString failed to parse unknown string type ${type}`,
+					`IOException(); Socket.ReadString failed to parse unknown string type ${type}`
 				);
 			}
 		}
@@ -153,7 +153,7 @@ export class SocketStream {
 
 		const stringBuffer = this.buffer.slice(
 			this.bytesRead,
-			this.bytesRead + len,
+			this.bytesRead + len
 		);
 		if (this.isInTransaction) {
 			this.bytesRead = this.bytesRead + len;
@@ -193,7 +193,7 @@ export class SocketStream {
 
 		const stringBuffer = this.buffer.slice(
 			this.bytesRead,
-			this.bytesRead + length,
+			this.bytesRead + length
 		);
 		if (this.isInTransaction) {
 			this.bytesRead = this.bytesRead + length;

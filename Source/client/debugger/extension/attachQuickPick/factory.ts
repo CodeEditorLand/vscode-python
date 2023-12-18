@@ -21,23 +21,28 @@ export class AttachProcessProviderFactory
 	implements IAttachProcessProviderFactory
 {
 	constructor(
-        @inject(IApplicationShell) private readonly applicationShell: IApplicationShell,
-        @inject(ICommandManager) private readonly commandManager: ICommandManager,
-        @inject(IPlatformService) private readonly platformService: IPlatformService,
-        @inject(IProcessServiceFactory) private readonly processServiceFactory: IProcessServiceFactory,
-        @inject(IDisposableRegistry) private readonly disposableRegistry: IDisposableRegistry,
-    ) {}
+		@inject(IApplicationShell)
+		private readonly applicationShell: IApplicationShell,
+		@inject(ICommandManager)
+		private readonly commandManager: ICommandManager,
+		@inject(IPlatformService)
+		private readonly platformService: IPlatformService,
+		@inject(IProcessServiceFactory)
+		private readonly processServiceFactory: IProcessServiceFactory,
+		@inject(IDisposableRegistry)
+		private readonly disposableRegistry: IDisposableRegistry
+	) {}
 
 	public registerCommands() {
 		const provider = new AttachProcessProvider(
 			this.platformService,
-			this.processServiceFactory,
+			this.processServiceFactory
 		);
 		const picker = new AttachPicker(this.applicationShell, provider);
 		const disposable = this.commandManager.registerCommand(
 			Commands.PickLocalProcess,
 			() => picker.showQuickPick(),
-			this,
+			this
 		);
 		this.disposableRegistry.push(disposable);
 	}

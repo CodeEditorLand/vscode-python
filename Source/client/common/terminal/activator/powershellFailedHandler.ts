@@ -23,17 +23,18 @@ export class PowershellTerminalActivationFailedHandler
 	implements ITerminalActivationHandler
 {
 	constructor(
-        @inject(ITerminalHelper) private readonly helper: ITerminalHelper,
-        @inject(IPlatformService) private readonly platformService: IPlatformService,
-        @inject(IDiagnosticsService)
-        @named(PowerShellActivationHackDiagnosticsServiceId)
-        private readonly diagnosticService: IDiagnosticsService,
-    ) {}
+		@inject(ITerminalHelper) private readonly helper: ITerminalHelper,
+		@inject(IPlatformService)
+		private readonly platformService: IPlatformService,
+		@inject(IDiagnosticsService)
+		@named(PowerShellActivationHackDiagnosticsServiceId)
+		private readonly diagnosticService: IDiagnosticsService
+	) {}
 	public async handleActivation(
 		terminal: Terminal,
 		resource: Resource,
 		_preserveFocus: boolean,
-		activated: boolean,
+		activated: boolean
 	) {
 		if (activated || !this.platformService.isWindows) {
 			return;
@@ -49,7 +50,7 @@ export class PowershellTerminalActivationFailedHandler
 		const activationCommands =
 			await this.helper.getEnvironmentActivationCommands(
 				TerminalShellType.commandPrompt,
-				resource,
+				resource
 			);
 		if (
 			!activationCommands ||

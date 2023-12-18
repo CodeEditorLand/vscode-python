@@ -46,7 +46,7 @@ namespace vscErrors {
 	];
 	function errorMatches(
 		err: Error,
-		expectedName: string,
+		expectedName: string
 	): boolean | undefined {
 		if (!known.includes(err.name)) {
 			return undefined;
@@ -139,7 +139,7 @@ export function isNotDirError(err: Error): boolean | undefined {
 
 // Return true if the given error is EACCES.
 export function isNoPermissionsError(
-	err: unknown | Error,
+	err: unknown | Error
 ): boolean | undefined {
 	const error = err as Error;
 	const matched = vscErrors.isNoPermissions(error);

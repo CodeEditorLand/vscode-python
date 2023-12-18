@@ -84,7 +84,7 @@ export interface DeprecatedProposedAPI {
 		 * @param resource : Uri of a file or workspace
 		 */
 		getActiveEnvironmentPath(
-			resource?: Resource,
+			resource?: Resource
 		): Promise<EnvPathType | undefined>;
 		/**
 		 * Returns details for the given interpreter. Details such as absolute interpreter path,
@@ -97,7 +97,7 @@ export interface DeprecatedProposedAPI {
 		 */
 		getEnvironmentDetails(
 			path: string,
-			options?: EnvironmentDetailsOptions,
+			options?: EnvironmentDetailsOptions
 		): Promise<EnvironmentDetails | undefined>;
 		/**
 		 * Returns paths to environments that uniquely identifies an environment found by the extension
@@ -137,7 +137,7 @@ export interface DeprecatedProposedAPI {
 		 * refreshes going on.
 		 */
 		getRefreshPromise(
-			options?: GetRefreshEnvironmentsOptions,
+			options?: GetRefreshEnvironmentsOptions
 		): Promise<void> | undefined;
 		/**
 		 * This event is triggered when the known environment list changes, like when a environment

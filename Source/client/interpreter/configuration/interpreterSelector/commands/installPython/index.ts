@@ -26,18 +26,23 @@ export class InstallPythonCommand implements IExtensionSingleActivationService {
 	};
 
 	constructor(
-        @inject(ICommandManager) private readonly commandManager: ICommandManager,
-        @inject(IContextKeyManager) private readonly contextManager: IContextKeyManager,
-        @inject(IBrowserService) private readonly browserService: IBrowserService,
-        @inject(IPlatformService) private readonly platformService: IPlatformService,
-        @inject(IDisposableRegistry) private readonly disposables: IDisposableRegistry,
-    ) {}
+		@inject(ICommandManager)
+		private readonly commandManager: ICommandManager,
+		@inject(IContextKeyManager)
+		private readonly contextManager: IContextKeyManager,
+		@inject(IBrowserService)
+		private readonly browserService: IBrowserService,
+		@inject(IPlatformService)
+		private readonly platformService: IPlatformService,
+		@inject(IDisposableRegistry)
+		private readonly disposables: IDisposableRegistry
+	) {}
 
 	public async activate(): Promise<void> {
 		this.disposables.push(
 			this.commandManager.registerCommand(Commands.InstallPython, () =>
-				this._installPython(),
-			),
+				this._installPython()
+			)
 		);
 	}
 
@@ -48,7 +53,7 @@ export class InstallPythonCommand implements IExtensionSingleActivationService {
 				// OS is not Windows 8, ms-windows-store URIs are available:
 				// https://docs.microsoft.com/en-us/windows/uwp/launch-resume/launch-store-app
 				this.browserService.launch(
-					"ms-windows-store://pdp/?ProductId=9NRWMJP3717K",
+					"ms-windows-store://pdp/?ProductId=9NRWMJP3717K"
 				);
 				return;
 			}
@@ -59,7 +64,7 @@ export class InstallPythonCommand implements IExtensionSingleActivationService {
 	private showInstallPythonTile() {
 		this.contextManager.setContext(
 			ExtensionContextKey.showInstallPythonTile,
-			true,
+			true
 		);
 		let step: string;
 		if (this.platformService.isWindows) {
@@ -75,7 +80,7 @@ export class InstallPythonCommand implements IExtensionSingleActivationService {
 				category: `${PVSC_EXTENSION_ID}#${PythonWelcome.name}`,
 				step: `${PVSC_EXTENSION_ID}#${PythonWelcome.name}#${step}`,
 			},
-			false,
+			false
 		);
 	}
 }

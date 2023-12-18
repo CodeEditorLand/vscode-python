@@ -20,6 +20,6 @@ export const IChildProcessAttachService = Symbol("IChildProcessAttachService");
 export interface IChildProcessAttachService {
 	attach(
 		data: AttachRequestArguments & DebugConfiguration,
-		parentSession: DebugSession,
+		parentSession: DebugSession
 	): Promise<void>;
 }

@@ -17,12 +17,14 @@ import { BaseInterpreterSelectorCommand } from "./base";
 @injectable()
 export class ResetInterpreterCommand extends BaseInterpreterSelectorCommand {
 	constructor(
-		@inject(IPythonPathUpdaterServiceManager) pythonPathUpdaterService: IPythonPathUpdaterServiceManager,
+		@inject(IPythonPathUpdaterServiceManager)
+		pythonPathUpdaterService: IPythonPathUpdaterServiceManager,
 		@inject(ICommandManager) commandManager: ICommandManager,
 		@inject(IApplicationShell) applicationShell: IApplicationShell,
 		@inject(IWorkspaceService) workspaceService: IWorkspaceService,
 		@inject(IPathUtils) pathUtils: IPathUtils,
-		@inject(IConfigurationService) configurationService: IConfigurationService,
+		@inject(IConfigurationService)
+		configurationService: IConfigurationService
 	) {
 		super(
 			pythonPathUpdaterService,
@@ -30,7 +32,7 @@ export class ResetInterpreterCommand extends BaseInterpreterSelectorCommand {
 			applicationShell,
 			workspaceService,
 			pathUtils,
-			configurationService,
+			configurationService
 		);
 	}
 
@@ -38,8 +40,8 @@ export class ResetInterpreterCommand extends BaseInterpreterSelectorCommand {
 		this.disposables.push(
 			this.commandManager.registerCommand(
 				Commands.ClearWorkspaceInterpreter,
-				this.resetInterpreter.bind(this),
-			),
+				this.resetInterpreter.bind(this)
+			)
 		);
 	}
 
@@ -58,9 +60,9 @@ export class ResetInterpreterCommand extends BaseInterpreterSelectorCommand {
 					undefined,
 					configTarget,
 					"ui",
-					wkspace,
+					wkspace
 				);
-			}),
+			})
 		);
 	}
 }

@@ -18,13 +18,15 @@ import { TerminalCodeExecutionProvider } from "./terminalCodeExecution";
 @injectable()
 export class ReplProvider extends TerminalCodeExecutionProvider {
 	constructor(
-		@inject(ITerminalServiceFactory) terminalServiceFactory: ITerminalServiceFactory,
-		@inject(IConfigurationService) configurationService: IConfigurationService,
+		@inject(ITerminalServiceFactory)
+		terminalServiceFactory: ITerminalServiceFactory,
+		@inject(IConfigurationService)
+		configurationService: IConfigurationService,
 		@inject(IWorkspaceService) workspace: IWorkspaceService,
 		@inject(IDisposableRegistry) disposableRegistry: Disposable[],
 		@inject(IPlatformService) platformService: IPlatformService,
 		@inject(IInterpreterService) interpreterService: IInterpreterService,
-		@inject(ICommandManager) commandManager: ICommandManager,
+		@inject(ICommandManager) commandManager: ICommandManager
 	) {
 		super(
 			terminalServiceFactory,
@@ -33,7 +35,7 @@ export class ReplProvider extends TerminalCodeExecutionProvider {
 			disposableRegistry,
 			platformService,
 			interpreterService,
-			commandManager,
+			commandManager
 		);
 		this.terminalTitle = "REPL";
 	}

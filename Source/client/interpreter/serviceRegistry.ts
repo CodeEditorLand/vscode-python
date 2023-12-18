@@ -53,84 +53,84 @@ import { VirtualEnvironmentPrompt } from "./virtualEnvs/virtualEnvPrompt";
  */
 
 export function registerInterpreterTypes(
-	serviceManager: IServiceManager,
+	serviceManager: IServiceManager
 ): void {
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
-		InstallPythonCommand,
+		InstallPythonCommand
 	);
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
-		InstallPythonViaTerminal,
+		InstallPythonViaTerminal
 	);
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
-		SetInterpreterCommand,
+		SetInterpreterCommand
 	);
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
-		ResetInterpreterCommand,
+		ResetInterpreterCommand
 	);
 	serviceManager.addSingleton(IInterpreterQuickPick, SetInterpreterCommand);
 
 	serviceManager.addSingleton<IExtensionActivationService>(
 		IExtensionActivationService,
-		VirtualEnvironmentPrompt,
+		VirtualEnvironmentPrompt
 	);
 
 	serviceManager.addSingleton<IInterpreterService>(
 		IInterpreterService,
-		InterpreterService,
+		InterpreterService
 	);
 	serviceManager.addSingleton<IInterpreterDisplay>(
 		IInterpreterDisplay,
-		InterpreterDisplay,
+		InterpreterDisplay
 	);
 	serviceManager.addBinding(
 		IInterpreterDisplay,
-		IExtensionSingleActivationService,
+		IExtensionSingleActivationService
 	);
 
 	serviceManager.addSingleton<IPythonPathUpdaterServiceFactory>(
 		IPythonPathUpdaterServiceFactory,
-		PythonPathUpdaterServiceFactory,
+		PythonPathUpdaterServiceFactory
 	);
 	serviceManager.addSingleton<IPythonPathUpdaterServiceManager>(
 		IPythonPathUpdaterServiceManager,
-		PythonPathUpdaterService,
+		PythonPathUpdaterService
 	);
 
 	serviceManager.addSingleton<IInterpreterSelector>(
 		IInterpreterSelector,
-		InterpreterSelector,
+		InterpreterSelector
 	);
 	serviceManager.addSingleton<IInterpreterHelper>(
 		IInterpreterHelper,
-		InterpreterHelper,
+		InterpreterHelper
 	);
 
 	serviceManager.addSingleton<IInterpreterComparer>(
 		IInterpreterComparer,
-		EnvironmentTypeComparer,
+		EnvironmentTypeComparer
 	);
 
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
-		InterpreterLocatorProgressStatubarHandler,
+		InterpreterLocatorProgressStatubarHandler
 	);
 
 	serviceManager.addSingleton<IInterpreterAutoSelectionService>(
 		IInterpreterAutoSelectionService,
-		InterpreterAutoSelectionService,
+		InterpreterAutoSelectionService
 	);
 
 	serviceManager.addSingleton<IExtensionActivationService>(
 		IExtensionActivationService,
-		CondaInheritEnvPrompt,
+		CondaInheritEnvPrompt
 	);
 	serviceManager.addSingleton<IActivatedEnvironmentLaunch>(
 		IActivatedEnvironmentLaunch,
-		ActivatedEnvironmentLaunch,
+		ActivatedEnvironmentLaunch
 	);
 }
 
@@ -138,14 +138,14 @@ export function registerTypes(serviceManager: IServiceManager): void {
 	registerInterpreterTypes(serviceManager);
 	serviceManager.addSingleton<IInterpreterAutoSelectionProxyService>(
 		IInterpreterAutoSelectionProxyService,
-		InterpreterAutoSelectionProxyService,
+		InterpreterAutoSelectionProxyService
 	);
 	serviceManager.addSingleton<IEnvironmentActivationService>(
 		EnvironmentActivationService,
-		EnvironmentActivationService,
+		EnvironmentActivationService
 	);
 	serviceManager.addSingleton<IEnvironmentActivationService>(
 		IEnvironmentActivationService,
-		EnvironmentActivationService,
+		EnvironmentActivationService
 	);
 }

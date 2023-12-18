@@ -47,28 +47,31 @@ export class InstallPythonViaTerminal
 		};
 
 	constructor(
-        @inject(ICommandManager) private readonly commandManager: ICommandManager,
-        @inject(ITerminalManager) private readonly terminalManager: ITerminalManager,
-        @inject(IDisposableRegistry) private readonly disposables: IDisposableRegistry,
-    ) {}
+		@inject(ICommandManager)
+		private readonly commandManager: ICommandManager,
+		@inject(ITerminalManager)
+		private readonly terminalManager: ITerminalManager,
+		@inject(IDisposableRegistry)
+		private readonly disposables: IDisposableRegistry
+	) {}
 
 	public async activate(): Promise<void> {
 		this.disposables.push(
 			this.commandManager.registerCommand(
 				Commands.InstallPythonOnMac,
-				() => this._installPythonOnUnix(OSType.OSX),
-			),
+				() => this._installPythonOnUnix(OSType.OSX)
+			)
 		);
 		this.disposables.push(
 			this.commandManager.registerCommand(
 				Commands.InstallPythonOnLinux,
-				() => this._installPythonOnUnix(OSType.Linux),
-			),
+				() => this._installPythonOnUnix(OSType.Linux)
+			)
 		);
 	}
 
 	public async _installPythonOnUnix(
-		os: OSType.Linux | OSType.OSX,
+		os: OSType.Linux | OSType.OSX
 	): Promise<void> {
 		const commands = await this.getCommands(os);
 		const installMessage =
@@ -101,7 +104,7 @@ export class InstallPythonViaTerminal
 	}
 
 	private async getCommandsForPackageManagers(
-		packageManagers: PackageManagers[],
+		packageManagers: PackageManagers[]
 	) {
 		for (const packageManager of packageManagers) {
 			if (await isPackageAvailable(packageManager)) {
@@ -118,7 +121,7 @@ async function isPackageAvailable(packageManager: PackageManagers) {
 		const resolvedPath = await which(packageManager);
 		traceVerbose(
 			`Resolved path to ${packageManager} module:`,
-			resolvedPath,
+			resolvedPath
 		);
 		return resolvedPath.trim().length > 0;
 	} catch (ex) {

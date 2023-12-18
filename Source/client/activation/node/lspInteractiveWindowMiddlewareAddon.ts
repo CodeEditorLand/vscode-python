@@ -34,7 +34,7 @@ export class LspInteractiveWindowMiddlewareAddon
 {
 	constructor(
 		private readonly getClient: () => LanguageClient | undefined,
-		private readonly jupyterExtensionIntegration: JupyterExtensionIntegration,
+		private readonly jupyterExtensionIntegration: JupyterExtensionIntegration
 	) {
 		// Make sure a bunch of functions are bound to this. VS code can call them without a this context
 		this.didOpen = this.didOpen.bind(this);
@@ -61,7 +61,7 @@ export class LspInteractiveWindowMiddlewareAddon
 
 	public async didOpen(
 		document: TextDocument,
-		next: (ev: TextDocument) => Promise<void>,
+		next: (ev: TextDocument) => Promise<void>
 	): Promise<void> {
 		const notebookUri = this.getNotebookUriForTextDocumentUri(document.uri);
 		if (!notebookUri) {
@@ -70,7 +70,7 @@ export class LspInteractiveWindowMiddlewareAddon
 		}
 
 		const notebookDocument = this.notebookDocumentMap.get(
-			notebookUri.toString(),
+			notebookUri.toString()
 		);
 		if (!notebookDocument) {
 			this.unlinkedTextDocumentMap.set(notebookUri.toString(), document);
@@ -112,12 +112,12 @@ export class LspInteractiveWindowMiddlewareAddon
 						uri: notebookUri.toString(),
 					},
 					change: result,
-				},
+				}
 			);
 		} catch (error) {
 			this.getClient()?.error(
 				"Sending DidChangeNotebookDocumentNotification failed",
-				error,
+				error
 			);
 			throw error;
 		}
@@ -125,10 +125,10 @@ export class LspInteractiveWindowMiddlewareAddon
 
 	public async didChange(
 		event: TextDocumentChangeEvent,
-		next: (ev: TextDocumentChangeEvent) => Promise<void>,
+		next: (ev: TextDocumentChangeEvent) => Promise<void>
 	): Promise<void> {
 		const notebookUri = this.getNotebookUriForTextDocumentUri(
-			event.document.uri,
+			event.document.uri
 		);
 		if (!notebookUri) {
 			await next(event);
@@ -136,7 +136,7 @@ export class LspInteractiveWindowMiddlewareAddon
 		}
 
 		const notebookDocument = this.notebookDocumentMap.get(
-			notebookUri.toString(),
+			notebookUri.toString()
 		);
 		if (notebookDocument) {
 			const client = this.getClient();
@@ -153,12 +153,12 @@ export class LspInteractiveWindowMiddlewareAddon
 								textContent: [
 									LspInteractiveWindowMiddlewareAddon._asTextContentChange(
 										event,
-										client.code2ProtocolConverter,
+										client.code2ProtocolConverter
 									),
 								],
 							},
 						},
-					},
+					}
 				);
 			}
 		}
@@ -166,12 +166,12 @@ export class LspInteractiveWindowMiddlewareAddon
 
 	private static _asTextContentChange(
 		event: TextDocumentChangeEvent,
-		c2pConverter: Converter,
+		c2pConverter: Converter
 	): TextContent {
 		const params = c2pConverter.asChangeTextDocumentParams(
 			event,
 			event.document.uri,
-			event.document.version,
+			event.document.version
 		);
 		return {
 			document: params.textDocument,
@@ -181,7 +181,7 @@ export class LspInteractiveWindowMiddlewareAddon
 
 	public async didClose(
 		document: TextDocument,
-		next: (ev: TextDocument) => Promise<void>,
+		next: (ev: TextDocument) => Promise<void>
 	): Promise<void> {
 		const notebookUri = this.getNotebookUriForTextDocumentUri(document.uri);
 		if (!notebookUri) {
@@ -197,16 +197,16 @@ export class LspInteractiveWindowMiddlewareAddon
 		cells: NotebookCell[],
 		next: (
 			notebookDocument: NotebookDocument,
-			cells: NotebookCell[],
-		) => Promise<void>,
+			cells: NotebookCell[]
+		) => Promise<void>
 	): Promise<void> {
 		this.notebookDocumentMap.set(
 			notebookDocument.uri.toString(),
-			notebookDocument,
+			notebookDocument
 		);
 
 		const relatedTextDocument = this.unlinkedTextDocumentMap.get(
-			notebookDocument.uri.toString(),
+			notebookDocument.uri.toString()
 		);
 		if (relatedTextDocument) {
 			const newCells = [
@@ -223,7 +223,7 @@ export class LspInteractiveWindowMiddlewareAddon
 			];
 
 			this.unlinkedTextDocumentMap.delete(
-				notebookDocument.uri.toString(),
+				notebookDocument.uri.toString()
 			);
 
 			await next(notebookDocument, newCells);
@@ -237,8 +237,8 @@ export class LspInteractiveWindowMiddlewareAddon
 		cells: NotebookCell[],
 		next: (
 			notebookDocument: NotebookDocument,
-			cells: NotebookCell[],
-		) => Promise<void>,
+			cells: NotebookCell[]
+		) => Promise<void>
 	): Promise<void> {
 		this.notebookDocumentMap.delete(notebookDocument.uri.toString());
 
@@ -251,7 +251,7 @@ export class LspInteractiveWindowMiddlewareAddon
 	};
 
 	private getNotebookUriForTextDocumentUri(
-		textDocumentUri: Uri,
+		textDocumentUri: Uri
 	): Uri | undefined {
 		const getNotebookUriFunction =
 			this.jupyterExtensionIntegration.getGetNotebookUriForTextDocumentUriFunction();

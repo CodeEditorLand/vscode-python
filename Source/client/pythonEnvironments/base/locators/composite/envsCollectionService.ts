@@ -65,7 +65,7 @@ export class EnvsCollectionService
 	}
 
 	public getRefreshPromise(
-		options?: GetRefreshEnvironmentsOptions,
+		options?: GetRefreshEnvironmentsOptions
 	): Promise<void> | undefined {
 		const stage = options?.stage ?? ProgressReportStage.discoveryFinished;
 		return this.progressPromises.get(stage)?.promise;
@@ -73,7 +73,7 @@ export class EnvsCollectionService
 
 	constructor(
 		private readonly cache: IEnvsCollectionCache,
-		private readonly locator: IResolvingLocator,
+		private readonly locator: IResolvingLocator
 	) {
 		super();
 		this.locator.onChanged((event) => {
@@ -128,7 +128,7 @@ export class EnvsCollectionService
 
 	public triggerRefresh(
 		query?: PythonLocatorQuery,
-		options?: TriggerRefreshOptions,
+		options?: TriggerRefreshOptions
 	): Promise<void> {
 		const stopWatch = new StopWatch();
 		let refreshPromise = this.getRefreshPromiseForQuery(query);
@@ -141,7 +141,7 @@ export class EnvsCollectionService
 				return Promise.resolve();
 			}
 			refreshPromise = this.startRefresh(query).then(() =>
-				this.sendTelemetry(query, stopWatch),
+				this.sendTelemetry(query, stopWatch)
 			);
 		}
 		return refreshPromise;
@@ -160,7 +160,7 @@ export class EnvsCollectionService
 	}
 
 	private async addEnvsToCacheForQuery(
-		query: PythonLocatorQuery | undefined,
+		query: PythonLocatorQuery | undefined
 	) {
 		const iterator = this.locator.iterEnvs(query);
 		const seen: PythonEnvInfo[] = [];
@@ -238,7 +238,7 @@ export class EnvsCollectionService
 	 * Ensure we trigger a fresh refresh for the query after the current refresh (if any) is done.
 	 */
 	private async scheduleNewRefresh(
-		query?: PythonLocatorQuery,
+		query?: PythonLocatorQuery
 	): Promise<void> {
 		const refreshPromise = this.getRefreshPromiseForQuery(query);
 		let nextRefreshPromise: Promise<void>;
@@ -263,14 +263,14 @@ export class EnvsCollectionService
 		if (ProgressReportStage.allPathsDiscovered && query) {
 			// Only mark as all paths discovered when querying for all envs.
 			this.progressPromises.delete(
-				ProgressReportStage.allPathsDiscovered,
+				ProgressReportStage.allPathsDiscovered
 			);
 		}
 	}
 
 	private rejectProgressStates(
 		query: PythonLocatorQuery | undefined,
-		ex: Error,
+		ex: Error
 	) {
 		this.refreshesPerQuery.get(query)?.reject(ex);
 		this.refreshesPerQuery.delete(query);
@@ -285,7 +285,7 @@ export class EnvsCollectionService
 		this.refreshesPerQuery.delete(query);
 		// Refreshes per stage are resolved using progress events instead.
 		const isRefreshComplete = Array.from(
-			this.refreshesPerQuery.values(),
+			this.refreshesPerQuery.values()
 		).every((d) => d.completed);
 		if (isRefreshComplete) {
 			this.progress.fire({
@@ -296,7 +296,7 @@ export class EnvsCollectionService
 
 	private sendTelemetry(
 		query: PythonLocatorQuery | undefined,
-		stopWatch: StopWatch,
+		stopWatch: StopWatch
 	) {
 		if (!query && !this.hasRefreshFinished(query)) {
 			// Intent is to capture time taken for discovery of all envs to complete the first time.
@@ -310,9 +310,9 @@ export class EnvsCollectionService
 						.filter(
 							(e) =>
 								getEnvPath(e.executable.filename, e.location)
-									.pathType === "envFolderPath",
+									.pathType === "envFolderPath"
 						).length,
-				},
+				}
 			);
 		}
 		this.hasRefreshFinishedForQuery.set(query, true);

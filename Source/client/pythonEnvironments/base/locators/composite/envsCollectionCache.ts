@@ -30,7 +30,7 @@ export interface IEnvsCollectionCache {
 	 */
 	updateEnv(
 		oldValue: PythonEnvInfo,
-		newValue: PythonEnvInfo | undefined,
+		newValue: PythonEnvInfo | undefined
 	): void;
 
 	/**
@@ -65,7 +65,7 @@ export interface IEnvsCollectionCache {
 	 */
 	validateCache(
 		envs?: PythonEnvInfo[],
-		isCompleteList?: boolean,
+		isCompleteList?: boolean
 	): Promise<void>;
 }
 
@@ -100,7 +100,7 @@ export class PythonEnvInfoCache
 
 	public async validateCache(
 		envs?: PythonEnvInfo[],
-		isCompleteList?: boolean,
+		isCompleteList?: boolean
 	): Promise<void> {
 		/**
 		 * We do check if an env has updated as we already run discovery in background
@@ -112,7 +112,7 @@ export class PythonEnvInfoCache
 			this.envs.map(async (cachedEnv) => {
 				const { path } = getEnvPath(
 					cachedEnv.executable.filename,
-					cachedEnv.location,
+					cachedEnv.location
 				);
 				if (await pathExists(path)) {
 					if (envs && isCompleteList) {
@@ -130,7 +130,7 @@ export class PythonEnvInfoCache
 						}
 						if (
 							Array.from(this.validatedEnvs.keys()).some(
-								(envId) => cachedEnv.id === envId,
+								(envId) => cachedEnv.id === envId
 							)
 						) {
 							// These envs are provided by the consumer themselves, consider them valid.
@@ -141,7 +141,7 @@ export class PythonEnvInfoCache
 					}
 				}
 				return false;
-			}),
+			})
 		);
 		const invalidIndexes = areEnvsValid
 			.map((isValid, index) => (isValid ? -1 : index))
@@ -186,7 +186,7 @@ export class PythonEnvInfoCache
 	public updateEnv(
 		oldValue: PythonEnvInfo,
 		newValue: PythonEnvInfo | undefined,
-		forceUpdate = false,
+		forceUpdate = false
 	): void {
 		if (this.flushedEnvs.has(oldValue.id!) && !forceUpdate) {
 			// We have already flushed this env to persistent storage, so it likely has upto date info.
@@ -205,7 +205,7 @@ export class PythonEnvInfoCache
 	}
 
 	public async getLatestInfo(
-		path: string,
+		path: string
 	): Promise<PythonEnvInfo | undefined> {
 		// `path` can either be path to environment or executable path
 		const env =
@@ -295,7 +295,7 @@ export class PythonEnvInfoCache
  * Build a cache of PythonEnvInfo that is ready to use.
  */
 export async function createCollectionCache(
-	storage: IPersistentStorage,
+	storage: IPersistentStorage
 ): Promise<PythonEnvInfoCache> {
 	const cache = new PythonEnvInfoCache(storage);
 	cache.clearAndReloadFromStorage();

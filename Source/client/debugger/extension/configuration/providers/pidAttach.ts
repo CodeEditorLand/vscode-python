@@ -13,7 +13,7 @@ import { DebugConfigurationState, DebugConfigurationType } from "../../types";
 
 export async function buildPidAttachConfiguration(
 	_input: MultiStepInput<DebugConfigurationState>,
-	state: DebugConfigurationState,
+	state: DebugConfigurationState
 ): Promise<void> {
 	const config: Partial<AttachRequestArguments> = {
 		name: DebugConfigStrings.attachPid.snippet.name,

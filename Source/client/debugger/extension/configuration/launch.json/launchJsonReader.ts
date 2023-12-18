@@ -12,7 +12,7 @@ import {
 import { traceLog } from "../../../../logging";
 
 export async function getConfigurationsForWorkspace(
-	workspace: WorkspaceFolder,
+	workspace: WorkspaceFolder
 ): Promise<DebugConfiguration[]> {
 	const filename = path.join(workspace.uri.fsPath, ".vscode", "launch.json");
 	if (!(await fs.pathExists(filename))) {
@@ -45,7 +45,7 @@ export async function getConfigurationsForWorkspace(
 }
 
 export async function getConfigurationsByUri(
-	uri?: Uri,
+	uri?: Uri
 ): Promise<DebugConfiguration[]> {
 	if (uri) {
 		const workspace = getWorkspaceFolder(uri);

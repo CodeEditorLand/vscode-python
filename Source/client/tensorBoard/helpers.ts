@@ -17,7 +17,7 @@ const TensorBoardImportRegEx =
 	/^\s*(?:from torch\.utils\.tensorboard import \w+)|(?:from torch\.utils import (?:(\w+, )*tensorboard(, \w+)*))|(?:from tensorboardX import \w+)|(?:import (\w+, )*((torch\.utils\.tensorboard)|(tensorboardX)|(tensorboard))(, \w+)*)/;
 
 export function containsTensorBoardImport(
-	lines: (string | undefined)[],
+	lines: (string | undefined)[]
 ): boolean {
 	try {
 		for (const s of lines) {
@@ -37,7 +37,7 @@ export function containsTensorBoardImport(
 }
 
 export function containsNotebookExtension(
-	lines: (string | undefined)[],
+	lines: (string | undefined)[]
 ): boolean {
 	for (const s of lines) {
 		if (

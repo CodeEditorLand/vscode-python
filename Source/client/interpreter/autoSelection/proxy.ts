@@ -18,16 +18,19 @@ export class InterpreterAutoSelectionProxyService
 
 	private instance?: IInterpreterAutoSelectionProxyService;
 
-	constructor(@inject(IDisposableRegistry) private readonly disposables: IDisposableRegistry) {}
+	constructor(
+		@inject(IDisposableRegistry)
+		private readonly disposables: IDisposableRegistry
+	) {}
 
 	public registerInstance(
-		instance: IInterpreterAutoSelectionProxyService,
+		instance: IInterpreterAutoSelectionProxyService
 	): void {
 		this.instance = instance;
 		this.disposables.push(
 			this.instance.onDidChangeAutoSelectedInterpreter(() =>
-				this.didAutoSelectedInterpreterEmitter.fire(),
-			),
+				this.didAutoSelectedInterpreterEmitter.fire()
+			)
 		);
 	}
 
@@ -36,7 +39,7 @@ export class InterpreterAutoSelectionProxyService
 	}
 
 	public getAutoSelectedInterpreter(
-		resource: Resource,
+		resource: Resource
 	): PythonEnvironment | undefined {
 		return this.instance
 			? this.instance.getAutoSelectedInterpreter(resource)
@@ -45,7 +48,7 @@ export class InterpreterAutoSelectionProxyService
 
 	public async setWorkspaceInterpreter(
 		resource: Uri,
-		interpreter: PythonEnvironment | undefined,
+		interpreter: PythonEnvironment | undefined
 	): Promise<void> {
 		return this.instance
 			? this.instance.setWorkspaceInterpreter(resource, interpreter)

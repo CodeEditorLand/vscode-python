@@ -29,7 +29,7 @@ export function getAllScripts(pathJoin: (...p: string[]) => string): string[] {
 					name,
 					// We also add scripts in subdirs.
 					pathJoin("Scripts", name),
-					pathJoin("scripts", name),
+					pathJoin("scripts", name)
 				);
 			}
 		}
@@ -41,27 +41,29 @@ export function getAllScripts(pathJoin: (...p: string[]) => string): string[] {
 export class CommandPromptAndPowerShell extends VenvBaseActivationCommandProvider {
 	protected readonly scripts: ActivationScripts;
 
-	constructor(@inject(IServiceContainer) serviceContainer: IServiceContainer) {
-        super(serviceContainer);
-        this.scripts = {};
-        for (const [key, names] of Object.entries(SCRIPTS)) {
-            const shell = key as TerminalShellType;
-            const scripts: string[] = [];
-            for (const name of names) {
-                scripts.push(
-                    name,
-                    // We also add scripts in subdirs.
-                    path.join('Scripts', name),
-                    path.join('scripts', name),
-                );
-            }
-            this.scripts[shell] = scripts;
-        }
-    }
+	constructor(
+		@inject(IServiceContainer) serviceContainer: IServiceContainer
+	) {
+		super(serviceContainer);
+		this.scripts = {};
+		for (const [key, names] of Object.entries(SCRIPTS)) {
+			const shell = key as TerminalShellType;
+			const scripts: string[] = [];
+			for (const name of names) {
+				scripts.push(
+					name,
+					// We also add scripts in subdirs.
+					path.join("Scripts", name),
+					path.join("scripts", name)
+				);
+			}
+			this.scripts[shell] = scripts;
+		}
+	}
 
 	public async getActivationCommandsForInterpreter(
 		pythonPath: string,
-		targetShell: TerminalShellType,
+		targetShell: TerminalShellType
 	): Promise<string[] | undefined> {
 		const scriptFile = await this.findScriptFile(pythonPath, targetShell);
 		if (!scriptFile) {

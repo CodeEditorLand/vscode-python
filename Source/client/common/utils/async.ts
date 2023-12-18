@@ -36,7 +36,7 @@ class DeferredImpl<T> implements Deferred<T> {
 	private _resolve!: (value: T | PromiseLike<T>) => void;
 
 	private _reject!: (
-		reason?: string | Error | Record<string, unknown>,
+		reason?: string | Error | Record<string, unknown>
 	) => void;
 
 	private _resolved = false;
@@ -132,7 +132,7 @@ type NextResult<T> = { index: number } & (
 );
 async function getNext<T>(
 	it: AsyncIterator<T, T | void>,
-	indexMaybe?: number,
+	indexMaybe?: number
 ): Promise<NextResult<T>> {
 	const index = indexMaybe === undefined ? -1 : indexMaybe;
 	try {
@@ -159,7 +159,7 @@ const NEVER: Promise<unknown> = new Promise(() => {
  */
 export async function* chain<T>(
 	iterators: AsyncIterator<T, T | void>[],
-	onError?: (err: Error, index: number) => Promise<void>,
+	onError?: (err: Error, index: number) => Promise<void>
 	// Ultimately we may also want to support cancellation.
 ): IAsyncIterableIterator<T> {
 	const promises = iterators.map(getNext);
@@ -203,7 +203,7 @@ export async function* chain<T>(
 export async function* mapToIterator<T, R = T>(
 	items: T[],
 	func: (item: T) => Promise<R>,
-	race = true,
+	race = true
 ): IAsyncIterableIterator<R> {
 	if (race) {
 		const iterators = items.map((item) => {
@@ -222,7 +222,7 @@ export async function* mapToIterator<T, R = T>(
  * Convert an iterator into an iterable, if it isn't one already.
  */
 export function iterable<T>(
-	iterator: IAsyncIterator<T>,
+	iterator: IAsyncIterator<T>
 ): IAsyncIterableIterator<T> {
 	const it = iterator as IAsyncIterableIterator<T>;
 	if (it[Symbol.asyncIterator] === undefined) {
@@ -235,7 +235,7 @@ export function iterable<T>(
  * Get everything yielded by the iterator.
  */
 export async function flattenIterator<T>(
-	iterator: IAsyncIterator<T>,
+	iterator: IAsyncIterator<T>
 ): Promise<T[]> {
 	const results: T[] = [];
 	for await (const item of iterable(iterator)) {
@@ -256,7 +256,7 @@ export async function flattenIterator<T>(
 export async function waitForCondition(
 	condition: () => Promise<boolean>,
 	timeoutMs: number,
-	errorMessage: string,
+	errorMessage: string
 ): Promise<void> {
 	return new Promise<void>(async (resolve, reject) => {
 		const timeout = setTimeout(() => {

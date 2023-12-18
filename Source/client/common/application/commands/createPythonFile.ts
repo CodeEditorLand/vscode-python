@@ -20,19 +20,22 @@ export class CreatePythonFileCommandHandler
 	};
 
 	constructor(
-        @inject(ICommandManager) private readonly commandManager: ICommandManager,
-        @inject(IWorkspaceService) private readonly workspaceService: IWorkspaceService,
-        @inject(IApplicationShell) private readonly appShell: IApplicationShell,
-        @inject(IDisposableRegistry) private readonly disposables: IDisposableRegistry,
-    ) {}
+		@inject(ICommandManager)
+		private readonly commandManager: ICommandManager,
+		@inject(IWorkspaceService)
+		private readonly workspaceService: IWorkspaceService,
+		@inject(IApplicationShell) private readonly appShell: IApplicationShell,
+		@inject(IDisposableRegistry)
+		private readonly disposables: IDisposableRegistry
+	) {}
 
 	public async activate(): Promise<void> {
 		this.disposables.push(
 			this.commandManager.registerCommand(
 				Commands.CreateNewFile,
 				this.createPythonFile,
-				this,
-			),
+				this
+			)
 		);
 	}
 

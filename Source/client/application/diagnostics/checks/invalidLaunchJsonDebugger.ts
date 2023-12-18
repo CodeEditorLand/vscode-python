@@ -39,7 +39,7 @@ export class InvalidLaunchJsonDebuggerDiagnostic extends BaseDiagnostic {
 			| DiagnosticCodes.ConsoleTypeDiagnostic
 			| DiagnosticCodes.ConfigPythonPathDiagnostic,
 		resource: Resource,
-		shouldShowPrompt = true,
+		shouldShowPrompt = true
 	) {
 		super(
 			code,
@@ -47,7 +47,7 @@ export class InvalidLaunchJsonDebuggerDiagnostic extends BaseDiagnostic {
 			DiagnosticSeverity.Error,
 			DiagnosticScope.WorkspaceFolder,
 			resource,
-			shouldShowPrompt,
+			shouldShowPrompt
 		);
 	}
 }
@@ -58,26 +58,27 @@ export const InvalidLaunchJsonDebuggerServiceId =
 @injectable()
 export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 	constructor(
-        @inject(IServiceContainer) serviceContainer: IServiceContainer,
-        @inject(IFileSystem) private readonly fs: IFileSystem,
-        @inject(IDisposableRegistry) disposableRegistry: IDisposableRegistry,
-        @inject(IWorkspaceService) private readonly workspaceService: IWorkspaceService,
-        @inject(IDiagnosticHandlerService)
-        @named(DiagnosticCommandPromptHandlerServiceId)
-        private readonly messageService: IDiagnosticHandlerService<MessageCommandPrompt>,
-    ) {
-        super(
-            [
-                DiagnosticCodes.InvalidDebuggerTypeDiagnostic,
-                DiagnosticCodes.JustMyCodeDiagnostic,
-                DiagnosticCodes.ConsoleTypeDiagnostic,
-                DiagnosticCodes.ConfigPythonPathDiagnostic,
-            ],
-            serviceContainer,
-            disposableRegistry,
-            true,
-        );
-    }
+		@inject(IServiceContainer) serviceContainer: IServiceContainer,
+		@inject(IFileSystem) private readonly fs: IFileSystem,
+		@inject(IDisposableRegistry) disposableRegistry: IDisposableRegistry,
+		@inject(IWorkspaceService)
+		private readonly workspaceService: IWorkspaceService,
+		@inject(IDiagnosticHandlerService)
+		@named(DiagnosticCommandPromptHandlerServiceId)
+		private readonly messageService: IDiagnosticHandlerService<MessageCommandPrompt>
+	) {
+		super(
+			[
+				DiagnosticCodes.InvalidDebuggerTypeDiagnostic,
+				DiagnosticCodes.JustMyCodeDiagnostic,
+				DiagnosticCodes.ConsoleTypeDiagnostic,
+				DiagnosticCodes.ConfigPythonPathDiagnostic,
+			],
+			serviceContainer,
+			disposableRegistry,
+			true
+		);
+	}
 
 	public async diagnose(resource: Resource): Promise<IDiagnostic[]> {
 		const hasWorkspaceFolders =
@@ -105,14 +106,14 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 		await Promise.all(
 			(this.workspaceService.workspaceFolders ?? []).map(
 				(workspaceFolder) =>
-					this.fixLaunchJsonInWorkspace(code, workspaceFolder),
-			),
+					this.fixLaunchJsonInWorkspace(code, workspaceFolder)
+			)
 		);
 	}
 
 	private async diagnoseWorkspace(
 		workspaceFolder: WorkspaceFolder,
-		resource: Resource,
+		resource: Resource
 	) {
 		const launchJson = getLaunchJsonFile(workspaceFolder);
 		if (!(await this.fs.fileExists(launchJson))) {
@@ -125,24 +126,24 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 			diagnostics.push(
 				new InvalidLaunchJsonDebuggerDiagnostic(
 					DiagnosticCodes.InvalidDebuggerTypeDiagnostic,
-					resource,
-				),
+					resource
+				)
 			);
 		}
 		if (fileContents.indexOf('"debugStdLib"') > 0) {
 			diagnostics.push(
 				new InvalidLaunchJsonDebuggerDiagnostic(
 					DiagnosticCodes.JustMyCodeDiagnostic,
-					resource,
-				),
+					resource
+				)
 			);
 		}
 		if (fileContents.indexOf('"console": "none"') > 0) {
 			diagnostics.push(
 				new InvalidLaunchJsonDebuggerDiagnostic(
 					DiagnosticCodes.ConsoleTypeDiagnostic,
-					resource,
-				),
+					resource
+				)
 			);
 		}
 		if (
@@ -154,8 +155,8 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 				new InvalidLaunchJsonDebuggerDiagnostic(
 					DiagnosticCodes.ConfigPythonPathDiagnostic,
 					resource,
-					false,
-				),
+					false
+				)
 			);
 		}
 		return diagnostics;
@@ -186,7 +187,7 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 
 	private async fixLaunchJsonInWorkspace(
 		code: DiagnosticCodes,
-		workspaceFolder: WorkspaceFolder,
+		workspaceFolder: WorkspaceFolder
 	) {
 		if (
 			(await this.diagnoseWorkspace(workspaceFolder, undefined))
@@ -201,12 +202,12 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 				fileContents = findAndReplace(
 					fileContents,
 					'"pythonExperimental"',
-					'"python"',
+					'"python"'
 				);
 				fileContents = findAndReplace(
 					fileContents,
 					'"Python Experimental:',
-					'"Python:',
+					'"Python:'
 				);
 				break;
 			}
@@ -214,12 +215,12 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 				fileContents = findAndReplace(
 					fileContents,
 					'"debugStdLib": false',
-					'"justMyCode": true',
+					'"justMyCode": true'
 				);
 				fileContents = findAndReplace(
 					fileContents,
 					'"debugStdLib": true',
-					'"justMyCode": false',
+					'"justMyCode": false'
 				);
 				break;
 			}
@@ -227,7 +228,7 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 				fileContents = findAndReplace(
 					fileContents,
 					'"console": "none"',
-					'"console": "internalConsole"',
+					'"console": "internalConsole"'
 				);
 				break;
 			}
@@ -235,17 +236,17 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 				fileContents = findAndReplace(
 					fileContents,
 					'"pythonPath":',
-					'"python":',
+					'"python":'
 				);
 				fileContents = findAndReplace(
 					fileContents,
 					"{config:python.pythonPath}",
-					"{command:python.interpreterPath}",
+					"{command:python.interpreterPath}"
 				);
 				fileContents = findAndReplace(
 					fileContents,
 					"{config:python.interpreterPath}",
-					"{command:python.interpreterPath}",
+					"{command:python.interpreterPath}"
 				);
 				break;
 			}

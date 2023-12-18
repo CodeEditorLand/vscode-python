@@ -10,6 +10,6 @@ import { CodeActionProviderService } from "./codeActionProvider/main";
 export function registerTypes(serviceManager: IServiceManager): void {
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
-		CodeActionProviderService,
+		CodeActionProviderService
 	);
 }

@@ -38,7 +38,7 @@ export interface IModuleInstaller {
 		resource?: InterpreterUri,
 		cancel?: CancellationToken,
 		flags?: ModuleInstallFlags,
-		options?: InstallOptions,
+		options?: InstallOptions
 	): Promise<void>;
 	isSupported(resource?: InterpreterUri): Promise<boolean>;
 }
@@ -50,18 +50,18 @@ export interface IBaseInstaller {
 		resource?: InterpreterUri,
 		cancel?: CancellationToken,
 		flags?: ModuleInstallFlags,
-		options?: InstallOptions,
+		options?: InstallOptions
 	): Promise<InstallerResponse>;
 	promptToInstall(
 		product: Product,
 		resource?: InterpreterUri,
 		cancel?: CancellationToken,
-		flags?: ModuleInstallFlags,
+		flags?: ModuleInstallFlags
 	): Promise<InstallerResponse>;
 	isProductVersionCompatible(
 		product: Product,
 		semVerRequirement: string,
-		resource?: InterpreterUri,
+		resource?: InterpreterUri
 	): Promise<ProductInstallStatus>;
 	isInstalled(product: Product, resource?: InterpreterUri): Promise<boolean>;
 }
@@ -72,15 +72,15 @@ export interface IPythonInstallation {
 }
 
 export const IInstallationChannelManager = Symbol(
-	"IInstallationChannelManager",
+	"IInstallationChannelManager"
 );
 export interface IInstallationChannelManager {
 	getInstallationChannel(
 		product: Product,
-		resource?: InterpreterUri,
+		resource?: InterpreterUri
 	): Promise<IModuleInstaller | undefined>;
 	getInstallationChannels(
-		resource?: InterpreterUri,
+		resource?: InterpreterUri
 	): Promise<IModuleInstaller[]>;
 	showNoInstallersMessage(): void;
 }

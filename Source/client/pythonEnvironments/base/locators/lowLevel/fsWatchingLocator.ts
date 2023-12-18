@@ -96,12 +96,12 @@ export abstract class FSWatchingLocator extends LazyResourceBasedLocator {
 		 * Returns the kind of environment specific to locator given the path to executable.
 		 */
 		private readonly getKind: (
-			executable: string,
+			executable: string
 		) => Promise<PythonEnvKind>,
 		private readonly creationOptions:
 			| LocationWatchOptions
 			| FileWatchOptions = {},
-		private readonly watcherKind: FSWatcherKind = FSWatcherKind.Global,
+		private readonly watcherKind: FSWatcherKind = FSWatcherKind.Global
 	) {
 		super();
 		this.activate().ignoreErrors();
@@ -138,7 +138,7 @@ export abstract class FSWatchingLocator extends LazyResourceBasedLocator {
 			return root;
 		});
 		const watchableRoots = (await Promise.all(promises)).filter(
-			(root) => !!root,
+			(root) => !!root
 		) as string[];
 		watchableRoots.forEach((root) => this.startWatchers(root));
 	}
@@ -159,11 +159,11 @@ export abstract class FSWatchingLocator extends LazyResourceBasedLocator {
 						traceVerbose(
 							"Detected change in file: ",
 							root,
-							"initiating a refresh",
+							"initiating a refresh"
 						);
 						this.emitter.fire({ providerId: this.providerId });
-					},
-				),
+					}
+				)
 			);
 			return;
 		}
@@ -188,12 +188,12 @@ export abstract class FSWatchingLocator extends LazyResourceBasedLocator {
 			//        |__ python  <--- executable
 			const searchLocation = Uri.file(
 				opts.searchLocation ??
-					path.dirname(getEnvironmentDirFromPath(executable)),
+					path.dirname(getEnvironmentDirFromPath(executable))
 			);
 			traceVerbose(
 				"Fired event ",
 				JSON.stringify({ type, kind, searchLocation }),
-				"from locator",
+				"from locator"
 			);
 			this.emitter.fire({
 				type,
@@ -207,23 +207,23 @@ export abstract class FSWatchingLocator extends LazyResourceBasedLocator {
 		const globs = resolvePythonExeGlobs(
 			opts.baseGlob,
 			// The structure determines which globs are returned.
-			opts.envStructure,
+			opts.envStructure
 		);
 		traceVerbose(
 			"Start watching root",
 			root,
 			"for globs",
-			JSON.stringify(globs),
+			JSON.stringify(globs)
 		);
 		const watchers = globs.map((g) =>
-			watchLocationForPythonBinaries(root, callback, g),
+			watchLocationForPythonBinaries(root, callback, g)
 		);
 		this.disposables.push(...watchers);
 	}
 }
 
 function isWatchingAFile(
-	options: LocationWatchOptions | FileWatchOptions,
+	options: LocationWatchOptions | FileWatchOptions
 ): options is FileWatchOptions {
 	return "isFile" in options && options.isFile;
 }

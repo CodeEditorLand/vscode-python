@@ -30,7 +30,7 @@ import {
 export const DEPS_NOT_INSTALLED_KEY = "pythonDepsNotInstalled";
 
 async function setContextForActiveEditor(
-	diagnosticCollection: DiagnosticCollection,
+	diagnosticCollection: DiagnosticCollection
 ): Promise<void> {
 	const doc = getActiveTextEditor()?.document;
 	if (
@@ -41,7 +41,7 @@ async function setContextForActiveEditor(
 		const diagnostics = diagnosticCollection.get(doc.uri);
 		if (diagnostics && diagnostics.length > 0) {
 			traceVerbose(
-				`Setting context for python dependencies not installed: ${doc.uri.fsPath}`,
+				`Setting context for python dependencies not installed: ${doc.uri.fsPath}`
 			);
 			await executeCommand("setContext", DEPS_NOT_INSTALLED_KEY, true);
 			return;
@@ -50,17 +50,17 @@ async function setContextForActiveEditor(
 
 	// undefined here in the logs means no file was selected
 	traceVerbose(
-		`Clearing context for python dependencies not installed: ${doc?.uri.fsPath}`,
+		`Clearing context for python dependencies not installed: ${doc?.uri.fsPath}`
 	);
 	await executeCommand("setContext", DEPS_NOT_INSTALLED_KEY, false);
 }
 
 export function registerInstalledPackagesDiagnosticsProvider(
 	disposables: IDisposableRegistry,
-	interpreterPathService: IInterpreterPathService,
+	interpreterPathService: IInterpreterPathService
 ): void {
 	const diagnosticCollection = createDiagnosticCollection(
-		INSTALL_CHECKER_SOURCE,
+		INSTALL_CHECKER_SOURCE
 	);
 	const updateDiagnostics = (uri: Uri, diagnostics: Diagnostic[]) => {
 		if (diagnostics.length > 0) {
@@ -79,7 +79,7 @@ export function registerInstalledPackagesDiagnosticsProvider(
 			) {
 				const diagnostics = await getInstalledPackagesDiagnostics(
 					interpreterPathService,
-					doc,
+					doc
 				);
 				updateDiagnostics(doc.uri, diagnostics);
 			}
@@ -91,7 +91,7 @@ export function registerInstalledPackagesDiagnosticsProvider(
 			) {
 				const diagnostics = await getInstalledPackagesDiagnostics(
 					interpreterPathService,
-					doc,
+					doc
 				);
 				updateDiagnostics(doc.uri, diagnostics);
 			}
@@ -113,12 +113,12 @@ export function registerInstalledPackagesDiagnosticsProvider(
 				) {
 					const diagnostics = await getInstalledPackagesDiagnostics(
 						interpreterPathService,
-						doc,
+						doc
 					);
 					updateDiagnostics(doc.uri, diagnostics);
 				}
 			});
-		}),
+		})
 	);
 
 	getOpenTextDocuments().forEach(async (doc: TextDocument) => {
@@ -128,7 +128,7 @@ export function registerInstalledPackagesDiagnosticsProvider(
 		) {
 			const diagnostics = await getInstalledPackagesDiagnostics(
 				interpreterPathService,
-				doc,
+				doc
 			);
 			updateDiagnostics(doc.uri, diagnostics);
 		}

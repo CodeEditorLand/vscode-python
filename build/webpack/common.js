@@ -37,7 +37,7 @@ function getDefaultPlugins(name) {
 				generateStatsFile: true,
 				statsFilename: `${name}.stats.json`,
 				openAnalyzer: false, // Open file manually if you want to see it :)
-			}),
+			})
 		);
 	}
 	return plugins;

@@ -20,11 +20,13 @@ import {
 
 @injectable()
 export class InstallationChannelManager implements IInstallationChannelManager {
-	constructor(@inject(IServiceContainer) private serviceContainer: IServiceContainer) {}
+	constructor(
+		@inject(IServiceContainer) private serviceContainer: IServiceContainer
+	) {}
 
 	public async getInstallationChannel(
 		product: Product,
-		resource?: InterpreterUri,
+		resource?: InterpreterUri
 	): Promise<IModuleInstaller | undefined> {
 		const channels = await this.getInstallationChannels(resource);
 		if (channels.length === 1) {
@@ -36,7 +38,7 @@ export class InstallationChannelManager implements IInstallationChannelManager {
 			this.serviceContainer.get<IApplicationShell>(IApplicationShell);
 		if (channels.length === 0) {
 			await this.showNoInstallersMessage(
-				isResource(resource) ? resource : undefined,
+				isResource(resource) ? resource : undefined
 			);
 			return;
 		}
@@ -55,13 +57,13 @@ export class InstallationChannelManager implements IInstallationChannelManager {
 				matchOnDescription: true,
 				matchOnDetail: true,
 				placeHolder,
-			},
+			}
 		);
 		return selection ? selection.installer : undefined;
 	}
 
 	public async getInstallationChannels(
-		resource?: InterpreterUri,
+		resource?: InterpreterUri
 	): Promise<IModuleInstaller[]> {
 		const installers =
 			this.serviceContainer.getAll<IModuleInstaller>(IModuleInstaller);
@@ -102,12 +104,12 @@ export class InstallationChannelManager implements IInstallationChannelManager {
 		if (interpreter.envType === EnvironmentType.Conda) {
 			result = await appShell.showErrorMessage(
 				Installer.noCondaOrPipInstaller,
-				Installer.searchForHelp,
+				Installer.searchForHelp
 			);
 		} else {
 			result = await appShell.showErrorMessage(
 				Installer.noPipInstaller,
-				Installer.searchForHelp,
+				Installer.searchForHelp
 			);
 		}
 		if (result === search) {
@@ -116,12 +118,12 @@ export class InstallationChannelManager implements IInstallationChannelManager {
 			const osName = platform.isWindows
 				? "Windows"
 				: platform.isMac
-				  ? "MacOS"
-				  : "Linux";
+					? "MacOS"
+					: "Linux";
 			appShell.openUrl(
 				`https://www.bing.com/search?q=Install Pip ${osName} ${
 					interpreter.envType === EnvironmentType.Conda ? "Conda" : ""
-				}`,
+				}`
 			);
 		}
 	}

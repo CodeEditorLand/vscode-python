@@ -17,7 +17,7 @@ const defaultPort = 5678;
 
 export async function configurePort(
 	input: MultiStepInput<DebugConfigurationState>,
-	config: Partial<AttachRequestArguments>,
+	config: Partial<AttachRequestArguments>
 ): Promise<void> {
 	const connect = config.connect || (config.connect = {});
 	const port = await input.showInputBox({
@@ -30,7 +30,7 @@ export async function configurePort(
 			Promise.resolve(
 				value && /^\d+$/.test(value.trim())
 					? undefined
-					: DebugConfigStrings.attach.enterRemotePort.invalid,
+					: DebugConfigStrings.attach.enterRemotePort.invalid
 			),
 	});
 	if (port && /^\d+$/.test(port.trim())) {
