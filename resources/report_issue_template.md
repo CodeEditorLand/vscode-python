@@ -1,7 +1,5 @@
 <!-- Please fill in all XXX markers -->
-
 # Behaviour
-
 ## Expected vs. Actual
 
 XXX
@@ -15,7 +13,6 @@ XXX
 -->
 
 <!-- **NOTE**: Everything below except Python output panel is auto-generated; no editing required. Please do provide Python output panel. -->
-
 # Diagnostic data
 
 -   Python version (& distribution if applicable, e.g. Anaconda): {0}
