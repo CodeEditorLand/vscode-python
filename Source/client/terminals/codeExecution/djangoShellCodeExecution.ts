@@ -1,10 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
-import { inject, injectable } from "inversify";
 import * as path from "path";
+import { inject, injectable } from "inversify";
 import { Disposable, Uri } from "vscode";
 import {
 	ICommandManager,
@@ -17,8 +15,8 @@ import { ITerminalServiceFactory } from "../../common/terminal/types";
 import { IConfigurationService, IDisposableRegistry } from "../../common/types";
 import { IInterpreterService } from "../../interpreter/contracts";
 import {
-	copyPythonExecInfo,
 	PythonExecInfo,
+	copyPythonExecInfo,
 } from "../../pythonEnvironments/exec";
 import { DjangoContextInitializer } from "./djangoContext";
 import { TerminalCodeExecutionProvider } from "./terminalCodeExecution";
@@ -36,7 +34,7 @@ export class DjangoShellCodeExecutionProvider extends TerminalCodeExecutionProvi
 		@inject(ICommandManager) commandManager: ICommandManager,
 		@inject(IFileSystem) fileSystem: IFileSystem,
 		@inject(IDisposableRegistry) disposableRegistry: Disposable[],
-		@inject(IInterpreterService) interpreterService: IInterpreterService
+		@inject(IInterpreterService) interpreterService: IInterpreterService,
 	) {
 		super(
 			terminalServiceFactory,
@@ -45,7 +43,7 @@ export class DjangoShellCodeExecutionProvider extends TerminalCodeExecutionProvi
 			disposableRegistry,
 			platformService,
 			interpreterService,
-			commandManager
+			commandManager,
 		);
 		this.terminalTitle = "Django Shell";
 		disposableRegistry.push(
@@ -53,14 +51,14 @@ export class DjangoShellCodeExecutionProvider extends TerminalCodeExecutionProvi
 				documentManager,
 				workspace,
 				fileSystem,
-				commandManager
-			)
+				commandManager,
+			),
 		);
 	}
 
 	public async getExecutableInfo(
 		resource?: Uri,
-		args: string[] = []
+		args: string[] = [],
 	): Promise<PythonExecInfo> {
 		const info = await super.getExecutableInfo(resource, args);
 
@@ -88,7 +86,7 @@ export class DjangoShellCodeExecutionProvider extends TerminalCodeExecutionProvi
 
 	public async getExecuteFileArgs(
 		resource?: Uri,
-		executeArgs: string[] = []
+		executeArgs: string[] = [],
 	): Promise<PythonExecInfo> {
 		// We need the executable info but not the 'manage.py shell' args
 		const info = await super.getExecutableInfo(resource);

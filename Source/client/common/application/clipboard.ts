@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { injectable } from "inversify";
 import { env } from "vscode";
 import { IClipboard } from "./types";

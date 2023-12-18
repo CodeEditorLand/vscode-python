@@ -13,7 +13,7 @@ export function createDiagnosticCollection(name: string): DiagnosticCollection {
 }
 
 export function onDidChangeDiagnostics(
-	handler: (e: DiagnosticChangeEvent) => void
+	handler: (e: DiagnosticChangeEvent) => void,
 ): Disposable {
 	return languages.onDidChangeDiagnostics(handler);
 }

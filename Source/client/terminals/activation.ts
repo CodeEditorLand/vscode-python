@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable } from "inversify";
 import { Terminal, Uri } from "vscode";
 import {
@@ -44,7 +42,7 @@ export class TerminalAutoActivation implements ITerminalAutoActivation {
 		}
 		this.handler = this.terminalManager.onDidOpenTerminal(
 			this.activateTerminal,
-			this
+			this,
 		);
 	}
 

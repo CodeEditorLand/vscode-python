@@ -36,7 +36,7 @@ export function registerLogger(logger: ILogging): Disposable {
 export function initializeFileLogging(disposables: Disposable[]): void {
 	if (process.env.VSC_PYTHON_LOG_FILE) {
 		const fileLogger = new FileLogger(
-			createWriteStream(process.env.VSC_PYTHON_LOG_FILE)
+			createWriteStream(process.env.VSC_PYTHON_LOG_FILE),
 		);
 		disposables.push(fileLogger);
 		disposables.push(registerLogger(fileLogger));
@@ -67,7 +67,7 @@ export function traceVerbose(...args: Arguments): void {
 
 export function traceDecoratorVerbose(
 	message: string,
-	opts: TraceOptions = DEFAULT_OPTS
+	opts: TraceOptions = DEFAULT_OPTS,
 ): TraceDecoratorType {
 	return createTracingDecorator({ message, opts, level: LogLevel.Debug });
 }
@@ -118,13 +118,13 @@ type LogInfo = {
 
 // Return a decorator that traces the decorated function.
 function traceDecorator(
-	log: (c: CallInfo, t: TraceInfo) => void
+	log: (c: CallInfo, t: TraceInfo) => void,
 ): TraceDecoratorType {
-	return function (
+	return (
 		_: Object,
 		__: string,
-		descriptor: TypedPropertyDescriptor<any>
-	) {
+		descriptor: TypedPropertyDescriptor<any>,
+	) => {
 		const originalMethod = descriptor.value;
 
 		descriptor.value = function (...args: unknown[]) {
@@ -133,14 +133,11 @@ function traceDecorator(
 				name: _ && _.constructor ? _.constructor.name : "",
 				args,
 			};
-
-			// eslint-disable-next-line @typescript-eslint/no-this-alias
-			const scope = this;
 			return tracing(
 				// "log()"
 				(t) => log(call, t),
 				// "run()"
-				() => originalMethod.apply(scope, args)
+				() => originalMethod.apply(this, args),
 			);
 		};
 
@@ -198,14 +195,14 @@ function normalizeCall(call: CallInfo): CallInfo {
 function formatMessages(
 	logInfo: LogInfo,
 	traced: TraceInfo,
-	call?: CallInfo
+	call?: CallInfo,
 ): string {
 	call = normalizeCall(call!);
 	const messages = [logInfo.message];
 	messages.push(
 		`${call.kind} name = ${call.name}`.trim(),
 		`completed in ${traced.elapsed}ms`,
-		`has a ${traced.returnValue ? "truthy" : "falsy"} return value`
+		`has a ${traced.returnValue ? "truthy" : "falsy"} return value`,
 	);
 	if ((logInfo.opts & TraceOptions.Arguments) === TraceOptions.Arguments) {
 		messages.push(argsToLogString(call.args));
@@ -232,7 +229,7 @@ function logResult(logInfo: LogInfo, traced: TraceInfo, call?: CallInfo) {
 			"ERROR" as unknown as EventName,
 			undefined,
 			undefined,
-			traced.err
+			traced.err,
 		);
 	}
 }

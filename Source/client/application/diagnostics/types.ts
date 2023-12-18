@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { DiagnosticSeverity, Uri } from "vscode";
 import { Resource } from "../../common/types";
 import { PythonPathSource } from "../../debugger/extension/types";
@@ -54,7 +52,7 @@ export interface IDiagnosticCommand {
 export type IDiagnosticMessageOnCloseHandler = (response?: string) => void;
 
 export const IInvalidPythonPathInSettings = Symbol(
-	"IInvalidPythonPathInSettings"
+	"IInvalidPythonPathInSettings",
 );
 
 export interface IInvalidPythonPathInSettings extends IDiagnosticsService {
@@ -62,7 +60,7 @@ export interface IInvalidPythonPathInSettings extends IDiagnosticsService {
 }
 
 export const IInvalidPythonPathInDebuggerService = Symbol(
-	"IInvalidPythonPathInDebuggerService"
+	"IInvalidPythonPathInDebuggerService",
 );
 
 export interface IInvalidPythonPathInDebuggerService
@@ -70,7 +68,7 @@ export interface IInvalidPythonPathInDebuggerService
 	validatePythonPath(
 		pythonPath?: string,
 		pythonPathSource?: PythonPathSource,
-		resource?: Uri
+		resource?: Uri,
 	): Promise<boolean>;
 }
 export const ISourceMapSupportService = Symbol("ISourceMapSupportService");

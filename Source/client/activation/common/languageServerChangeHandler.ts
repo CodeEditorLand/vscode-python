@@ -17,13 +17,13 @@ export async function promptForPylanceInstall(
 	appShell: IApplicationShell,
 	commandManager: ICommandManager,
 	workspace: IWorkspaceService,
-	configService: IConfigurationService
+	configService: IConfigurationService,
 ): Promise<void> {
 	const response = await appShell.showWarningMessage(
 		Pylance.pylanceRevertToJediPrompt,
 		Pylance.pylanceInstallPylance,
 		Pylance.pylanceRevertToJedi,
-		Pylance.remindMeLater
+		Pylance.remindMeLater,
 	);
 
 	if (response === Pylance.pylanceInstallPylance) {
@@ -45,7 +45,7 @@ export async function promptForPylanceInstall(
 				"languageServer",
 				LanguageServerType.Jedi,
 				undefined,
-				target
+				target,
 			);
 		}
 	}
@@ -66,13 +66,13 @@ export class LanguageServerChangeHandler implements Disposable {
 		private readonly appShell: IApplicationShell,
 		private readonly commands: ICommandManager,
 		private readonly workspace: IWorkspaceService,
-		private readonly configService: IConfigurationService
+		private readonly configService: IConfigurationService,
 	) {
 		this.pylanceInstalled = this.isPylanceInstalled();
 		this.disposables.push(
 			extensions.onDidChange(async () => {
 				await this.extensionsChangeHandler();
-			})
+			}),
 		);
 	}
 
@@ -88,7 +88,7 @@ export class LanguageServerChangeHandler implements Disposable {
 	}
 
 	public async handleLanguageServerChange(
-		lsType: LanguageServerType | undefined
+		lsType: LanguageServerType | undefined,
 	): Promise<void> {
 		if (
 			this.currentLsType === lsType ||
@@ -108,7 +108,7 @@ export class LanguageServerChangeHandler implements Disposable {
 				this.appShell,
 				this.commands,
 				this.workspace,
-				this.configService
+				this.configService,
 			);
 			// At this point Pylance is not yet installed. Skip reload prompt
 			// since we are going to show it when Pylance becomes available.

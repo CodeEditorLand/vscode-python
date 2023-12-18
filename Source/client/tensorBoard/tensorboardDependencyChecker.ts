@@ -10,16 +10,16 @@ import {
 } from "../common/application/types";
 import { IPythonExecutionFactory } from "../common/process/types";
 import {
+	IConfigurationService,
+	IDisposable,
 	IInstaller,
 	IPersistentState,
 	IPersistentStateFactory,
-	IConfigurationService,
-	IDisposable,
 } from "../common/types";
 import { IMultiStepInputFactory } from "../common/utils/multiStepInput";
+import { disposeAll } from "../common/utils/resourceLifecycle";
 import { IInterpreterService } from "../interpreter/contracts";
 import { TensorBoardSession } from "./tensorBoardSession";
-import { disposeAll } from "../common/utils/resourceLifecycle";
 import { PREFERRED_VIEWGROUP } from "./tensorBoardSessionProvider";
 
 @injectable()
@@ -53,7 +53,7 @@ export class TensorboardDependencyChecker {
 	}
 
 	public async ensureDependenciesAreInstalled(
-		resource?: Uri
+		resource?: Uri,
 	): Promise<boolean> {
 		const disposables: IDisposable[] = [];
 		const newSession = new TensorBoardSession(
@@ -66,7 +66,7 @@ export class TensorboardDependencyChecker {
 			this.applicationShell,
 			this.preferredViewGroupMemento,
 			this.multiStepFactory,
-			this.configurationService
+			this.configurationService,
 		);
 		const result =
 			await newSession.ensurePrerequisitesAreInstalled(resource);

@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable } from "inversify";
 import { Uri } from "vscode";
 import { IExtensionSingleActivationService } from "../../../../activation/types";
@@ -29,13 +27,13 @@ export class InterpreterPathCommand
 	public async activate(): Promise<void> {
 		this.disposables.push(
 			registerCommand(Commands.GetSelectedInterpreterPath, (args) =>
-				this._getSelectedInterpreterPath(args)
-			)
+				this._getSelectedInterpreterPath(args),
+			),
 		);
 	}
 
 	public async _getSelectedInterpreterPath(
-		args: { workspaceFolder: string } | string[]
+		args: { workspaceFolder: string } | string[],
 	): Promise<string> {
 		// If `launch.json` is launching this command, `args.workspaceFolder` carries the workspaceFolder
 		// If `tasks.json` is launching this command, `args[1]` carries the workspaceFolder
@@ -61,7 +59,7 @@ export class InterpreterPathCommand
 		return (
 			(
 				await this.interpreterService.getActiveInterpreter(
-					workspaceFolderUri
+					workspaceFolderUri,
 				)
 			)?.path ?? "python"
 		);

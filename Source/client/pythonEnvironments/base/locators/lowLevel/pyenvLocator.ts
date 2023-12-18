@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+import { traceError, traceVerbose } from "../../../../logging";
+import { getInterpreterPathFromDir } from "../../../common/commonUtils";
+import { getPyenvVersionsDir } from "../../../common/environmentManagers/pyenv";
+import { getSubDirs } from "../../../common/externalDependencies";
 import { PythonEnvKind } from "../../info";
 import { BasicEnvInfo, IPythonEnvsIterator } from "../../locator";
 import { FSWatchingLocator } from "./fsWatchingLocator";
-import { getInterpreterPathFromDir } from "../../../common/commonUtils";
-import { getSubDirs } from "../../../common/externalDependencies";
-import { getPyenvVersionsDir } from "../../../common/environmentManagers/pyenv";
-import { traceError, traceVerbose } from "../../../../logging";
 
 /**
  * Gets all the pyenv environments.
@@ -32,7 +32,7 @@ async function* getPyenvEnvironments(): AsyncIterableIterator<BasicEnvInfo> {
 			} catch (ex) {
 				traceError(
 					`Failed to process environment: ${interpreterPath}`,
-					ex
+					ex,
 				);
 			}
 		}

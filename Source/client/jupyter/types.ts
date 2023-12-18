@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { QuickPickItem } from "vscode";
 
 interface IJupyterServerUri {
@@ -22,7 +20,7 @@ export interface IJupyterUriProvider {
 	getQuickPickEntryItems(): QuickPickItem[];
 	handleQuickPick(
 		item: QuickPickItem,
-		backEnabled: boolean
+		backEnabled: boolean,
 	): Promise<JupyterServerUriHandle | "back" | undefined>;
 	getServerUri(handle: JupyterServerUriHandle): Promise<IJupyterServerUri>;
 }

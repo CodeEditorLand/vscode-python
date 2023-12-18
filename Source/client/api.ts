@@ -2,9 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
-import { Uri, Event } from "vscode";
+import { Event, Uri } from "vscode";
 import {
 	BaseLanguageClient,
 	LanguageClientOptions,
@@ -13,19 +11,19 @@ import { LanguageClient } from "vscode-languageclient/node";
 import { PYLANCE_NAME } from "./activation/node/languageClientFactory";
 import { ILanguageServerOutputChannel } from "./activation/types";
 import { PythonExtension } from "./api/types";
-import { isTestExecution, PYTHON_LANGUAGE } from "./common/constants";
+import { PYTHON_LANGUAGE, isTestExecution } from "./common/constants";
 import { IConfigurationService, Resource } from "./common/types";
 import {
 	getDebugpyLauncherArgs,
 	getDebugpyPackagePath,
 } from "./debugger/extension/adapter/remoteLaunchers";
+import { buildEnvironmentApi } from "./environmentApi";
 import { IInterpreterService } from "./interpreter/contracts";
 import { IServiceContainer, IServiceManager } from "./ioc/types";
 import { JupyterExtensionIntegration } from "./jupyter/jupyterIntegration";
 import { traceError } from "./logging";
-import { IDiscoveryAPI } from "./pythonEnvironments/base/locator";
-import { buildEnvironmentApi } from "./environmentApi";
 import { ApiForPylance } from "./pylanceApi";
+import { IDiscoveryAPI } from "./pythonEnvironments/base/locator";
 import { getTelemetryReporter } from "./telemetry";
 import { TensorboardExtensionIntegration } from "./tensorBoard/tensorboardIntegration";
 
@@ -33,31 +31,31 @@ export function buildApi(
 	ready: Promise<void>,
 	serviceManager: IServiceManager,
 	serviceContainer: IServiceContainer,
-	discoveryApi: IDiscoveryAPI
+	discoveryApi: IDiscoveryAPI,
 ): PythonExtension {
 	const configurationService = serviceContainer.get<IConfigurationService>(
-		IConfigurationService
+		IConfigurationService,
 	);
 	const interpreterService =
 		serviceContainer.get<IInterpreterService>(IInterpreterService);
 	serviceManager.addSingleton<JupyterExtensionIntegration>(
 		JupyterExtensionIntegration,
-		JupyterExtensionIntegration
+		JupyterExtensionIntegration,
 	);
 	serviceManager.addSingleton<TensorboardExtensionIntegration>(
 		TensorboardExtensionIntegration,
-		TensorboardExtensionIntegration
+		TensorboardExtensionIntegration,
 	);
 	const jupyterIntegration =
 		serviceContainer.get<JupyterExtensionIntegration>(
-			JupyterExtensionIntegration
+			JupyterExtensionIntegration,
 		);
 	const tensorboardIntegration =
 		serviceContainer.get<TensorboardExtensionIntegration>(
-			TensorboardExtensionIntegration
+			TensorboardExtensionIntegration,
 		);
 	const outputChannel = serviceContainer.get<ILanguageServerOutputChannel>(
-		ILanguageServerOutputChannel
+		ILanguageServerOutputChannel,
 	);
 
 	const api: PythonExtension & {
@@ -131,7 +129,7 @@ export function buildApi(
 			async getRemoteLauncherCommand(
 				host: string,
 				port: number,
-				waitUntilDebuggerAttaches = true
+				waitUntilDebuggerAttaches = true,
 			): Promise<string[]> {
 				return getDebugpyLauncherArgs({
 					host,
@@ -167,7 +165,7 @@ export function buildApi(
 					PYTHON_LANGUAGE,
 					PYLANCE_NAME,
 					args[0],
-					clientOptions
+					clientOptions,
 				);
 			},
 			start: (client: BaseLanguageClient): Promise<void> =>

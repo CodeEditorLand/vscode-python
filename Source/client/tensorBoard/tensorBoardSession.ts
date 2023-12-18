@@ -1,15 +1,13 @@
+import { ChildProcess } from "child_process";
+import * as path from "path";
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 import * as fs from "fs-extra";
-import { ChildProcess } from "child_process";
-import * as path from "path";
 import {
 	CancellationToken,
 	CancellationTokenSource,
-	env,
 	Event,
 	EventEmitter,
-	l10n,
 	Position,
 	Progress,
 	ProgressLocation,
@@ -21,6 +19,8 @@ import {
 	ViewColumn,
 	WebviewPanel,
 	WebviewPanelOnDidChangeViewStateEvent,
+	env,
+	l10n,
 	window,
 	workspace,
 } from "vscode";
@@ -30,24 +30,27 @@ import {
 	IWorkspaceService,
 } from "../common/application/types";
 import { createPromiseFromCancellation } from "../common/cancellation";
+import { ModuleInstallFlags } from "../common/installer/types";
 import { tensorboardLauncher } from "../common/process/internal/scripts";
 import {
 	IPythonExecutionFactory,
 	ObservableExecutionResult,
 } from "../common/process/types";
 import {
+	IConfigurationService,
 	IDisposableRegistry,
 	IInstaller,
-	InstallerResponse,
-	ProductInstallStatus,
-	Product,
 	IPersistentState,
-	IConfigurationService,
+	InstallerResponse,
+	Product,
+	ProductInstallStatus,
 } from "../common/types";
 import { createDeferred, sleep } from "../common/utils/async";
 import { Common, TensorBoard } from "../common/utils/localize";
+import { IMultiStepInputFactory } from "../common/utils/multiStepInput";
 import { StopWatch } from "../common/utils/stopWatch";
 import { IInterpreterService } from "../interpreter/contracts";
+import { traceError, traceVerbose } from "../logging";
 import { sendTelemetryEvent } from "../telemetry";
 import { EventName } from "../telemetry/constants";
 import { ImportTracker } from "../telemetry/importTracker";
@@ -55,9 +58,6 @@ import {
 	TensorBoardPromptSelection,
 	TensorBoardSessionStartResult,
 } from "./constants";
-import { IMultiStepInputFactory } from "../common/utils/multiStepInput";
-import { ModuleInstallFlags } from "../common/installer/types";
-import { traceError, traceVerbose } from "../logging";
 
 enum Messages {
 	JumpToSource = "jump_to_source",
@@ -109,7 +109,7 @@ export class TensorBoardSession {
 		private readonly applicationShell: IApplicationShell,
 		private readonly globalMemento: IPersistentState<ViewColumn>,
 		private readonly multiStepFactory: IMultiStepInputFactory,
-		private readonly configurationService: IConfigurationService
+		private readonly configurationService: IConfigurationService,
 	) {
 		this.disposables.push(this.onDidChangeViewStateEventEmitter);
 		this.disposables.push(this.onDidDisposeEventEmitter);
@@ -153,7 +153,7 @@ export class TensorBoardSession {
 			// this particular telemetry event if the whole session creation succeeded
 			sendTelemetryEvent(
 				EventName.TENSORBOARD_SESSION_E2E_STARTUP_DURATION,
-				e2eStartupDurationStopwatch.elapsedTime
+				e2eStartupDurationStopwatch.elapsedTime,
 			);
 		}
 		this.sessionDurationStopwatch = new StopWatch();
@@ -161,7 +161,7 @@ export class TensorBoardSession {
 
 	private async promptToInstall(
 		tensorBoardInstallStatus: ProductInstallStatus,
-		profilerPluginInstallStatus: ProductInstallStatus
+		profilerPluginInstallStatus: ProductInstallStatus,
 	) {
 		sendTelemetryEvent(EventName.TENSORBOARD_INSTALL_PROMPT_SHOWN);
 		const yes = Common.bannerLabelYes;
@@ -190,7 +190,7 @@ export class TensorBoardSession {
 		}
 		const selection = await this.applicationShell.showErrorMessage(
 			message,
-			...[yes, no]
+			...[yes, no],
 		);
 		let telemetrySelection = TensorBoardPromptSelection.None;
 		if (selection === yes) {
@@ -204,7 +204,7 @@ export class TensorBoardSession {
 			{
 				selection: telemetrySelection,
 				operationType: isUpgrade ? "upgrade" : "install",
-			}
+			},
 		);
 		return selection;
 	}
@@ -214,10 +214,10 @@ export class TensorBoardSession {
 	// any of their open documents, also try to install the torch-tb-plugin
 	// package, but don't block if installing that fails.
 	public async ensurePrerequisitesAreInstalled(
-		resource?: Uri
+		resource?: Uri,
 	): Promise<boolean> {
 		traceVerbose(
-			"Ensuring TensorBoard package is installed into active interpreter"
+			"Ensuring TensorBoard package is installed into active interpreter",
 		);
 		const interpreter =
 			(await this.interpreterService.getActiveInterpreter(resource)) ||
@@ -232,12 +232,12 @@ export class TensorBoardSession {
 				this.installer.isProductVersionCompatible(
 					Product.tensorboard,
 					TensorBoardSemVerRequirement,
-					interpreter
+					interpreter,
 				),
 				this.installer.isProductVersionCompatible(
 					Product.torchProfilerImportName,
 					TorchProfilerSemVerRequirement,
-					interpreter
+					interpreter,
 				),
 			]);
 		const isTorchUser = ImportTracker.hasModuleImport("torch");
@@ -263,7 +263,7 @@ export class TensorBoardSession {
 			tensorboardInstallStatus,
 			isTorchUser
 				? profilerPluginInstallStatus
-				: ProductInstallStatus.Installed
+				: ProductInstallStatus.Installed,
 		);
 		if (selection !== Common.bannerLabelYes && !needsTensorBoardInstall) {
 			return true;
@@ -289,10 +289,10 @@ export class TensorBoardSession {
 					interpreter,
 					installerToken,
 					tensorboardInstallStatus ===
-						ProductInstallStatus.NeedsUpgrade
+					ProductInstallStatus.NeedsUpgrade
 						? ModuleInstallFlags.upgrade
-						: undefined
-				)
+						: undefined,
+				),
 			);
 		}
 		if (isTorchUser && needsProfilerPluginInstall) {
@@ -302,10 +302,10 @@ export class TensorBoardSession {
 					interpreter,
 					installerToken,
 					profilerPluginInstallStatus ===
-						ProductInstallStatus.NeedsUpgrade
+					ProductInstallStatus.NeedsUpgrade
 						? ModuleInstallFlags.upgrade
-						: undefined
-				)
+						: undefined,
+				),
 			);
 		}
 		await Promise.race([...installPromises, cancellationPromise]);
@@ -316,12 +316,12 @@ export class TensorBoardSession {
 				this.installer.isProductVersionCompatible(
 					Product.tensorboard,
 					TensorBoardSemVerRequirement,
-					interpreter
+					interpreter,
 				),
 				this.installer.isProductVersionCompatible(
 					Product.torchProfilerImportName,
 					TorchProfilerSemVerRequirement,
-					interpreter
+					interpreter,
 				),
 			]);
 		// Send telemetry regarding results of install
@@ -336,7 +336,7 @@ export class TensorBoardSession {
 				wasProfilerPluginInstalled:
 					profilerPluginInstallStatus ===
 					ProductInstallStatus.Installed,
-			}
+			},
 		);
 		// Profiler plugin is not required to start TensorBoard. If it failed, note that it failed
 		// in the log, but report success only based on TensorBoard package install status.
@@ -345,7 +345,7 @@ export class TensorBoardSession {
 			profilerPluginInstallStatus !== ProductInstallStatus.Installed
 		) {
 			traceError(
-				`Failed to install torch-tb-plugin. Profiler plugin will not appear in TensorBoard session.`
+				`Failed to install torch-tb-plugin. Profiler plugin will not appear in TensorBoard session.`,
 			);
 		}
 		return tensorboardInstallStatus === ProductInstallStatus.Installed;
@@ -404,7 +404,7 @@ export class TensorBoardSession {
 		const settingValue = settings.tensorBoard?.logDirectory;
 		if (settingValue) {
 			traceVerbose(
-				`Using log directory resolved by python.tensorBoard.logDirectory setting: ${settingValue}`
+				`Using log directory resolved by python.tensorBoard.logDirectory setting: ${settingValue}`,
 			);
 			return settingValue;
 		}
@@ -470,7 +470,7 @@ export class TensorBoardSession {
 			progressOptions,
 			(_progress: Progress<unknown>, token: CancellationToken) => {
 				traceVerbose(
-					`Starting TensorBoard with log directory ${logDir}...`
+					`Starting TensorBoard with log directory ${logDir}...`,
 				);
 
 				const spawnTensorBoard =
@@ -486,7 +486,7 @@ export class TensorBoardSession {
 					spawnTensorBoard,
 					userCancellation,
 				]);
-			}
+			},
 		);
 
 		switch (result) {
@@ -497,7 +497,7 @@ export class TensorBoardSession {
 					sessionStartStopwatch.elapsedTime,
 					{
 						result: TensorBoardSessionStartResult.cancel,
-					}
+					},
 				);
 				observable.dispose();
 				return false;
@@ -508,7 +508,7 @@ export class TensorBoardSession {
 					sessionStartStopwatch.elapsedTime,
 					{
 						result: TensorBoardSessionStartResult.success,
-					}
+					},
 				);
 				return true;
 			case timeout:
@@ -517,23 +517,23 @@ export class TensorBoardSession {
 					sessionStartStopwatch.elapsedTime,
 					{
 						result: TensorBoardSessionStartResult.error,
-					}
+					},
 				);
 				throw new Error(
 					`Timed out after ${
 						timeout / 1000
-					} seconds waiting for TensorBoard to launch.`
+					} seconds waiting for TensorBoard to launch.`,
 				);
 			default:
 				// We should never get here
 				throw new Error(
-					`Failed to start TensorBoard, received unknown promise result: ${result}`
+					`Failed to start TensorBoard, received unknown promise result: ${result}`,
 				);
 		}
 	}
 
 	private async waitForTensorBoardStart(
-		observable: ObservableExecutionResult<string>
+		observable: ObservableExecutionResult<string>,
 	) {
 		const urlThatTensorBoardIsRunningAt = createDeferred<string>();
 
@@ -541,7 +541,7 @@ export class TensorBoardSession {
 			next: (output) => {
 				if (output.source === "stdout") {
 					const match = output.out.match(
-						/TensorBoard started at (.*)/
+						/TensorBoard started at (.*)/,
 					);
 					if (match && match[1]) {
 						// eslint-disable-next-line prefer-destructuring
@@ -577,7 +577,7 @@ export class TensorBoardSession {
 			{
 				enableScripts: true,
 				retainContextWhenHidden: true,
-			}
+			},
 		);
 		webviewPanel.webview.html = await this.getHtml();
 		this.webviewPanel = webviewPanel;
@@ -588,12 +588,12 @@ export class TensorBoardSession {
 				this.process?.kill();
 				sendTelemetryEvent(
 					EventName.TENSORBOARD_SESSION_DURATION,
-					this.sessionDurationStopwatch?.elapsedTime
+					this.sessionDurationStopwatch?.elapsedTime,
 				);
 				this.process = undefined;
 				this._active = false;
 				this.onDidDisposeEventEmitter.fire(this);
-			})
+			}),
 		);
 		this.disposables.push(
 			webviewPanel.onDidChangeViewState(
@@ -601,13 +601,13 @@ export class TensorBoardSession {
 					// The webview has been moved to a different viewgroup if it was active before and remains active now
 					if (this.active && args.webviewPanel.active) {
 						await this.globalMemento.updateValue(
-							webviewPanel.viewColumn ?? ViewColumn.Active
+							webviewPanel.viewColumn ?? ViewColumn.Active,
 						);
 					}
 					this._active = args.webviewPanel.active;
 					this.onDidChangeViewStateEventEmitter.fire();
-				}
-			)
+				},
+			),
 		);
 		this.disposables.push(
 			webviewPanel.webview.onDidReceiveMessage((message) => {
@@ -616,13 +616,13 @@ export class TensorBoardSession {
 					case Messages.JumpToSource:
 						void this.jumpToSource(
 							message.args.filename,
-							message.args.line
+							message.args.line,
 						);
 						break;
 					default:
 						break;
 				}
-			})
+			}),
 		);
 		return webviewPanel;
 	}
@@ -645,10 +645,10 @@ export class TensorBoardSession {
 			uri = Uri.file(fsPath);
 		} else {
 			sendTelemetryEvent(
-				EventName.TENSORBOARD_JUMP_TO_SOURCE_FILE_NOT_FOUND
+				EventName.TENSORBOARD_JUMP_TO_SOURCE_FILE_NOT_FOUND,
 			);
 			traceError(
-				`Requested jump to source filepath ${fsPath} does not exist. Prompting user to select source file...`
+				`Requested jump to source filepath ${fsPath} does not exist. Prompting user to select source file...`,
 			);
 			// Prompt the user to pick the file on disk
 			const items: QuickPickItem[] = [
@@ -689,19 +689,19 @@ export class TensorBoardSession {
 		const document = await workspace.openTextDocument(uri);
 		const editor = await window.showTextDocument(
 			document,
-			ViewColumn.Beside
+			ViewColumn.Beside,
 		);
 		// Select the line if it exists in the document
 		if (line < editor.document.lineCount) {
 			const position = new Position(line, 0);
 			const selection = new Selection(
 				position,
-				editor.document.lineAt(line).range.end
+				editor.document.lineAt(line).range.end,
 			);
 			editor.selection = selection;
 			editor.revealRange(
 				selection,
-				TextEditorRevealType.InCenterIfOutsideViewport
+				TextEditorRevealType.InCenterIfOutsideViewport,
 			);
 		}
 	}

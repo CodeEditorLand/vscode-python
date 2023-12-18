@@ -2,57 +2,57 @@
 // Licensed under the MIT License.
 
 import { IServiceManager } from "../ioc/types";
+import { ILanguageServerWatcher } from "../languageServer/types";
+import { LanguageServerWatcher } from "../languageServer/watcher";
 import { ExtensionActivationManager } from "./activationManager";
-import { ExtensionSurveyPrompt } from "./extensionSurvey";
+import { LoadLanguageServerExtension } from "./common/loadLanguageServerExtension";
 import { LanguageServerOutputChannel } from "./common/outputChannel";
+import { ExtensionSurveyPrompt } from "./extensionSurvey";
+import { LspNotebooksExperiment } from "./node/lspNotebooksExperiment";
+import { PartialModeStatusItem } from "./partialModeStatus";
 import {
 	IExtensionActivationManager,
 	IExtensionActivationService,
 	IExtensionSingleActivationService,
 	ILanguageServerOutputChannel,
 } from "./types";
-import { LoadLanguageServerExtension } from "./common/loadLanguageServerExtension";
-import { PartialModeStatusItem } from "./partialModeStatus";
-import { ILanguageServerWatcher } from "../languageServer/types";
-import { LanguageServerWatcher } from "../languageServer/watcher";
-import { LspNotebooksExperiment } from "./node/lspNotebooksExperiment";
 
 export function registerTypes(serviceManager: IServiceManager): void {
 	serviceManager.addSingleton<IExtensionActivationService>(
 		IExtensionActivationService,
-		PartialModeStatusItem
+		PartialModeStatusItem,
 	);
 	serviceManager.add<IExtensionActivationManager>(
 		IExtensionActivationManager,
-		ExtensionActivationManager
+		ExtensionActivationManager,
 	);
 	serviceManager.addSingleton<ILanguageServerOutputChannel>(
 		ILanguageServerOutputChannel,
-		LanguageServerOutputChannel
+		LanguageServerOutputChannel,
 	);
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
-		ExtensionSurveyPrompt
+		ExtensionSurveyPrompt,
 	);
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
-		LoadLanguageServerExtension
+		LoadLanguageServerExtension,
 	);
 
 	serviceManager.addSingleton<ILanguageServerWatcher>(
 		ILanguageServerWatcher,
-		LanguageServerWatcher
+		LanguageServerWatcher,
 	);
 	serviceManager.addBinding(
 		ILanguageServerWatcher,
-		IExtensionActivationService
+		IExtensionActivationService,
 	);
 	serviceManager.addSingleton<LspNotebooksExperiment>(
 		LspNotebooksExperiment,
-		LspNotebooksExperiment
+		LspNotebooksExperiment,
 	);
 	serviceManager.addBinding(
 		LspNotebooksExperiment,
-		IExtensionSingleActivationService
+		IExtensionSingleActivationService,
 	);
 }

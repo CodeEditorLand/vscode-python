@@ -1,7 +1,7 @@
 import "../../common/extensions";
 import { traceError } from "../../logging";
 import { isTestExecution } from "../constants";
-import { createDeferred, Deferred } from "./async";
+import { Deferred, createDeferred } from "./async";
 import { getCacheKeyFromFunctionArgs, getGlobalCacheStore } from "./cacheUtils";
 import { StopWatch } from "./stopWatch";
 
@@ -52,11 +52,11 @@ export function debounceAsync(wait?: number) {
 }
 
 export function makeDebounceDecorator(wait?: number) {
-	return function (
+	return (
 		_target: any,
 		_propertyName: string,
-		descriptor: TypedPropertyDescriptor<VoidFunction>
-	) {
+		descriptor: TypedPropertyDescriptor<VoidFunction>,
+	) => {
 		// We could also make use of _debounce() options.  For instance,
 		// the following causes the original method to be called
 		// immediately:
@@ -75,18 +75,18 @@ export function makeDebounceDecorator(wait?: number) {
 				return originalMethod.apply(this, arguments as any);
 			},
 			wait,
-			options
+			options,
 		);
 		(descriptor as any).value = debounced;
 	};
 }
 
 export function makeDebounceAsyncDecorator(wait?: number) {
-	return function (
+	return (
 		_target: any,
 		_propertyName: string,
-		descriptor: TypedPropertyDescriptor<AsyncVoidFunction>
-	) {
+		descriptor: TypedPropertyDescriptor<AsyncVoidFunction>,
+	) => {
 		type StateInformation = {
 			started: boolean;
 			deferred: Deferred<any> | undefined;
@@ -117,19 +117,22 @@ export function makeDebounceAsyncDecorator(wait?: number) {
 				clearTimeout(state.timer as any);
 			}
 
-			state.timer = setTimeout(async () => {
-				state.started = true;
-				originalMethod
-					.apply(this)
-					.then((r) => {
-						state.started = false;
-						deferred.resolve(r);
-					})
-					.catch((ex) => {
-						state.started = false;
-						deferred.reject(ex);
-					});
-			}, wait || 0);
+			state.timer = setTimeout(
+				async () => {
+					state.started = true;
+					originalMethod
+						.apply(this)
+						.then((r) => {
+							state.started = false;
+							deferred.resolve(r);
+						})
+						.catch((ex) => {
+							state.started = false;
+							deferred.reject(ex);
+						});
+				},
+				wait || 0,
+			);
 			return deferred.promise;
 		};
 	};
@@ -158,13 +161,13 @@ const moduleLoadWatch = new StopWatch();
 export function cache(
 	expiryDurationMs: number,
 	cachePromise = false,
-	expiryDurationAfterStartUpMs?: number
+	expiryDurationAfterStartUpMs?: number,
 ) {
-	return function (
+	return (
 		target: Object,
 		propertyName: string,
-		descriptor: TypedPropertyDescriptor<PromiseFunctionWithAnyArgs>
-	) {
+		descriptor: TypedPropertyDescriptor<PromiseFunctionWithAnyArgs>,
+	) => {
 		const originalMethod = descriptor.value!;
 		const className =
 			"constructor" in target && target.constructor.name
@@ -182,7 +185,7 @@ export function cache(
 				traceError(
 					"Error while creating key for keyPrefix:",
 					keyPrefix,
-					ex
+					ex,
 				);
 				return originalMethod.apply(this, args) as Promise<any>;
 			}
@@ -210,7 +213,7 @@ export function cache(
 						cacheStoreForMethods.set(key, {
 							data: result,
 							expiry: Date.now() + expiryMs,
-						})
+						}),
 					)
 					.ignoreErrors();
 			}
@@ -227,11 +230,11 @@ export function cache(
  * @returns void
  */
 export function swallowExceptions(scopeName?: string) {
-	return function (
+	return (
 		_target: any,
 		propertyName: string,
-		descriptor: TypedPropertyDescriptor<any>
-	) {
+		descriptor: TypedPropertyDescriptor<any>,
+	) => {
 		const originalMethod = descriptor.value!;
 		const errorMessage = `Python Extension (Error in ${
 			scopeName || propertyName

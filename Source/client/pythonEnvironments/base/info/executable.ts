@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 import * as path from "path";
-import { getOSType, OSType } from "../../../common/utils/platform";
+import { OSType, getOSType } from "../../../common/utils/platform";
 import { getEmptyVersion, parseVersion } from "./pythonVersion";
 
 import { PythonVersion } from ".";
@@ -34,7 +34,7 @@ function parseBasename(basename: string): PythonVersion {
 	}
 	if (!basename.startsWith("python")) {
 		throw Error(
-			`not a Python executable (expected "python..", got "${basename}")`
+			`not a Python executable (expected "python..", got "${basename}")`,
 		);
 	}
 	// If we reach here then we expect it to have a version in the name.

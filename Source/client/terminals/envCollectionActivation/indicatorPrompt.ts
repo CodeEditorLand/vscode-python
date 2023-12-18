@@ -1,14 +1,17 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+import * as path from "path";
 import { inject, injectable } from "inversify";
 import { Uri } from "vscode";
-import * as path from "path";
+import { IExtensionSingleActivationService } from "../../activation/types";
 import {
 	IActiveResourceService,
 	IApplicationShell,
 	ITerminalManager,
 } from "../../common/application/types";
+import { isTestExecution } from "../../common/constants";
+import { inTerminalEnvVarExperiment } from "../../common/experiments/helpers";
 import {
 	IConfigurationService,
 	IDisposableRegistry,
@@ -16,15 +19,12 @@ import {
 	IPersistentStateFactory,
 	Resource,
 } from "../../common/types";
+import { sleep } from "../../common/utils/async";
 import { Common, Interpreters } from "../../common/utils/localize";
-import { IExtensionSingleActivationService } from "../../activation/types";
-import { inTerminalEnvVarExperiment } from "../../common/experiments/helpers";
 import { IInterpreterService } from "../../interpreter/contracts";
+import { PythonEnvType } from "../../pythonEnvironments/base/info";
 import { PythonEnvironment } from "../../pythonEnvironments/info";
 import { ITerminalEnvVarCollectionService } from "../types";
-import { sleep } from "../../common/utils/async";
-import { isTestExecution } from "../../common/constants";
-import { PythonEnvType } from "../../pythonEnvironments/base/info";
 
 export const terminalEnvCollectionPromptKey =
 	"TERMINAL_ENV_COLLECTION_PROMPT_KEY";
@@ -95,14 +95,14 @@ export class TerminalIndicatorPrompt
 				}
 				if (
 					this.terminalEnvVarCollectionService.isTerminalPromptSetCorrectly(
-						resource
+						resource,
 					)
 				) {
 					// No need to show notification if terminal prompt already indicates when env is activated.
 					return;
 				}
 				await this.notifyUsers(resource);
-			})
+			}),
 		);
 	}
 
@@ -110,7 +110,7 @@ export class TerminalIndicatorPrompt
 		const notificationPromptEnabled =
 			this.persistentStateFactory.createGlobalPersistentState(
 				terminalEnvCollectionPromptKey,
-				true
+				true,
 			);
 		if (!notificationPromptEnabled.value) {
 			return;
@@ -129,9 +129,9 @@ export class TerminalIndicatorPrompt
 		const selection = await this.appShell.showInformationMessage(
 			Interpreters.terminalEnvVarCollectionPrompt.format(
 				environmentType,
-				terminalPromptName
+				terminalPromptName,
 			),
-			...prompts
+			...prompts,
 		);
 		if (!selection) {
 			return;

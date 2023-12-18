@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
 import { injectable } from "inversify";
 import {
 	DebugAdapterTracker,
@@ -25,7 +24,7 @@ class OutdatedDebuggerPrompt implements DebugAdapterTracker {
 			const prompts = [Common.moreInfo];
 			showInformationMessage(
 				OutdatedDebugger.outdatedDebuggerMessage,
-				...prompts
+				...prompts,
 			).then((selection) => {
 				if (selection === prompts[0]) {
 					launch("https://aka.ms/migrateToDebugpy");
@@ -60,7 +59,7 @@ class OutdatedDebuggerPrompt implements DebugAdapterTracker {
 }
 
 class OutdatedDebuggerPromptState implements IPromptShowState {
-	private shouldShow: boolean = true;
+	private shouldShow = true;
 	public shouldShowPrompt(): boolean {
 		return this.shouldShow;
 	}
@@ -78,7 +77,7 @@ export class OutdatedDebuggerPromptFactory
 		this.promptCheck = new OutdatedDebuggerPromptState();
 	}
 	public createDebugAdapterTracker(
-		_session: DebugSession
+		_session: DebugSession,
 	): ProviderResult<DebugAdapterTracker> {
 		return new OutdatedDebuggerPrompt(this.promptCheck);
 	}

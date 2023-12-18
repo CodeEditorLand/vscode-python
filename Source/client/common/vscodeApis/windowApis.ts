@@ -5,21 +5,21 @@
 
 import {
 	CancellationToken,
+	Disposable,
 	MessageItem,
 	MessageOptions,
 	Progress,
 	ProgressOptions,
-	QuickPick,
 	QuickInputButtons,
+	QuickPick,
 	QuickPickItem,
+	QuickPickItemButtonEvent,
 	QuickPickOptions,
 	TextEditor,
-	window,
-	Disposable,
-	QuickPickItemButtonEvent,
 	Uri,
+	window,
 } from "vscode";
-import { createDeferred, Deferred } from "../utils/async";
+import { Deferred, createDeferred } from "../utils/async";
 
 export function showTextDocument(uri: Uri): Thenable<TextEditor> {
 	return window.showTextDocument(uri);
@@ -28,7 +28,7 @@ export function showTextDocument(uri: Uri): Thenable<TextEditor> {
 export function showQuickPick<T extends QuickPickItem>(
 	items: readonly T[] | Thenable<readonly T[]>,
 	options?: QuickPickOptions,
-	token?: CancellationToken
+	token?: CancellationToken,
 ): Thenable<T | undefined> {
 	return window.showQuickPick(items, options, token);
 }
@@ -119,8 +119,8 @@ export function withProgress<R>(
 	options: ProgressOptions,
 	task: (
 		progress: Progress<{ message?: string; increment?: number }>,
-		token: CancellationToken
-	) => Thenable<R>
+		token: CancellationToken,
+	) => Thenable<R>,
 ): Thenable<R> {
 	return window.withProgress(options, task);
 }
@@ -131,7 +131,7 @@ export function getActiveTextEditor(): TextEditor | undefined {
 }
 
 export function onDidChangeActiveTextEditor(
-	handler: (e: TextEditor | undefined) => void
+	handler: (e: TextEditor | undefined) => void,
 ): Disposable {
 	return window.onDidChangeActiveTextEditor(handler);
 }
@@ -146,7 +146,7 @@ export async function showQuickPickWithBack<T extends QuickPickItem>(
 	items: readonly T[],
 	options?: QuickPickOptions,
 	token?: CancellationToken,
-	itemButtonHandler?: (e: QuickPickItemButtonEvent<T>) => void
+	itemButtonHandler?: (e: QuickPickItemButtonEvent<T>) => void,
 ): Promise<T | T[] | undefined> {
 	const quickPick: QuickPick<T> = window.createQuickPick<T>();
 	const disposables: Disposable[] = [quickPick];
@@ -174,7 +174,7 @@ export async function showQuickPickWithBack<T extends QuickPickItem>(
 			if (!deferred.completed) {
 				if (quickPick.canSelectMany) {
 					deferred.resolve(
-						quickPick.selectedItems.map((item) => item)
+						quickPick.selectedItems.map((item) => item),
 					);
 				} else {
 					deferred.resolve(quickPick.selectedItems[0]);
@@ -192,13 +192,13 @@ export async function showQuickPickWithBack<T extends QuickPickItem>(
 			if (itemButtonHandler) {
 				itemButtonHandler(e);
 			}
-		})
+		}),
 	);
 	if (token) {
 		disposables.push(
 			token.onCancellationRequested(() => {
 				quickPick.hide();
-			})
+			}),
 		);
 	}
 	quickPick.show();
@@ -214,14 +214,14 @@ export class MultiStepNode {
 	constructor(
 		public previous: MultiStepNode | undefined,
 		public readonly current: (
-			context?: MultiStepAction
+			context?: MultiStepAction,
 		) => Promise<MultiStepAction>,
-		public next: MultiStepNode | undefined
+		public next: MultiStepNode | undefined,
 	) {}
 
 	public static async run(
 		step: MultiStepNode,
-		context?: MultiStepAction
+		context?: MultiStepAction,
 	): Promise<MultiStepAction> {
 		let nextStep: MultiStepNode | undefined = step;
 		let flowAction = await nextStep.current(context);
@@ -246,7 +246,7 @@ export class MultiStepNode {
 }
 
 export function createStepBackEndNode<T>(
-	deferred?: Deferred<T>
+	deferred?: Deferred<T>,
 ): MultiStepNode {
 	return new MultiStepNode(
 		undefined,
@@ -257,13 +257,13 @@ export function createStepBackEndNode<T>(
 			}
 			return Promise.resolve(MultiStepAction.Back);
 		},
-		undefined
+		undefined,
 	);
 }
 
 export function createStepForwardEndNode<T>(
 	deferred?: Deferred<T>,
-	result?: T
+	result?: T,
 ): MultiStepNode {
 	return new MultiStepNode(
 		undefined,
@@ -274,6 +274,6 @@ export function createStepForwardEndNode<T>(
 			}
 			return Promise.resolve(MultiStepAction.Back);
 		},
-		undefined
+		undefined,
 	);
 }

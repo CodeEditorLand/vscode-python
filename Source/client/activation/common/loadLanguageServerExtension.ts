@@ -32,7 +32,7 @@ export class LoadLanguageServerExtension
 			"python._loadLanguageServerExtension",
 			() => {
 				/** no-op */
-			}
+			},
 		);
 		this.disposables.push(disposable);
 		return Promise.resolve();

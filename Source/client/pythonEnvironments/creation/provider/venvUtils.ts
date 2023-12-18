@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License
 
+import * as path from "path";
 import * as tomljs from "@iarna/toml";
 import * as fs from "fs-extra";
 import { flatten, isArray } from "lodash";
-import * as path from "path";
 import {
 	CancellationToken,
 	ProgressLocation,
@@ -15,6 +15,8 @@ import {
 	Uri,
 	WorkspaceFolder,
 } from "vscode";
+import { Commands } from "../../../common/constants";
+import { isWindows } from "../../../common/platform/platformService";
 import { Common, CreateEnv } from "../../../common/utils/localize";
 import {
 	MultiStepAction,
@@ -25,8 +27,6 @@ import {
 } from "../../../common/vscodeApis/windowApis";
 import { findFiles } from "../../../common/vscodeApis/workspaceApis";
 import { traceError, traceVerbose } from "../../../logging";
-import { Commands } from "../../../common/constants";
-import { isWindows } from "../../../common/platform/platformService";
 import { getVenvPath, hasVenv } from "../common/commonUtils";
 import {
 	deleteEnvironmentNonWindows,
@@ -41,7 +41,7 @@ const exclude =
 	"**/{.venv*,.git,.nox,.tox,.conda,site-packages,__pypackages__}/**";
 export async function getPipRequirementsFiles(
 	workspaceFolder: WorkspaceFolder,
-	token?: CancellationToken
+	token?: CancellationToken,
 ): Promise<string[] | undefined> {
 	const files = flatten(
 		await Promise.all([
@@ -49,15 +49,15 @@ export async function getPipRequirementsFiles(
 				new RelativePattern(workspaceFolder, "**/*requirement*.txt"),
 				exclude,
 				undefined,
-				token
+				token,
 			),
 			findFiles(
 				new RelativePattern(workspaceFolder, "**/requirements/*.txt"),
 				exclude,
 				undefined,
-				token
+				token,
 			),
-		])
+		]),
 	).map((u) => u.fsPath);
 	return files;
 }
@@ -91,7 +91,7 @@ function getTomlOptionalDeps(toml: tomljs.JsonMap): string[] {
 
 async function pickTomlExtras(
 	extras: string[],
-	token?: CancellationToken
+	token?: CancellationToken,
 ): Promise<string[] | undefined> {
 	const items: QuickPickItem[] = extras.map((e) => ({ label: e }));
 
@@ -102,7 +102,7 @@ async function pickTomlExtras(
 			canPickMany: true,
 			ignoreFocusOut: true,
 		},
-		token
+		token,
 	);
 
 	if (selection && isArray(selection)) {
@@ -115,7 +115,7 @@ async function pickTomlExtras(
 async function pickRequirementsFiles(
 	files: string[],
 	root: string,
-	token?: CancellationToken
+	token?: CancellationToken,
 ): Promise<string[] | undefined> {
 	const items: QuickPickItem[] = files
 		.map((p) => path.relative(root, p))
@@ -147,7 +147,7 @@ async function pickRequirementsFiles(
 			if (e.item.label) {
 				await showTextDocument(Uri.file(path.join(root, e.item.label)));
 			}
-		}
+		},
 	);
 
 	if (selection && isArray(selection)) {
@@ -170,7 +170,7 @@ export interface IPackageInstallSelection {
 
 export async function pickPackagesToInstall(
 	workspaceFolder: WorkspaceFolder,
-	token?: CancellationToken
+	token?: CancellationToken,
 ): Promise<IPackageInstallSelection[] | undefined> {
 	const tomlPath = path.join(workspaceFolder.uri.fsPath, "pyproject.toml");
 	const packages: IPackageInstallSelection[] = [];
@@ -179,7 +179,7 @@ export async function pickPackagesToInstall(
 		undefined,
 		async (context?: MultiStepAction) => {
 			traceVerbose(
-				`Looking for toml pyproject.toml with optional dependencies at: ${tomlPath}`
+				`Looking for toml pyproject.toml with optional dependencies at: ${tomlPath}`,
 			);
 
 			let extras: string[] = [];
@@ -192,12 +192,12 @@ export async function pickPackagesToInstall(
 
 				if (!hasBuildSystem) {
 					traceVerbose(
-						"Create env: Found toml without build system. So we will not use editable install."
+						"Create env: Found toml without build system. So we will not use editable install.",
 					);
 				}
 				if (extras.length === 0) {
 					traceVerbose(
-						"Create env: Found toml without optional dependencies."
+						"Create env: Found toml without optional dependencies.",
 					);
 				}
 			} else if (context === MultiStepAction.Back) {
@@ -208,7 +208,7 @@ export async function pickPackagesToInstall(
 			if (hasBuildSystem) {
 				if (extras.length > 0) {
 					traceVerbose(
-						"Create Env: Found toml with optional dependencies."
+						"Create Env: Found toml with optional dependencies.",
 					);
 
 					try {
@@ -253,7 +253,7 @@ export async function pickPackagesToInstall(
 
 			return MultiStepAction.Continue;
 		},
-		undefined
+		undefined,
 	);
 
 	const requirementsStep = new MultiStepNode(
@@ -262,7 +262,7 @@ export async function pickPackagesToInstall(
 			traceVerbose("Looking for pip requirements.");
 			const requirementFiles = await getPipRequirementsFiles(
 				workspaceFolder,
-				token
+				token,
 			);
 			if (requirementFiles && requirementFiles.length > 0) {
 				traceVerbose("Found pip requirements.");
@@ -270,10 +270,10 @@ export async function pickPackagesToInstall(
 					const result = await pickRequirementsFiles(
 						requirementFiles,
 						workspaceFolder.uri.fsPath,
-						token
+						token,
 					);
 					const installList = result?.map((p) =>
-						path.join(workspaceFolder.uri.fsPath, p)
+						path.join(workspaceFolder.uri.fsPath, p),
 					);
 					if (installList) {
 						installList.forEach((i) => {
@@ -301,7 +301,7 @@ export async function pickPackagesToInstall(
 
 			return MultiStepAction.Continue;
 		},
-		undefined
+		undefined,
 	);
 	tomlStep.next = requirementsStep;
 
@@ -315,7 +315,7 @@ export async function pickPackagesToInstall(
 
 export async function deleteEnvironment(
 	workspaceFolder: WorkspaceFolder,
-	interpreter: string | undefined
+	interpreter: string | undefined,
 ): Promise<boolean> {
 	const venvPath = getVenvPath(workspaceFolder);
 	return withProgress<boolean>(
@@ -329,18 +329,18 @@ export async function deleteEnvironment(
 				return deleteEnvironmentWindows(workspaceFolder, interpreter);
 			}
 			return deleteEnvironmentNonWindows(workspaceFolder);
-		}
+		},
 	);
 }
 
 export enum ExistingVenvAction {
-	Recreate,
-	UseExisting,
-	Create,
+	Recreate = 0,
+	UseExisting = 1,
+	Create = 2,
 }
 
 export async function pickExistingVenvAction(
-	workspaceFolder: WorkspaceFolder | undefined
+	workspaceFolder: WorkspaceFolder | undefined,
 ): Promise<ExistingVenvAction> {
 	if (workspaceFolder) {
 		if (await hasVenv(workspaceFolder)) {
@@ -362,7 +362,7 @@ export async function pickExistingVenvAction(
 						CreateEnv.Venv.existingVenvQuickPickPlaceholder,
 					ignoreFocusOut: true,
 				},
-				undefined
+				undefined,
 			)) as QuickPickItem | undefined;
 
 			if (selection?.label === CreateEnv.Venv.recreate) {

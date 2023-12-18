@@ -1,15 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { CancellationToken, Position, TextDocument, Uri } from "vscode";
 import { Commands as LSCommands } from "../../activation/commands";
 import {
 	TensorBoardEntrypoint,
 	TensorBoardEntrypointTrigger,
 } from "../../tensorBoard/constants";
-import { Channel, Commands, CommandSource } from "../constants";
+import { Channel, CommandSource, Commands } from "../constants";
 
 export type CommandsWithoutArgs = keyof ICommandNameWithoutArgumentTypeMapping;
 

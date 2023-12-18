@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { QuickPickItem } from "vscode";
 
 export type ProcessListCommand = { command: string; args: string[] };
@@ -18,7 +16,7 @@ export interface IAttachProcessProvider {
 }
 
 export const IAttachProcessProviderFactory = Symbol(
-	"IAttachProcessProviderFactory"
+	"IAttachProcessProviderFactory",
 );
 export interface IAttachProcessProviderFactory {
 	registerCommands(): void;

@@ -1,14 +1,18 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import * as path from "path";
+import { isTestExecution } from "../../../common/constants";
+import { splitLines } from "../../../common/stringUtils";
+import { cache } from "../../../common/utils/decorators";
 import {
+	OSType,
 	getOSType,
 	getUserHomeDir,
-	OSType,
 } from "../../../common/utils/platform";
+import { StopWatch } from "../../../common/utils/stopWatch";
+import { traceError, traceVerbose } from "../../../logging";
+import { getEnvironmentDirFromPath } from "../commonUtils";
 import {
 	getPythonSetting,
 	isParentPath,
@@ -17,13 +21,7 @@ import {
 	readFileSync,
 	shellExecute,
 } from "../externalDependencies";
-import { getEnvironmentDirFromPath } from "../commonUtils";
 import { isVirtualenvEnvironment } from "./simplevirtualenvs";
-import { StopWatch } from "../../../common/utils/stopWatch";
-import { cache } from "../../../common/utils/decorators";
-import { isTestExecution } from "../../../common/constants";
-import { traceError, traceVerbose } from "../../../logging";
-import { splitLines } from "../../../common/stringUtils";
 
 /**
  * Global virtual env dir for a project is named as:
@@ -41,7 +39,7 @@ const globalPoetryEnvDirRegex = /^(.+)-(.+)-py(\d).(\d){1,2}$/;
  * @returns {boolean} : Returns true if the interpreter belongs to a venv environment.
  */
 async function isGlobalPoetryEnvironment(
-	interpreterPath: string
+	interpreterPath: string,
 ): Promise<boolean> {
 	const envDir = getEnvironmentDirFromPath(interpreterPath);
 	return globalPoetryEnvDirRegex.test(path.basename(envDir))
@@ -60,7 +58,7 @@ export const localPoetryEnvDirName = ".venv";
  * @returns {boolean} : Returns true if the interpreter belongs to a venv environment.
  */
 async function isLocalPoetryEnvironment(
-	interpreterPath: string
+	interpreterPath: string,
 ): Promise<boolean> {
 	// This is the layout we wish to verify.
 	// project
@@ -93,7 +91,7 @@ async function isLocalPoetryEnvironment(
  * @returns {boolean} : Returns true if the interpreter belongs to a venv environment.
  */
 export async function isPoetryEnvironment(
-	interpreterPath: string
+	interpreterPath: string,
 ): Promise<boolean> {
 	if (await isGlobalPoetryEnvironment(interpreterPath)) {
 		return true;
@@ -123,10 +121,7 @@ export class Poetry {
 	 * first argument of spawn() - i.e. it can be a full path, or just a binary name.
 	 * @param cwd - The working directory to use as cwd when running poetry.
 	 */
-	constructor(
-		public readonly command: string,
-		private cwd: string
-	) {
+	constructor(public readonly command: string, private cwd: string) {
 		this.fixCwd();
 	}
 
@@ -173,7 +168,7 @@ export class Poetry {
 					home,
 					".poetry",
 					"bin",
-					"poetry"
+					"poetry",
 				);
 				if (pathExistsSync(defaultPoetryPath)) {
 					yield defaultPoetryPath;
@@ -188,7 +183,7 @@ export class Poetry {
 			const virtualenvs = await poetry.getEnvList();
 			if (virtualenvs !== undefined) {
 				traceVerbose(
-					`Found poetry via filesystem probing for ${cwd}: ${poetryPath}`
+					`Found poetry via filesystem probing for ${cwd}: ${poetryPath}`,
 				);
 				return poetry;
 			}
@@ -219,10 +214,10 @@ export class Poetry {
 	 */
 	@cache(30_000, true, 10_000)
 	private async getEnvListCached(
-		_cwd: string
+		_cwd: string,
 	): Promise<string[] | undefined> {
 		const result = await this.safeShellExecute(
-			`${this.command} env list --full-path`
+			`${this.command} env list --full-path`,
 		);
 		if (!result) {
 			return undefined;
@@ -244,7 +239,7 @@ export class Poetry {
 				}
 				const folder = line.trim();
 				return (await pathExists(folder)) ? folder : undefined;
-			})
+			}),
 		);
 		return res.filter((r) => r !== undefined).map((r) => r!);
 	}
@@ -263,11 +258,11 @@ export class Poetry {
 	 */
 	@cache(20_000, true, 10_000)
 	private async getActiveEnvPathCached(
-		_cwd: string
+		_cwd: string,
 	): Promise<string | undefined> {
 		const result = await this.safeShellExecute(
 			`${this.command} env info -p`,
-			true
+			true,
 		);
 		if (!result) {
 			return undefined;
@@ -281,7 +276,7 @@ export class Poetry {
 	 */
 	public async getVirtualenvsPathSetting(): Promise<string | undefined> {
 		const result = await this.safeShellExecute(
-			`${this.command} config virtualenvs.path`
+			`${this.command} config virtualenvs.path`,
 		);
 		if (!result) {
 			return undefined;
@@ -327,7 +322,7 @@ export class Poetry {
 		});
 		traceVerbose(
 			`Time taken to run ${command} in ms`,
-			stopWatch.elapsedTime
+			stopWatch.elapsedTime,
 		);
 		return result;
 	}
@@ -343,7 +338,7 @@ export class Poetry {
 export async function isPoetryEnvironmentRelatedToFolder(
 	interpreterPath: string,
 	folder: string,
-	poetryPath?: string
+	poetryPath?: string,
 ): Promise<boolean> {
 	const poetry = poetryPath
 		? new Poetry(poetryPath, folder)

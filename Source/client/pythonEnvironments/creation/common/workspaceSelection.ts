@@ -1,17 +1,17 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import * as fsapi from "fs-extra";
 import * as path from "path";
+import * as fsapi from "fs-extra";
 import { CancellationToken, QuickPickItem, WorkspaceFolder } from "vscode";
+import { Common, CreateEnv } from "../../../common/utils/localize";
+import { executeCommand } from "../../../common/vscodeApis/commandApis";
 import {
 	MultiStepAction,
 	showErrorMessage,
 	showQuickPickWithBack,
 } from "../../../common/vscodeApis/windowApis";
 import { getWorkspaceFolders } from "../../../common/vscodeApis/workspaceApis";
-import { Common, CreateEnv } from "../../../common/utils/localize";
-import { executeCommand } from "../../../common/vscodeApis/commandApis";
 
 function hasVirtualEnv(workspace: WorkspaceFolder): Promise<boolean> {
 	return Promise.race([
@@ -21,7 +21,7 @@ function hasVirtualEnv(workspace: WorkspaceFolder): Promise<boolean> {
 }
 
 async function getWorkspacesForQuickPick(
-	workspaces: readonly WorkspaceFolder[]
+	workspaces: readonly WorkspaceFolder[],
 ): Promise<QuickPickItem[]> {
 	const items: QuickPickItem[] = [];
 	for (const workspace of workspaces) {
@@ -44,7 +44,7 @@ export interface PickWorkspaceFolderOptions {
 
 export async function pickWorkspaceFolder(
 	options?: PickWorkspaceFolderOptions,
-	context?: MultiStepAction
+	context?: MultiStepAction,
 ): Promise<WorkspaceFolder | WorkspaceFolder[] | undefined> {
 	const workspaces = getWorkspaceFolders();
 
@@ -55,7 +55,7 @@ export async function pickWorkspaceFolder(
 		}
 		const result = await showErrorMessage(
 			CreateEnv.noWorkspace,
-			Common.openFolder
+			Common.openFolder,
 		);
 		if (result === Common.openFolder) {
 			await executeCommand("vscode.openFolder");
@@ -82,7 +82,7 @@ export async function pickWorkspaceFolder(
 			matchOnDescription: true,
 			matchOnDetail: true,
 		},
-		options?.token
+		options?.token,
 	);
 
 	if (selected) {
@@ -93,7 +93,7 @@ export async function pickWorkspaceFolder(
 			return workspaces.filter((w) => details.includes(w.uri.fsPath));
 		}
 		return workspaces.filter(
-			(w) => w.uri.fsPath === (selected as QuickPickItem).detail
+			(w) => w.uri.fsPath === (selected as QuickPickItem).detail,
 		)[0];
 	}
 

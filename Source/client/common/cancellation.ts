@@ -1,6 +1,5 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-"use strict";
 
 import { CancellationToken, CancellationTokenSource } from "vscode";
 import { createDeferred } from "./utils/async";
@@ -80,7 +79,7 @@ export namespace Cancellation {
 	 */
 	export function race<T>(
 		work: (token?: CancellationToken) => Promise<T>,
-		token?: CancellationToken
+		token?: CancellationToken,
 	): Promise<T> {
 		if (token) {
 			// Use a deferred promise. Resolves when the work finishes

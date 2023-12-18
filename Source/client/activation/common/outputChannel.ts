@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable } from "inversify";
 import {
 	IApplicationShell,
@@ -32,7 +30,7 @@ export class LanguageServerOutputChannel
 	public get channel(): ILogOutputChannel {
 		if (!this.output) {
 			this.output = this.appShell.createOutputChannel(
-				OutputChannelNames.languageServer
+				OutputChannelNames.languageServer,
 			);
 			this.disposable.push(this.output);
 			this.registerCommand().ignoreErrors();
@@ -50,13 +48,13 @@ export class LanguageServerOutputChannel
 		await this.commandManager.executeCommand(
 			"setContext",
 			"python.hasLanguageServerOutputChannel",
-			true
+			true,
 		);
 		this.disposable.push(
 			this.commandManager.registerCommand(
 				"python.viewLanguageServerOutput",
-				() => this.output?.show(true)
-			)
+				() => this.output?.show(true),
+			),
 		);
 		this.disposable.push({
 			dispose: () => {

@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable } from "inversify";
 import { l10n } from "vscode";
 import { IPlatformService } from "../../../common/platform/types";
@@ -29,11 +27,11 @@ export class AttachProcessProvider implements IAttachProcessProvider {
 			processEntries.sort(
 				(
 					{ processName: aprocessName, commandLine: aCommandLine },
-					{ processName: bProcessName, commandLine: bCommandLine }
+					{ processName: bProcessName, commandLine: bCommandLine },
 				) => {
 					const compare = (
 						aString: string,
-						bString: string
+						bString: string,
 					): number => {
 						// localeCompare is significantly slower than < and > (2000 ms vs 80 ms for 10,000 elements)
 						// We can change to localeCompare if this becomes an issue
@@ -64,7 +62,7 @@ export class AttachProcessProvider implements IAttachProcessProvider {
 					}
 
 					return compare(aprocessName, bProcessName);
-				}
+				},
 			);
 
 			return processEntries;
@@ -83,8 +81,8 @@ export class AttachProcessProvider implements IAttachProcessProvider {
 			throw new Error(
 				l10n.t(
 					"Operating system '{0}' not supported.",
-					this.platformService.osType
-				)
+					this.platformService.osType,
+				),
 			);
 		}
 
@@ -92,7 +90,7 @@ export class AttachProcessProvider implements IAttachProcessProvider {
 		const output = await processService.exec(
 			processCmd.command,
 			processCmd.args,
-			{ throwOnStdErr: true }
+			{ throwOnStdErr: true },
 		);
 
 		return this.platformService.isWindows

@@ -1,9 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
-import { createScanner, parse, SyntaxKind } from "jsonc-parser";
+import { SyntaxKind, createScanner, parse } from "jsonc-parser";
 import {
 	CancellationToken,
 	DebugConfiguration,
@@ -28,14 +26,14 @@ type PositionOfComma = "BeforeCursor";
 
 export class LaunchJsonUpdaterServiceHelper {
 	constructor(
-		private readonly configurationProvider: IDebugConfigurationService
+		private readonly configurationProvider: IDebugConfigurationService,
 	) {}
 
 	@captureTelemetry(EventName.DEBUGGER_CONFIGURATION_PROMPTS_IN_LAUNCH_JSON)
 	public async selectAndInsertDebugConfig(
 		document: TextDocument,
 		position: Position,
-		token: CancellationToken
+		token: CancellationToken,
 	): Promise<void> {
 		const activeTextEditor = getActiveTextEditor();
 		if (activeTextEditor && activeTextEditor.document === document) {
@@ -52,7 +50,7 @@ export class LaunchJsonUpdaterServiceHelper {
 				await LaunchJsonUpdaterServiceHelper.insertDebugConfiguration(
 					document,
 					position,
-					configs[0]
+					configs[0],
 				);
 			}
 		}
@@ -70,12 +68,12 @@ export class LaunchJsonUpdaterServiceHelper {
 	public static async insertDebugConfiguration(
 		document: TextDocument,
 		position: Position,
-		config: DebugConfiguration
+		config: DebugConfiguration,
 	): Promise<void> {
 		const cursorPosition =
 			LaunchJsonUpdaterServiceHelper.getCursorPositionInConfigurationsArray(
 				document,
-				position
+				position,
 			);
 		if (!cursorPosition) {
 			return;
@@ -83,7 +81,7 @@ export class LaunchJsonUpdaterServiceHelper {
 		const commaPosition =
 			LaunchJsonUpdaterServiceHelper.isCommaImmediatelyBeforeCursor(
 				document,
-				position
+				position,
 			)
 				? "BeforeCursor"
 				: undefined;
@@ -91,7 +89,7 @@ export class LaunchJsonUpdaterServiceHelper {
 			LaunchJsonUpdaterServiceHelper.getTextForInsertion(
 				config,
 				cursorPosition,
-				commaPosition
+				commaPosition,
 			);
 		const workspaceEdit = new WorkspaceEdit();
 		workspaceEdit.insert(document.uri, position, formattedJson);
@@ -111,7 +109,7 @@ export class LaunchJsonUpdaterServiceHelper {
 	public static getTextForInsertion(
 		config: DebugConfiguration,
 		cursorPosition: PositionOfCursor,
-		commaPosition?: PositionOfComma
+		commaPosition?: PositionOfComma,
 	): string {
 		const json = JSON.stringify(config);
 		if (cursorPosition === "AfterItem") {
@@ -126,7 +124,7 @@ export class LaunchJsonUpdaterServiceHelper {
 
 	public static getCursorPositionInConfigurationsArray(
 		document: TextDocument,
-		position: Position
+		position: Position,
 	): PositionOfCursor | undefined {
 		if (
 			LaunchJsonUpdaterServiceHelper.isConfigurationArrayEmpty(document)
@@ -164,12 +162,12 @@ export class LaunchJsonUpdaterServiceHelper {
 
 	public static isCommaImmediatelyBeforeCursor(
 		document: TextDocument,
-		position: Position
+		position: Position,
 	): boolean {
 		const line = document.lineAt(position.line);
 		// Get text from start of line until the cursor.
 		const currentLine = document.getText(
-			new Range(line.range.start, position)
+			new Range(line.range.start, position),
 		);
 		if (currentLine.trim().endsWith(",")) {
 			return true;

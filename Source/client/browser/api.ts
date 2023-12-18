@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { BaseLanguageClient } from "vscode-languageclient";
 import { LanguageClient } from "vscode-languageclient/browser";
 import { PYTHON_LANGUAGE } from "../common/constants";
@@ -25,7 +23,7 @@ export function buildApi(reporter: TelemetryReporter): IBrowserExtensionApi {
 					PYTHON_LANGUAGE,
 					"Python Language Server",
 					args[0],
-					args[1]
+					args[1],
 				),
 			start: (client: BaseLanguageClient): Promise<void> =>
 				client.start(),

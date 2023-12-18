@@ -1,10 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { injectable } from "inversify";
-import { env, Uri } from "vscode";
+import { Uri, env } from "vscode";
 import { IBrowserService } from "../types";
 
 export function launch(url: string) {

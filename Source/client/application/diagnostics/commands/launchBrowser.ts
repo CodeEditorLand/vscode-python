@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { IBrowserService } from "../../../common/types";
 import { IServiceContainer } from "../../../ioc/types";
 import { sendTelemetryEvent } from "../../../telemetry";
@@ -14,7 +12,7 @@ export class LaunchBrowserCommand extends BaseDiagnosticCommand {
 	constructor(
 		diagnostic: IDiagnostic,
 		private serviceContainer: IServiceContainer,
-		private url: string
+		private url: string,
 	) {
 		super(diagnostic);
 	}

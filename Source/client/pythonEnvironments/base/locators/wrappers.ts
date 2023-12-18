@@ -14,7 +14,7 @@ import {
 	IPythonEnvsIterator,
 	PythonLocatorQuery,
 } from "../locator";
-import { combineIterators, Locators } from "../locators";
+import { Locators, combineIterators } from "../locators";
 import { LazyResourceBasedLocator } from "./common/resourceBasedLocator";
 
 /**
@@ -27,7 +27,7 @@ export class ExtensionLocators<I = PythonEnvInfo> extends Locators<I> {
 		private readonly nonWorkspace: ILocator<I>[],
 		// This is expected to be a locator wrapping any found in
 		// the workspace (i.e. WorkspaceLocators).
-		private readonly workspace: ILocator<I>
+		private readonly workspace: ILocator<I>,
 	) {
 		super([...nonWorkspace, workspace]);
 	}
@@ -39,8 +39,8 @@ export class ExtensionLocators<I = PythonEnvInfo> extends Locators<I> {
 		if (!query?.searchLocations?.doNotIncludeNonRooted) {
 			const nonWorkspace = query?.providerId
 				? this.nonWorkspace.filter(
-						(locator) => query.providerId === locator.providerId
-					)
+						(locator) => query.providerId === locator.providerId,
+				  )
 				: this.nonWorkspace;
 			iterators.push(...nonWorkspace.map((loc) => loc.iterEnvs(query)));
 		}
@@ -77,7 +77,7 @@ export class WorkspaceLocators extends LazyResourceBasedLocator {
 
 	constructor(
 		private readonly watchRoots: WatchRootsFunc,
-		private readonly factories: WorkspaceLocatorFactory[]
+		private readonly factories: WorkspaceLocatorFactory[],
 	) {
 		super();
 		this.activate().ignoreErrors();
@@ -92,7 +92,7 @@ export class WorkspaceLocators extends LazyResourceBasedLocator {
 	}
 
 	protected doIterEnvs(
-		query?: PythonLocatorQuery
+		query?: PythonLocatorQuery,
 	): IPythonEnvsIterator<BasicEnvInfo> {
 		const iterators = Object.keys(this.locators).map((key) => {
 			if (query?.searchLocations !== undefined) {
@@ -160,7 +160,7 @@ export class WorkspaceLocators extends LazyResourceBasedLocator {
 					e.searchLocation = root;
 				}
 				this.emitter.fire(e);
-			})
+			}),
 		);
 	}
 

@@ -7,9 +7,9 @@ import {
 	IApplicationShell,
 	ICommandManager,
 } from "../common/application/types";
-import { Common, Interpreters } from "../common/utils/localize";
 import { Commands, JUPYTER_EXTENSION_ID } from "../common/constants";
 import { IDisposable, IDisposableRegistry } from "../common/types";
+import { Common, Interpreters } from "../common/utils/localize";
 import { sendTelemetryEvent } from "../telemetry";
 import { EventName } from "../telemetry/constants";
 
@@ -30,8 +30,8 @@ export class RequireJupyterPrompt implements IExtensionSingleActivationService {
 	public async activate(): Promise<void> {
 		this.disposables.push(
 			this.commandManager.registerCommand(Commands.InstallJupyter, () =>
-				this._showPrompt()
-			)
+				this._showPrompt(),
+			),
 		);
 	}
 
@@ -40,7 +40,7 @@ export class RequireJupyterPrompt implements IExtensionSingleActivationService {
 		const telemetrySelections: ["Yes", "No"] = ["Yes", "No"];
 		const selection = await this.appShell.showInformationMessage(
 			Interpreters.requireJupyter,
-			...prompts
+			...prompts,
 		);
 		sendTelemetryEvent(EventName.REQUIRE_JUPYTER_PROMPT, undefined, {
 			selection: selection
@@ -54,7 +54,7 @@ export class RequireJupyterPrompt implements IExtensionSingleActivationService {
 			await this.commandManager.executeCommand(
 				"workbench.extensions.installExtension",
 				JUPYTER_EXTENSION_ID,
-				undefined
+				undefined,
 			);
 		}
 	}

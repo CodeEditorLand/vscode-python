@@ -27,21 +27,21 @@ export class TerminalProvider implements Disposable {
 		this.registerCommands();
 		this.activeResourceService =
 			this.serviceContainer.get<IActiveResourceService>(
-				IActiveResourceService
+				IActiveResourceService,
 			);
 	}
 
 	@swallowExceptions("Failed to initialize terminal provider")
 	public async initialize(
-		currentTerminal: Terminal | undefined
+		currentTerminal: Terminal | undefined,
 	): Promise<void> {
 		const configuration = this.serviceContainer.get<IConfigurationService>(
-			IConfigurationService
+			IConfigurationService,
 		);
 		const experimentService =
 			this.serviceContainer.get<IExperimentService>(IExperimentService);
 		const pythonSettings = configuration.getSettings(
-			this.activeResourceService.getActiveResource()
+			this.activeResourceService.getActiveResource(),
 		);
 
 		if (
@@ -55,11 +55,11 @@ export class TerminalProvider implements Disposable {
 			if (!hideFromUser) {
 				const terminalActivator =
 					this.serviceContainer.get<ITerminalActivator>(
-						ITerminalActivator
+						ITerminalActivator,
 					);
 				await terminalActivator.activateEnvironmentInTerminal(
 					currentTerminal,
-					{ preserveFocus: true }
+					{ preserveFocus: true },
 				);
 			}
 			sendTelemetryEvent(
@@ -67,7 +67,7 @@ export class TerminalProvider implements Disposable {
 				undefined,
 				{
 					isTerminalVisible: !hideFromUser,
-				}
+				},
 			);
 		}
 	}
@@ -82,7 +82,7 @@ export class TerminalProvider implements Disposable {
 		const disposable = commandManager.registerCommand(
 			Commands.Create_Terminal,
 			this.onCreateTerminal,
-			this
+			this,
 		);
 
 		this.disposables.push(disposable);
@@ -94,7 +94,7 @@ export class TerminalProvider implements Disposable {
 	private async onCreateTerminal() {
 		const terminalService =
 			this.serviceContainer.get<ITerminalServiceFactory>(
-				ITerminalServiceFactory
+				ITerminalServiceFactory,
 			);
 		const activeResource = this.activeResourceService.getActiveResource();
 		await terminalService

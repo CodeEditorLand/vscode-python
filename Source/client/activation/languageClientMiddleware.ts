@@ -15,7 +15,7 @@ export class LanguageClientMiddleware extends LanguageClientMiddlewareBase {
 	public constructor(
 		serviceContainer: IServiceContainer,
 		serverType: LanguageServerType,
-		serverVersion?: string
+		serverVersion?: string,
 	) {
 		super(serviceContainer, serverType, sendTelemetryEvent, serverVersion);
 	}
@@ -30,7 +30,7 @@ export class LanguageClientMiddleware extends LanguageClientMiddlewareBase {
 	protected setupHidingMiddleware(serviceContainer: IServiceContainer) {
 		const jupyterDependencyManager =
 			serviceContainer.get<IJupyterExtensionDependencyManager>(
-				IJupyterExtensionDependencyManager
+				IJupyterExtensionDependencyManager,
 			);
 		const disposables =
 			serviceContainer.get<IDisposableRegistry>(IDisposableRegistry) ||
@@ -45,12 +45,12 @@ export class LanguageClientMiddleware extends LanguageClientMiddlewareBase {
 		disposables.push(
 			extensions?.onDidChange(async () => {
 				await this.onExtensionChange(jupyterDependencyManager);
-			})
+			}),
 		);
 	}
 
 	protected shouldCreateHidingMiddleware(
-		jupyterDependencyManager: IJupyterExtensionDependencyManager
+		jupyterDependencyManager: IJupyterExtensionDependencyManager,
 	): boolean {
 		return (
 			jupyterDependencyManager &&
@@ -59,7 +59,7 @@ export class LanguageClientMiddleware extends LanguageClientMiddlewareBase {
 	}
 
 	protected async onExtensionChange(
-		jupyterDependencyManager: IJupyterExtensionDependencyManager
+		jupyterDependencyManager: IJupyterExtensionDependencyManager,
 	): Promise<void> {
 		if (jupyterDependencyManager) {
 			if (

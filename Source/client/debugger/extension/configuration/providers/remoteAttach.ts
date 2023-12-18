@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { DebugConfigStrings } from "../../../../common/utils/localize";
 import {
 	InputStep,
@@ -20,7 +18,7 @@ const defaultPort = 5678;
 
 export async function buildRemoteAttachConfiguration(
 	input: MultiStepInput<DebugConfigurationState>,
-	state: DebugConfigurationState
+	state: DebugConfigurationState,
 ): Promise<InputStep<DebugConfigurationState> | void> {
 	const config: Partial<AttachRequestArguments> = {
 		name: DebugConfigStrings.attach.snippet.name,
@@ -50,7 +48,7 @@ export async function buildRemoteAttachConfiguration(
 			Promise.resolve(
 				value && value.trim().length > 0
 					? undefined
-					: DebugConfigStrings.attach.enterRemoteHost.invalid
+					: DebugConfigStrings.attach.enterRemoteHost.invalid,
 			),
 	});
 	if (!connect.host) {

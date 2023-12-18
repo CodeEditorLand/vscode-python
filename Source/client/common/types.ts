@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { Socket } from "net";
 import {
 	CancellationToken,
@@ -13,19 +11,19 @@ import {
 	Event,
 	Extension,
 	ExtensionContext,
-	Memento,
 	LogOutputChannel,
-	Uri,
+	Memento,
 	OutputChannel,
+	Uri,
 } from "vscode";
 import { LanguageServerType } from "../activation/types";
+import { ITestingSettings } from "../testing/configuration/types";
 import type {
 	InstallOptions,
 	InterpreterUri,
 	ModuleInstallFlags,
 } from "./installer/types";
 import { EnvironmentVariables } from "./variables/types";
-import { ITestingSettings } from "../testing/configuration/types";
 
 export interface IDisposable {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -33,11 +31,11 @@ export interface IDisposable {
 }
 
 export const ILogOutputChannel = Symbol("ILogOutputChannel");
-export interface ILogOutputChannel extends LogOutputChannel {}
+export type ILogOutputChannel = LogOutputChannel;
 export const ITestOutputChannel = Symbol("ITestOutputChannel");
-export interface ITestOutputChannel extends OutputChannel {}
+export type ITestOutputChannel = OutputChannel;
 export const IDocumentSymbolProvider = Symbol("IDocumentSymbolProvider");
-export interface IDocumentSymbolProvider extends DocumentSymbolProvider {}
+export type IDocumentSymbolProvider = DocumentSymbolProvider;
 export const IsWindows = Symbol("IS_WINDOWS");
 export const IDisposableRegistry = Symbol("IDisposableRegistry");
 export type IDisposableRegistry = IDisposable[];
@@ -66,12 +64,12 @@ export interface IPersistentStateFactory {
 	createGlobalPersistentState<T>(
 		key: string,
 		defaultValue?: T,
-		expiryDurationMs?: number
+		expiryDurationMs?: number,
 	): IPersistentState<T>;
 	createWorkspacePersistentState<T>(
 		key: string,
 		defaultValue?: T,
-		expiryDurationMs?: number
+		expiryDurationMs?: number,
 	): IPersistentState<T>;
 }
 
@@ -84,15 +82,15 @@ export type ExecutionInfo = {
 };
 
 export enum InstallerResponse {
-	Installed,
-	Disabled,
-	Ignore,
+	Installed = 0,
+	Disabled = 1,
+	Ignore = 2,
 }
 
 export enum ProductInstallStatus {
-	Installed,
-	NotInstalled,
-	NeedsUpgrade,
+	Installed = 0,
+	NotInstalled = 1,
+	NeedsUpgrade = 2,
 }
 
 export enum ProductType {
@@ -119,20 +117,20 @@ export interface IInstaller {
 		product: Product,
 		resource?: InterpreterUri,
 		cancel?: CancellationToken,
-		flags?: ModuleInstallFlags
+		flags?: ModuleInstallFlags,
 	): Promise<InstallerResponse>;
 	install(
 		product: Product,
 		resource?: InterpreterUri,
 		cancel?: CancellationToken,
 		flags?: ModuleInstallFlags,
-		options?: InstallOptions
+		options?: InstallOptions,
 	): Promise<InstallerResponse>;
 	isInstalled(product: Product, resource?: InterpreterUri): Promise<boolean>;
 	isProductVersionCompatible(
 		product: Product,
 		semVerRequirement: string,
-		resource?: InterpreterUri
+		resource?: InterpreterUri,
 	): Promise<ProductInstallStatus>;
 	translateProductToModuleName(product: Product): string;
 }
@@ -242,14 +240,14 @@ export interface IConfigurationService {
 		setting: string,
 		value?: unknown,
 		resource?: Uri,
-		configTarget?: ConfigurationTarget
+		configTarget?: ConfigurationTarget,
 	): Promise<void>;
 	updateSectionSetting(
 		section: string,
 		setting: string,
 		value?: unknown,
 		resource?: Uri,
-		configTarget?: ConfigurationTarget
+		configTarget?: ConfigurationTarget,
 	): Promise<void>;
 }
 
@@ -289,7 +287,7 @@ export type DownloadOptions = {
 };
 
 export const IExtensionContext = Symbol("ExtensionContext");
-export interface IExtensionContext extends ExtensionContext {}
+export type IExtensionContext = ExtensionContext;
 
 export const IExtensions = Symbol("IExtensions");
 export interface IExtensions {
@@ -353,7 +351,7 @@ export interface IExperimentService {
 	inExperiment(experimentName: string): Promise<boolean>;
 	inExperimentSync(experimentName: string): boolean;
 	getExperimentValue<T extends boolean | number | string>(
-		experimentName: string
+		experimentName: string,
 	): Promise<T | undefined>;
 }
 
@@ -378,7 +376,7 @@ export interface IInterpreterPathService {
 	update(
 		resource: Resource,
 		configTarget: ConfigurationTarget,
-		value: string | undefined
+		value: string | undefined,
 	): Promise<void>;
 	copyOldInterpreterStorageValuesToNew(resource: Resource): Promise<void>;
 }

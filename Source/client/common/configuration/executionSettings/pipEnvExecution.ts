@@ -1,9 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
-import { injectable, inject } from "inversify";
+import { inject, injectable } from "inversify";
 import { IConfigurationService, IToolExecutionPath } from "../../types";
 
 @injectable()

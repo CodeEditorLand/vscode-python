@@ -73,7 +73,7 @@ export class VenvProgressAndTelemetry {
 					{
 						environmentType: "venv",
 						using: "requirements.txt",
-					}
+					},
 				);
 				return undefined;
 			},
@@ -88,7 +88,7 @@ export class VenvProgressAndTelemetry {
 					{
 						environmentType: "venv",
 						using: "pyproject.toml",
-					}
+					},
 				);
 				return undefined;
 			},
@@ -132,7 +132,7 @@ export class VenvProgressAndTelemetry {
 					{
 						environmentType: "venv",
 						using: "requirements.txt",
-					}
+					},
 				);
 				return INSTALL_REQUIREMENTS_FAILED_MARKER;
 			},
@@ -146,7 +146,7 @@ export class VenvProgressAndTelemetry {
 					{
 						environmentType: "venv",
 						using: "pyproject.toml",
-					}
+					},
 				);
 				return INSTALL_PYPROJECT_FAILED_MARKER;
 			},
@@ -180,7 +180,7 @@ export class VenvProgressAndTelemetry {
 					{
 						environmentType: "venv",
 						using: "requirements.txt",
-					}
+					},
 				);
 				return undefined;
 			},
@@ -194,7 +194,7 @@ export class VenvProgressAndTelemetry {
 					{
 						environmentType: "venv",
 						using: "pyproject.toml",
-					}
+					},
 				);
 				return undefined;
 			},
@@ -208,7 +208,7 @@ export class VenvProgressAndTelemetry {
 					{
 						environmentType: "venv",
 						using: "pipUpgrade",
-					}
+					},
 				);
 				return undefined;
 			},
@@ -222,7 +222,7 @@ export class VenvProgressAndTelemetry {
 					{
 						environmentType: "venv",
 						using: "pipUpgrade",
-					}
+					},
 				);
 				return UPGRADE_PIP_FAILED_MARKER;
 			},
@@ -237,7 +237,7 @@ export class VenvProgressAndTelemetry {
 					{
 						environmentType: "venv",
 						using: "pipDownload",
-					}
+					},
 				);
 				return undefined;
 			},
@@ -251,7 +251,7 @@ export class VenvProgressAndTelemetry {
 					{
 						environmentType: "venv",
 						using: "pipDownload",
-					}
+					},
 				);
 				return DOWNLOAD_PIP_FAILED_MARKER;
 			},
@@ -266,7 +266,7 @@ export class VenvProgressAndTelemetry {
 					{
 						environmentType: "venv",
 						using: "pipInstall",
-					}
+					},
 				);
 				return undefined;
 			},
@@ -280,7 +280,7 @@ export class VenvProgressAndTelemetry {
 					{
 						environmentType: "venv",
 						using: "pipInstall",
-					}
+					},
 				);
 				return INSTALL_PIP_FAILED_MARKER;
 			},
@@ -336,7 +336,7 @@ export class VenvProgressAndTelemetry {
 					{
 						environmentType: "venv",
 						using: "pipUpgrade",
-					}
+					},
 				);
 				return undefined;
 			},

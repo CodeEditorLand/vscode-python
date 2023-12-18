@@ -1,10 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable, multiInject } from "inversify";
 import { Terminal } from "vscode";
+import { inTerminalEnvVarExperiment } from "../../experiments/helpers";
 import { IConfigurationService, IExperimentService } from "../../types";
 import {
 	ITerminalActivationHandler,
@@ -13,7 +12,6 @@ import {
 	TerminalActivationOptions,
 } from "../types";
 import { BaseTerminalActivator } from "./base";
-import { inTerminalEnvVarExperiment } from "../../experiments/helpers";
 
 @injectable()
 export class TerminalActivator implements ITerminalActivator {
@@ -32,7 +30,7 @@ export class TerminalActivator implements ITerminalActivator {
 	}
 	public async activateEnvironmentInTerminal(
 		terminal: Terminal,
-		options?: TerminalActivationOptions
+		options?: TerminalActivationOptions,
 	): Promise<boolean> {
 		let promise = this.pendingActivations.get(terminal);
 		if (promise) {
@@ -44,10 +42,10 @@ export class TerminalActivator implements ITerminalActivator {
 	}
 	private async activateEnvironmentInTerminalImpl(
 		terminal: Terminal,
-		options?: TerminalActivationOptions
+		options?: TerminalActivationOptions,
 	): Promise<boolean> {
 		const settings = this.configurationService.getSettings(
-			options?.resource
+			options?.resource,
 		);
 		const activateEnvironment =
 			settings.terminal.activateEnvironment &&
@@ -59,7 +57,7 @@ export class TerminalActivator implements ITerminalActivator {
 		const activated =
 			await this.baseActivator.activateEnvironmentInTerminal(
 				terminal,
-				options
+				options,
 			);
 		this.handlers.forEach((handler) =>
 			handler
@@ -67,9 +65,9 @@ export class TerminalActivator implements ITerminalActivator {
 					terminal,
 					options?.resource,
 					options?.preserveFocus === true,
-					activated
+					activated,
 				)
-				.ignoreErrors()
+				.ignoreErrors(),
 		);
 		return activated;
 	}

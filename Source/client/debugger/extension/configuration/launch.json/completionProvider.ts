@@ -1,11 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
+import * as path from "path";
 import { inject, injectable } from "inversify";
 import { getLocation } from "jsonc-parser";
-import * as path from "path";
 import {
 	CancellationToken,
 	CompletionItem,
@@ -46,14 +44,14 @@ export class LaunchJsonCompletionProvider
 		this.disposableRegistry.push(
 			this.languageService.registerCompletionItemProvider(
 				{ language: JsonLanguages.json },
-				this
-			)
+				this,
+			),
 		);
 		this.disposableRegistry.push(
 			this.languageService.registerCompletionItemProvider(
 				{ language: JsonLanguages.jsonWithComments },
-				this
-			)
+				this,
+			),
 		);
 	}
 
@@ -61,12 +59,12 @@ export class LaunchJsonCompletionProvider
 	public async provideCompletionItems(
 		document: TextDocument,
 		position: Position,
-		token: CancellationToken
+		token: CancellationToken,
 	): Promise<CompletionItem[]> {
 		if (
 			!LaunchJsonCompletionProvider.canProvideCompletions(
 				document,
-				position
+				position,
 			)
 		) {
 			return [];
@@ -92,14 +90,14 @@ export class LaunchJsonCompletionProvider
 
 	public static canProvideCompletions(
 		document: TextDocument,
-		position: Position
+		position: Position,
 	): boolean {
 		if (path.basename(document.uri.fsPath) !== "launch.json") {
 			return false;
 		}
 		const location = getLocation(
 			document.getText(),
-			document.offsetAt(position)
+			document.offsetAt(position),
 		);
 		// Cursor must be inside the configurations array and not in any nested items.
 		// Hence path[0] = array, path[1] = array element index.

@@ -43,7 +43,7 @@ export async function getFileType(
 	filename: string,
 	opts: {
 		ignoreErrors: boolean;
-	} = { ignoreErrors: true }
+	} = { ignoreErrors: true },
 ): Promise<FileType | undefined> {
 	let stat: fs.Stats;
 	try {
@@ -63,7 +63,7 @@ export async function getFileType(
 }
 
 function normalizeFileTypes(
-	filetypes: FileType | FileType[] | undefined
+	filetypes: FileType | FileType[] | undefined,
 ): FileType[] | undefined {
 	if (filetypes === undefined) {
 		return undefined;
@@ -82,7 +82,7 @@ async function resolveFile(
 	opts: {
 		ensure?: boolean;
 		onMissing?: FileType;
-	} = {}
+	} = {},
 ): Promise<DirEntry | undefined> {
 	let filename: string;
 	if (typeof file !== "string") {
@@ -116,7 +116,7 @@ export function getFileFilter(
 		ensureEntry?: boolean;
 	} = {
 		ignoreMissing: true,
-	}
+	},
 ): FileFilterFunc | undefined {
 	const ignoreFileType = normalizeFileTypes(opts.ignoreFileType);
 

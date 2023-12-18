@@ -1,13 +1,11 @@
-"use strict";
-
 import * as net from "net";
 
 const uint64be = require("uint64be");
 
 enum DataType {
-	string,
-	int32,
-	int64,
+	string = 0,
+	int32 = 1,
+	int64 = 2,
 }
 
 export class SocketStream {
@@ -38,7 +36,7 @@ export class SocketStream {
 
 	private buffer: Buffer;
 	private isInTransaction!: boolean;
-	private bytesRead: number = 0;
+	private bytesRead = 0;
 	public get Buffer(): Buffer {
 		return this.buffer;
 	}
@@ -63,7 +61,7 @@ export class SocketStream {
 		this.hasInsufficientDataForReading = false;
 	}
 
-	private hasInsufficientDataForReading: boolean = false;
+	private hasInsufficientDataForReading = false;
 	public get HasInsufficientDataForReading(): boolean {
 		return this.hasInsufficientDataForReading;
 	}
@@ -82,7 +80,7 @@ export class SocketStream {
 			return;
 		}
 		const newBuffer = Buffer.alloc(
-			this.buffer.length + additionalData.length
+			this.buffer.length + additionalData.length,
 		);
 		this.buffer.copy(newBuffer);
 		additionalData.copy(newBuffer, this.buffer.length);
@@ -119,7 +117,7 @@ export class SocketStream {
 
 		if (byteRead < 0) {
 			throw new Error(
-				"IOException() - Socket.ReadString failed to read string type;"
+				"IOException() - Socket.ReadString failed to read string type;",
 			);
 		}
 
@@ -137,7 +135,7 @@ export class SocketStream {
 			}
 			default: {
 				throw new Error(
-					`IOException(); Socket.ReadString failed to parse unknown string type ${type}`
+					`IOException(); Socket.ReadString failed to parse unknown string type ${type}`,
 				);
 			}
 		}
@@ -153,7 +151,7 @@ export class SocketStream {
 
 		const stringBuffer = this.buffer.slice(
 			this.bytesRead,
-			this.bytesRead + len
+			this.bytesRead + len,
 		);
 		if (this.isInTransaction) {
 			this.bytesRead = this.bytesRead + len;
@@ -193,7 +191,7 @@ export class SocketStream {
 
 		const stringBuffer = this.buffer.slice(
 			this.bytesRead,
-			this.bytesRead + length
+			this.bytesRead + length,
 		);
 		if (this.isInTransaction) {
 			this.bytesRead = this.bytesRead + length;

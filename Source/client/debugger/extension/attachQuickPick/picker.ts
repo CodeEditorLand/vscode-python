@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable } from "inversify";
 import { Disposable } from "vscode";
 import { IApplicationShell } from "../../../common/application/types";
@@ -54,7 +52,7 @@ export class AttachPicker implements IAttachPicker {
 					quickPick.busy = false;
 				},
 				this,
-				disposables
+				disposables,
 			);
 
 			quickPick.onDidAccept(
@@ -71,7 +69,7 @@ export class AttachPicker implements IAttachPicker {
 					resolve(selectedId);
 				},
 				undefined,
-				disposables
+				disposables,
 			);
 
 			quickPick.onDidHide(
@@ -82,7 +80,7 @@ export class AttachPicker implements IAttachPicker {
 					reject(new Error(AttachProcess.noProcessSelected));
 				},
 				undefined,
-				disposables
+				disposables,
 			);
 
 			quickPick.show();

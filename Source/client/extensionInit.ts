@@ -1,35 +1,33 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { Container } from "inversify";
-import { Disposable, Memento, window } from "vscode";
 import { instance, mock } from "ts-mockito";
+import { Disposable, Memento, window } from "vscode";
+import { WorkspaceService } from "./common/application/workspace";
 import { registerTypes as platformRegisterTypes } from "./common/platform/serviceRegistry";
 import { registerTypes as processRegisterTypes } from "./common/process/serviceRegistry";
 import { registerTypes as commonRegisterTypes } from "./common/serviceRegistry";
-import { registerTypes as interpretersRegisterTypes } from "./interpreter/serviceRegistry";
 import {
 	GLOBAL_MEMENTO,
 	IDisposableRegistry,
 	IExtensionContext,
-	IMemento,
 	ILogOutputChannel,
+	IMemento,
 	ITestOutputChannel,
 	WORKSPACE_MEMENTO,
 } from "./common/types";
-import { registerTypes as variableRegisterTypes } from "./common/variables/serviceRegistry";
 import { OutputChannelNames } from "./common/utils/localize";
+import { registerTypes as variableRegisterTypes } from "./common/variables/serviceRegistry";
 import { ExtensionState } from "./components";
+import { registerTypes as interpretersRegisterTypes } from "./interpreter/serviceRegistry";
 import { ServiceContainer } from "./ioc/container";
 import { ServiceManager } from "./ioc/serviceManager";
 import { IServiceContainer, IServiceManager } from "./ioc/types";
-import * as pythonEnvironments from "./pythonEnvironments";
-import { IDiscoveryAPI } from "./pythonEnvironments/base/locator";
 import { registerLogger } from "./logging";
 import { OutputChannelLogger } from "./logging/outputChannelLogger";
-import { WorkspaceService } from "./common/application/workspace";
+import * as pythonEnvironments from "./pythonEnvironments";
+import { IDiscoveryAPI } from "./pythonEnvironments/base/locator";
 
 // The code in this module should do nothing more complex than register
 // objects to DI and simple init (e.g. no side effects).  That implies
@@ -38,7 +36,7 @@ import { WorkspaceService } from "./common/application/workspace";
 
 export function initializeGlobals(
 	// This is stored in ExtensionState.
-	context: IExtensionContext
+	context: IExtensionContext,
 ): ExtensionState {
 	const disposables: IDisposableRegistry = context.subscriptions;
 	const cont = new Container({ skipBaseClassChecks: true });
@@ -47,56 +45,56 @@ export function initializeGlobals(
 
 	serviceManager.addSingletonInstance<IServiceContainer>(
 		IServiceContainer,
-		serviceContainer
+		serviceContainer,
 	);
 	serviceManager.addSingletonInstance<IServiceManager>(
 		IServiceManager,
-		serviceManager
+		serviceManager,
 	);
 
 	serviceManager.addSingletonInstance<Disposable[]>(
 		IDisposableRegistry,
-		disposables
+		disposables,
 	);
 	serviceManager.addSingletonInstance<Memento>(
 		IMemento,
 		context.globalState,
-		GLOBAL_MEMENTO
+		GLOBAL_MEMENTO,
 	);
 	serviceManager.addSingletonInstance<Memento>(
 		IMemento,
 		context.workspaceState,
-		WORKSPACE_MEMENTO
+		WORKSPACE_MEMENTO,
 	);
 	serviceManager.addSingletonInstance<IExtensionContext>(
 		IExtensionContext,
-		context
+		context,
 	);
 
 	const standardOutputChannel = window.createOutputChannel(
 		OutputChannelNames.python,
-		{ log: true }
+		{ log: true },
 	);
 	disposables.push(standardOutputChannel);
 	disposables.push(
-		registerLogger(new OutputChannelLogger(standardOutputChannel))
+		registerLogger(new OutputChannelLogger(standardOutputChannel)),
 	);
 
 	const workspaceService = new WorkspaceService();
 	const unitTestOutChannel =
 		workspaceService.isVirtualWorkspace || !workspaceService.isTrusted
 			? // Do not create any test related output UI when using virtual workspaces.
-				instance(mock<ITestOutputChannel>())
+			  instance(mock<ITestOutputChannel>())
 			: window.createOutputChannel(OutputChannelNames.pythonTest);
 	disposables.push(unitTestOutChannel);
 
 	serviceManager.addSingletonInstance<ILogOutputChannel>(
 		ILogOutputChannel,
-		standardOutputChannel
+		standardOutputChannel,
 	);
 	serviceManager.addSingletonInstance<ITestOutputChannel>(
 		ITestOutputChannel,
-		unitTestOutChannel
+		unitTestOutChannel,
 	);
 
 	return {
@@ -132,7 +130,7 @@ export type Components = {
  * Initialize all components in the extension.
  */
 export async function initializeComponents(
-	ext: ExtensionState
+	ext: ExtensionState,
 ): Promise<Components> {
 	const pythonEnvs = await pythonEnvironments.initialize(ext);
 

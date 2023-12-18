@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable } from "inversify";
 import { Disposable, Uri } from "vscode";
 import { arePathsSame } from "../../../common/platform/fs-paths";
@@ -34,38 +32,38 @@ export class InterpreterSelector implements IInterpreterSelector {
 
 	public getSuggestions(
 		resource: Resource,
-		useFullDisplayName = false
+		useFullDisplayName = false,
 	): IInterpreterQuickPickItem[] {
 		const interpreters = this.interpreterManager.getInterpreters(resource);
 		interpreters.sort(
-			this.envTypeComparer.compare.bind(this.envTypeComparer)
+			this.envTypeComparer.compare.bind(this.envTypeComparer),
 		);
 
 		return interpreters.map((item) =>
-			this.suggestionToQuickPickItem(item, resource, useFullDisplayName)
+			this.suggestionToQuickPickItem(item, resource, useFullDisplayName),
 		);
 	}
 
 	public async getAllSuggestions(
-		resource: Resource
+		resource: Resource,
 	): Promise<IInterpreterQuickPickItem[]> {
 		const interpreters =
 			await this.interpreterManager.getAllInterpreters(resource);
 		interpreters.sort(
-			this.envTypeComparer.compare.bind(this.envTypeComparer)
+			this.envTypeComparer.compare.bind(this.envTypeComparer),
 		);
 
 		return Promise.all(
 			interpreters.map((item) =>
-				this.suggestionToQuickPickItem(item, resource)
-			)
+				this.suggestionToQuickPickItem(item, resource),
+			),
 		);
 	}
 
 	public suggestionToQuickPickItem(
 		interpreter: PythonEnvironment,
 		workspaceUri?: Uri,
-		useDetailedName = false
+		useDetailedName = false,
 	): IInterpreterQuickPickItem {
 		const path =
 			interpreter.envPath &&
@@ -75,7 +73,7 @@ export class InterpreterSelector implements IInterpreterSelector {
 				: interpreter.path;
 		const detail = this.pathUtils.getDisplayName(
 			path,
-			workspaceUri ? workspaceUri.fsPath : undefined
+			workspaceUri ? workspaceUri.fsPath : undefined,
 		);
 		const cachedPrefix = interpreter.cachedEntry ? "(cached) " : "";
 		return {
@@ -91,18 +89,18 @@ export class InterpreterSelector implements IInterpreterSelector {
 
 	public getRecommendedSuggestion(
 		suggestions: IInterpreterQuickPickItem[],
-		resource: Resource
+		resource: Resource,
 	): IInterpreterQuickPickItem | undefined {
 		const envs = this.interpreterManager.getInterpreters(resource);
 		const recommendedEnv = this.envTypeComparer.getRecommended(
 			envs,
-			resource
+			resource,
 		);
 		if (!recommendedEnv) {
 			return undefined;
 		}
 		return suggestions.find((item) =>
-			arePathsSame(item.interpreter.path, recommendedEnv.path)
+			arePathsSame(item.interpreter.path, recommendedEnv.path),
 		);
 	}
 }

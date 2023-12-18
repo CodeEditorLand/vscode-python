@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { injectable, inject } from "inversify";
+import { inject, injectable } from "inversify";
 import { Resource } from "../../common/types";
 import { Architecture } from "../../common/utils/platform";
 import { isActiveStateEnvironmentForWorkspace } from "../../pythonEnvironments/common/environmentManagers/activestate";
@@ -61,7 +61,7 @@ export class EnvironmentTypeComparer implements IInterpreterComparer {
 		const envLocationComparison = compareEnvironmentLocation(
 			a,
 			b,
-			this.workspaceFolderPath
+			this.workspaceFolderPath,
 		);
 		if (envLocationComparison !== 0) {
 			return envLocationComparison;
@@ -76,7 +76,7 @@ export class EnvironmentTypeComparer implements IInterpreterComparer {
 		// Check Python version.
 		const versionComparison = comparePythonVersionDescending(
 			a.version,
-			b.version
+			b.version,
 		);
 		if (versionComparison !== 0) {
 			return versionComparison;
@@ -103,7 +103,7 @@ export class EnvironmentTypeComparer implements IInterpreterComparer {
 
 	public getRecommended(
 		interpreters: PythonEnvironment[],
-		resource: Resource
+		resource: Resource,
 	): PythonEnvironment | undefined {
 		// When recommending an intepreter for a workspace, we either want to return a local one
 		// or fallback on a globally-installed interpreter, and we don't want want to suggest a global environment
@@ -120,7 +120,7 @@ export class EnvironmentTypeComparer implements IInterpreterComparer {
 					!workspaceUri ||
 					!isActiveStateEnvironmentForWorkspace(
 						i.path,
-						workspaceUri.folderUri.fsPath
+						workspaceUri.folderUri.fsPath,
 					))
 			) {
 				return false;
@@ -128,7 +128,7 @@ export class EnvironmentTypeComparer implements IInterpreterComparer {
 			if (
 				getEnvLocationHeuristic(
 					i,
-					workspaceUri?.folderUri.fsPath || ""
+					workspaceUri?.folderUri.fsPath || "",
 				) === EnvLocationHeuristic.Local
 			) {
 				return true;
@@ -151,7 +151,7 @@ export class EnvironmentTypeComparer implements IInterpreterComparer {
 
 function getSortName(
 	info: PythonEnvironment,
-	interpreterHelper: IInterpreterHelper
+	interpreterHelper: IInterpreterHelper,
 ): string {
 	const sortNameParts: string[] = [];
 	const envSuffixParts: string[] = [];
@@ -175,7 +175,7 @@ function getSortName(
 
 	if (info.envType) {
 		const name = interpreterHelper.getInterpreterTypeDisplayName(
-			info.envType
+			info.envType,
 		);
 		if (name) {
 			envSuffixParts.push(name);
@@ -210,7 +210,7 @@ function isBaseCondaEnvironment(environment: PythonEnvironment): boolean {
 }
 
 export function isProblematicCondaEnvironment(
-	environment: PythonEnvironment
+	environment: PythonEnvironment,
 ): boolean {
 	return (
 		environment.envType === EnvironmentType.Conda &&
@@ -223,7 +223,7 @@ export function isProblematicCondaEnvironment(
  */
 function comparePythonVersionDescending(
 	a: PythonVersion | undefined,
-	b: PythonVersion | undefined
+	b: PythonVersion | undefined,
 ): number {
 	if (!a) {
 		return 1;
@@ -256,7 +256,7 @@ function comparePythonVersionDescending(
 function compareEnvironmentLocation(
 	a: PythonEnvironment,
 	b: PythonEnvironment,
-	workspacePath: string
+	workspacePath: string,
 ): number {
 	const aHeuristic = getEnvLocationHeuristic(a, workspacePath);
 	const bHeuristic = getEnvLocationHeuristic(b, workspacePath);
@@ -269,7 +269,7 @@ function compareEnvironmentLocation(
  */
 export function getEnvLocationHeuristic(
 	environment: PythonEnvironment,
-	workspacePath: string
+	workspacePath: string,
 ): EnvLocationHeuristic {
 	if (
 		workspacePath.length > 0 &&
@@ -287,7 +287,7 @@ export function getEnvLocationHeuristic(
  */
 function compareEnvironmentType(
 	a: PythonEnvironment,
-	b: PythonEnvironment
+	b: PythonEnvironment,
 ): number {
 	if (!a.type && !b.type) {
 		// Return 0 if two global interpreters are being compared.
@@ -296,7 +296,7 @@ function compareEnvironmentType(
 	const envTypeByPriority = getPrioritizedEnvironmentType();
 	return Math.sign(
 		envTypeByPriority.indexOf(a.envType) -
-			envTypeByPriority.indexOf(b.envType)
+			envTypeByPriority.indexOf(b.envType),
 	);
 }
 

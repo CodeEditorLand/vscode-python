@@ -4,13 +4,13 @@
 import { PythonExecutableInfo, PythonVersion } from ".";
 import { isCI } from "../../../common/constants";
 import {
-	interpreterInfo as getInterpreterInfoCommand,
 	InterpreterInfoJson,
+	interpreterInfo as getInterpreterInfoCommand,
 } from "../../../common/process/internal/scripts";
 import { Architecture } from "../../../common/utils/platform";
 import { traceError, traceVerbose } from "../../../logging";
 import { shellExecute } from "../../common/externalDependencies";
-import { copyPythonExecInfo, PythonExecInfo } from "../../exec";
+import { PythonExecInfo, copyPythonExecInfo } from "../../exec";
 import { parseVersion } from "./pythonVersion";
 
 export type InterpreterInformation = {
@@ -29,7 +29,7 @@ export type InterpreterInformation = {
  */
 function extractInterpreterInfo(
 	python: string,
-	raw: InterpreterInfoJson
+	raw: InterpreterInfoJson,
 ): InterpreterInformation {
 	let rawVersion = `${raw.versionInfo.slice(0, 3).join(".")}`;
 
@@ -75,7 +75,7 @@ function extractInterpreterInfo(
  */
 export async function getInterpreterInfo(
 	python: PythonExecInfo,
-	timeout?: number
+	timeout?: number,
 ): Promise<InterpreterInformation | undefined> {
 	const [args, parse] = getInterpreterInfoCommand();
 	const info = copyPythonExecInfo(python, args);
@@ -87,7 +87,7 @@ export async function getInterpreterInfo(
 			p
 				? `${p} ${c.toCommandArgumentForPythonExt()}`
 				: `${c.toCommandArgumentForPythonExt()}`,
-		""
+		"",
 	);
 
 	// Sometimes on CI, the python process takes a long time to start up. This is a workaround for that.
@@ -103,7 +103,7 @@ export async function getInterpreterInfo(
 	});
 	if (result.stderr) {
 		traceError(
-			`Stderr when executing script with >> ${quoted} << stderr: ${result.stderr}, still attempting to parse output`
+			`Stderr when executing script with >> ${quoted} << stderr: ${result.stderr}, still attempting to parse output`,
 		);
 	}
 	let json: InterpreterInfoJson;
@@ -111,12 +111,12 @@ export async function getInterpreterInfo(
 		json = parse(result.stdout);
 	} catch (ex) {
 		traceError(
-			`Failed to parse interpreter information for >> ${quoted} << with ${ex}`
+			`Failed to parse interpreter information for >> ${quoted} << with ${ex}`,
 		);
 		return undefined;
 	}
 	traceVerbose(
-		`Found interpreter for >> ${quoted} <<: ${JSON.stringify(json)}`
+		`Found interpreter for >> ${quoted} <<: ${JSON.stringify(json)}`,
 	);
 	return extractInterpreterInfo(python.pythonExecutable, json);
 }

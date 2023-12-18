@@ -3,8 +3,6 @@
 
 // @ts-check
 
-"use strict";
-
 const path = require("path");
 const webpack = require("webpack");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");

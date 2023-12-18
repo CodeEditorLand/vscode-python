@@ -14,14 +14,14 @@ import {
 export function registerTypes(serviceManager: IServiceManager) {
 	serviceManager.addSingleton<IProcessServiceFactory>(
 		IProcessServiceFactory,
-		ProcessServiceFactory
+		ProcessServiceFactory,
 	);
 	serviceManager.addSingleton<IPythonExecutionFactory>(
 		IPythonExecutionFactory,
-		PythonExecutionFactory
+		PythonExecutionFactory,
 	);
 	serviceManager.addSingleton<IPythonToolExecutionService>(
 		IPythonToolExecutionService,
-		PythonToolExecutionService
+		PythonToolExecutionService,
 	);
 }

@@ -33,7 +33,7 @@ function log(diagnostics: IDiagnostic[]): void {
 
 async function runDiagnostics(
 	diagnosticServices: IDiagnosticsService[],
-	resource: Resource
+	resource: Resource,
 ): Promise<void> {
 	await Promise.all(
 		diagnosticServices.map(async (diagnosticService) => {
@@ -42,7 +42,7 @@ async function runDiagnostics(
 				log(diagnostics);
 				await diagnosticService.handle(diagnostics);
 			}
-		})
+		}),
 	);
 }
 
@@ -60,7 +60,7 @@ export class ApplicationDiagnostics implements IApplicationDiagnostics {
 	}
 
 	public async performPreStartupHealthCheck(
-		resource: Resource
+		resource: Resource,
 	): Promise<void> {
 		// When testing, do not perform health checks, as modal dialogs can be displayed.
 		if (isTestExecution()) {
@@ -68,7 +68,7 @@ export class ApplicationDiagnostics implements IApplicationDiagnostics {
 		}
 		let services =
 			this.serviceContainer.getAll<IDiagnosticsService>(
-				IDiagnosticsService
+				IDiagnosticsService,
 			);
 		const workspaceService =
 			this.serviceContainer.get<IWorkspaceService>(IWorkspaceService);
@@ -78,13 +78,13 @@ export class ApplicationDiagnostics implements IApplicationDiagnostics {
 		// Perform these validation checks in the foreground.
 		await runDiagnostics(
 			services.filter((item) => !item.runInBackground),
-			resource
+			resource,
 		);
 
 		// Perform these validation checks in the background.
 		runDiagnostics(
 			services.filter((item) => item.runInBackground),
-			resource
+			resource,
 		).ignoreErrors();
 	}
 }

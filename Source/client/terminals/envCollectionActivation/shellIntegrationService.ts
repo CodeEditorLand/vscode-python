@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { injectable, inject } from "inversify";
+import { inject, injectable } from "inversify";
 import {
 	IApplicationShell,
 	ITerminalManager,
@@ -41,7 +41,7 @@ export class ShellIntegrationService implements IShellIntegrationService {
 			traceError(
 				`Failed to determine if shell supports shell integration`,
 				shell,
-				ex
+				ex,
 			);
 			return false;
 		});
@@ -94,7 +94,7 @@ export class ShellIntegrationService implements IShellIntegrationService {
 		} catch (ex) {
 			traceVerbose(
 				`Proposed API is not available, failed to subscribe to onDidExecuteTerminalCommand`,
-				ex
+				ex,
 			);
 			// Proposed API is not available, assume shell integration is working at this point.
 			return true;

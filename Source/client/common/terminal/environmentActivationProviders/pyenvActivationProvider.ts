@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable } from "inversify";
 import { Uri } from "vscode";
 import { IInterpreterService } from "../../../interpreter/contracts";
@@ -29,7 +27,7 @@ export class PyEnvActivationCommandProvider
 
 	public async getActivationCommands(
 		resource: Uri | undefined,
-		_: TerminalShellType
+		_: TerminalShellType,
 	): Promise<string[] | undefined> {
 		const interpreter = await this.serviceContainer
 			.get<IInterpreterService>(IInterpreterService)
@@ -49,7 +47,7 @@ export class PyEnvActivationCommandProvider
 
 	public async getActivationCommandsForInterpreter(
 		pythonPath: string,
-		_targetShell: TerminalShellType
+		_targetShell: TerminalShellType,
 	): Promise<string[] | undefined> {
 		const interpreter = await this.serviceContainer
 			.get<IInterpreterService>(IInterpreterService)

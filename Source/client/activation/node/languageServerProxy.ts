@@ -10,6 +10,8 @@ import {
 } from "vscode-languageclient/node";
 
 import { Extension } from "vscode";
+import { IWorkspaceService } from "../../common/application/types";
+import { PYLANCE_EXTENSION_ID } from "../../common/constants";
 import {
 	IExperimentService,
 	IExtensions,
@@ -17,19 +19,17 @@ import {
 	Resource,
 } from "../../common/types";
 import { IEnvironmentVariablesProvider } from "../../common/variables/types";
+import {
+	traceDecoratorError,
+	traceDecoratorVerbose,
+	traceError,
+} from "../../logging";
 import { PythonEnvironment } from "../../pythonEnvironments/info";
 import { captureTelemetry, sendTelemetryEvent } from "../../telemetry";
 import { EventName } from "../../telemetry/constants";
 import { FileBasedCancellationStrategy } from "../common/cancellationUtils";
 import { ProgressReporting } from "../progress";
 import { ILanguageClientFactory, ILanguageServerProxy } from "../types";
-import {
-	traceDecoratorError,
-	traceDecoratorVerbose,
-	traceError,
-} from "../../logging";
-import { IWorkspaceService } from "../../common/application/types";
-import { PYLANCE_EXTENSION_ID } from "../../common/constants";
 import { PylanceApi } from "./pylanceApi";
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -75,7 +75,7 @@ export class NodeLanguageServerProxy implements ILanguageServerProxy {
 		private readonly interpreterPathService: IInterpreterPathService,
 		private readonly environmentService: IEnvironmentVariablesProvider,
 		private readonly workspace: IWorkspaceService,
-		private readonly extensions: IExtensions
+		private readonly extensions: IExtensions,
 	) {}
 
 	private static versionTelemetryProps(instance: NodeLanguageServerProxy) {
@@ -95,12 +95,12 @@ export class NodeLanguageServerProxy implements ILanguageServerProxy {
 		undefined,
 		true,
 		undefined,
-		NodeLanguageServerProxy.versionTelemetryProps
+		NodeLanguageServerProxy.versionTelemetryProps,
 	)
 	public async start(
 		resource: Resource,
 		interpreter: PythonEnvironment | undefined,
-		options: LanguageClientOptions
+		options: LanguageClientOptions,
 	): Promise<void> {
 		const extension = await this.getPylanceExtension();
 		this.lsVersion = extension?.packageJSON.version || "0";
@@ -120,7 +120,7 @@ export class NodeLanguageServerProxy implements ILanguageServerProxy {
 		const client = await this.factory.createLanguageClient(
 			resource,
 			interpreter,
-			options
+			options,
 		);
 		this.registerHandlers(client, resource);
 
@@ -129,7 +129,7 @@ export class NodeLanguageServerProxy implements ILanguageServerProxy {
 				client.sendNotification("python/workspaceTrusted", {
 					isTrusted: true,
 				});
-			})
+			}),
 		);
 
 		await client.start();
@@ -178,7 +178,7 @@ export class NodeLanguageServerProxy implements ILanguageServerProxy {
 		undefined,
 		true,
 		undefined,
-		NodeLanguageServerProxy.versionTelemetryProps
+		NodeLanguageServerProxy.versionTelemetryProps,
 	)
 	private registerHandlers(client: LanguageClient, _resource: Resource) {
 		const progressReporting = new ProgressReporting(client);
@@ -194,9 +194,9 @@ export class NodeLanguageServerProxy implements ILanguageServerProxy {
 					DidChangeConfigurationNotification.type,
 					{
 						settings: null,
-					}
+					},
 				);
-			})
+			}),
 		);
 		this.disposables.push(
 			this.environmentService.onDidEnvironmentVariablesChange(() => {
@@ -204,9 +204,9 @@ export class NodeLanguageServerProxy implements ILanguageServerProxy {
 					DidChangeConfigurationNotification.type,
 					{
 						settings: null,
-					}
+					},
 				);
-			})
+			}),
 		);
 
 		client.onTelemetry((telemetryEvent) => {
@@ -221,39 +221,39 @@ export class NodeLanguageServerProxy implements ILanguageServerProxy {
 				eventName,
 				telemetryEvent.Measurements,
 				formattedProperties,
-				telemetryEvent.Exception
+				telemetryEvent.Exception,
 			);
 		});
 
 		client.onRequest(
 			InExperiment.Method,
 			async (
-				params: InExperiment.IRequest
+				params: InExperiment.IRequest,
 			): Promise<InExperiment.IResponse> => {
 				const inExperiment = await this.experimentService.inExperiment(
-					params.experimentName
+					params.experimentName,
 				);
 				return { inExperiment };
-			}
+			},
 		);
 
 		client.onRequest(
 			GetExperimentValue.Method,
 			async <T extends boolean | number | string>(
-				params: GetExperimentValue.IRequest
+				params: GetExperimentValue.IRequest,
 			): Promise<GetExperimentValue.IResponse<T>> => {
 				const value =
 					await this.experimentService.getExperimentValue<T>(
-						params.experimentName
+						params.experimentName,
 					);
 				return { value };
-			}
+			},
 		);
 
 		this.disposables.push(
 			client.onRequest("python/isTrustedWorkspace", async () => ({
 				isTrusted: this.workspace.isTrusted,
-			}))
+			})),
 		);
 	}
 

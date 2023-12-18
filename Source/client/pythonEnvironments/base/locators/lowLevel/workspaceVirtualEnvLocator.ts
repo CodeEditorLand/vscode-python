@@ -2,23 +2,23 @@
 // Licensed under the MIT License.
 
 import * as path from "path";
+import "../../../../common/extensions";
+import { asyncFilter } from "../../../../common/utils/arrayUtils";
 import { chain, iterable } from "../../../../common/utils/async";
+import { traceVerbose } from "../../../../logging";
 import {
 	findInterpretersInDir,
 	looksLikeBasicVirtualPython,
 } from "../../../common/commonUtils";
-import { pathExists } from "../../../common/externalDependencies";
 import { isPipenvEnvironment } from "../../../common/environmentManagers/pipenv";
 import {
 	isVenvEnvironment,
 	isVirtualenvEnvironment,
 } from "../../../common/environmentManagers/simplevirtualenvs";
+import { pathExists } from "../../../common/externalDependencies";
 import { PythonEnvKind } from "../../info";
 import { BasicEnvInfo, IPythonEnvsIterator } from "../../locator";
 import { FSWatcherKind, FSWatchingLocator } from "./fsWatchingLocator";
-import "../../../../common/extensions";
-import { asyncFilter } from "../../../../common/utils/arrayUtils";
-import { traceVerbose } from "../../../../logging";
 
 /**
  * Default number of levels of sub-directories to recurse when looking for interpreters.
@@ -39,7 +39,7 @@ function getWorkspaceVirtualEnvDirs(root: string): Promise<string[]> {
  * @param interpreterPath: Absolute path to the interpreter paths.
  */
 async function getVirtualEnvKind(
-	interpreterPath: string
+	interpreterPath: string,
 ): Promise<PythonEnvKind> {
 	if (await isPipenvEnvironment(interpreterPath)) {
 		return PythonEnvKind.Pipenv;
@@ -70,7 +70,7 @@ export class WorkspaceVirtualEnvironmentLocator extends FSWatchingLocator {
 				// executable, so we need to wait before attempting to detect it.
 				delayOnCreated: 1000,
 			},
-			FSWatcherKind.Workspace
+			FSWatcherKind.Workspace,
 		);
 	}
 
@@ -80,12 +80,12 @@ export class WorkspaceVirtualEnvironmentLocator extends FSWatchingLocator {
 			const envGenerators = envRootDirs.map((envRootDir) => {
 				async function* generator() {
 					traceVerbose(
-						`Searching for workspace virtual envs in: ${envRootDir}`
+						`Searching for workspace virtual envs in: ${envRootDir}`,
 					);
 
 					const executables = findInterpretersInDir(
 						envRootDir,
-						DEFAULT_SEARCH_DEPTH
+						DEFAULT_SEARCH_DEPTH,
 					);
 
 					for await (const entry of executables) {
@@ -101,11 +101,11 @@ export class WorkspaceVirtualEnvironmentLocator extends FSWatchingLocator {
 							const kind = await getVirtualEnvKind(filename);
 							yield { kind, executablePath: filename };
 							traceVerbose(
-								`Workspace Virtual Environment: [added] ${filename}`
+								`Workspace Virtual Environment: [added] ${filename}`,
 							);
 						} else {
 							traceVerbose(
-								`Workspace Virtual Environment: [skipped] ${filename}`
+								`Workspace Virtual Environment: [skipped] ${filename}`,
 							);
 						}
 					}

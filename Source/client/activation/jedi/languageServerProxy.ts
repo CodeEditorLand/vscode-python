@@ -1,27 +1,27 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import "../../common/extensions";
 import {
 	Disposable,
 	LanguageClient,
 	LanguageClientOptions,
 } from "vscode-languageclient/node";
+import "../../common/extensions";
 
 import { ChildProcess } from "child_process";
-import { Resource } from "../../common/types";
-import { PythonEnvironment } from "../../pythonEnvironments/info";
-import { captureTelemetry } from "../../telemetry";
-import { EventName } from "../../telemetry/constants";
-import { JediLanguageClientMiddleware } from "./languageClientMiddleware";
-import { ProgressReporting } from "../progress";
-import { ILanguageClientFactory, ILanguageServerProxy } from "../types";
 import { killPid } from "../../common/process/rawProcessApis";
+import { Resource } from "../../common/types";
 import {
 	traceDecoratorError,
 	traceDecoratorVerbose,
 	traceError,
 } from "../../logging";
+import { PythonEnvironment } from "../../pythonEnvironments/info";
+import { captureTelemetry } from "../../telemetry";
+import { EventName } from "../../telemetry/constants";
+import { ProgressReporting } from "../progress";
+import { ILanguageClientFactory, ILanguageServerProxy } from "../types";
+import { JediLanguageClientMiddleware } from "./languageClientMiddleware";
 
 export class JediLanguageServerProxy implements ILanguageServerProxy {
 	private languageClient: LanguageClient | undefined;
@@ -49,12 +49,12 @@ export class JediLanguageServerProxy implements ILanguageServerProxy {
 		undefined,
 		true,
 		undefined,
-		JediLanguageServerProxy.versionTelemetryProps
+		JediLanguageServerProxy.versionTelemetryProps,
 	)
 	public async start(
 		resource: Resource,
 		interpreter: PythonEnvironment | undefined,
-		options: LanguageClientOptions
+		options: LanguageClientOptions,
 	): Promise<void> {
 		this.lsVersion =
 			(options.middleware
@@ -66,7 +66,7 @@ export class JediLanguageServerProxy implements ILanguageServerProxy {
 			const client = await this.factory.createLanguageClient(
 				resource,
 				interpreter,
-				options
+				options,
 			);
 			this.registerHandlers(client);
 			await client.start();
@@ -74,7 +74,7 @@ export class JediLanguageServerProxy implements ILanguageServerProxy {
 		} catch (ex) {
 			traceError("Failed to start language server:", ex);
 			throw new Error(
-				"Launching Jedi language server using python failed, see output."
+				"Launching Jedi language server using python failed, see output.",
 			);
 		}
 	}
@@ -121,7 +121,7 @@ export class JediLanguageServerProxy implements ILanguageServerProxy {
 		undefined,
 		true,
 		undefined,
-		JediLanguageServerProxy.versionTelemetryProps
+		JediLanguageServerProxy.versionTelemetryProps,
 	)
 	private registerHandlers(client: LanguageClient) {
 		const progressReporting = new ProgressReporting(client);

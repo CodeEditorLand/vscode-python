@@ -1,29 +1,29 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+import * as path from "path";
 import { inject, injectable } from "inversify";
+import { IInterpreterService } from "../../interpreter/contracts";
 import { IServiceContainer } from "../../ioc/types";
 import {
 	EnvironmentType,
 	ModuleInstallerType,
 } from "../../pythonEnvironments/info";
+import { sendTelemetryEvent } from "../../telemetry";
+import { EventName } from "../../telemetry/constants";
 import { IWorkspaceService } from "../application/types";
+import { isParentPath } from "../platform/fs-paths";
+import { _SCRIPTS_DIR } from "../process/internal/scripts/constants";
 import { IPythonExecutionFactory } from "../process/types";
 import { ExecutionInfo, IInstaller, Product } from "../types";
 import { isResource } from "../utils/misc";
 import { ModuleInstaller, translateProductToModule } from "./moduleInstaller";
-import { InterpreterUri, ModuleInstallFlags } from "./types";
-import * as path from "path";
-import { _SCRIPTS_DIR } from "../process/internal/scripts/constants";
 import { ProductNames } from "./productNames";
-import { sendTelemetryEvent } from "../../telemetry";
-import { EventName } from "../../telemetry/constants";
-import { IInterpreterService } from "../../interpreter/contracts";
-import { isParentPath } from "../platform/fs-paths";
+import { InterpreterUri, ModuleInstallFlags } from "./types";
 
 async function doesEnvironmentContainPython(
 	serviceContainer: IServiceContainer,
-	resource: InterpreterUri
+	resource: InterpreterUri,
 ) {
 	const interpreterService =
 		serviceContainer.get<IInterpreterService>(IInterpreterService);
@@ -71,7 +71,7 @@ export class PipInstaller extends ModuleInstaller {
 		if (
 			(await doesEnvironmentContainPython(
 				this.serviceContainer,
-				resource
+				resource,
 			)) === false
 		) {
 			return false;
@@ -81,14 +81,14 @@ export class PipInstaller extends ModuleInstaller {
 	protected async getExecutionInfo(
 		moduleName: string,
 		resource?: InterpreterUri,
-		flags: ModuleInstallFlags = 0
+		flags: ModuleInstallFlags = 0,
 	): Promise<ExecutionInfo> {
 		if (moduleName === translateProductToModule(Product.pip)) {
 			const version = isResource(resource)
 				? ""
 				: `${resource.version?.major || ""}.${
 						resource.version?.minor || ""
-					}.${resource.version?.patch || ""}`;
+				  }.${resource.version?.patch || ""}`;
 			const envType = isResource(resource) ? undefined : resource.envType;
 
 			sendTelemetryEvent(EventName.PYTHON_INSTALL_PACKAGE, undefined, {
@@ -119,7 +119,7 @@ export class PipInstaller extends ModuleInstaller {
 			// Return script to install pip.
 			const interpreterService =
 				this.serviceContainer.get<IInterpreterService>(
-					IInterpreterService
+					IInterpreterService,
 				);
 			const interpreter = isResource(resource)
 				? await interpreterService.getActiveInterpreter(resource)
@@ -152,7 +152,7 @@ export class PipInstaller extends ModuleInstaller {
 	private isPipAvailable(info?: InterpreterUri): Promise<boolean> {
 		const pythonExecutionFactory =
 			this.serviceContainer.get<IPythonExecutionFactory>(
-				IPythonExecutionFactory
+				IPythonExecutionFactory,
 			);
 		const resource = isResource(info) ? info : undefined;
 		const pythonPath = isResource(info) ? undefined : info.path;

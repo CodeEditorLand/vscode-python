@@ -18,7 +18,7 @@ type PythonApiForTensorboardExtension = {
 	 * Gets activated env vars for the active Python Environment for the given resource.
 	 */
 	getActivatedEnvironmentVariables(
-		resource: Resource
+		resource: Resource,
 	): Promise<NodeJS.ProcessEnv | undefined>;
 	/**
 	 * Ensures that the dependencies required for TensorBoard are installed in Active Environment for the given resource.
@@ -35,7 +35,7 @@ type TensorboardExtensionApi = {
 	 * Registers python extension specific parts with the tensorboard extension
 	 */
 	registerPythonApi(
-		interpreterService: PythonApiForTensorboardExtension
+		interpreterService: PythonApiForTensorboardExtension,
 	): void;
 };
 
@@ -61,12 +61,12 @@ export class TensorboardExtensionIntegration {
 	}
 
 	public registerApi(
-		tensorboardExtensionApi: TensorboardExtensionApi
+		tensorboardExtensionApi: TensorboardExtensionApi,
 	): TensorboardExtensionApi | undefined {
 		this.hideCommands();
 		if (!this.workspaceService.isTrusted) {
 			this.workspaceService.onDidGrantWorkspaceTrust(() =>
-				this.registerApi(tensorboardExtensionApi)
+				this.registerApi(tensorboardExtensionApi),
 			);
 			return undefined;
 		}
@@ -75,10 +75,10 @@ export class TensorboardExtensionIntegration {
 				this.envActivation.getActivatedEnvironmentVariables(
 					resource,
 					undefined,
-					true
+					true,
 				),
 			ensureDependenciesAreInstalled: async (
-				resource?: Uri
+				resource?: Uri,
 			): Promise<boolean> =>
 				this.dependencyChcker.ensureDependenciesAreInstalled(resource),
 			isPromptEnabled: () => this.tensorBoardPrompt.isPromptEnabled(),
@@ -91,7 +91,7 @@ export class TensorboardExtensionIntegration {
 			void commands.executeCommand(
 				"setContext",
 				"python.tensorboardExtInstalled",
-				true
+				true,
 			);
 		}
 	}
@@ -106,10 +106,12 @@ export class TensorboardExtensionIntegration {
 	private async getExtensionApi(): Promise<
 		TensorboardExtensionApi | undefined
 	> {
-		if (!this.tensorboardExtension) {
+		if (this.tensorboardExtension) {
+			return this.tensorboardExtension.exports;
+		} else {
 			const extension =
 				this.extensions.getExtension<TensorboardExtensionApi>(
-					TENSORBOARD_EXTENSION_ID
+					TENSORBOARD_EXTENSION_ID,
 				);
 			if (!extension) {
 				return undefined;
@@ -119,8 +121,6 @@ export class TensorboardExtensionIntegration {
 				this.tensorboardExtension = extension;
 				return this.tensorboardExtension.exports;
 			}
-		} else {
-			return this.tensorboardExtension.exports;
 		}
 		return undefined;
 	}

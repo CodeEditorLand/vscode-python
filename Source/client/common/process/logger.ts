@@ -1,17 +1,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable } from "inversify";
+import { escapeRegExp } from "lodash";
 import { traceLog } from "../../logging";
 import { IWorkspaceService } from "../application/types";
 import { isCI, isTestExecution } from "../constants";
-import { getOSType, getUserHomeDir, OSType } from "../utils/platform";
-import { IProcessLogger, SpawnOptions } from "./types";
-import { escapeRegExp } from "lodash";
 import { replaceAll } from "../stringUtils";
 import { identifyShellFromShellPath } from "../terminal/shellDetectors/baseShellDetector";
+import { OSType, getOSType, getUserHomeDir } from "../utils/platform";
+import { IProcessLogger, SpawnOptions } from "./types";
 
 @injectable()
 export class ProcessLogger implements IProcessLogger {
@@ -23,7 +21,7 @@ export class ProcessLogger implements IProcessLogger {
 	public logProcess(
 		fileOrCommand: string,
 		args?: string[],
-		options?: SpawnOptions
+		options?: SpawnOptions,
 	) {
 		if (
 			!isTestExecution() &&
@@ -34,7 +32,7 @@ export class ProcessLogger implements IProcessLogger {
 			// Used only during UI Tests (hence this setting need not be exposed as a valid setting).
 			return;
 		}
-		let command = args
+		const command = args
 			? [fileOrCommand, ...args]
 					.map((e) => e.trimQuotes().toCommandArgumentForPythonExt())
 					.join(" ")
@@ -64,7 +62,7 @@ export class ProcessLogger implements IProcessLogger {
 			command = replaceMatchesWithCharacter(
 				command,
 				this.workspaceService.workspaceFolders[0].uri.fsPath,
-				"."
+				".",
 			);
 		}
 		const home = getUserHomeDir();
@@ -81,7 +79,7 @@ export class ProcessLogger implements IProcessLogger {
 function replaceMatchesWithCharacter(
 	original: string,
 	match: string,
-	character: string
+	character: string,
 ): string {
 	// Backslashes, plus signs, brackets and other characters have special meaning in regexes,
 	// we need to escape using an extra backlash so it's not considered special.
@@ -91,7 +89,7 @@ function replaceMatchesWithCharacter(
 			// Match both forward and backward slash versions of 'match' for Windows.
 			pattern = replaceAll(pattern, "\\\\", "(\\\\|/)");
 		}
-		let regex = new RegExp(pattern, "ig");
+		const regex = new RegExp(pattern, "ig");
 		return regex;
 	}
 
@@ -99,7 +97,7 @@ function replaceMatchesWithCharacter(
 		return chunk[index].match(/[a-z]/);
 	}
 
-	let chunked = original.split(" ");
+	const chunked = original.split(" ");
 
 	for (let i = 0; i < chunked.length; i++) {
 		let regex = getRegex(match);

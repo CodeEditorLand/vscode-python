@@ -1,15 +1,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import * as fsapi from "fs-extra";
 import * as path from "path";
+import * as fsapi from "fs-extra";
 import "../../../common/extensions";
 import { splitLines } from "../../../common/stringUtils";
 import {
+	OSType,
 	getEnvironmentVariable,
 	getOSType,
 	getUserHomeDir,
-	OSType,
 } from "../../../common/utils/platform";
 import { PythonVersion, UNKNOWN_PYTHON_VERSION } from "../../base/info";
 import { comparePythonVersionSpecificity } from "../../base/info/env";
@@ -30,7 +30,7 @@ function getPyvenvConfigPathsFrom(interpreterPath: string): string[] {
 	//     |__ python  <--- interpreterPath
 	const venvPath1 = path.join(
 		path.dirname(path.dirname(interpreterPath)),
-		pyvenvConfigFile
+		pyvenvConfigFile,
 	);
 
 	// Check if the pyvenv.cfg file is in the directory as the interpreter.
@@ -39,7 +39,7 @@ function getPyvenvConfigPathsFrom(interpreterPath: string): string[] {
 	// |__ python  <--- interpreterPath
 	const venvPath2 = path.join(
 		path.dirname(interpreterPath),
-		pyvenvConfigFile
+		pyvenvConfigFile,
 	);
 
 	// The paths are ordered in the most common to least common
@@ -52,7 +52,7 @@ function getPyvenvConfigPathsFrom(interpreterPath: string): string[] {
  * @returns {boolean} : Returns true if the interpreter belongs to a venv environment.
  */
 export async function isVirtualEnvironment(
-	interpreterPath: string
+	interpreterPath: string,
 ): Promise<boolean> {
 	return isVenvEnvironment(interpreterPath);
 }
@@ -63,7 +63,7 @@ export async function isVirtualEnvironment(
  * @returns {boolean} : Returns true if the interpreter belongs to a venv environment.
  */
 export async function isVenvEnvironment(
-	interpreterPath: string
+	interpreterPath: string,
 ): Promise<boolean> {
 	const venvPaths = getPyvenvConfigPathsFrom(interpreterPath);
 
@@ -82,7 +82,7 @@ export async function isVenvEnvironment(
  * @returns {boolean} : Returns true if the interpreter belongs to a virtualenv environment.
  */
 export async function isVirtualenvEnvironment(
-	interpreterPath: string
+	interpreterPath: string,
 ): Promise<boolean> {
 	// Check if there are any activate.* files in the same directory as the interpreter.
 	//
@@ -129,7 +129,7 @@ function getWorkOnHome(): Promise<string> {
  * @returns {boolean}: Returns true if the interpreter belongs to a virtualenvWrapper environment.
  */
 export async function isVirtualenvwrapperEnvironment(
-	interpreterPath: string
+	interpreterPath: string,
 ): Promise<boolean> {
 	const workOnHomeDir = await getWorkOnHome();
 
@@ -152,7 +152,7 @@ export async function isVirtualenvwrapperEnvironment(
  * version string from that lines and parses it.
  */
 export async function getPythonVersionFromPyvenvCfg(
-	interpreterPath: string
+	interpreterPath: string,
 ): Promise<PythonVersion> {
 	const configPaths = getPyvenvConfigPathsFrom(interpreterPath);
 	let version = UNKNOWN_PYTHON_VERSION;

@@ -1,14 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { Position, Range, TextDocument } from "vscode";
 import { isNumber } from "./sysTypes";
 
 export function getWindowsLineEndingCount(
 	document: TextDocument,
-	offset: number
+	offset: number,
 ): number {
 	// const eolPattern = new RegExp('\r\n', 'g');
 	const eolPattern = /\r\n/g;

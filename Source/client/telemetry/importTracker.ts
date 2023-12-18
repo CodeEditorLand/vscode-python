@@ -1,11 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
-import { inject, injectable } from "inversify";
 import * as path from "path";
 import { clearTimeout, setTimeout } from "timers";
+import { inject, injectable } from "inversify";
 import { TextDocument } from "vscode";
 import { sendTelemetryEvent } from ".";
 import { IExtensionSingleActivationService } from "../activation/types";
@@ -83,7 +81,7 @@ export class ImportTracker implements IExtensionSingleActivationService {
 	public async activate(): Promise<void> {
 		// Act like all of our open documents just opened; our timeout will make sure this is delayed.
 		this.documentManager.textDocuments.forEach((d) =>
-			this.onOpenedOrSavedDocument(d)
+			this.onOpenedOrSavedDocument(d),
 		);
 	}
 
@@ -101,7 +99,7 @@ export class ImportTracker implements IExtensionSingleActivationService {
 	private scheduleDocument(document: TextDocument) {
 		this.scheduleCheck(
 			document.fileName,
-			this.checkDocument.bind(this, document)
+			this.checkDocument.bind(this, document),
 		);
 	}
 
@@ -162,7 +160,7 @@ export class ImportTracker implements IExtensionSingleActivationService {
 				}
 				if (s && TorchProfilerImportRegEx.test(s)) {
 					sendTelemetryEvent(
-						EventName.TENSORBOARD_TORCH_PROFILER_IMPORT
+						EventName.TENSORBOARD_TORCH_PROFILER_IMPORT,
 					);
 				}
 			}
@@ -174,10 +172,10 @@ export class ImportTracker implements IExtensionSingleActivationService {
 }
 
 export function getDocumentLines(
-	document: TextDocument
+	document: TextDocument,
 ): (string | undefined)[] {
 	const array = Array<string>(
-		Math.min(document.lineCount, MAX_DOCUMENT_LINES)
+		Math.min(document.lineCount, MAX_DOCUMENT_LINES),
 	).fill("");
 	return array
 		.map((_a: string, i: number) => {

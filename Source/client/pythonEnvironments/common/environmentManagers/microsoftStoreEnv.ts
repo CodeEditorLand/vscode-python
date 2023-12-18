@@ -25,7 +25,7 @@ function isForbiddenStorePath(absPath: string): boolean {
 	const programFilesStorePath = path
 		.join(
 			getEnvironmentVariable("ProgramFiles") || "Program Files",
-			"WindowsApps"
+			"WindowsApps",
 		)
 		.normalize()
 		.toUpperCase();
@@ -63,7 +63,7 @@ export function isMicrosoftStoreDir(dirPath: string): boolean {
  * found in the store apps directory is a real python or a store install shortcut.
  */
 export async function isStorePythonInstalled(
-	interpreterPath?: string
+	interpreterPath?: string,
 ): Promise<boolean> {
 	let results = await Promise.all([
 		pathExists(path.join(getMicrosoftStoreAppsRoot(), "idle.exe")),
@@ -117,7 +117,7 @@ export async function isStorePythonInstalled(
  */
 
 export async function isMicrosoftStoreEnvironment(
-	interpreterPath: string
+	interpreterPath: string,
 ): Promise<boolean> {
 	if (await isStorePythonInstalled(interpreterPath)) {
 		const pythonPathToCompare = path
@@ -134,7 +134,7 @@ export async function isMicrosoftStoreEnvironment(
 		// We should never have to look at this path or even execute python from this path.
 		if (isForbiddenStorePath(pythonPathToCompare)) {
 			traceWarn(
-				"isMicrosoftStoreEnvironment called with Program Files store path."
+				"isMicrosoftStoreEnvironment called with Program Files store path.",
 			);
 			return true;
 		}

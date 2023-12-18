@@ -4,46 +4,46 @@
 import { inject, injectable } from "inversify";
 import {
 	Position,
+	ProgressLocation,
+	Range,
+	Selection,
+	Terminal,
+	TextEditorRevealType,
 	Uri,
 	WorkspaceEdit,
-	Range,
-	TextEditorRevealType,
-	ProgressLocation,
-	Terminal,
-	Selection,
 } from "vscode";
+import { IExtensionSingleActivationService } from "../../activation/types";
+import { ProgressService } from "../../common/application/progressService";
 import {
 	IApplicationEnvironment,
 	IApplicationShell,
 	IDocumentManager,
 	ITerminalManager,
 } from "../../common/application/types";
-import {
-	IDisposableRegistry,
-	IExperimentService,
-	IPersistentStateFactory,
-} from "../../common/types";
-import { Common, Interpreters } from "../../common/utils/localize";
-import { IExtensionSingleActivationService } from "../../activation/types";
-import { inTerminalEnvVarExperiment } from "../../common/experiments/helpers";
-import { IInterpreterService } from "../../interpreter/contracts";
-import { PythonEnvType } from "../../pythonEnvironments/base/info";
-import { identifyShellFromShellPath } from "../../common/terminal/shellDetectors/baseShellDetector";
-import { TerminalShellType } from "../../common/terminal/types";
-import { traceError } from "../../logging";
-import { shellExec } from "../../common/process/rawProcessApis";
-import { sleep } from "../../common/utils/async";
-import { getDeactivateShellInfo } from "./deactivateScripts";
 import { isTestExecution } from "../../common/constants";
-import { ProgressService } from "../../common/application/progressService";
+import { inTerminalEnvVarExperiment } from "../../common/experiments/helpers";
 import {
 	copyFile,
 	createFile,
 	pathExists,
 } from "../../common/platform/fs-paths";
-import { getOSType, OSType } from "../../common/utils/platform";
+import { shellExec } from "../../common/process/rawProcessApis";
+import { identifyShellFromShellPath } from "../../common/terminal/shellDetectors/baseShellDetector";
+import { TerminalShellType } from "../../common/terminal/types";
+import {
+	IDisposableRegistry,
+	IExperimentService,
+	IPersistentStateFactory,
+} from "../../common/types";
+import { sleep } from "../../common/utils/async";
+import { Common, Interpreters } from "../../common/utils/localize";
+import { OSType, getOSType } from "../../common/utils/platform";
+import { IInterpreterService } from "../../interpreter/contracts";
+import { traceError } from "../../logging";
+import { PythonEnvType } from "../../pythonEnvironments/base/info";
 import { sendTelemetryEvent } from "../../telemetry";
 import { EventName } from "../../telemetry/constants";
+import { getDeactivateShellInfo } from "./deactivateScripts";
 
 export const terminalDeactivationPromptKey = "TERMINAL_DEACTIVATION_PROMPT_KEY";
 @injectable()
@@ -93,7 +93,7 @@ export class TerminalDeactivateLimitationPrompt
 					return;
 				}
 				let shellType = identifyShellFromShellPath(
-					this.appEnvironment.shell
+					this.appEnvironment.shell,
 				);
 				if (shellType === TerminalShellType.commandPrompt) {
 					return;
@@ -118,26 +118,26 @@ export class TerminalDeactivateLimitationPrompt
 				const resource = typeof cwd === "string" ? Uri.file(cwd) : cwd;
 				const interpreter =
 					await this.interpreterService.getActiveInterpreter(
-						resource
+						resource,
 					);
 				if (interpreter?.type !== PythonEnvType.Virtual) {
 					return;
 				}
 				await this._notifyUsers(shellType, terminal).catch((ex) =>
-					traceError("Deactivate prompt failed", ex)
+					traceError("Deactivate prompt failed", ex),
 				);
-			})
+			}),
 		);
 	}
 
 	public async _notifyUsers(
 		shellType: TerminalShellType,
-		terminal: Terminal
+		terminal: Terminal,
 	): Promise<void> {
 		const notificationPromptEnabled =
 			this.persistentStateFactory.createGlobalPersistentState(
 				`${terminalDeactivationPromptKey}-${shellType}`,
-				true
+				true,
 			);
 		if (!notificationPromptEnabled.value) {
 			const processId = await terminal.processId;
@@ -163,9 +163,9 @@ export class TerminalDeactivateLimitationPrompt
 		];
 		const selection = await this.appShell.showWarningMessage(
 			Interpreters.terminalDeactivatePrompt.format(
-				initScript.displayName
+				initScript.displayName,
 			),
-			...prompts
+			...prompts,
 		);
 		let index = selection ? prompts.indexOf(selection) : 0;
 		if (selection === prompts[0]) {
@@ -181,13 +181,13 @@ export class TerminalDeactivateLimitationPrompt
 			this.progressService.showProgress({
 				location: ProgressLocation.Window,
 				title: Interpreters.terminalDeactivateProgress.format(
-					initScript.displayName
+					initScript.displayName,
 				),
 			});
 			await copyFile(source, destination);
 			await this.openScriptWithEdits(
 				initScript.command,
-				initScript.contents
+				initScript.contents,
 			);
 			await notificationPromptEnabled.updateValue(false);
 			this.progressService.hideProgress();
@@ -211,9 +211,9 @@ ${content}
 			editor.revealRange(
 				new Range(
 					new Position(document.lineCount - 3, 0),
-					new Position(document.lineCount, 0)
+					new Position(document.lineCount, 0),
 				),
-				TextEditorRevealType.AtTop
+				TextEditorRevealType.AtTop,
 			);
 			return;
 		}
@@ -221,20 +221,20 @@ ${content}
 		editorEdit.insert(
 			document.uri,
 			new Position(document.lineCount, 0),
-			content
+			content,
 		);
 		await this.documentManager.applyEdit(editorEdit);
 		// Reveal the edits.
 		editor.selection = new Selection(
 			new Position(document.lineCount - 3, 0),
-			new Position(document.lineCount, 0)
+			new Position(document.lineCount, 0),
 		);
 		editor.revealRange(
 			new Range(
 				new Position(document.lineCount - 3, 0),
-				new Position(document.lineCount, 0)
+				new Position(document.lineCount, 0),
 			),
-			TextEditorRevealType.AtTop
+			TextEditorRevealType.AtTop,
 		);
 	}
 
@@ -250,7 +250,7 @@ ${content}
 
 	private async getPathToScript(command: string) {
 		return shellExec(command, { shell: this.appEnvironment.shell }).then(
-			(output) => output.stdout.trim()
+			(output) => output.stdout.trim(),
 		);
 	}
 

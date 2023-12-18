@@ -1,10 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
-import { inject, injectable } from "inversify";
 import * as path from "path";
+import { inject, injectable } from "inversify";
 import { Uri } from "vscode";
 import { IServiceContainer } from "../../ioc/types";
 import { ITestingService } from "../../testing/types";
@@ -25,7 +23,7 @@ export abstract class BaseProductPathsService implements IProductPathService {
 	}
 	public abstract getExecutableNameFromSettings(
 		product: Product,
-		resource?: Uri
+		resource?: Uri,
 	): string;
 	public isExecutableAModule(product: Product, resource?: Uri): boolean {
 		let moduleName: string | undefined;
@@ -37,7 +35,7 @@ export abstract class BaseProductPathsService implements IProductPathService {
 		// User may have customized the module name or provided the fully qualifieid path.
 		const executableName = this.getExecutableNameFromSettings(
 			product,
-			resource
+			resource,
 		);
 
 		return (
@@ -57,7 +55,7 @@ export class TestFrameworkProductPathService extends BaseProductPathsService {
 	}
 	public getExecutableNameFromSettings(
 		product: Product,
-		resource?: Uri
+		resource?: Uri,
 	): string {
 		const testHelper =
 			this.serviceContainer.get<ITestingService>(ITestingService);

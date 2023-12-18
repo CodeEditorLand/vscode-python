@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable } from "inversify";
 import { Disposable } from "vscode";
 import {
@@ -26,7 +24,7 @@ export class ReplProvider extends TerminalCodeExecutionProvider {
 		@inject(IDisposableRegistry) disposableRegistry: Disposable[],
 		@inject(IPlatformService) platformService: IPlatformService,
 		@inject(IInterpreterService) interpreterService: IInterpreterService,
-		@inject(ICommandManager) commandManager: ICommandManager
+		@inject(ICommandManager) commandManager: ICommandManager,
 	) {
 		super(
 			terminalServiceFactory,
@@ -35,7 +33,7 @@ export class ReplProvider extends TerminalCodeExecutionProvider {
 			disposableRegistry,
 			platformService,
 			interpreterService,
-			commandManager
+			commandManager,
 		);
 		this.terminalTitle = "REPL";
 	}

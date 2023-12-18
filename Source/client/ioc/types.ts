@@ -25,53 +25,53 @@ export interface IServiceManager extends IDisposable {
 		serviceIdentifier: interfaces.ServiceIdentifier<T>,
 		constructor: ClassType<T>,
 		name?: string | number | symbol | undefined,
-		bindings?: symbol[]
+		bindings?: symbol[],
 	): void;
 	addSingleton<T>(
 		serviceIdentifier: interfaces.ServiceIdentifier<T>,
 		constructor: ClassType<T>,
 		name?: string | number | symbol,
-		bindings?: symbol[]
+		bindings?: symbol[],
 	): void;
 	addSingletonInstance<T>(
 		serviceIdentifier: interfaces.ServiceIdentifier<T>,
 		instance: T,
-		name?: string | number | symbol
+		name?: string | number | symbol,
 	): void;
 	addFactory<T>(
 		factoryIdentifier: interfaces.ServiceIdentifier<interfaces.Factory<T>>,
-		factoryMethod: interfaces.FactoryCreator<T>
+		factoryMethod: interfaces.FactoryCreator<T>,
 	): void;
 	addBinding<T1, T2>(
 		from: interfaces.ServiceIdentifier<T1>,
-		to: interfaces.ServiceIdentifier<T2>
+		to: interfaces.ServiceIdentifier<T2>,
 	): void;
 	get<T>(
 		serviceIdentifier: interfaces.ServiceIdentifier<T>,
-		name?: string | number | symbol
+		name?: string | number | symbol,
 	): T;
 	tryGet<T>(
 		serviceIdentifier: interfaces.ServiceIdentifier<T>,
-		name?: string | number | symbol
+		name?: string | number | symbol,
 	): T | undefined;
 	getAll<T>(
 		serviceIdentifier: interfaces.ServiceIdentifier<T>,
-		name?: string | number | symbol
+		name?: string | number | symbol,
 	): T[];
 	rebind<T>(
 		serviceIdentifier: interfaces.ServiceIdentifier<T>,
 		constructor: ClassType<T>,
-		name?: string | number | symbol
+		name?: string | number | symbol,
 	): void;
 	rebindSingleton<T>(
 		serviceIdentifier: interfaces.ServiceIdentifier<T>,
 		constructor: ClassType<T>,
-		name?: string | number | symbol
+		name?: string | number | symbol,
 	): void;
 	rebindInstance<T>(
 		serviceIdentifier: interfaces.ServiceIdentifier<T>,
 		instance: T,
-		name?: string | number | symbol
+		name?: string | number | symbol,
 	): void;
 }
 
@@ -79,14 +79,14 @@ export const IServiceContainer = Symbol("IServiceContainer");
 export interface IServiceContainer {
 	get<T>(
 		serviceIdentifier: interfaces.ServiceIdentifier<T>,
-		name?: string | number | symbol
+		name?: string | number | symbol,
 	): T;
 	getAll<T>(
 		serviceIdentifier: interfaces.ServiceIdentifier<T>,
-		name?: string | number | symbol
+		name?: string | number | symbol,
 	): T[];
 	tryGet<T>(
 		serviceIdentifier: interfaces.ServiceIdentifier<T>,
-		name?: string | number | symbol
+		name?: string | number | symbol,
 	): T | undefined;
 }

@@ -1,32 +1,32 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { uniq } from "lodash";
 import * as path from "path";
+import { uniq } from "lodash";
+import "../../../../common/extensions";
+import { asyncFilter } from "../../../../common/utils/arrayUtils";
 import { chain, iterable } from "../../../../common/utils/async";
 import { getUserHomeDir } from "../../../../common/utils/platform";
-import { PythonEnvKind } from "../../info";
-import { BasicEnvInfo, IPythonEnvsIterator } from "../../locator";
-import { FSWatchingLocator } from "./fsWatchingLocator";
+import { traceError, traceVerbose } from "../../../../logging";
 import {
 	findInterpretersInDir,
 	looksLikeBasicVirtualPython,
 } from "../../../common/commonUtils";
-import {
-	getPythonSetting,
-	onDidChangePythonSetting,
-	pathExists,
-	untildify,
-} from "../../../common/externalDependencies";
 import { isPipenvEnvironment } from "../../../common/environmentManagers/pipenv";
 import {
 	isVenvEnvironment,
 	isVirtualenvEnvironment,
 	isVirtualenvwrapperEnvironment,
 } from "../../../common/environmentManagers/simplevirtualenvs";
-import "../../../../common/extensions";
-import { asyncFilter } from "../../../../common/utils/arrayUtils";
-import { traceError, traceVerbose } from "../../../../logging";
+import {
+	getPythonSetting,
+	onDidChangePythonSetting,
+	pathExists,
+	untildify,
+} from "../../../common/externalDependencies";
+import { PythonEnvKind } from "../../info";
+import { BasicEnvInfo, IPythonEnvsIterator } from "../../locator";
+import { FSWatchingLocator } from "./fsWatchingLocator";
 /**
  * Default number of levels of sub-directories to recurse when looking for interpreters.
  */
@@ -62,7 +62,7 @@ async function getCustomVirtualEnvDirs(): Promise<string[]> {
  * @param interpreterPath: Absolute path to the interpreter paths.
  */
 async function getVirtualEnvKind(
-	interpreterPath: string
+	interpreterPath: string,
 ): Promise<PythonEnvKind> {
 	if (await isPipenvEnvironment(interpreterPath)) {
 		return PythonEnvKind.Pipenv;
@@ -101,10 +101,12 @@ export class CustomVirtualEnvironmentLocator extends FSWatchingLocator {
 
 	protected async initResources(): Promise<void> {
 		this.disposables.push(
-			onDidChangePythonSetting(VENVPATH_SETTING_KEY, () => this.fire())
+			onDidChangePythonSetting(VENVPATH_SETTING_KEY, () => this.fire()),
 		);
 		this.disposables.push(
-			onDidChangePythonSetting(VENVFOLDERS_SETTING_KEY, () => this.fire())
+			onDidChangePythonSetting(VENVFOLDERS_SETTING_KEY, () =>
+				this.fire(),
+			),
 		);
 	}
 
@@ -115,12 +117,12 @@ export class CustomVirtualEnvironmentLocator extends FSWatchingLocator {
 			const envGenerators = envRootDirs.map((envRootDir) => {
 				async function* generator() {
 					traceVerbose(
-						`Searching for custom virtual envs in: ${envRootDir}`
+						`Searching for custom virtual envs in: ${envRootDir}`,
 					);
 
 					const executables = findInterpretersInDir(
 						envRootDir,
-						DEFAULT_SEARCH_DEPTH
+						DEFAULT_SEARCH_DEPTH,
 					);
 
 					for await (const entry of executables) {
@@ -137,17 +139,17 @@ export class CustomVirtualEnvironmentLocator extends FSWatchingLocator {
 								const kind = await getVirtualEnvKind(filename);
 								yield { kind, executablePath: filename };
 								traceVerbose(
-									`Custom Virtual Environment: [added] ${filename}`
+									`Custom Virtual Environment: [added] ${filename}`,
 								);
 							} catch (ex) {
 								traceError(
 									`Failed to process environment: ${filename}`,
-									ex
+									ex,
 								);
 							}
 						} else {
 							traceVerbose(
-								`Custom Virtual Environment: [skipped] ${filename}`
+								`Custom Virtual Environment: [skipped] ${filename}`,
 							);
 						}
 					}

@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { inject, injectable } from "inversify";
 import * as path from "path";
+import { inject, injectable } from "inversify";
 import {
 	CancellationToken,
 	Disposable,
@@ -18,7 +18,6 @@ import { EventName } from "../../telemetry/constants";
 import { ITerminalAutoActivation } from "../../terminals/types";
 import { ITerminalManager } from "../application/types";
 import { EXTENSION_ROOT_DIR } from "../constants";
-import { _SCRIPTS_DIR } from "../process/internal/scripts/constants";
 import { IConfigurationService, IDisposableRegistry } from "../types";
 import {
 	ITerminalActivator,
@@ -40,7 +39,7 @@ export class TerminalService implements ITerminalService, Disposable {
 	private readonly envVarScript = path.join(
 		EXTENSION_ROOT_DIR,
 		"pythonFiles",
-		"pythonrc.py"
+		"pythonrc.py",
 	);
 	public get onDidCloseTerminal(): Event<void> {
 		return this.terminalClosed.event.bind(this.terminalClosed);
@@ -76,13 +75,13 @@ export class TerminalService implements ITerminalService, Disposable {
 	public async sendCommand(
 		command: string,
 		args: string[],
-		_?: CancellationToken
+		_?: CancellationToken,
 	): Promise<void> {
 		await this.ensureTerminal();
 		const text = this.terminalHelper.buildCommandForTerminal(
 			this.terminalShellType,
 			command,
-			args
+			args,
 		);
 		if (!this.options?.hideFromUser) {
 			this.terminal!.show(true);
@@ -96,18 +95,18 @@ export class TerminalService implements ITerminalService, Disposable {
 		}
 		this.terminal!.sendText(text);
 	}
-	public async show(preserveFocus: boolean = true): Promise<void> {
+	public async show(preserveFocus = true): Promise<void> {
 		await this.ensureTerminal(preserveFocus);
 		if (!this.options?.hideFromUser) {
 			this.terminal!.show(preserveFocus);
 		}
 	}
-	public async ensureTerminal(preserveFocus: boolean = true): Promise<void> {
+	public async ensureTerminal(preserveFocus = true): Promise<void> {
 		if (this.terminal) {
 			return;
 		}
 		this.terminalShellType = this.terminalHelper.identifyTerminalShell(
-			this.terminal
+			this.terminal,
 		);
 		this.terminal = this.terminalManager.createTerminal({
 			name: this.options?.title || "Python",
@@ -126,7 +125,7 @@ export class TerminalService implements ITerminalService, Disposable {
 				preserveFocus,
 				interpreter: this.options?.interpreter,
 				hideFromUser: this.options?.hideFromUser,
-			}
+			},
 		);
 
 		if (!this.options?.hideFromUser) {

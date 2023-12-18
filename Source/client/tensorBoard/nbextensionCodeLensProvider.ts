@@ -8,10 +8,10 @@ import {
 	CodeLens,
 	Command,
 	Disposable,
-	languages,
 	Position,
 	Range,
 	TextDocument,
+	languages,
 } from "vscode";
 import { IExtensionSingleActivationService } from "../activation/types";
 import {
@@ -49,8 +49,8 @@ export class TensorBoardNbextensionCodeLensProvider
 			{
 				trigger: TensorBoardEntrypointTrigger.nbextension,
 				entrypoint: TensorBoardEntrypoint.codelens,
-			}
-		)
+			},
+		),
 	);
 
 	constructor(
@@ -80,14 +80,14 @@ export class TensorBoardNbextensionCodeLensProvider
 					{ scheme: NotebookCellScheme, language: PYTHON_LANGUAGE },
 					{ scheme: "vscode-notebook", language: PYTHON_LANGUAGE },
 				],
-				this
-			)
+				this,
+			),
 		);
 	}
 
 	public provideCodeLenses(
 		document: TextDocument,
-		cancelToken: CancellationToken
+		cancelToken: CancellationToken,
 	): CodeLens[] {
 		const command: Command = {
 			title: TensorBoard.launchNativeTensorBoardSessionCodeLens,
@@ -108,7 +108,7 @@ export class TensorBoardNbextensionCodeLensProvider
 			if (containsNotebookExtension([line.text])) {
 				const range = new Range(
 					new Position(line.lineNumber, 0),
-					new Position(line.lineNumber, 1)
+					new Position(line.lineNumber, 1),
 				);
 				codelenses.push(new CodeLens(range, command));
 				this.sendTelemetryOnce();

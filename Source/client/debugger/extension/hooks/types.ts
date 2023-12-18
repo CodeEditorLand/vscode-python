@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import {
 	DebugConfiguration,
 	DebugSession,
@@ -20,6 +18,6 @@ export const IChildProcessAttachService = Symbol("IChildProcessAttachService");
 export interface IChildProcessAttachService {
 	attach(
 		data: AttachRequestArguments & DebugConfiguration,
-		parentSession: DebugSession
+		parentSession: DebugSession,
 	): Promise<void>;
 }

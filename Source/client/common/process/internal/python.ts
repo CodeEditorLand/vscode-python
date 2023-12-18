@@ -14,7 +14,7 @@
 // string as the stdout text and returns the relevant data.
 
 export function execCode(code: string): string[] {
-	let args = ["-c", code];
+	const args = ["-c", code];
 	// "code" isn't specific enough to know how to parse it,
 	// so we only return the args.
 	return args;
@@ -74,7 +74,7 @@ export function isValid(): [string[], (out: string) => boolean] {
 }
 
 export function isModuleInstalled(
-	name: string
+	name: string,
 ): [string[], (out: string) => boolean] {
 	const args = ["-c", `import ${name}`];
 
@@ -87,7 +87,7 @@ export function isModuleInstalled(
 }
 
 export function getModuleVersion(
-	name: string
+	name: string,
 ): [string[], (out: string) => string] {
 	const args = ["-c", `import ${name}; print(${name}.__version__)`];
 

@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 import { inject, injectable } from "inversify";
-import { Disposable, l10n, ViewColumn } from "vscode";
+import { Disposable, ViewColumn, l10n } from "vscode";
 import { IExtensionSingleActivationService } from "../activation/types";
 import {
 	IApplicationShell,
@@ -13,12 +13,12 @@ import { Commands } from "../common/constants";
 import { ContextKey } from "../common/contextKey";
 import { IPythonExecutionFactory } from "../common/process/types";
 import {
+	IConfigurationService,
+	IDisposable,
 	IDisposableRegistry,
 	IInstaller,
 	IPersistentState,
 	IPersistentStateFactory,
-	IConfigurationService,
-	IDisposable,
 } from "../common/types";
 import { IMultiStepInputFactory } from "../common/utils/multiStepInput";
 import { IInterpreterService } from "../interpreter/contracts";
@@ -100,7 +100,7 @@ export class TensorBoardSessionProvider
 				Commands.LaunchTensorBoard,
 				(
 					entrypoint: TensorBoardEntrypoint = TensorBoardEntrypoint.palette,
-					trigger: TensorBoardEntrypointTrigger = TensorBoardEntrypointTrigger.palette
+					trigger: TensorBoardEntrypointTrigger = TensorBoardEntrypointTrigger.palette,
 				): void => {
 					sendTelemetryEvent(
 						EventName.TENSORBOARD_SESSION_LAUNCH,
@@ -108,7 +108,7 @@ export class TensorBoardSessionProvider
 						{
 							trigger,
 							entrypoint,
-						}
+						},
 					);
 					if (
 						this.experiment.recommendAndUseNewExtension() ===
@@ -116,7 +116,7 @@ export class TensorBoardSessionProvider
 					) {
 						void this.createNewSession();
 					}
-				}
+				},
 			),
 			this.commandManager.registerCommand(
 				Commands.RefreshTensorBoard,
@@ -124,8 +124,8 @@ export class TensorBoardSessionProvider
 					this.experiment.recommendAndUseNewExtension() ===
 					"continueWithPythonExtension"
 						? this.knownSessions.map((w) => w.refresh())
-						: undefined
-			)
+						: undefined,
+			),
 		);
 	}
 
@@ -137,7 +137,7 @@ export class TensorBoardSessionProvider
 			}
 		});
 		await this.hasActiveTensorBoardSessionContext.set(
-			hasActiveTensorBoardSession
+			hasActiveTensorBoardSession,
 		);
 	}
 
@@ -159,30 +159,30 @@ export class TensorBoardSessionProvider
 				this.applicationShell,
 				this.preferredViewGroupMemento,
 				this.multiStepFactory,
-				this.configurationService
+				this.configurationService,
 			);
 			newSession.onDidChangeViewState(
 				() => this.updateTensorBoardSessionContext(),
 				this,
-				this.disposables
+				this.disposables,
 			);
 			newSession.onDidDispose(
 				(e) => this.didDisposeSession(e),
 				this,
-				this.disposables
+				this.disposables,
 			);
 			this.knownSessions.push(newSession);
 			await newSession.initialize();
 			return newSession;
 		} catch (e) {
 			traceError(
-				`Encountered error while starting new TensorBoard session: ${e}`
+				`Encountered error while starting new TensorBoard session: ${e}`,
 			);
 			await this.applicationShell.showErrorMessage(
 				l10n.t(
 					"We failed to start a TensorBoard session due to the following error: {0}",
-					(e as Error).message
-				)
+					(e as Error).message,
+				),
 			);
 		}
 		return undefined;

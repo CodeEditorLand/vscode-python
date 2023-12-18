@@ -16,7 +16,7 @@ export class ContextKeyManager implements IContextKeyManager {
 
 	public async setContext(
 		key: ExtensionContextKey,
-		value: boolean
+		value: boolean,
 	): Promise<void> {
 		if (this.values.get(key) === value) {
 			return Promise.resolve();

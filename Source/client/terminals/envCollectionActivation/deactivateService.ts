@@ -2,8 +2,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { inject, injectable } from "inversify";
 import * as path from "path";
+import { inject, injectable } from "inversify";
 import { ITerminalManager } from "../../common/application/types";
 import { pathExists } from "../../common/platform/fs-paths";
 import { _SCRIPTS_DIR } from "../../common/process/internal/scripts/constants";
@@ -37,7 +37,7 @@ const ShellIntegrationShells = [
 export class TerminalDeactivateService implements ITerminalDeactivateService {
 	private readonly envVarScript = path.join(
 		_SCRIPTS_DIR,
-		"printEnvVariablesToFile.py"
+		"printEnvVariablesToFile.py",
 	);
 
 	constructor(
@@ -75,22 +75,22 @@ export class TerminalDeactivateService implements ITerminalDeactivateService {
 		const command = this.terminalHelper.buildCommandForTerminal(
 			shellType,
 			interpreterPath,
-			[this.envVarScript, outputFile]
+			[this.envVarScript, outputFile],
 		);
 		terminal.sendText(command);
 		await waitForCondition(
 			checkIfFileHasBeenCreated,
 			30_000,
-			`"${outputFile}" file not created`
+			`"${outputFile}" file not created`,
 		);
 		traceVerbose(
-			`Time taken to get env vars using terminal is ${stopWatch.elapsedTime}ms`
+			`Time taken to get env vars using terminal is ${stopWatch.elapsedTime}ms`,
 		);
 	}
 
 	public async getScriptLocation(
 		shell: string,
-		resource: Resource
+		resource: Resource,
 	): Promise<string | undefined> {
 		const interpreter =
 			await this.interpreterService.getActiveInterpreter(resource);
@@ -108,7 +108,7 @@ export class TerminalDeactivateService implements ITerminalDeactivateService {
 		return path.join(
 			_SCRIPTS_DIR,
 			"deactivate",
-			this.getShellFolderName(shellType)
+			this.getShellFolderName(shellType),
 		);
 	}
 

@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable } from "inversify";
 import { Uri } from "vscode";
 import { IDisposableRegistry } from "../types";
@@ -25,7 +23,7 @@ export class ProcessServiceFactory implements IProcessServiceFactory {
 	) {}
 	public async create(
 		resource?: Uri,
-		options?: { doNotUseCustomEnvs: boolean }
+		options?: { doNotUseCustomEnvs: boolean },
 	): Promise<IProcessService> {
 		const customEnvVars = options?.doNotUseCustomEnvs
 			? undefined
@@ -34,7 +32,7 @@ export class ProcessServiceFactory implements IProcessServiceFactory {
 		this.disposableRegistry.push(proc);
 		return proc.on(
 			"exec",
-			this.processLogger.logProcess.bind(this.processLogger)
+			this.processLogger.logProcess.bind(this.processLogger),
 		);
 	}
 }

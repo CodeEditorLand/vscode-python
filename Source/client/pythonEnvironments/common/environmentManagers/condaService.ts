@@ -1,5 +1,5 @@
-import { inject, injectable } from "inversify";
 import * as path from "path";
+import { inject, injectable } from "inversify";
 import { SemVer } from "semver";
 import { IFileSystem, IPlatformService } from "../../../common/platform/types";
 import { cache } from "../../../common/utils/decorators";
@@ -21,13 +21,13 @@ export class CondaService implements ICondaService {
 
 	public async getActivationScriptFromInterpreter(
 		interpreterPath?: string,
-		envName?: string
+		envName?: string,
 	): Promise<
 		{ path: string | undefined; type: "local" | "global" } | undefined
 	> {
 		const condaPath = await this.getCondaFileFromInterpreter(
 			interpreterPath,
-			envName
+			envName,
 		);
 
 		const activatePath = (
@@ -46,7 +46,7 @@ export class CondaService implements ICondaService {
 					.join(
 						condaInfo.root_prefix,
 						this.platform.virtualEnvBinName,
-						"activate"
+						"activate",
 					)
 					.fileToCommandArgumentForPythonExt();
 
@@ -80,7 +80,7 @@ export class CondaService implements ICondaService {
 
 	// eslint-disable-next-line class-methods-use-this
 	public async getInterpreterPathForEnvironment(
-		condaEnv: CondaEnvironmentInfo
+		condaEnv: CondaEnvironmentInfo,
 	): Promise<string | undefined> {
 		const conda = await Conda.getConda();
 		return conda?.getInterpreterPathForEnvironment({
@@ -122,7 +122,7 @@ export class CondaService implements ICondaService {
 	@cache(120_000)
 	public async getCondaFileFromInterpreter(
 		interpreterPath?: string,
-		envName?: string
+		envName?: string,
 	): Promise<string | undefined> {
 		const condaExe = this.platform.isWindows ? "conda.exe" : "conda";
 		const scriptsDir = this.platform.isWindows ? "Scripts" : "bin";

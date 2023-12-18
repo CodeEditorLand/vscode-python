@@ -1,10 +1,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import * as path from "path";
 import { dirname } from "path";
+import { cache } from "../../../common/utils/decorators";
+import {
+	OSType,
+	getOSType,
+	getUserHomeDir,
+} from "../../../common/utils/platform";
+import { traceError, traceVerbose } from "../../../logging";
 import {
 	arePathsSame,
 	getPythonSetting,
@@ -12,13 +17,6 @@ import {
 	pathExists,
 	shellExecute,
 } from "../externalDependencies";
-import { cache } from "../../../common/utils/decorators";
-import { traceError, traceVerbose } from "../../../logging";
-import {
-	getOSType,
-	getUserHomeDir,
-	OSType,
-} from "../../../common/utils/platform";
 
 export const ACTIVESTATETOOLPATH_SETTING_KEY = "activeStateToolPath";
 
@@ -32,7 +30,7 @@ export type ProjectInfo = {
 };
 
 export async function isActiveStateEnvironment(
-	interpreterPath: string
+	interpreterPath: string,
 ): Promise<boolean> {
 	const execDir = path.dirname(interpreterPath);
 	const runtimeDir = path.dirname(execDir);
@@ -97,7 +95,7 @@ export class ActiveState {
 				`${stateCommand} projects -o editor`,
 				{
 					timeout: STATE_GENERAL_TIMEOUT,
-				}
+				},
 			);
 			if (!result) {
 				return undefined;
@@ -133,7 +131,7 @@ export class ActiveState {
 
 export function isActiveStateEnvironmentForWorkspace(
 	interpreterPath: string,
-	workspacePath: string
+	workspacePath: string,
 ): boolean {
 	const interpreterDir = dirname(interpreterPath);
 	for (const project of ActiveState.getCachedProjectInfo()) {

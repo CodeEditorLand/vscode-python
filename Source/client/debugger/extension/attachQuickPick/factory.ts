@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable } from "inversify";
 import {
 	IApplicationShell,
@@ -36,13 +34,13 @@ export class AttachProcessProviderFactory
 	public registerCommands() {
 		const provider = new AttachProcessProvider(
 			this.platformService,
-			this.processServiceFactory
+			this.processServiceFactory,
 		);
 		const picker = new AttachPicker(this.applicationShell, provider);
 		const disposable = this.commandManager.registerCommand(
 			Commands.PickLocalProcess,
 			() => picker.showQuickPick(),
-			this
+			this,
 		);
 		this.disposableRegistry.push(disposable);
 	}

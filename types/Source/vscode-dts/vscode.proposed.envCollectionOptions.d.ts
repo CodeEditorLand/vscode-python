@@ -46,7 +46,7 @@ declare module "vscode" {
 		replace(
 			variable: string,
 			value: string,
-			options?: EnvironmentVariableMutatorOptions
+			options?: EnvironmentVariableMutatorOptions,
 		): void;
 
 		/**
@@ -55,7 +55,7 @@ declare module "vscode" {
 		append(
 			variable: string,
 			value: string,
-			options?: EnvironmentVariableMutatorOptions
+			options?: EnvironmentVariableMutatorOptions,
 		): void;
 
 		/**
@@ -64,7 +64,7 @@ declare module "vscode" {
 		prepend(
 			variable: string,
 			value: string,
-			options?: EnvironmentVariableMutatorOptions
+			options?: EnvironmentVariableMutatorOptions,
 		): void;
 	}
 }

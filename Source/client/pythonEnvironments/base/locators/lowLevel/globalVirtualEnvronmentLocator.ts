@@ -1,32 +1,32 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { toLower, uniq, uniqBy } from "lodash";
 import * as path from "path";
+import { toLower, uniq, uniqBy } from "lodash";
+import "../../../../common/extensions";
+import { asyncFilter } from "../../../../common/utils/arrayUtils";
 import { chain, iterable } from "../../../../common/utils/async";
 import {
+	OSType,
 	getEnvironmentVariable,
 	getOSType,
 	getUserHomeDir,
-	OSType,
 } from "../../../../common/utils/platform";
-import { PythonEnvKind } from "../../info";
-import { BasicEnvInfo, IPythonEnvsIterator } from "../../locator";
-import { FSWatchingLocator } from "./fsWatchingLocator";
+import { traceError, traceVerbose } from "../../../../logging";
 import {
 	findInterpretersInDir,
 	looksLikeBasicVirtualPython,
 } from "../../../common/commonUtils";
-import { pathExists, untildify } from "../../../common/externalDependencies";
 import { isPipenvEnvironment } from "../../../common/environmentManagers/pipenv";
 import {
 	isVenvEnvironment,
 	isVirtualenvEnvironment,
 	isVirtualenvwrapperEnvironment,
 } from "../../../common/environmentManagers/simplevirtualenvs";
-import "../../../../common/extensions";
-import { asyncFilter } from "../../../../common/utils/arrayUtils";
-import { traceError, traceVerbose } from "../../../../logging";
+import { pathExists, untildify } from "../../../common/externalDependencies";
+import { PythonEnvKind } from "../../info";
+import { BasicEnvInfo, IPythonEnvsIterator } from "../../locator";
+import { FSWatchingLocator } from "./fsWatchingLocator";
 
 const DEFAULT_SEARCH_DEPTH = 2;
 /**
@@ -57,7 +57,7 @@ async function getGlobalVirtualEnvDirs(): Promise<string[]> {
 		];
 		const filtered = await asyncFilter(
 			subDirs.map((d) => path.join(homeDir, d)),
-			pathExists
+			pathExists,
 		);
 		filtered.forEach((d) => venvDirs.push(d));
 	}
@@ -74,7 +74,7 @@ async function getGlobalVirtualEnvDirs(): Promise<string[]> {
  * @param interpreterPath: Absolute path to the interpreter paths.
  */
 async function getVirtualEnvKind(
-	interpreterPath: string
+	interpreterPath: string,
 ): Promise<PythonEnvKind> {
 	if (await isPipenvEnvironment(interpreterPath)) {
 		return PythonEnvKind.Pipenv;
@@ -121,12 +121,12 @@ export class GlobalVirtualEnvironmentLocator extends FSWatchingLocator {
 			const envGenerators = envRootDirs.map((envRootDir) => {
 				async function* generator() {
 					traceVerbose(
-						`Searching for global virtual envs in: ${envRootDir}`
+						`Searching for global virtual envs in: ${envRootDir}`,
 					);
 
 					const executables = findInterpretersInDir(
 						envRootDir,
-						searchDepth
+						searchDepth,
 					);
 
 					for await (const entry of executables) {
@@ -143,17 +143,17 @@ export class GlobalVirtualEnvironmentLocator extends FSWatchingLocator {
 							try {
 								yield { kind, executablePath: filename };
 								traceVerbose(
-									`Global Virtual Environment: [added] ${filename}`
+									`Global Virtual Environment: [added] ${filename}`,
 								);
 							} catch (ex) {
 								traceError(
 									`Failed to process environment: ${filename}`,
-									ex
+									ex,
 								);
 							}
 						} else {
 							traceVerbose(
-								`Global Virtual Environment: [skipped] ${filename}`
+								`Global Virtual Environment: [skipped] ${filename}`,
 							);
 						}
 					}

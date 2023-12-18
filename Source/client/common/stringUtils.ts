@@ -13,7 +13,7 @@ export interface SplitLinesOptions {
  */
 export function splitLines(
 	source: string,
-	splitOptions: SplitLinesOptions = { removeEmptyEntries: true, trim: true }
+	splitOptions: SplitLinesOptions = { removeEmptyEntries: true, trim: true },
 ): string[] {
 	let lines = source.split(/\r?\n/g);
 	if (splitOptions?.trim) {
@@ -31,7 +31,7 @@ export function splitLines(
 export function replaceAll(
 	source: string,
 	substr: string,
-	newSubstr: string
+	newSubstr: string,
 ): string {
 	if (!source) {
 		return source;

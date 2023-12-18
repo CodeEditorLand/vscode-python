@@ -1,26 +1,24 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable } from "inversify";
+import { PYTHON_LANGUAGE } from "../../../../common/constants";
 import { ICurrentProcess } from "../../../../common/types";
+import { getSearchPathEnvVarNames } from "../../../../common/utils/exec";
 import {
 	EnvironmentVariables,
 	IEnvironmentVariablesService,
 } from "../../../../common/variables/types";
-import { LaunchRequestArguments } from "../../../types";
-import { PYTHON_LANGUAGE } from "../../../../common/constants";
 import { getActiveTextEditor } from "../../../../common/vscodeApis/windowApis";
-import { getSearchPathEnvVarNames } from "../../../../common/utils/exec";
+import { LaunchRequestArguments } from "../../../types";
 
 export const IDebugEnvironmentVariablesService = Symbol(
-	"IDebugEnvironmentVariablesService"
+	"IDebugEnvironmentVariablesService",
 );
 export interface IDebugEnvironmentVariablesService {
 	getEnvironmentVariables(
 		args: LaunchRequestArguments,
-		baseVars?: EnvironmentVariables
+		baseVars?: EnvironmentVariables,
 	): Promise<EnvironmentVariables>;
 }
 
@@ -36,7 +34,7 @@ export class DebugEnvironmentVariablesHelper
 
 	public async getEnvironmentVariables(
 		args: LaunchRequestArguments,
-		baseVars?: EnvironmentVariables
+		baseVars?: EnvironmentVariables,
 	): Promise<EnvironmentVariables> {
 		const pathVariableName = getSearchPathEnvVarNames()[0];
 
@@ -47,7 +45,7 @@ export class DebugEnvironmentVariablesHelper
 				: ({} as Record<string, string>);
 		const envFileVars = await this.envParser.parseFile(
 			args.envFile,
-			debugLaunchEnvVars
+			debugLaunchEnvVars,
 		);
 		const env = envFileVars ? { ...envFileVars } : {};
 
@@ -64,7 +62,7 @@ export class DebugEnvironmentVariablesHelper
 		this.envParser.appendPath(
 			env,
 			debugLaunchEnvVars[pathVariableName] ??
-				debugLaunchEnvVars[pathVariableName.toUpperCase()]
+				debugLaunchEnvVars[pathVariableName.toUpperCase()],
 		);
 		this.envParser.appendPythonPath(env, debugLaunchEnvVars.PYTHONPATH);
 

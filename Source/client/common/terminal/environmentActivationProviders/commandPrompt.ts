@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { inject, injectable } from "inversify";
 import * as path from "path";
+import { inject, injectable } from "inversify";
 import { IServiceContainer } from "../../../ioc/types";
 import "../../extensions";
 import { TerminalShellType } from "../types";
@@ -29,7 +29,7 @@ export function getAllScripts(pathJoin: (...p: string[]) => string): string[] {
 					name,
 					// We also add scripts in subdirs.
 					pathJoin("Scripts", name),
-					pathJoin("scripts", name)
+					pathJoin("scripts", name),
 				);
 			}
 		}
@@ -63,7 +63,7 @@ export class CommandPromptAndPowerShell extends VenvBaseActivationCommandProvide
 
 	public async getActivationCommandsForInterpreter(
 		pythonPath: string,
-		targetShell: TerminalShellType
+		targetShell: TerminalShellType,
 	): Promise<string[] | undefined> {
 		const scriptFile = await this.findScriptFile(pythonPath, targetShell);
 		if (!scriptFile) {

@@ -7,12 +7,13 @@ import { Event } from "vscode";
 import { IDisposable } from "../../../../common/types";
 import { getSearchPathEntries } from "../../../../common/utils/exec";
 import { Disposables } from "../../../../common/utils/resourceLifecycle";
+import { traceVerbose } from "../../../../logging";
 import {
 	iterPythonExecutablesInDir,
 	looksLikeBasicGlobalPython,
 } from "../../../common/commonUtils";
-import { isPyenvShimDir } from "../../../common/environmentManagers/pyenv";
 import { isMicrosoftStoreDir } from "../../../common/environmentManagers/microsoftStoreEnv";
+import { isPyenvShimDir } from "../../../common/environmentManagers/pyenv";
 import { PythonEnvKind, PythonEnvSource } from "../../info";
 import {
 	BasicEnvInfo,
@@ -20,11 +21,10 @@ import {
 	IPythonEnvsIterator,
 	PythonLocatorQuery,
 } from "../../locator";
-import { Locators } from "../../locators";
 import { getEnvs } from "../../locatorUtils";
+import { Locators } from "../../locators";
 import { PythonEnvsChangedEvent } from "../../watcher";
 import { DirFilesLocator } from "./filesLocator";
-import { traceVerbose } from "../../../../logging";
 
 /**
  * A locator for Windows locators found under the $PATH env var.
@@ -57,13 +57,13 @@ export class WindowsPathEnvVarLocator
 						//    the binaries specified in .python-version file in the cwd. We should not be reporting
 						//    those binaries as environments.
 						!isMicrosoftStoreDir(dirname) &&
-						!isPyenvShimDir(dirname)
+						!isPyenvShimDir(dirname),
 				)
 				// Build a locator for each directory.
 				.map((dirname) =>
 					getDirFilesLocator(dirname, PythonEnvKind.System, [
 						PythonEnvSource.PathEnvVar,
-					])
+					]),
 				);
 		this.disposables.push(...dirLocators);
 		this.locators = new Locators(dirLocators);
@@ -76,7 +76,7 @@ export class WindowsPathEnvVarLocator
 	}
 
 	public iterEnvs(
-		query?: PythonLocatorQuery
+		query?: PythonLocatorQuery,
 	): IPythonEnvsIterator<BasicEnvInfo> {
 		// Note that we do no filtering here, including to check if files
 		// are valid executables.  That is left to callers (e.g. composite
@@ -104,7 +104,7 @@ function getDirFilesLocator(
 	// These are passed through to DirFilesLocator.
 	dirname: string,
 	kind: PythonEnvKind,
-	source?: PythonEnvSource[]
+	source?: PythonEnvSource[],
 ): ILocator<BasicEnvInfo> & IDisposable {
 	// For now we do not bother using a locator that watches for changes
 	// in the directory.  If we did then we would use
@@ -118,7 +118,7 @@ function getDirFilesLocator(
 	// rather than in each low-level locator.  In the meantime we
 	// take a naive approach.
 	async function* iterEnvs(
-		query: PythonLocatorQuery
+		query: PythonLocatorQuery,
 	): IPythonEnvsIterator<BasicEnvInfo> {
 		yield* await getEnvs(locator.iterEnvs(query)).then((res) => res);
 	}

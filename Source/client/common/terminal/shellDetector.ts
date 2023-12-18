@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable, multiInject } from "inversify";
 import { Terminal, env } from "vscode";
 import { traceError, traceVerbose } from "../../logging";
@@ -72,12 +70,12 @@ export class ShellDetector {
 		sendTelemetryEvent(
 			EventName.TERMINAL_SHELL_IDENTIFICATION,
 			undefined,
-			telemetryProperties
+			telemetryProperties,
 		);
 		traceVerbose(
 			`Shell identified as ${shell} ${
 				terminal ? `(Terminal name is ${terminal.name})` : ""
-			}`
+			}`,
 		);
 
 		// If we could not identify the shell, use the defaults.
@@ -86,7 +84,7 @@ export class ShellDetector {
 				"Unable to identify shell",
 				env.shell,
 				" for OS ",
-				this.platform.osType
+				this.platform.osType,
 			);
 			traceVerbose("Using default OS shell");
 			shell = defaultOSShells[this.platform.osType];

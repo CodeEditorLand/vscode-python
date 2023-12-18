@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import * as path from "path";
 import { EXTENSION_ROOT_DIR } from "../../../common/constants";
 import "../../../common/extensions";
@@ -11,7 +9,7 @@ const pathToPythonLibDir = path.join(
 	EXTENSION_ROOT_DIR,
 	"pythonFiles",
 	"lib",
-	"python"
+	"python",
 );
 const pathToDebugger = path.join(pathToPythonLibDir, "debugpy");
 
@@ -23,7 +21,7 @@ type RemoteDebugOptions = {
 
 export function getDebugpyLauncherArgs(
 	options: RemoteDebugOptions,
-	debuggerPath: string = pathToDebugger
+	debuggerPath: string = pathToDebugger,
 ) {
 	const waitArgs = options.waitUntilDebuggerAttaches
 		? ["--wait-for-client"]

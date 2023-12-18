@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 export class StopWatch implements IStopWatch {
 	private started = new Date().getTime();
 	public get elapsedTime() {

@@ -39,11 +39,11 @@ export class TerminalWatcher
 			// stick around for long enough that we only need to run this check
 			// every 5 min or so
 			const matches = window.terminals.filter(
-				(terminal) => terminal.name === "tensorboard"
+				(terminal) => terminal.name === "tensorboard",
 			);
 			if (matches.length > 0) {
 				sendTelemetryEvent(
-					EventName.TENSORBOARD_DETECTED_IN_INTEGRATED_TERMINAL
+					EventName.TENSORBOARD_DETECTED_IN_INTEGRATED_TERMINAL,
 				);
 				clearInterval(handle); // Only need telemetry sent once per VS Code session
 			}

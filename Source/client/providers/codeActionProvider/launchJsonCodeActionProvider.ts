@@ -19,12 +19,12 @@ export class LaunchJsonCodeActionProvider implements CodeActionProvider {
 	public provideCodeActions(
 		document: TextDocument,
 		_: Range,
-		context: CodeActionContext
+		context: CodeActionContext,
 	): CodeAction[] {
 		return context.diagnostics
 			.filter(
 				(diagnostic) =>
-					diagnostic.message === 'Incorrect type. Expected "string".'
+					diagnostic.message === 'Incorrect type. Expected "string".',
 			)
 			.map((diagnostic) => this.createFix(document, diagnostic));
 	}
@@ -32,12 +32,12 @@ export class LaunchJsonCodeActionProvider implements CodeActionProvider {
 	// eslint-disable-next-line class-methods-use-this
 	private createFix(
 		document: TextDocument,
-		diagnostic: Diagnostic
+		diagnostic: Diagnostic,
 	): CodeAction {
 		const finalText = `"${document.getText(diagnostic.range)}"`;
 		const fix = new CodeAction(
 			`Convert to ${finalText}`,
-			CodeActionKind.QuickFix
+			CodeActionKind.QuickFix,
 		);
 		fix.edit = new WorkspaceEdit();
 		fix.edit.replace(document.uri, diagnostic.range, finalText);

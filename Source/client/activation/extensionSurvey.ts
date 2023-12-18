@@ -1,11 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
-import { inject, injectable, optional } from "inversify";
 import * as querystring from "querystring";
-import { env, UIKind } from "vscode";
+import { inject, injectable, optional } from "inversify";
+import { UIKind, env } from "vscode";
 import {
 	IApplicationEnvironment,
 	IApplicationShell,
@@ -52,7 +50,7 @@ export class ExtensionSurveyPrompt
 		@inject(IApplicationEnvironment)
 		private appEnvironment: IApplicationEnvironment,
 		@inject(IPlatformService) private platformService: IPlatformService,
-		@optional() private sampleSizePerOneHundredUsers: number = 10,
+		@optional() private sampleSizePerOneHundredUsers = 10,
 		@optional()
 		private waitTimeToShowSurvey: number = WAIT_TIME_TO_SHOW_SURVEY
 	) {}
@@ -60,7 +58,7 @@ export class ExtensionSurveyPrompt
 	public async activate(): Promise<void> {
 		if (
 			!(await this.experiments.inExperiment(
-				ShowExtensionSurveyPrompt.experiment
+				ShowExtensionSurveyPrompt.experiment,
 			))
 		) {
 			return;
@@ -71,12 +69,12 @@ export class ExtensionSurveyPrompt
 		}
 		setTimeout(
 			() => this.showSurvey().ignoreErrors(),
-			this.waitTimeToShowSurvey
+			this.waitTimeToShowSurvey,
 		);
 	}
 
 	@traceDecoratorError(
-		"Failed to check whether to display prompt for extension survey"
+		"Failed to check whether to display prompt for extension survey",
 	)
 	public shouldShowBanner(): boolean {
 		if (env.uiKind === UIKind?.Web) {
@@ -85,7 +83,7 @@ export class ExtensionSurveyPrompt
 		const doNotShowSurveyAgain =
 			this.persistentState.createGlobalPersistentState(
 				extensionSurveyStateKeys.doNotShowAgain,
-				false
+				false,
 			);
 		if (doNotShowSurveyAgain.value) {
 			return false;
@@ -94,7 +92,7 @@ export class ExtensionSurveyPrompt
 			this.persistentState.createGlobalPersistentState(
 				extensionSurveyStateKeys.disableSurveyForTime,
 				false,
-				timeToDisableSurveyFor
+				timeToDisableSurveyFor,
 			);
 		if (isSurveyDisabledForTimeState.value) {
 			return false;
@@ -118,7 +116,7 @@ export class ExtensionSurveyPrompt
 			["Yes", "Maybe later", "Don't show again"];
 		const selection = await this.appShell.showInformationMessage(
 			ExtensionSurveyBanner.bannerMessage,
-			...prompts
+			...prompts,
 		);
 		sendTelemetryEvent(EventName.EXTENSION_SURVEY_PROMPT, undefined, {
 			selection: selection
@@ -135,7 +133,7 @@ export class ExtensionSurveyPrompt
 				.createGlobalPersistentState(
 					extensionSurveyStateKeys.disableSurveyForTime,
 					false,
-					timeToDisableSurveyFor
+					timeToDisableSurveyFor,
 				)
 				.updateValue(true);
 		} else if (selection === Common.doNotShowAgain) {
@@ -143,7 +141,7 @@ export class ExtensionSurveyPrompt
 			await this.persistentState
 				.createGlobalPersistentState(
 					extensionSurveyStateKeys.doNotShowAgain,
-					false
+					false,
 				)
 				.updateValue(true);
 		}

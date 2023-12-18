@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { injectable, unmanaged } from "inversify";
 import { DiagnosticSeverity } from "vscode";
 import { IWorkspaceService } from "../../common/application/types";
@@ -28,7 +26,7 @@ export abstract class BaseDiagnostic implements IDiagnostic {
 		public readonly scope: DiagnosticScope,
 		public readonly resource: Resource,
 		public readonly shouldShowPrompt = true,
-		public readonly invokeHandler: "always" | "default" = "default"
+		public readonly invokeHandler: "always" | "default" = "default",
 	) {}
 }
 
@@ -42,8 +40,8 @@ export abstract class BaseDiagnosticsService
 		@unmanaged() private readonly supportedDiagnosticCodes: string[],
 		@unmanaged() protected serviceContainer: IServiceContainer,
 		@unmanaged() protected disposableRegistry: IDisposableRegistry,
-		@unmanaged() public readonly runInBackground: boolean = false,
-		@unmanaged() public readonly runInUntrustedWorkspace: boolean = false
+		@unmanaged() public readonly runInBackground = false,
+		@unmanaged() public readonly runInUntrustedWorkspace = false
 	) {
 		this.filterService = serviceContainer.get<IDiagnosticFilterService>(
 			IDiagnosticFilterService
@@ -70,14 +68,14 @@ export abstract class BaseDiagnosticsService
 				const key = this.getDiagnosticsKey(item);
 				if (
 					BaseDiagnosticsService.handledDiagnosticCodeKeys.indexOf(
-						key
+						key,
 					) !== -1
 				) {
 					return false;
 				}
 				BaseDiagnosticsService.handledDiagnosticCodeKeys.push(key);
 				return true;
-			}
+			},
 		);
 		await this.onHandle(diagnosticsToHandle);
 	}
@@ -87,7 +85,7 @@ export abstract class BaseDiagnosticsService
 		});
 		return (
 			this.supportedDiagnosticCodes.filter(
-				(item) => item === diagnostic.code
+				(item) => item === diagnostic.code,
 			).length > 0
 		);
 	}

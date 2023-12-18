@@ -28,7 +28,7 @@ export class SwitchToDefaultLanguageServerDiagnostic extends BaseDiagnostic {
 			message,
 			DiagnosticSeverity.Warning,
 			DiagnosticScope.Global,
-			resource
+			resource,
 		);
 	}
 }
@@ -64,7 +64,7 @@ export class SwitchToDefaultLanguageServerDiagnosticService extends BaseDiagnost
 			config.update(
 				"languageServer",
 				"Default",
-				ConfigurationTarget.Workspace
+				ConfigurationTarget.Workspace,
 			);
 			changed = true;
 		}
@@ -73,7 +73,7 @@ export class SwitchToDefaultLanguageServerDiagnosticService extends BaseDiagnost
 			config.update(
 				"languageServer",
 				"Default",
-				ConfigurationTarget.Global
+				ConfigurationTarget.Global,
 			);
 			changed = true;
 		}
@@ -83,10 +83,10 @@ export class SwitchToDefaultLanguageServerDiagnosticService extends BaseDiagnost
 				? [
 						new SwitchToDefaultLanguageServerDiagnostic(
 							SwitchToDefaultLS.bannerMessage,
-							resource
+							resource,
 						),
-					]
-				: []
+				  ]
+				: [],
 		);
 	}
 

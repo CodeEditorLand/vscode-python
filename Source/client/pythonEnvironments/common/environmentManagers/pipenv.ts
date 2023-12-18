@@ -22,7 +22,7 @@ function getSearchHeight() {
 	// eslint-disable-next-line no-restricted-globals
 	if (isNaN(maxDepth)) {
 		traceError(
-			`PIPENV_MAX_DEPTH is incorrectly set. Converting value '${maxDepthStr}' to number results in NaN`
+			`PIPENV_MAX_DEPTH is incorrectly set. Converting value '${maxDepthStr}' to number results in NaN`,
 		);
 		return 1;
 	}
@@ -36,7 +36,7 @@ function getSearchHeight() {
  */
 export async function _getAssociatedPipfile(
 	searchDir: string,
-	options: { lookIntoParentDirectories: boolean }
+	options: { lookIntoParentDirectories: boolean },
 ): Promise<string | undefined> {
 	const pipFileName = getEnvironmentVariable("PIPENV_PIPFILE") || "Pipfile";
 	let heightToSearch = options.lookIntoParentDirectories
@@ -62,7 +62,7 @@ export async function _getAssociatedPipfile(
  * @param interpreterPath Absolute path to any python interpreter.
  */
 async function getPipfileIfLocal(
-	interpreterPath: string
+	interpreterPath: string,
 ): Promise<string | undefined> {
 	// Local pipenv environments are created by setting PIPENV_VENV_IN_PROJECT to 1, which always names the environment
 	// folder '.venv': https://pipenv.pypa.io/en/latest/advanced/#pipenv.environments.PIPENV_VENV_IN_PROJECT
@@ -102,7 +102,7 @@ async function getProjectDir(envFolder: string): Promise<string | undefined> {
 	const projectDir = (await readFile(dotProjectFile)).trim();
 	if (!(await pathExists(projectDir))) {
 		traceVerbose(
-			`The .project file inside environment folder: ${envFolder} doesn't contain a valid path to the project`
+			`The .project file inside environment folder: ${envFolder} doesn't contain a valid path to the project`,
 		);
 		return undefined;
 	}
@@ -114,7 +114,7 @@ async function getProjectDir(envFolder: string): Promise<string | undefined> {
  * @param interpreterPath Absolute path to any python interpreter.
  */
 async function getPipfileIfGlobal(
-	interpreterPath: string
+	interpreterPath: string,
 ): Promise<string | undefined> {
 	const envFolder = path.dirname(path.dirname(interpreterPath));
 	const projectDir = await getProjectDir(envFolder);
@@ -144,7 +144,7 @@ async function getPipfileIfGlobal(
  * @param interpreterPath: Absolute path to any python interpreter.
  */
 export async function isPipenvEnvironment(
-	interpreterPath: string
+	interpreterPath: string,
 ): Promise<boolean> {
 	if (await getPipfileIfLocal(interpreterPath)) {
 		return true;
@@ -162,7 +162,7 @@ export async function isPipenvEnvironment(
  */
 export async function isPipenvEnvironmentRelatedToFolder(
 	interpreterPath: string,
-	folder: string
+	folder: string,
 ): Promise<boolean> {
 	const pipFileAssociatedWithEnvironment =
 		await getPipfileIfGlobal(interpreterPath);
@@ -182,6 +182,6 @@ export async function isPipenvEnvironmentRelatedToFolder(
 	}
 	return arePathsSame(
 		pipFileAssociatedWithEnvironment,
-		pipFileAssociatedWithFolder
+		pipFileAssociatedWithFolder,
 	);
 }

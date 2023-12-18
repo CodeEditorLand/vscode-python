@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 import { injectable } from "inversify";
-import { commands, Disposable, TextEditor, TextEditorEdit } from "vscode";
+import { Disposable, TextEditor, TextEditorEdit, commands } from "vscode";
 import { ICommandNameArgumentTypeMapping } from "./commands";
 import { ICommandManager } from "./types";
 
@@ -54,7 +54,7 @@ export class CommandManager implements ICommandManager {
 			...args: any[]
 		) => void,
 		// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
-		thisArg?: any
+		thisArg?: any,
 	): Disposable {
 		return commands.registerTextEditorCommand(command, callback, thisArg);
 	}

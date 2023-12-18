@@ -3,11 +3,13 @@
 import { inject, injectable } from "inversify";
 
 import { IEnvironmentActivationService } from "../../interpreter/activation/types";
+import { IInterpreterAutoSelectionService } from "../../interpreter/autoSelection/types";
 import {
 	IActivatedEnvironmentLaunch,
 	IComponentAdapter,
 } from "../../interpreter/contracts";
 import { IServiceContainer } from "../../ioc/types";
+import { traceError } from "../../logging";
 import { sendTelemetryEvent } from "../../telemetry";
 import { EventName } from "../../telemetry/constants";
 import { IFileSystem } from "../platform/types";
@@ -16,11 +18,12 @@ import {
 	IDisposableRegistry,
 	IInterpreterPathService,
 } from "../types";
+import { sleep } from "../utils/async";
 import { ProcessService } from "./proc";
 import {
 	createCondaEnv,
-	createPythonEnv,
 	createMicrosoftStoreEnv,
+	createPythonEnv,
 } from "./pythonEnvironment";
 import { createPythonProcessService } from "./pythonProcess";
 import {
@@ -33,9 +36,6 @@ import {
 	IPythonExecutionFactory,
 	IPythonExecutionService,
 } from "./types";
-import { IInterpreterAutoSelectionService } from "../../interpreter/autoSelection/types";
-import { sleep } from "../utils/async";
-import { traceError } from "../../logging";
 
 @injectable()
 export class PythonExecutionFactory implements IPythonExecutionFactory {
@@ -67,19 +67,19 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 	}
 
 	public async create(
-		options: ExecutionFactoryCreationOptions
+		options: ExecutionFactoryCreationOptions,
 	): Promise<IPythonExecutionService> {
 		let { pythonPath } = options;
 		if (!pythonPath || pythonPath === "python") {
 			const activatedEnvLaunch =
 				this.serviceContainer.get<IActivatedEnvironmentLaunch>(
-					IActivatedEnvironmentLaunch
+					IActivatedEnvironmentLaunch,
 				);
 			await activatedEnvLaunch.selectIfLaunchedViaActivatedEnv();
 			// If python path wasn't passed in, we need to auto select it and then read it
 			// from the configuration.
 			const interpreterPath = this.interpreterPathExpHelper.get(
-				options.resource
+				options.resource,
 			);
 			if (!interpreterPath || interpreterPath === "python") {
 				// Block on autoselection if no interpreter selected.
@@ -95,12 +95,12 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 				]);
 				if (!success) {
 					traceError(
-						"Autoselection timeout out, this is likely a issue with how consumer called execution factory API. Using default python to execute."
+						"Autoselection timeout out, this is likely a issue with how consumer called execution factory API. Using default python to execute.",
 					);
 				}
 			}
 			pythonPath = this.configService.getSettings(
-				options.resource
+				options.resource,
 			).pythonPath;
 		}
 		const processService: IProcessService =
@@ -108,7 +108,7 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 
 		const condaExecutionService = await this.createCondaExecutionService(
 			pythonPath,
-			processService
+			processService,
 		);
 		if (condaExecutionService) {
 			return condaExecutionService;
@@ -125,19 +125,19 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 	}
 
 	public async createActivatedEnvironment(
-		options: ExecutionFactoryCreateWithEnvironmentOptions
+		options: ExecutionFactoryCreateWithEnvironmentOptions,
 	): Promise<IPythonExecutionService> {
 		const envVars =
 			await this.activationHelper.getActivatedEnvironmentVariables(
 				options.resource,
 				options.interpreter,
-				options.allowEnvironmentFetchExceptions
+				options.allowEnvironmentFetchExceptions,
 			);
 		const hasEnvVars = envVars && Object.keys(envVars).length > 0;
 		sendTelemetryEvent(
 			EventName.PYTHON_INTERPRETER_ACTIVATION_ENVIRONMENT_VARIABLES,
 			undefined,
-			{ hasEnvVars }
+			{ hasEnvVars },
 		);
 		if (!hasEnvVars) {
 			return this.create({
@@ -158,7 +158,7 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 
 		const condaExecutionService = await this.createCondaExecutionService(
 			pythonPath,
-			processService
+			processService,
 		);
 		if (condaExecutionService) {
 			return condaExecutionService;
@@ -166,14 +166,14 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 		const env = createPythonEnv(
 			pythonPath,
 			processService,
-			this.fileSystem
+			this.fileSystem,
 		);
 		return createPythonService(processService, env);
 	}
 
 	public async createCondaExecutionService(
 		pythonPath: string,
-		processService: IProcessService
+		processService: IProcessService,
 	): Promise<IPythonExecutionService | undefined> {
 		const condaLocatorService =
 			this.serviceContainer.get<IComponentAdapter>(IComponentAdapter);
@@ -186,7 +186,7 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 		const env = await createCondaEnv(
 			condaEnvironment,
 			processService,
-			this.fileSystem
+			this.fileSystem,
 		);
 		if (!env) {
 			return undefined;
@@ -197,7 +197,7 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 
 function createPythonService(
 	procService: IProcessService,
-	env: IPythonEnvironment
+	env: IPythonEnvironment,
 ): IPythonExecutionService {
 	const procs = createPythonProcessService(procService, env);
 	return {

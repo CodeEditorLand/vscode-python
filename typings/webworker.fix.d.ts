@@ -5,4 +5,4 @@
 // tsconfig's DOM and WebWorker lib options being mutally exclusive.
 // https://github.com/microsoft/TypeScript/issues/20595
 
-interface DedicatedWorkerGlobalScope {}
+type DedicatedWorkerGlobalScope = {};

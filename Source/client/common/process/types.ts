@@ -56,7 +56,7 @@ export interface IProcessLogger {
 	logProcess(
 		fileOrCommand: string,
 		args?: string[],
-		options?: SpawnOptions
+		options?: SpawnOptions,
 	): void;
 }
 
@@ -64,20 +64,24 @@ export interface IProcessService extends IDisposable {
 	execObservable(
 		file: string,
 		args: string[],
-		options?: SpawnOptions
+		options?: SpawnOptions,
 	): ObservableExecutionResult<string>;
 	exec(
 		file: string,
 		args: string[],
-		options?: SpawnOptions
+		options?: SpawnOptions,
 	): Promise<ExecutionResult<string>>;
 	shellExec(
 		command: string,
-		options?: ShellOptions
+		options?: ShellOptions,
 	): Promise<ExecutionResult<string>>;
 	on(
 		event: "exec",
-		listener: (file: string, args: string[], options?: SpawnOptions) => void
+		listener: (
+			file: string,
+			args: string[],
+			options?: SpawnOptions,
+		) => void,
 	): this;
 }
 
@@ -86,7 +90,7 @@ export const IProcessServiceFactory = Symbol("IProcessServiceFactory");
 export interface IProcessServiceFactory {
 	create(
 		resource?: Uri,
-		options?: { doNotUseCustomEnvs: boolean }
+		options?: { doNotUseCustomEnvs: boolean },
 	): Promise<IProcessService>;
 }
 
@@ -108,14 +112,14 @@ export type ExecutionFactoryCreateWithEnvironmentOptions = {
 };
 export interface IPythonExecutionFactory {
 	create(
-		options: ExecutionFactoryCreationOptions
+		options: ExecutionFactoryCreationOptions,
 	): Promise<IPythonExecutionService>;
 	createActivatedEnvironment(
-		options: ExecutionFactoryCreateWithEnvironmentOptions
+		options: ExecutionFactoryCreateWithEnvironmentOptions,
 	): Promise<IPythonExecutionService>;
 	createCondaExecutionService(
 		pythonPath: string,
-		processService: IProcessService
+		processService: IProcessService,
 	): Promise<IPythonExecutionService | undefined>;
 }
 export const IPythonExecutionService = Symbol("IPythonExecutionService");
@@ -129,27 +133,27 @@ export interface IPythonExecutionService {
 
 	execObservable(
 		args: string[],
-		options: SpawnOptions
+		options: SpawnOptions,
 	): ObservableExecutionResult<string>;
 	execModuleObservable(
 		moduleName: string,
 		args: string[],
-		options: SpawnOptions
+		options: SpawnOptions,
 	): ObservableExecutionResult<string>;
 
 	exec(
 		args: string[],
-		options: SpawnOptions
+		options: SpawnOptions,
 	): Promise<ExecutionResult<string>>;
 	execModule(
 		moduleName: string,
 		args: string[],
-		options: SpawnOptions
+		options: SpawnOptions,
 	): Promise<ExecutionResult<string>>;
 	execForLinter(
 		moduleName: string,
 		args: string[],
-		options: SpawnOptions
+		options: SpawnOptions,
 	): Promise<ExecutionResult<string>>;
 }
 
@@ -157,20 +161,20 @@ export interface IPythonEnvironment {
 	getInterpreterInformation(): Promise<InterpreterInformation | undefined>;
 	getExecutionObservableInfo(
 		pythonArgs?: string[],
-		pythonExecutable?: string
+		pythonExecutable?: string,
 	): PythonExecInfo;
 	getExecutablePath(): Promise<string | undefined>;
 	isModuleInstalled(moduleName: string): Promise<boolean>;
 	getModuleVersion(moduleName: string): Promise<string | undefined>;
 	getExecutionInfo(
 		pythonArgs?: string[],
-		pythonExecutable?: string
+		pythonExecutable?: string,
 	): PythonExecInfo;
 }
 
 export type ShellExecFunc = (
 	command: string,
-	options?: ShellOptions | undefined
+	options?: ShellOptions | undefined,
 ) => Promise<ExecutionResult<string>>;
 
 export class StdErrError extends Error {
@@ -185,16 +189,16 @@ export interface IPythonToolExecutionService {
 	execObservable(
 		executionInfo: ExecutionInfo,
 		options: SpawnOptions,
-		resource: Uri
+		resource: Uri,
 	): Promise<ObservableExecutionResult<string>>;
 	exec(
 		executionInfo: ExecutionInfo,
 		options: SpawnOptions,
-		resource: Uri
+		resource: Uri,
 	): Promise<ExecutionResult<string>>;
 	execForLinter(
 		executionInfo: ExecutionInfo,
 		options: SpawnOptions,
-		resource: Uri
+		resource: Uri,
 	): Promise<ExecutionResult<string>>;
 }

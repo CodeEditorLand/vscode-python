@@ -5,11 +5,11 @@ import { ConfigurationTarget, EventEmitter } from "vscode";
 import { arePathsSame } from "./common/platform/fs-paths";
 import { IExtensions, IInterpreterPathService, Resource } from "./common/types";
 import {
-	EnvironmentsChangedParams,
 	ActiveEnvironmentChangedParams,
-	EnvironmentDetailsOptions,
-	EnvironmentDetails,
 	DeprecatedProposedAPI,
+	EnvironmentDetails,
+	EnvironmentDetailsOptions,
+	EnvironmentsChangedParams,
 } from "./deprecatedProposedApiTypes";
 import { IInterpreterService } from "./interpreter/contracts";
 import { IServiceContainer } from "./ioc/types";
@@ -30,7 +30,7 @@ const onDidInterpretersChangedEvent = new EventEmitter<
  * @deprecated Will be removed soon.
  */
 export function reportInterpretersChanged(
-	e: EnvironmentsChangedParams[]
+	e: EnvironmentsChangedParams[],
 ): void {
 	onDidInterpretersChangedEvent.fire(e);
 }
@@ -41,7 +41,7 @@ const onDidActiveInterpreterChangedEvent =
  * @deprecated Will be removed soon.
  */
 export function reportActiveInterpreterChangedDeprecated(
-	e: ActiveEnvironmentChangedParams
+	e: ActiveEnvironmentChangedParams,
 ): void {
 	onDidActiveInterpreterChangedEvent.fire(e);
 }
@@ -75,7 +75,7 @@ function isEnvSame(path: string, env: PythonEnvInfo) {
 
 export function buildDeprecatedProposedApi(
 	discoveryApi: IDiscoveryAPI,
-	serviceContainer: IServiceContainer
+	serviceContainer: IServiceContainer,
 ): DeprecatedProposedAPI {
 	const interpreterPathService =
 		serviceContainer.get<IInterpreterPathService>(IInterpreterPathService);
@@ -93,14 +93,14 @@ export function buildDeprecatedProposedApi(
 					{
 						apiName,
 						extensionId: info.extensionId,
-					}
+					},
 				);
 				traceVerbose(
-					`Extension ${info.extensionId} accessed ${apiName}`
+					`Extension ${info.extensionId} accessed ${apiName}`,
 				);
 				if (warnLog && !warningLogged.has(info.extensionId)) {
 					console.warn(
-						`${info.extensionId} extension is using deprecated python APIs which will be removed soon.`
+						`${info.extensionId} extension is using deprecated python APIs which will be removed soon.`,
 					);
 					warningLogged.add(info.extensionId);
 				}
@@ -129,7 +129,7 @@ export function buildDeprecatedProposedApi(
 			},
 			async getEnvironmentDetails(
 				path: string,
-				options?: EnvironmentDetailsOptions
+				options?: EnvironmentDetailsOptions,
 			): Promise<EnvironmentDetails | undefined> {
 				sendApiTelemetry("deprecated.getEnvironmentDetails");
 				let env: PythonEnvInfo | undefined;
@@ -167,13 +167,13 @@ export function buildDeprecatedProposedApi(
 			},
 			setActiveEnvironment(
 				path: string,
-				resource?: Resource
+				resource?: Resource,
 			): Promise<void> {
 				sendApiTelemetry("deprecated.setActiveEnvironment");
 				return interpreterPathService.update(
 					resource,
 					ConfigurationTarget.WorkspaceFolder,
-					path
+					path,
 				);
 			},
 			async refreshEnvironment() {
@@ -185,7 +185,7 @@ export function buildDeprecatedProposedApi(
 				return Promise.resolve(paths);
 			},
 			getRefreshPromise(
-				options?: GetRefreshEnvironmentsOptions
+				options?: GetRefreshEnvironmentsOptions,
 			): Promise<void> | undefined {
 				sendApiTelemetry("deprecated.getRefreshPromise");
 				return discoveryApi.getRefreshPromise(options);
@@ -193,7 +193,7 @@ export function buildDeprecatedProposedApi(
 			get onDidChangeExecutionDetails() {
 				sendApiTelemetry(
 					"deprecated.onDidChangeExecutionDetails",
-					false
+					false,
 				);
 				return interpreterService.onDidChangeInterpreterConfiguration;
 			},
@@ -204,7 +204,7 @@ export function buildDeprecatedProposedApi(
 			get onDidActiveEnvironmentChanged() {
 				sendApiTelemetry(
 					"deprecated.onDidActiveEnvironmentChanged",
-					false
+					false,
 				);
 				return onDidActiveInterpreterChangedEvent.event;
 			},

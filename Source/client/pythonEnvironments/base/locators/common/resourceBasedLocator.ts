@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 import { IDisposable } from "../../../../common/types";
-import { createDeferred, Deferred } from "../../../../common/utils/async";
+import { Deferred, createDeferred } from "../../../../common/utils/async";
 import { Disposables } from "../../../../common/utils/resourceLifecycle";
 import { traceError } from "../../../../logging";
 import {
@@ -55,7 +55,7 @@ export abstract class LazyResourceBasedLocator
 	}
 
 	public async *iterEnvs(
-		query?: PythonLocatorQuery
+		query?: PythonLocatorQuery,
 	): IPythonEnvsIterator<BasicEnvInfo> {
 		await this.activate();
 		const iterator = this.doIterEnvs(query);
@@ -65,7 +65,7 @@ export abstract class LazyResourceBasedLocator
 				const currEnv = result.value;
 				const { path } = getEnvPath(
 					currEnv.executablePath,
-					currEnv.envPath
+					currEnv.envPath,
 				);
 				if (arePathsSame(path, query.envPath)) {
 					yield currEnv;
@@ -82,7 +82,7 @@ export abstract class LazyResourceBasedLocator
 	 * The subclass implementation of iterEnvs().
 	 */
 	protected abstract doIterEnvs(
-		query?: PythonLocatorQuery
+		query?: PythonLocatorQuery,
 	): IPythonEnvsIterator<BasicEnvInfo>;
 
 	/**

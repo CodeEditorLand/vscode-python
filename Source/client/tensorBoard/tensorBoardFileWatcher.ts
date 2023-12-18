@@ -70,8 +70,8 @@ export class TensorBoardFileWatcher
 		// If workspace folders change, ensure we update our FileSystemWatchers
 		this.disposables.push(
 			this.workspaceService.onDidChangeWorkspaceFolders((e) =>
-				this.updateFileSystemWatchers(e)
-			)
+				this.updateFileSystemWatchers(e),
+			),
 		);
 	}
 
@@ -83,7 +83,7 @@ export class TensorBoardFileWatcher
 			const fileSystemWatchers = this.fileSystemWatchers.get(removed);
 			if (fileSystemWatchers) {
 				fileSystemWatchers.forEach((fileWatcher) =>
-					fileWatcher.dispose()
+					fileWatcher.dispose(),
 				);
 				this.fileSystemWatchers.delete(removed);
 			}
@@ -101,16 +101,16 @@ export class TensorBoardFileWatcher
 			this.disposables.push(
 				fileSystemWatcher.onDidCreate(() =>
 					this.tensorBoardPrompt.showNativeTensorBoardPrompt(
-						TensorBoardEntrypointTrigger.tfeventfiles
-					)
-				)
+						TensorBoardEntrypointTrigger.tfeventfiles,
+					),
+				),
 			);
 			this.disposables.push(
 				fileSystemWatcher.onDidChange(() =>
 					this.tensorBoardPrompt.showNativeTensorBoardPrompt(
-						TensorBoardEntrypointTrigger.tfeventfiles
-					)
-				)
+						TensorBoardEntrypointTrigger.tfeventfiles,
+					),
+				),
 			);
 			this.disposables.push(fileSystemWatcher);
 			fileWatchers.push(fileSystemWatcher);

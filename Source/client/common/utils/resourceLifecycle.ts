@@ -19,7 +19,7 @@ export async function disposeAll(disposables: IDisposable[]): Promise<void> {
 				// do nothing
 			}
 			return Promise.resolve();
-		})
+		}),
 	);
 }
 

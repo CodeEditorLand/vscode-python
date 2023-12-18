@@ -7,7 +7,7 @@
  */
 export async function asyncFilter<T>(
 	arr: T[],
-	asyncPredicate: (value: T) => Promise<unknown>
+	asyncPredicate: (value: T) => Promise<unknown>,
 ): Promise<T[]> {
 	const results = await Promise.all(arr.map(asyncPredicate));
 	return arr.filter((_v, index) => results[index]);
@@ -15,7 +15,7 @@ export async function asyncFilter<T>(
 
 export async function asyncForEach<T>(
 	arr: T[],
-	asyncFunc: (value: T) => Promise<void>
+	asyncFunc: (value: T) => Promise<void>,
 ): Promise<void> {
 	await Promise.all(arr.map(asyncFunc));
 }

@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { CommandsWithoutArgs } from "../../../common/application/commands";
 import { ICommandManager } from "../../../common/application/types";
 import { IServiceContainer } from "../../../ioc/types";
@@ -15,7 +13,7 @@ export class ExecuteVSCCommand extends BaseDiagnosticCommand {
 	constructor(
 		diagnostic: IDiagnostic,
 		private serviceContainer: IServiceContainer,
-		private commandName: CommandsWithoutArgs
+		private commandName: CommandsWithoutArgs,
 	) {
 		super(diagnostic);
 	}

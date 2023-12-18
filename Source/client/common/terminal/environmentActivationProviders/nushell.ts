@@ -32,7 +32,7 @@ export class Nushell extends VenvBaseActivationCommandProvider {
 
 	public async getActivationCommandsForInterpreter(
 		pythonPath: string,
-		targetShell: TerminalShellType
+		targetShell: TerminalShellType,
 	): Promise<string[] | undefined> {
 		const scriptFile = await this.findScriptFile(pythonPath, targetShell);
 		if (!scriptFile) {

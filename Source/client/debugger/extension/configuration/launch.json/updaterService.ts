@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable } from "inversify";
 import { IExtensionSingleActivationService } from "../../../../activation/types";
 import { IDisposableRegistry } from "../../../../common/types";
@@ -28,14 +26,14 @@ export class LaunchJsonUpdaterService
 
 	public async activate(): Promise<void> {
 		const handler = new LaunchJsonUpdaterServiceHelper(
-			this.configurationProvider
+			this.configurationProvider,
 		);
 		this.disposableRegistry.push(
 			registerCommand(
 				"python.SelectAndInsertDebugConfiguration",
 				handler.selectAndInsertDebugConfig,
-				handler
-			)
+				handler,
+			),
 		);
 	}
 }

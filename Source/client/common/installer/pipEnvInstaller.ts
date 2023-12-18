@@ -59,7 +59,7 @@ export class PipEnvInstaller extends ModuleInstaller {
 			// Install using `pipenv install` only if the active environment is related to the current folder.
 			return isPipenvEnvironmentRelatedToFolder(
 				interpreter.path,
-				workspaceFolder.uri.fsPath
+				workspaceFolder.uri.fsPath,
 			);
 		} else {
 			return resource.envType === EnvironmentType.Pipenv;
@@ -68,7 +68,7 @@ export class PipEnvInstaller extends ModuleInstaller {
 	protected async getExecutionInfo(
 		moduleName: string,
 		_resource?: InterpreterUri,
-		flags: ModuleInstallFlags = 0
+		flags: ModuleInstallFlags = 0,
 	): Promise<ExecutionInfo> {
 		// In pipenv the only way to update/upgrade or re-install is update (apart from a complete uninstall and re-install).
 		const update =

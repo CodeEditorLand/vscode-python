@@ -4,8 +4,6 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-"use strict";
-
 import { DebugConfigStrings } from "../../../../common/utils/localize";
 import { MultiStepInput } from "../../../../common/utils/multiStepInput";
 import { sendTelemetryEvent } from "../../../../telemetry";
@@ -17,7 +15,7 @@ const defaultPort = 5678;
 
 export async function configurePort(
 	input: MultiStepInput<DebugConfigurationState>,
-	config: Partial<AttachRequestArguments>
+	config: Partial<AttachRequestArguments>,
 ): Promise<void> {
 	const connect = config.connect || (config.connect = {});
 	const port = await input.showInputBox({
@@ -30,7 +28,7 @@ export async function configurePort(
 			Promise.resolve(
 				value && /^\d+$/.test(value.trim())
 					? undefined
-					: DebugConfigStrings.attach.enterRemotePort.invalid
+					: DebugConfigStrings.attach.enterRemotePort.invalid,
 			),
 	});
 	if (port && /^\d+$/.test(port.trim())) {

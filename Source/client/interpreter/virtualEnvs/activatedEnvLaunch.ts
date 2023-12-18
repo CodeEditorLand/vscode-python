@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+import * as path from "path";
 import { inject, injectable, optional } from "inversify";
 import { ConfigurationTarget } from "vscode";
-import * as path from "path";
 import {
 	IApplicationShell,
 	IWorkspaceService,
@@ -38,7 +38,7 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 		private readonly interpreterService: IInterpreterService,
 		@inject(IProcessServiceFactory)
 		private readonly processServiceFactory: IProcessServiceFactory,
-		@optional() public wasSelected: boolean = false
+		@optional() public wasSelected = false
 	) {}
 
 	@cache(-1, true)
@@ -49,7 +49,7 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 		}
 		const info =
 			await this.interpreterService.getInterpreterDetails(
-				baseCondaPrefix
+				baseCondaPrefix,
 			);
 		if (info?.envName !== "base") {
 			// Only show prompt for base conda environments, as we need to check config for such envs which can be slow.
@@ -58,7 +58,7 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 		const conda = await Conda.getConda();
 		if (!conda) {
 			traceWarn(
-				"Conda not found even though activated environment vars are set"
+				"Conda not found even though activated environment vars are set",
 			);
 			return;
 		}
@@ -82,7 +82,7 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 		const telemetrySelections: ["Yes", "No"] = ["Yes", "No"];
 		const selection = await this.appShell.showInformationMessage(
 			Interpreters.activatedCondaEnvLaunch,
-			...prompts
+			...prompts,
 		);
 		sendTelemetryEvent(EventName.ACTIVATED_CONDA_ENV_LAUNCH, undefined, {
 			selection: selection
@@ -98,7 +98,7 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 	}
 
 	public async selectIfLaunchedViaActivatedEnv(
-		doNotBlockOnSelection = false
+		doNotBlockOnSelection = false,
 	): Promise<string | undefined> {
 		if (this.wasSelected) {
 			return this.inMemorySelection;
@@ -108,7 +108,7 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 
 	@cache(-1, true)
 	private async _selectIfLaunchedViaActivatedEnv(
-		doNotBlockOnSelection = false
+		doNotBlockOnSelection = false,
 	): Promise<string | undefined> {
 		if (this.workspaceService.workspaceFile) {
 			// Assuming multiroot workspaces cannot be directly launched via `code .` command.
@@ -128,8 +128,8 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 		this.inMemorySelection = prefix;
 		traceLog(
 			`VS Code was launched from an activated environment: '${path.basename(
-				prefix
-			)}', selecting it as the interpreter for workspace.`
+				prefix,
+			)}', selecting it as the interpreter for workspace.`,
 		);
 		if (doNotBlockOnSelection) {
 			this.setInterpeterInStorage(prefix).ignoreErrors();
@@ -147,14 +147,14 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 			await this.pythonPathUpdaterService.updatePythonPath(
 				prefix,
 				ConfigurationTarget.Global,
-				"load"
+				"load",
 			);
 		} else {
 			await this.pythonPathUpdaterService.updatePythonPath(
 				prefix,
 				ConfigurationTarget.WorkspaceFolder,
 				"load",
-				workspaceFolders[0].uri
+				workspaceFolders[0].uri,
 			);
 		}
 	}

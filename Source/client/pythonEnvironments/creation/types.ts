@@ -3,5 +3,7 @@
 
 import { Progress } from "vscode";
 
-export interface CreateEnvironmentProgress
-	extends Progress<{ message?: string; increment?: number }> {}
+export type CreateEnvironmentProgress = Progress<{
+	message?: string;
+	increment?: number;
+}>;

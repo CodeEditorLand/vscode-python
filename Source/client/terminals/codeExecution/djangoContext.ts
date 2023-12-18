@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { injectable } from "inversify";
 import * as path from "path";
+import { injectable } from "inversify";
 import { Disposable } from "vscode";
 import {
 	ICommandManager,
@@ -16,28 +16,28 @@ import { traceError } from "../../logging";
 @injectable()
 export class DjangoContextInitializer implements Disposable {
 	private readonly isDjangoProject: ContextKey;
-	private monitoringActiveTextEditor: boolean = false;
+	private monitoringActiveTextEditor = false;
 	private workspaceContextKeyValues = new Map<string, boolean>();
-	private lastCheckedWorkspace: string = "";
+	private lastCheckedWorkspace = "";
 	private disposables: Disposable[] = [];
 
 	constructor(
 		private documentManager: IDocumentManager,
 		private workpaceService: IWorkspaceService,
 		private fileSystem: IFileSystem,
-		commandManager: ICommandManager
+		commandManager: ICommandManager,
 	) {
 		this.isDjangoProject = new ContextKey(
 			"python.isDjangoProject",
-			commandManager
+			commandManager,
 		);
 		this.ensureContextStateIsSet().catch((ex) =>
-			traceError("Python Extension: ensureState", ex)
+			traceError("Python Extension: ensureState", ex),
 		);
 		this.disposables.push(
 			this.workpaceService.onDidChangeWorkspaceFolders(() =>
-				this.updateContextKeyBasedOnActiveWorkspace()
-			)
+				this.updateContextKeyBasedOnActiveWorkspace(),
+			),
 		);
 	}
 
@@ -51,8 +51,8 @@ export class DjangoContextInitializer implements Disposable {
 		this.monitoringActiveTextEditor = true;
 		this.disposables.push(
 			this.documentManager.onDidChangeActiveTextEditor(() =>
-				this.ensureContextStateIsSet()
-			)
+				this.ensureContextStateIsSet(),
+			),
 		);
 	}
 	private getActiveWorkspace(): string | undefined {
@@ -70,7 +70,7 @@ export class DjangoContextInitializer implements Disposable {
 			return;
 		}
 		const workspaceFolder = this.workpaceService.getWorkspaceFolder(
-			activeEditor.document.uri
+			activeEditor.document.uri,
 		);
 		return workspaceFolder ? workspaceFolder.uri.fsPath : undefined;
 	}
@@ -84,11 +84,11 @@ export class DjangoContextInitializer implements Disposable {
 		}
 		if (this.workspaceContextKeyValues.has(activeWorkspace)) {
 			await this.isDjangoProject.set(
-				this.workspaceContextKeyValues.get(activeWorkspace)!
+				this.workspaceContextKeyValues.get(activeWorkspace)!,
 			);
 		} else {
 			const exists = await this.fileSystem.fileExists(
-				path.join(activeWorkspace, "manage.py")
+				path.join(activeWorkspace, "manage.py"),
 			);
 			await this.isDjangoProject.set(exists);
 			this.workspaceContextKeyValues.set(activeWorkspace, exists);

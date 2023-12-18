@@ -1,14 +1,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+import * as path from "path";
 // eslint-disable-next-line max-classes-per-file
 import { inject, injectable, named } from "inversify";
-import * as path from "path";
 import {
 	DiagnosticSeverity,
 	Uri,
-	workspace as workspc,
 	WorkspaceFolder,
+	workspace as workspc,
 } from "vscode";
 import {
 	IDocumentManager,
@@ -53,7 +53,7 @@ class InvalidPythonPathInDebuggerDiagnostic extends BaseDiagnostic {
 		code:
 			| DiagnosticCodes.InvalidPythonPathInDebuggerLaunchDiagnostic
 			| DiagnosticCodes.InvalidPythonPathInDebuggerSettingsDiagnostic,
-		resource: Resource
+		resource: Resource,
 	) {
 		super(
 			code,
@@ -62,7 +62,7 @@ class InvalidPythonPathInDebuggerDiagnostic extends BaseDiagnostic {
 			DiagnosticScope.WorkspaceFolder,
 			resource,
 			undefined,
-			"always"
+			"always",
 		);
 	}
 }
@@ -111,7 +111,7 @@ export class InvalidPythonPathInDebuggerService
 	public async validatePythonPath(
 		pythonPath?: string,
 		pythonPathSource?: PythonPathSource,
-		resource?: Uri
+		resource?: Uri,
 	): Promise<boolean> {
 		pythonPath = pythonPath
 			? this.resolveVariables(pythonPath, resource)
@@ -132,28 +132,28 @@ export class InvalidPythonPathInDebuggerService
 			this.handle([
 				new InvalidPythonPathInDebuggerDiagnostic(
 					DiagnosticCodes.InvalidPythonPathInDebuggerLaunchDiagnostic,
-					resource
+					resource,
 				),
 			])
 				.catch((ex) =>
 					traceError(
 						"Failed to handle invalid python path in launch.json debugger",
-						ex
-					)
+						ex,
+					),
 				)
 				.ignoreErrors();
 		} else {
 			this.handle([
 				new InvalidPythonPathInDebuggerDiagnostic(
 					DiagnosticCodes.InvalidPythonPathInDebuggerSettingsDiagnostic,
-					resource
+					resource,
 				),
 			])
 				.catch((ex) =>
 					traceError(
 						"Failed to handle invalid python path in settings.json debugger",
-						ex
-					)
+						ex,
+					),
 				)
 				.ignoreErrors();
 		}
@@ -173,18 +173,18 @@ export class InvalidPythonPathInDebuggerService
 
 	protected resolveVariables(
 		pythonPath: string,
-		resource: Uri | undefined
+		resource: Uri | undefined,
 	): string {
 		const systemVariables = new SystemVariables(
 			resource,
 			undefined,
-			this.workspace
+			this.workspace,
 		);
 		return systemVariables.resolveAny(pythonPath);
 	}
 
 	private getCommandPrompts(
-		diagnostic: IDiagnostic
+		diagnostic: IDiagnostic,
 	): { prompt: string; command?: IDiagnosticCommand }[] {
 		switch (diagnostic.code) {
 			case DiagnosticCodes.InvalidPythonPathInDebuggerSettingsDiagnostic: {
@@ -206,14 +206,14 @@ export class InvalidPythonPathInDebuggerService
 							diagnostic,
 							invoke: async (): Promise<void> => {
 								const launchJson = getLaunchJsonFile(
-									workspc.workspaceFolders![0]
+									workspc.workspaceFolders![0],
 								);
 								const doc =
 									await this.documentManager.openTextDocument(
-										launchJson
+										launchJson,
 									);
 								await this.documentManager.showTextDocument(
-									doc
+									doc,
 								);
 							},
 						},
@@ -222,7 +222,7 @@ export class InvalidPythonPathInDebuggerService
 			}
 			default: {
 				throw new Error(
-					"Invalid diagnostic for 'InvalidPythonPathInDebuggerService'"
+					"Invalid diagnostic for 'InvalidPythonPathInDebuggerService'",
 				);
 			}
 		}

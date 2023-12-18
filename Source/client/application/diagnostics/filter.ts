@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable } from "inversify";
 import { IPersistentStateFactory } from "../../common/types";
 import { IServiceContainer } from "../../ioc/types";
@@ -20,15 +18,15 @@ export class DiagnosticFilterService implements IDiagnosticFilterService {
 	) {}
 	public async shouldIgnoreDiagnostic(code: string): Promise<boolean> {
 		const factory = this.serviceContainer.get<IPersistentStateFactory>(
-			IPersistentStateFactory
+			IPersistentStateFactory,
 		);
 		const globalState = factory.createGlobalPersistentState<string[]>(
 			FilterKeys.GlobalDiagnosticFilter,
-			[]
+			[],
 		);
 		const workspaceState = factory.createWorkspacePersistentState<string[]>(
 			FilterKeys.WorkspaceDiagnosticFilter,
-			[]
+			[],
 		);
 		return (
 			globalState.value.indexOf(code) >= 0 ||
@@ -37,21 +35,21 @@ export class DiagnosticFilterService implements IDiagnosticFilterService {
 	}
 	public async ignoreDiagnostic(
 		code: string,
-		scope: DiagnosticScope
+		scope: DiagnosticScope,
 	): Promise<void> {
 		const factory = this.serviceContainer.get<IPersistentStateFactory>(
-			IPersistentStateFactory
+			IPersistentStateFactory,
 		);
 		const state =
 			scope === DiagnosticScope.Global
 				? factory.createGlobalPersistentState<string[]>(
 						FilterKeys.GlobalDiagnosticFilter,
-						[]
-					)
+						[],
+				  )
 				: factory.createWorkspacePersistentState<string[]>(
 						FilterKeys.WorkspaceDiagnosticFilter,
-						[]
-					);
+						[],
+				  );
 
 		const currentValue = state.value.slice();
 		await state.updateValue(currentValue.concat(code));

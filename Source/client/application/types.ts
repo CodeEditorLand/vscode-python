@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { Resource } from "../common/types";
 
 export const IApplicationDiagnostics = Symbol("IApplicationDiagnostics");

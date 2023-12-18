@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { DebugConfigStrings } from "../../../../common/utils/localize";
 import { MultiStepInput } from "../../../../common/utils/multiStepInput";
 import { sendTelemetryEvent } from "../../../../telemetry";
@@ -13,7 +11,7 @@ import { DebugConfigurationState, DebugConfigurationType } from "../../types";
 
 export async function buildPidAttachConfiguration(
 	_input: MultiStepInput<DebugConfigurationState>,
-	state: DebugConfigurationState
+	state: DebugConfigurationState,
 ): Promise<void> {
 	const config: Partial<AttachRequestArguments> = {
 		name: DebugConfigStrings.attachPid.snippet.name,

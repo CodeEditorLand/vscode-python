@@ -1,6 +1,5 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-"use strict";
 
 import { IServiceManager } from "../../ioc/types";
 import { ProductType } from "../types";
@@ -24,36 +23,36 @@ import {
 export function registerTypes(serviceManager: IServiceManager) {
 	serviceManager.addSingleton<IModuleInstaller>(
 		IModuleInstaller,
-		CondaInstaller
+		CondaInstaller,
 	);
 	serviceManager.addSingleton<IModuleInstaller>(
 		IModuleInstaller,
-		PipInstaller
+		PipInstaller,
 	);
 	serviceManager.addSingleton<IModuleInstaller>(
 		IModuleInstaller,
-		PipEnvInstaller
+		PipEnvInstaller,
 	);
 	serviceManager.addSingleton<IModuleInstaller>(
 		IModuleInstaller,
-		PoetryInstaller
+		PoetryInstaller,
 	);
 	serviceManager.addSingleton<IInstallationChannelManager>(
 		IInstallationChannelManager,
-		InstallationChannelManager
+		InstallationChannelManager,
 	);
 	serviceManager.addSingleton<IProductService>(
 		IProductService,
-		ProductService
+		ProductService,
 	);
 	serviceManager.addSingleton<IProductPathService>(
 		IProductPathService,
 		TestFrameworkProductPathService,
-		ProductType.TestFramework
+		ProductType.TestFramework,
 	);
 	serviceManager.addSingleton<IProductPathService>(
 		IProductPathService,
 		DataScienceProductPathService,
-		ProductType.DataScience
+		ProductType.DataScience,
 	);
 }

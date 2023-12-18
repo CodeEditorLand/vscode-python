@@ -8,28 +8,28 @@ import {
 	IInterpreterPathService,
 	IPathUtils,
 } from "../../common/types";
+import { CreateEnv } from "../../common/utils/localize";
 import {
 	executeCommand,
 	registerCommand,
 } from "../../common/vscodeApis/commandApis";
+import { showInformationMessage } from "../../common/vscodeApis/windowApis";
 import { IInterpreterQuickPick } from "../../interpreter/configuration/types";
+import { sendTelemetryEvent } from "../../telemetry";
+import { EventName } from "../../telemetry/constants";
 import {
 	getCreationEvents,
 	handleCreateEnvironmentCommand,
 } from "./createEnvironment";
+import {
+	CreateEnvironmentOptions,
+	CreateEnvironmentProvider,
+	CreateEnvironmentResult,
+	EnvironmentDidCreateEvent,
+	ProposedCreateEnvironmentAPI,
+} from "./proposed.createEnvApis";
 import { condaCreationProvider } from "./provider/condaCreationProvider";
 import { VenvCreationProvider } from "./provider/venvCreationProvider";
-import { showInformationMessage } from "../../common/vscodeApis/windowApis";
-import { CreateEnv } from "../../common/utils/localize";
-import {
-	CreateEnvironmentProvider,
-	CreateEnvironmentOptions,
-	CreateEnvironmentResult,
-	ProposedCreateEnvironmentAPI,
-	EnvironmentDidCreateEvent,
-} from "./proposed.createEnvApis";
-import { sendTelemetryEvent } from "../../telemetry";
-import { EventName } from "../../telemetry/constants";
 
 class CreateEnvironmentProviders {
 	private _createEnvProviders: CreateEnvironmentProvider[] = [];
@@ -44,7 +44,7 @@ class CreateEnvironmentProviders {
 				.length > 0
 		) {
 			throw new Error(
-				`Create Environment provider with id ${provider.id} already registered`
+				`Create Environment provider with id ${provider.id} already registered`,
 			);
 		}
 		this._createEnvProviders.push(provider);
@@ -52,7 +52,7 @@ class CreateEnvironmentProviders {
 
 	public remove(provider: CreateEnvironmentProvider) {
 		this._createEnvProviders = this._createEnvProviders.filter(
-			(p) => p !== provider
+			(p) => p !== provider,
 		);
 	}
 
@@ -65,7 +65,7 @@ const _createEnvironmentProviders: CreateEnvironmentProviders =
 	new CreateEnvironmentProviders();
 
 export function registerCreateEnvironmentProvider(
-	provider: CreateEnvironmentProvider
+	provider: CreateEnvironmentProvider,
 ): Disposable {
 	_createEnvironmentProviders.add(provider);
 	return new Disposable(() => {
@@ -83,17 +83,17 @@ export function registerCreateEnvironmentFeatures(
 	disposables: IDisposableRegistry,
 	interpreterQuickPick: IInterpreterQuickPick,
 	interpreterPathService: IInterpreterPathService,
-	pathUtils: IPathUtils
+	pathUtils: IPathUtils,
 ): void {
 	disposables.push(
 		registerCommand(
 			Commands.Create_Environment,
 			(
-				options?: CreateEnvironmentOptions
+				options?: CreateEnvironmentOptions,
 			): Promise<CreateEnvironmentResult | undefined> => {
 				const providers = _createEnvironmentProviders.getAll();
 				return handleCreateEnvironmentCommand(providers, options);
-			}
+			},
 		),
 		registerCommand(
 			Commands.Create_Environment_Button,
@@ -101,13 +101,13 @@ export function registerCreateEnvironmentFeatures(
 				sendTelemetryEvent(
 					EventName.ENVIRONMENT_BUTTON,
 					undefined,
-					undefined
+					undefined,
 				);
 				await executeCommand(Commands.Create_Environment);
-			}
+			},
 		),
 		registerCreateEnvironmentProvider(
-			new VenvCreationProvider(interpreterQuickPick)
+			new VenvCreationProvider(interpreterQuickPick),
 		),
 		registerCreateEnvironmentProvider(condaCreationProvider()),
 		onCreateEnvironmentExited(async (e: EnvironmentDidCreateEvent) => {
@@ -115,15 +115,15 @@ export function registerCreateEnvironmentFeatures(
 				await interpreterPathService.update(
 					e.workspaceFolder?.uri,
 					ConfigurationTarget.WorkspaceFolder,
-					e.path
+					e.path,
 				);
 				showInformationMessage(
 					`${CreateEnv.informEnvCreation} ${pathUtils.getDisplayName(
-						e.path
-					)}`
+						e.path,
+					)}`,
 				);
 			}
-		})
+		}),
 	);
 }
 
@@ -132,7 +132,7 @@ export function buildEnvironmentCreationApi(): ProposedCreateEnvironmentAPI {
 		onWillCreateEnvironment: onCreateEnvironmentStarted,
 		onDidCreateEnvironment: onCreateEnvironmentExited,
 		createEnvironment: async (
-			options?: CreateEnvironmentOptions | undefined
+			options?: CreateEnvironmentOptions | undefined,
 		): Promise<CreateEnvironmentResult | undefined> => {
 			const providers = _createEnvironmentProviders.getAll();
 			try {
@@ -147,7 +147,7 @@ export function buildEnvironmentCreationApi(): ProposedCreateEnvironmentAPI {
 			}
 		},
 		registerCreateEnvironmentProvider: (
-			provider: CreateEnvironmentProvider
+			provider: CreateEnvironmentProvider,
 		) => registerCreateEnvironmentProvider(provider),
 	};
 }

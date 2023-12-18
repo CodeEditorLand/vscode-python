@@ -1,10 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
-import { inject, injectable } from "inversify";
 import * as path from "path";
+import { inject, injectable } from "inversify";
 import { parse } from "semver";
 import * as vscode from "vscode";
 import { traceError } from "../../logging";
@@ -33,7 +31,7 @@ export class ApplicationEnvironment implements IApplicationEnvironment {
 					"Application Support",
 					vscodeFolderName,
 					"User",
-					"settings.json"
+					"settings.json",
 				);
 			case OSType.Linux:
 				return path.join(
@@ -41,7 +39,7 @@ export class ApplicationEnvironment implements IApplicationEnvironment {
 					".config",
 					vscodeFolderName,
 					"User",
-					"settings.json"
+					"settings.json",
 				);
 			case OSType.Windows:
 				return this.process.env.APPDATA
@@ -49,8 +47,8 @@ export class ApplicationEnvironment implements IApplicationEnvironment {
 							this.process.env.APPDATA,
 							vscodeFolderName,
 							"User",
-							"settings.json"
-						)
+							"settings.json",
+					  )
 					: undefined;
 			default:
 				return;

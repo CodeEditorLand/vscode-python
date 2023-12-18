@@ -26,7 +26,7 @@ export interface IComponentAdapter {
 	readonly onProgress: Event<ProgressNotificationEvent>;
 	triggerRefresh(
 		query?: PythonLocatorQuery,
-		options?: TriggerRefreshOptions
+		options?: TriggerRefreshOptions,
 	): Promise<void>;
 	getRefreshPromise(): Promise<void> | undefined;
 	readonly onChanged: Event<PythonEnvironmentsChangedEvent>;
@@ -34,28 +34,28 @@ export interface IComponentAdapter {
 	onDidCreate(resource: Resource, callback: () => void): Disposable;
 	// IInterpreterLocatorService
 	hasInterpreters(
-		filter?: (e: PythonEnvironment) => Promise<boolean>
+		filter?: (e: PythonEnvironment) => Promise<boolean>,
 	): Promise<boolean>;
 	getInterpreters(
 		resource?: Uri,
-		source?: PythonEnvSource[]
+		source?: PythonEnvSource[],
 	): PythonEnvironment[];
 
 	// WorkspaceVirtualEnvInterpretersAutoSelectionRule
 	getWorkspaceVirtualEnvInterpreters(
 		resource: Uri,
-		options?: { ignoreCache?: boolean }
+		options?: { ignoreCache?: boolean },
 	): Promise<PythonEnvironment[]>;
 
 	// IInterpreterService
 	getInterpreterDetails(
-		pythonPath: string
+		pythonPath: string,
 	): Promise<PythonEnvironment | undefined>;
 
 	// IInterpreterHelper
 	// Undefined is expected on this API, if the environment info retrieval fails.
 	getInterpreterInformation(
-		pythonPath: string
+		pythonPath: string,
 	): Promise<Partial<PythonEnvironment> | undefined>;
 
 	isMacDefaultPythonPath(pythonPath: string): Promise<boolean>;
@@ -64,7 +64,7 @@ export interface IComponentAdapter {
 	isCondaEnvironment(interpreterPath: string): Promise<boolean>;
 	// Undefined is expected on this API, if the environment is not conda env.
 	getCondaEnvironment(
-		interpreterPath: string
+		interpreterPath: string,
 	): Promise<CondaEnvironmentInfo | undefined>;
 
 	isMicrosoftStoreInterpreter(pythonPath: string): Promise<boolean>;
@@ -80,15 +80,15 @@ export interface ICondaService {
 	isCondaAvailable(): Promise<boolean>;
 	getCondaVersion(): Promise<SemVer | undefined>;
 	getInterpreterPathForEnvironment(
-		condaEnv: CondaEnvironmentInfo
+		condaEnv: CondaEnvironmentInfo,
 	): Promise<string | undefined>;
 	getCondaFileFromInterpreter(
 		interpreterPath?: string,
-		envName?: string
+		envName?: string,
 	): Promise<string | undefined>;
 	getActivationScriptFromInterpreter(
 		interpreterPath?: string,
-		envName?: string
+		envName?: string,
 	): Promise<
 		{ path: string | undefined; type: "local" | "global" } | undefined
 	>;
@@ -98,7 +98,7 @@ export const IInterpreterService = Symbol("IInterpreterService");
 export interface IInterpreterService {
 	triggerRefresh(
 		query?: PythonLocatorQuery,
-		options?: TriggerRefreshOptions
+		options?: TriggerRefreshOptions,
 	): Promise<void>;
 	readonly refreshPromise: Promise<void> | undefined;
 	readonly onDidChangeInterpreters: Event<PythonEnvironmentsChangedEvent>;
@@ -110,7 +110,7 @@ export interface IInterpreterService {
 	 * returned by this is more or less upto date but is not guaranteed to be.
 	 */
 	hasInterpreters(
-		filter?: (e: PythonEnvironment) => Promise<boolean>
+		filter?: (e: PythonEnvironment) => Promise<boolean>,
 	): Promise<boolean>;
 	getInterpreters(resource?: Uri): PythonEnvironment[];
 	/**
@@ -118,11 +118,11 @@ export interface IInterpreterService {
 	 */
 	getAllInterpreters(resource?: Uri): Promise<PythonEnvironment[]>;
 	getActiveInterpreter(
-		resource?: Uri
+		resource?: Uri,
 	): Promise<PythonEnvironment | undefined>;
 	getInterpreterDetails(
 		pythonPath: string,
-		resoure?: Uri
+		resoure?: Uri,
 	): Promise<undefined | PythonEnvironment>;
 	refresh(resource: Resource): Promise<void>;
 	initialize(): void;
@@ -132,7 +132,7 @@ export const IInterpreterDisplay = Symbol("IInterpreterDisplay");
 export interface IInterpreterDisplay {
 	refresh(resource?: Uri): Promise<void>;
 	registerVisibilityFilter(
-		filter: IInterpreterStatusbarVisibilityFilter
+		filter: IInterpreterStatusbarVisibilityFilter,
 	): void;
 }
 
@@ -140,19 +140,19 @@ export const IInterpreterHelper = Symbol("IInterpreterHelper");
 export interface IInterpreterHelper {
 	getActiveWorkspaceUri(resource: Resource): WorkspacePythonPath | undefined;
 	getInterpreterInformation(
-		pythonPath: string
+		pythonPath: string,
 	): Promise<undefined | Partial<PythonEnvironment>>;
 	isMacDefaultPythonPath(pythonPath: string): Promise<boolean>;
 	getInterpreterTypeDisplayName(
-		interpreterType: EnvironmentType
+		interpreterType: EnvironmentType,
 	): string | undefined;
 	getBestInterpreter(
-		interpreters?: PythonEnvironment[]
+		interpreters?: PythonEnvironment[],
 	): PythonEnvironment | undefined;
 }
 
 export const IInterpreterStatusbarVisibilityFilter = Symbol(
-	"IInterpreterStatusbarVisibilityFilter"
+	"IInterpreterStatusbarVisibilityFilter",
 );
 /**
  * Implement this interface to control the visibility of the interpreter statusbar.
@@ -170,10 +170,10 @@ export type WorkspacePythonPath = {
 };
 
 export const IActivatedEnvironmentLaunch = Symbol(
-	"IActivatedEnvironmentLaunch"
+	"IActivatedEnvironmentLaunch",
 );
 export interface IActivatedEnvironmentLaunch {
 	selectIfLaunchedViaActivatedEnv(
-		doNotBlockOnSelection?: boolean
+		doNotBlockOnSelection?: boolean,
 	): Promise<string | undefined>;
 }

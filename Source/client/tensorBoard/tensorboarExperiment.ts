@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+import { inject, injectable } from "inversify";
 import {
 	Disposable,
 	EventEmitter,
@@ -9,14 +10,13 @@ import {
 	l10n,
 	window,
 } from "vscode";
-import { inject, injectable } from "inversify";
+import { TENSORBOARD_EXTENSION_ID } from "../common/constants";
+import { RecommendTensobardExtension } from "../common/experiments/groups";
 import {
 	IDisposable,
 	IDisposableRegistry,
 	IExperimentService,
 } from "../common/types";
-import { RecommendTensobardExtension } from "../common/experiments/groups";
-import { TENSORBOARD_EXTENSION_ID } from "../common/constants";
 
 @injectable()
 export class TensorboardExperiment {
@@ -34,21 +34,21 @@ export class TensorboardExperiment {
 
 	constructor(
 		@inject(IDisposableRegistry) disposables: IDisposableRegistry,
-		@inject(IExperimentService) experiments: IExperimentService
+		@inject(IExperimentService) experiments: IExperimentService,
 	) {
 		this.isExperimentEnabled = experiments.inExperimentSync(
-			RecommendTensobardExtension.experiment
+			RecommendTensobardExtension.experiment,
 		);
 		disposables.push(this._onDidChange);
 		extensions.onDidChange(
 			() =>
 				TensorboardExperiment.isTensorboardExtensionInstalled
 					? Disposable.from(
-							...this.toDisposeWhenTensobardIsInstalled
-						).dispose()
+							...this.toDisposeWhenTensobardIsInstalled,
+					  ).dispose()
 					: undefined,
 			this,
-			disposables
+			disposables,
 		);
 	}
 
@@ -65,16 +65,16 @@ export class TensorboardExperiment {
 		window
 			.showInformationMessage(
 				l10n.t(
-					"Install the TensorBoard extension to use the this functionality. Once installed, select the command `Launch Tensorboard`."
+					"Install the TensorBoard extension to use the this functionality. Once installed, select the command `Launch Tensorboard`.",
 				),
 				{ modal: true },
-				install
+				install,
 			)
 			.then((result): void => {
 				if (result === install) {
 					void commands.executeCommand(
 						"workbench.extensions.installExtension",
-						TENSORBOARD_EXTENSION_ID
+						TENSORBOARD_EXTENSION_ID,
 					);
 				}
 			});

@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import * as semver from "semver";
 import { verboseRegExp } from "./regexp";
 
@@ -99,7 +97,7 @@ function copyStrict<T extends BasicVersionInfo>(info: T): RawBasicVersionInfo {
  * The caller is responsible for any other properties beyond that.
  */
 function normalizeBasicVersionInfo<T extends BasicVersionInfo>(
-	info: T | undefined
+	info: T | undefined,
 ): T {
 	if (!info) {
 		return EMPTY_VERSION as T;
@@ -109,13 +107,13 @@ function normalizeBasicVersionInfo<T extends BasicVersionInfo>(
 	if (norm.unnormalized === undefined) {
 		norm.unnormalized = {};
 		[norm.major, norm.unnormalized.major] = normalizeVersionPart(
-			norm.major
+			norm.major,
 		);
 		[norm.minor, norm.unnormalized.minor] = normalizeVersionPart(
-			norm.minor
+			norm.minor,
 		);
 		[norm.micro, norm.unnormalized.micro] = normalizeVersionPart(
-			norm.micro
+			norm.micro,
 		);
 	}
 	return norm as T;
@@ -124,7 +122,7 @@ function normalizeBasicVersionInfo<T extends BasicVersionInfo>(
 function validateVersionPart(
 	prop: string,
 	part: number,
-	unnormalized?: ErrorMsg
+	unnormalized?: ErrorMsg,
 ) {
 	// We expect a normalized version part here, so there's no need
 	// to check for NaN or non-numbers here.
@@ -135,7 +133,7 @@ function validateVersionPart(
 		return;
 	}
 	throw Error(
-		`invalid ${prop} version (failed to normalize; ${unnormalized})`
+		`invalid ${prop} version (failed to normalize; ${unnormalized})`,
 	);
 }
 
@@ -212,7 +210,7 @@ const basicVersionRegexp = verboseRegExp(basicVersionPattern, "s");
  * as well.
  */
 export function parseBasicVersionInfo<T extends BasicVersionInfo>(
-	verStr: string
+	verStr: string,
 ): ParseResult<T> | undefined {
 	const match = verStr.match(basicVersionRegexp);
 	if (!match) {
@@ -252,7 +250,7 @@ export function parseBasicVersionInfo<T extends BasicVersionInfo>(
  * The object is expected to already be normalized.
  */
 export function isVersionInfoEmpty<T extends BasicVersionInfo>(
-	info: T
+	info: T,
 ): boolean {
 	if (!info) {
 		return false;
@@ -286,7 +284,7 @@ export function compareVersions<
 	// the versions to compare:
 	left: T,
 	right: V,
-	compareExtra?: (v1: T, v2: V) => [number, string]
+	compareExtra?: (v1: T, v2: V) => [number, string],
 ): [number, string] {
 	if (left.major < right.major) {
 		return [1, "major"];
@@ -367,7 +365,7 @@ export function validateVersionInfo<T extends VersionInfo>(info: T): void {
  * as well.
  */
 export function parseVersionInfo<T extends VersionInfo>(
-	verStr: string
+	verStr: string,
 ): ParseResult<T> | undefined {
 	const result = parseBasicVersionInfo<T>(verStr);
 	if (result === undefined) {
@@ -389,7 +387,7 @@ export function areIdenticalVersion<
 	// the versions to compare:
 	left: T,
 	right: V,
-	compareExtra?: (v1: T, v2: V) => [number, string]
+	compareExtra?: (v1: T, v2: V) => [number, string],
 ): boolean {
 	const [result] = compareVersions(left, right, compareExtra);
 	return result === 0;
@@ -407,7 +405,7 @@ export function areSimilarVersions<
 	// the versions to compare:
 	left: T,
 	right: V,
-	compareExtra?: (v1: T, v2: V) => [number, string]
+	compareExtra?: (v1: T, v2: V) => [number, string],
 ): boolean {
 	const [result, prop] = compareVersions(left, right, compareExtra);
 	if (result === 0) {

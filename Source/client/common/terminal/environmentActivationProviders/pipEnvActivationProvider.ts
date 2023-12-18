@@ -1,15 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable, named } from "inversify";
 import { Uri } from "vscode";
-import "../../extensions";
 import { IInterpreterService } from "../../../interpreter/contracts";
 import { isPipenvEnvironmentRelatedToFolder } from "../../../pythonEnvironments/common/environmentManagers/pipenv";
 import { EnvironmentType } from "../../../pythonEnvironments/info";
 import { IWorkspaceService } from "../../application/types";
+import "../../extensions";
 import { IToolExecutionPath, ToolExecutionPath } from "../../types";
 import { ITerminalActivationCommandProvider } from "../types";
 
@@ -33,7 +31,7 @@ export class PipEnvActivationCommandProvider
 	}
 
 	public async getActivationCommands(
-		resource: Uri | undefined
+		resource: Uri | undefined,
 	): Promise<string[] | undefined> {
 		const interpreter =
 			await this.interpreterService.getActiveInterpreter(resource);
@@ -48,7 +46,7 @@ export class PipEnvActivationCommandProvider
 			if (
 				!(await isPipenvEnvironmentRelatedToFolder(
 					interpreter.path,
-					workspaceFolder?.uri.fsPath
+					workspaceFolder?.uri.fsPath,
 				))
 			) {
 				return undefined;
@@ -59,7 +57,7 @@ export class PipEnvActivationCommandProvider
 	}
 
 	public async getActivationCommandsForInterpreter(
-		pythonPath: string
+		pythonPath: string,
 	): Promise<string[] | undefined> {
 		const interpreter =
 			await this.interpreterService.getInterpreterDetails(pythonPath);

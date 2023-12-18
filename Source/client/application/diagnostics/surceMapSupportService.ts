@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable } from "inversify";
 import { ConfigurationTarget } from "vscode";
 import {
@@ -30,8 +28,8 @@ export class SourceMapSupportService implements ISourceMapSupportService {
 			this.commandManager.registerCommand(
 				Commands.Enable_SourceMap_Support,
 				this.onEnable,
-				this
-			)
+				this,
+			),
 		);
 	}
 	public async enable(): Promise<void> {
@@ -39,10 +37,10 @@ export class SourceMapSupportService implements ISourceMapSupportService {
 			"diagnostics.sourceMapsEnabled",
 			true,
 			undefined,
-			ConfigurationTarget.Global
+			ConfigurationTarget.Global,
 		);
 		await this.commandManager.executeCommand(
-			"workbench.action.reloadWindow"
+			"workbench.action.reloadWindow",
 		);
 	}
 	protected async onEnable(): Promise<void> {
@@ -50,7 +48,7 @@ export class SourceMapSupportService implements ISourceMapSupportService {
 			Diagnostics.enableSourceMapsAndReloadVSC;
 		const selection = await this.shell.showWarningMessage(
 			Diagnostics.warnBeforeEnablingSourceMaps,
-			enableSourceMapsAndReloadVSC
+			enableSourceMapsAndReloadVSC,
 		);
 		if (selection === enableSourceMapsAndReloadVSC) {
 			await this.enable();

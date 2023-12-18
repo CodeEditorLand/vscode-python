@@ -1,19 +1,19 @@
+import * as path from "path";
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 import * as fs from "fs-extra";
-import * as path from "path";
 import { WorkspaceFolder } from "vscode";
 import { Commands } from "../../../common/constants";
+import { isWindows } from "../../../common/platform/platformService";
 import { Common } from "../../../common/utils/localize";
 import { executeCommand } from "../../../common/vscodeApis/commandApis";
 import { showErrorMessage } from "../../../common/vscodeApis/windowApis";
-import { isWindows } from "../../../common/platform/platformService";
 
 export async function showErrorMessageWithLogs(message: string): Promise<void> {
 	const result = await showErrorMessage(
 		message,
 		Common.openOutputPanel,
-		Common.selectPythonInterpreter
+		Common.selectPythonInterpreter,
 	);
 	if (result === Common.openOutputPanel) {
 		await executeCommand(Commands.ViewOutput);
@@ -27,7 +27,7 @@ export function getVenvPath(workspaceFolder: WorkspaceFolder): string {
 }
 
 export async function hasVenv(
-	workspaceFolder: WorkspaceFolder
+	workspaceFolder: WorkspaceFolder,
 ): Promise<boolean> {
 	return fs.pathExists(getVenvPath(workspaceFolder));
 }
@@ -40,13 +40,13 @@ export function getVenvExecutable(workspaceFolder: WorkspaceFolder): string {
 }
 
 export function getPrefixCondaEnvPath(
-	workspaceFolder: WorkspaceFolder
+	workspaceFolder: WorkspaceFolder,
 ): string {
 	return path.join(workspaceFolder.uri.fsPath, ".conda");
 }
 
 export async function hasPrefixCondaEnv(
-	workspaceFolder: WorkspaceFolder
+	workspaceFolder: WorkspaceFolder,
 ): Promise<boolean> {
 	return fs.pathExists(getPrefixCondaEnvPath(workspaceFolder));
 }

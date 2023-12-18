@@ -1,11 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { Progress, ProgressLocation, window } from "vscode";
 import { Disposable, LanguageClient } from "vscode-languageclient/node";
-import { createDeferred, Deferred } from "../common/utils/async";
+import { Deferred, createDeferred } from "../common/utils/async";
 
 export class ProgressReporting implements Disposable {
 	private statusBarMessage: Disposable | undefined;
@@ -22,7 +20,7 @@ export class ProgressReporting implements Disposable {
 					this.statusBarMessage.dispose();
 				}
 				this.statusBarMessage = window.setStatusBarMessage(m);
-			}
+			},
 		);
 
 		this.languageClient.onNotification("python/beginProgress", (_) => {
@@ -39,7 +37,7 @@ export class ProgressReporting implements Disposable {
 					this.beginProgress();
 				}
 				this.progress!.report({ message: m }); // NOSONAR
-			}
+			},
 		);
 
 		this.languageClient.onNotification("python/endProgress", (_) => {
@@ -68,7 +66,7 @@ export class ProgressReporting implements Disposable {
 			(progress) => {
 				this.progress = progress;
 				return this.progressDeferred!.promise;
-			}
+			},
 		);
 	}
 }

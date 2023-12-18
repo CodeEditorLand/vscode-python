@@ -1,50 +1,50 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+import { cloneDeep } from "lodash";
 import * as vscode from "vscode";
 import { Uri } from "vscode";
-import { cloneDeep } from "lodash";
 import {
-	getGlobalStorage,
 	IPersistentStorage,
+	getGlobalStorage,
 } from "../common/persistentState";
-import { getOSType, OSType } from "../common/utils/platform";
+import { IDisposable } from "../common/types";
+import { OSType, getOSType } from "../common/utils/platform";
 import { ActivationResult, ExtensionState } from "../components";
+import { traceError } from "../logging";
+import { createPythonEnvironments } from "./api";
 import { PythonEnvInfo } from "./base/info";
+import { getEnvironmentInfoService } from "./base/info/environmentInfoService";
 import { BasicEnvInfo, IDiscoveryAPI, ILocator } from "./base/locator";
+import {
+	IEnvsCollectionCache,
+	createCollectionCache as createCache,
+} from "./base/locators/composite/envsCollectionCache";
+import { EnvsCollectionService } from "./base/locators/composite/envsCollectionService";
 import { PythonEnvsReducer } from "./base/locators/composite/envsReducer";
 import { PythonEnvsResolver } from "./base/locators/composite/envsResolver";
+import { ActiveStateLocator } from "./base/locators/lowLevel/activeStateLocator";
+import { CondaEnvironmentLocator } from "./base/locators/lowLevel/condaLocator";
+import { CustomVirtualEnvironmentLocator } from "./base/locators/lowLevel/customVirtualEnvLocator";
+import { CustomWorkspaceLocator } from "./base/locators/lowLevel/customWorkspaceLocator";
+import { GlobalVirtualEnvironmentLocator } from "./base/locators/lowLevel/globalVirtualEnvronmentLocator";
+import { MicrosoftStoreLocator } from "./base/locators/lowLevel/microsoftStoreLocator";
+import { PoetryLocator } from "./base/locators/lowLevel/poetryLocator";
+import { PosixKnownPathsLocator } from "./base/locators/lowLevel/posixKnownPathsLocator";
+import { PyenvLocator } from "./base/locators/lowLevel/pyenvLocator";
 import { WindowsPathEnvVarLocator } from "./base/locators/lowLevel/windowsKnownPathsLocator";
+import { WindowsRegistryLocator } from "./base/locators/lowLevel/windowsRegistryLocator";
 import { WorkspaceVirtualEnvironmentLocator } from "./base/locators/lowLevel/workspaceVirtualEnvLocator";
-import {
-	initializeExternalDependencies as initializeLegacyExternalDependencies,
-	normCasePath,
-} from "./common/externalDependencies";
 import {
 	ExtensionLocators,
 	WatchRootsArgs,
 	WorkspaceLocators,
 } from "./base/locators/wrappers";
-import { CustomVirtualEnvironmentLocator } from "./base/locators/lowLevel/customVirtualEnvLocator";
-import { CondaEnvironmentLocator } from "./base/locators/lowLevel/condaLocator";
-import { GlobalVirtualEnvironmentLocator } from "./base/locators/lowLevel/globalVirtualEnvronmentLocator";
-import { PosixKnownPathsLocator } from "./base/locators/lowLevel/posixKnownPathsLocator";
-import { PyenvLocator } from "./base/locators/lowLevel/pyenvLocator";
-import { WindowsRegistryLocator } from "./base/locators/lowLevel/windowsRegistryLocator";
-import { MicrosoftStoreLocator } from "./base/locators/lowLevel/microsoftStoreLocator";
-import { getEnvironmentInfoService } from "./base/info/environmentInfoService";
-import { registerNewDiscoveryForIOC } from "./legacyIOC";
-import { PoetryLocator } from "./base/locators/lowLevel/poetryLocator";
-import { createPythonEnvironments } from "./api";
 import {
-	createCollectionCache as createCache,
-	IEnvsCollectionCache,
-} from "./base/locators/composite/envsCollectionCache";
-import { EnvsCollectionService } from "./base/locators/composite/envsCollectionService";
-import { IDisposable } from "../common/types";
-import { traceError } from "../logging";
-import { ActiveStateLocator } from "./base/locators/lowLevel/activeStateLocator";
-import { CustomWorkspaceLocator } from "./base/locators/lowLevel/customWorkspaceLocator";
+	initializeExternalDependencies as initializeLegacyExternalDependencies,
+	normCasePath,
+} from "./common/externalDependencies";
+import { registerNewDiscoveryForIOC } from "./legacyIOC";
 
 /**
  * Set up the Python environments component (during extension activation).'
@@ -57,7 +57,7 @@ export async function initialize(ext: ExtensionState): Promise<IDiscoveryAPI> {
 	registerNewDiscoveryForIOC(
 		// These are what get wrapped in the legacy adapter.
 		ext.legacyIOC.serviceManager,
-		api
+		api,
 	);
 	return api;
 }
@@ -67,7 +67,7 @@ export async function initialize(ext: ExtensionState): Promise<IDiscoveryAPI> {
  */
 export async function activate(
 	api: IDiscoveryAPI,
-	ext: ExtensionState
+	ext: ExtensionState,
 ): Promise<ActivationResult> {
 	/**
 	 * Force an initial background refresh of the environments.
@@ -82,29 +82,17 @@ export async function activate(
 		getGlobalStorage<PythonEnvInfo[]>(
 			ext.context,
 			"PYTHON_ENV_INFO_CACHE",
-			[]
+			[],
 		).get().length > 0;
-	if (!wasTriggered) {
-		api.triggerRefresh().ignoreErrors();
-		folders?.forEach(async (folder) => {
-			const wasTriggeredForFolder = getGlobalStorage<boolean>(
-				ext.context,
-				`PYTHON_WAS_DISCOVERY_TRIGGERED_${normCasePath(
-					folder.uri.fsPath
-				)}`,
-				false
-			);
-			await wasTriggeredForFolder.set(true);
-		});
-	} else {
+	if (wasTriggered) {
 		// Figure out which workspace folders need to be activated if any.
 		folders?.forEach(async (folder) => {
 			const wasTriggeredForFolder = getGlobalStorage<boolean>(
 				ext.context,
 				`PYTHON_WAS_DISCOVERY_TRIGGERED_${normCasePath(
-					folder.uri.fsPath
+					folder.uri.fsPath,
 				)}`,
-				false
+				false,
 			);
 			if (!wasTriggeredForFolder.get()) {
 				api.triggerRefresh({
@@ -115,6 +103,18 @@ export async function activate(
 				}).ignoreErrors();
 				await wasTriggeredForFolder.set(true);
 			}
+		});
+	} else {
+		api.triggerRefresh().ignoreErrors();
+		folders?.forEach(async (folder) => {
+			const wasTriggeredForFolder = getGlobalStorage<boolean>(
+				ext.context,
+				`PYTHON_WAS_DISCOVERY_TRIGGERED_${normCasePath(
+					folder.uri.fsPath,
+				)}`,
+				false,
+			);
+			await wasTriggeredForFolder.set(true);
 		});
 	}
 
@@ -127,7 +127,7 @@ export async function activate(
  * Get the locator to use in the component.
  */
 async function createLocator(
-	ext: ExtensionState
+	ext: ExtensionState,
 	// This is shared.
 ): Promise<IDiscoveryAPI> {
 	// Create the low-level locators.
@@ -135,7 +135,7 @@ async function createLocator(
 		new ExtensionLocators<BasicEnvInfo>(
 			// Here we pull the locators together.
 			createNonWorkspaceLocators(ext),
-			createWorkspaceLocator(ext)
+			createWorkspaceLocator(ext),
 		);
 
 	// Create the env info service used by ResolvingLocator and CachingLocator.
@@ -146,18 +146,18 @@ async function createLocator(
 	const resolvingLocator = new PythonEnvsResolver(
 		reducer,
 		// These are shared.
-		envInfoService
+		envInfoService,
 	);
 	const caching = new EnvsCollectionService(
 		await createCollectionCache(ext),
 		// This is shared.
-		resolvingLocator
+		resolvingLocator,
 	);
 	return caching;
 }
 
 function createNonWorkspaceLocators(
-	ext: ExtensionState
+	ext: ExtensionState,
 ): ILocator<BasicEnvInfo>[] {
 	const locators: (ILocator<BasicEnvInfo> & Partial<IDisposable>)[] = [];
 	locators.push(
@@ -166,7 +166,7 @@ function createNonWorkspaceLocators(
 		new CondaEnvironmentLocator(),
 		new ActiveStateLocator(),
 		new GlobalVirtualEnvironmentLocator(),
-		new CustomVirtualEnvironmentLocator()
+		new CustomVirtualEnvironmentLocator(),
 	);
 
 	if (getOSType() === OSType.Windows) {
@@ -174,17 +174,17 @@ function createNonWorkspaceLocators(
 			// Windows specific locators go here.
 			new WindowsRegistryLocator(),
 			new MicrosoftStoreLocator(),
-			new WindowsPathEnvVarLocator()
+			new WindowsPathEnvVarLocator(),
 		);
 	} else {
 		locators.push(
 			// Linux/Mac locators go here.
-			new PosixKnownPathsLocator()
+			new PosixKnownPathsLocator(),
 		);
 	}
 
 	const disposables = locators.filter(
-		(d) => d.dispose !== undefined
+		(d) => d.dispose !== undefined,
 	) as IDisposable[];
 	ext.disposables.push(...disposables);
 	return locators;
@@ -222,7 +222,7 @@ function createWorkspaceLocator(ext: ExtensionState): WorkspaceLocators {
 }
 
 function getFromStorage(
-	storage: IPersistentStorage<PythonEnvInfo[]>
+	storage: IPersistentStorage<PythonEnvInfo[]>,
 ): PythonEnvInfo[] {
 	return storage.get().map((e) => {
 		if (e.searchLocation) {
@@ -233,12 +233,12 @@ function getFromStorage(
 				"path" in e.searchLocation
 			) {
 				e.searchLocation = Uri.parse(
-					`${e.searchLocation.scheme}://${e.searchLocation.path}`
+					`${e.searchLocation.scheme}://${e.searchLocation.path}`,
 				);
 			} else {
 				traceError(
 					"Unexpected search location",
-					JSON.stringify(e.searchLocation)
+					JSON.stringify(e.searchLocation),
 				);
 			}
 		}
@@ -248,7 +248,7 @@ function getFromStorage(
 
 function putIntoStorage(
 	storage: IPersistentStorage<PythonEnvInfo[]>,
-	envs: PythonEnvInfo[]
+	envs: PythonEnvInfo[],
 ): Promise<void> {
 	storage.set(
 		// We have to `cloneDeep()` here so that we don't overwrite the original `PythonEnvInfo` objects.
@@ -260,18 +260,18 @@ function putIntoStorage(
 					e.searchLocation.toString() as unknown as Uri;
 			}
 			return e;
-		})
+		}),
 	);
 	return Promise.resolve();
 }
 
 async function createCollectionCache(
-	ext: ExtensionState
+	ext: ExtensionState,
 ): Promise<IEnvsCollectionCache> {
 	const storage = getGlobalStorage<PythonEnvInfo[]>(
 		ext.context,
 		"PYTHON_ENV_INFO_CACHE",
-		[]
+		[],
 	);
 	const cache = await createCache({
 		get: () => getFromStorage(storage),

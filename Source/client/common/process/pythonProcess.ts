@@ -25,33 +25,33 @@ class PythonProcessService {
 			exec(
 				file: string,
 				args: string[],
-				options: SpawnOptions
+				options: SpawnOptions,
 			): Promise<ExecutionResult<string>>;
 			execObservable(
 				file: string,
 				args: string[],
-				options: SpawnOptions
+				options: SpawnOptions,
 			): ObservableExecutionResult<string>;
-		}
+		},
 	) {}
 
 	public execObservable(
 		args: string[],
-		options: SpawnOptions
+		options: SpawnOptions,
 	): ObservableExecutionResult<string> {
 		const opts: SpawnOptions = { ...options };
 		const executable = this.deps.getExecutionObservableInfo(args);
 		return this.deps.execObservable(
 			executable.command,
 			executable.args,
-			opts
+			opts,
 		);
 	}
 
 	public execModuleObservable(
 		moduleName: string,
 		moduleArgs: string[],
-		options: SpawnOptions
+		options: SpawnOptions,
 	): ObservableExecutionResult<string> {
 		const args = internalPython.execModule(moduleName, moduleArgs);
 		const opts: SpawnOptions = { ...options };
@@ -59,13 +59,13 @@ class PythonProcessService {
 		return this.deps.execObservable(
 			executable.command,
 			executable.args,
-			opts
+			opts,
 		);
 	}
 
 	public async exec(
 		args: string[],
-		options: SpawnOptions
+		options: SpawnOptions,
 	): Promise<ExecutionResult<string>> {
 		const opts: SpawnOptions = { ...options };
 		const executable = this.deps.getExecutionInfo(args);
@@ -75,7 +75,7 @@ class PythonProcessService {
 	public async execModule(
 		moduleName: string,
 		moduleArgs: string[],
-		options: SpawnOptions
+		options: SpawnOptions,
 	): Promise<ExecutionResult<string>> {
 		const args = internalPython.execModule(moduleName, moduleArgs);
 		const opts: SpawnOptions = { ...options };
@@ -83,7 +83,7 @@ class PythonProcessService {
 		const result = await this.deps.exec(
 			executable.command,
 			executable.args,
-			opts
+			opts,
 		);
 
 		// If a module is not installed we'll have something in stderr.
@@ -91,7 +91,7 @@ class PythonProcessService {
 			moduleName &&
 			ErrorUtils.outputHasModuleNotInstalledError(
 				moduleName,
-				result.stderr
+				result.stderr,
 			)
 		) {
 			const isInstalled = await this.deps.isModuleInstalled(moduleName);
@@ -106,14 +106,14 @@ class PythonProcessService {
 	public async execForLinter(
 		moduleName: string,
 		args: string[],
-		options: SpawnOptions
+		options: SpawnOptions,
 	): Promise<ExecutionResult<string>> {
 		const opts: SpawnOptions = { ...options };
 		const executable = this.deps.getExecutionInfo(args);
 		const result = await this.deps.exec(
 			executable.command,
 			executable.args,
-			opts
+			opts,
 		);
 
 		// If a module is not installed we'll have something in stderr.
@@ -121,7 +121,7 @@ class PythonProcessService {
 			moduleName &&
 			ErrorUtils.outputHasModuleNotInstalledError(
 				moduleName,
-				result.stderr
+				result.stderr,
 			)
 		) {
 			const isInstalled = await this.deps.isModuleInstalled(moduleName);
@@ -137,7 +137,7 @@ class PythonProcessService {
 export function createPythonProcessService(
 	procs: IProcessService,
 	// from PythonEnvironment:
-	env: IPythonEnvironment
+	env: IPythonEnvironment,
 ) {
 	const deps = {
 		// from PythonService:

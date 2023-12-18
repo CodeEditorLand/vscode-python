@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { WriteStream } from "fs-extra";
 import * as util from "util";
+import { WriteStream } from "fs-extra";
 import { Disposable } from "vscode-jsonrpc";
 import { Arguments, ILogging } from "./types";
 import { getTimeForLogging } from "./util";
@@ -10,8 +10,8 @@ import { getTimeForLogging } from "./util";
 function formatMessage(level?: string, ...data: Arguments): string {
 	return level
 		? `[${level.toUpperCase()} ${getTimeForLogging()}]: ${util.format(
-				...data
-			)}\r\n`
+				...data,
+		  )}\r\n`
 		: `${util.format(...data)}\r\n`;
 }
 

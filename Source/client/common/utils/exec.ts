@@ -3,13 +3,13 @@
 
 import * as fsapi from "fs";
 import * as path from "path";
-import { getEnvironmentVariable, getOSType, OSType } from "./platform";
+import { OSType, getEnvironmentVariable, getOSType } from "./platform";
 
 /**
  * Determine the env var to use for the executable search path.
  */
 export function getSearchPathEnvVarNames(
-	ostype = getOSType()
+	ostype = getOSType(),
 ): ("Path" | "PATH")[] {
 	if (ostype === OSType.Windows) {
 		// On Windows both are supported now.
@@ -52,7 +52,7 @@ function parseSearchPathEntries(envVarValue: string): string[] {
  * to decide what to do.
  */
 export async function isValidAndExecutable(
-	filename: string
+	filename: string,
 ): Promise<boolean | undefined> {
 	// There are three options when it comes to checking if a file
 	// is executable: `fs.stat()`, `fs.access()`, and

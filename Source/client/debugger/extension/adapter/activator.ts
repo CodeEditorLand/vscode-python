@@ -1,16 +1,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-import { Uri } from "vscode";
 import { inject, injectable } from "inversify";
+import { Uri } from "vscode";
 import { IExtensionSingleActivationService } from "../../../activation/types";
 import { IDebugService } from "../../../common/application/types";
+import { ICommandManager } from "../../../common/application/types";
 import {
 	IConfigurationService,
 	IDisposableRegistry,
 } from "../../../common/types";
-import { ICommandManager } from "../../../common/application/types";
 import { DebuggerTypeName } from "../../constants";
 import { IAttachProcessProviderFactory } from "../attachQuickPick/types";
 import {
@@ -49,33 +48,33 @@ export class DebugAdapterActivator
 		this.disposables.push(
 			this.debugService.registerDebugAdapterTrackerFactory(
 				DebuggerTypeName,
-				this.debugSessionLoggingFactory
-			)
+				this.debugSessionLoggingFactory,
+			),
 		);
 		this.disposables.push(
 			this.debugService.registerDebugAdapterTrackerFactory(
 				DebuggerTypeName,
-				this.debuggerPromptFactory
-			)
+				this.debuggerPromptFactory,
+			),
 		);
 
 		this.disposables.push(
 			this.debugService.registerDebugAdapterDescriptorFactory(
 				DebuggerTypeName,
-				this.descriptorFactory
-			)
+				this.descriptorFactory,
+			),
 		);
 		this.disposables.push(
 			this.debugService.onDidStartDebugSession((debugSession) => {
 				if (
 					this.shouldTerminalFocusOnStart(
-						debugSession.workspaceFolder?.uri
+						debugSession.workspaceFolder?.uri,
 					)
 				)
 					this.commandManager.executeCommand(
-						"workbench.action.terminal.focus"
+						"workbench.action.terminal.focus",
 					);
-			})
+			}),
 		);
 	}
 

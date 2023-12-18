@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable, named } from "inversify";
 import { cloneDeep } from "lodash";
 import {
@@ -14,8 +12,8 @@ import {
 import { DebugConfigStrings } from "../../../common/utils/localize";
 import {
 	IMultiStepInputFactory,
-	InputStep,
 	IQuickPickParameters,
+	InputStep,
 	MultiStepInput,
 } from "../../../common/utils/multiStepInput";
 import {
@@ -57,7 +55,7 @@ export class PythonDebugConfigurationService
 
 	public async provideDebugConfigurations(
 		folder: WorkspaceFolder | undefined,
-		token?: CancellationToken
+		token?: CancellationToken,
 	): Promise<DebugConfiguration[] | undefined> {
 		const config: Partial<DebugConfigurationArguments> = {};
 		const state = { config, folder, token };
@@ -69,9 +67,9 @@ export class PythonDebugConfigurationService
 			(input, s) =>
 				PythonDebugConfigurationService.pickDebugConfiguration(
 					input,
-					s
+					s,
 				),
-			state
+			state,
 		);
 
 		if (Object.keys(state.config).length !== 0) {
@@ -83,20 +81,20 @@ export class PythonDebugConfigurationService
 	public async resolveDebugConfiguration(
 		folder: WorkspaceFolder | undefined,
 		debugConfiguration: DebugConfiguration,
-		token?: CancellationToken
+		token?: CancellationToken,
 	): Promise<DebugConfiguration | undefined> {
 		if (debugConfiguration.request === "attach") {
 			return this.attachResolver.resolveDebugConfiguration(
 				folder,
 				debugConfiguration as AttachRequestArguments,
-				token
+				token,
 			);
 		}
 		if (debugConfiguration.request === "test") {
 			// `"request": "test"` is now deprecated. But some users might have it in their
 			// launch config. We get here if they triggered it using F5 or start with debugger.
 			throw Error(
-				'This configuration can only be used by the test debugging commands. `"request": "test"` is deprecated, please keep as `"request": "launch"` and add `"purpose": ["debug-test"]` instead.'
+				'This configuration can only be used by the test debugging commands. `"request": "test"` is deprecated, please keep as `"request": "launch"` and add `"purpose": ["debug-test"]` instead.',
 			);
 		} else {
 			if (Object.keys(debugConfiguration).length === 0) {
@@ -105,7 +103,7 @@ export class PythonDebugConfigurationService
 				} else {
 					const configs = await this.provideDebugConfigurations(
 						folder,
-						token
+						token,
 					);
 					if (configs === undefined) {
 						return undefined;
@@ -120,7 +118,7 @@ export class PythonDebugConfigurationService
 			return this.launchResolver.resolveDebugConfiguration(
 				folder,
 				debugConfiguration as LaunchRequestArguments,
-				token
+				token,
 			);
 		}
 	}
@@ -128,15 +126,15 @@ export class PythonDebugConfigurationService
 	public async resolveDebugConfigurationWithSubstitutedVariables(
 		folder: WorkspaceFolder | undefined,
 		debugConfiguration: DebugConfiguration,
-		token?: CancellationToken
+		token?: CancellationToken,
 	): Promise<DebugConfiguration | undefined> {
 		function resolve<T extends DebugConfiguration>(
-			resolver: IDebugConfigurationResolver<T>
+			resolver: IDebugConfigurationResolver<T>,
 		) {
 			return resolver.resolveDebugConfigurationWithSubstitutedVariables(
 				folder,
 				debugConfiguration as T,
-				token
+				token,
 			);
 		}
 		return debugConfiguration.request === "attach"
@@ -147,11 +145,11 @@ export class PythonDebugConfigurationService
 	// eslint-disable-next-line consistent-return
 	protected static async pickDebugConfiguration(
 		input: MultiStepInput<DebugConfigurationState>,
-		state: DebugConfigurationState
+		state: DebugConfigurationState,
 	): Promise<InputStep<DebugConfigurationState> | void> {
 		type DebugConfigurationQuickPickItemFunc = (
 			input: MultiStepInput<DebugConfigurationState>,
-			state: DebugConfigurationState
+			state: DebugConfigurationState,
 		) => Promise<void | InputStep<DebugConfigurationState>>;
 		type DebugConfigurationQuickPickItem = QuickPickItem & {
 			type: DebugConfigurationType;
@@ -236,7 +234,7 @@ export class PythonDebugConfigurationService
 		});
 		if (pick) {
 			const pickedDebugConfiguration = debugConfigurations.get(
-				pick.type
+				pick.type,
 			)!;
 			return pickedDebugConfiguration(input, state);
 		}

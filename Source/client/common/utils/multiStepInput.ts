@@ -3,17 +3,15 @@
 
 /* eslint-disable max-classes-per-file */
 
-"use strict";
-
 import { inject, injectable } from "inversify";
 import {
 	Disposable,
+	Event,
 	QuickInput,
 	QuickInputButton,
 	QuickInputButtons,
 	QuickPick,
 	QuickPickItem,
-	Event,
 } from "vscode";
 import { IApplicationShell } from "../application/types";
 import { createDeferred } from "./async";
@@ -34,13 +32,13 @@ export class InputFlowAction {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type InputStep<T extends any> = (
+export type InputStep<T> = (
 	input: MultiStepInput<T>,
-	state: T
+	state: T,
 ) => Promise<InputStep<T> | void>;
 
 type buttonCallbackType<T extends QuickPickItem> = (
-	quickPick: QuickPick<T>
+	quickPick: QuickPick<T>,
 ) => void;
 
 export type QuickInputButtonSetup = {
@@ -172,7 +170,7 @@ export class MultiStepInput<S> implements IMultiStepInput<S> {
 		this.current = input;
 		if (onChangeItem) {
 			disposables.push(
-				onChangeItem.event((e) => onChangeItem.callback(e, input))
+				onChangeItem.event((e) => onChangeItem.callback(e, input)),
 			);
 		}
 		// Quickpick should be initialized synchronously and on changed item handlers are registered synchronously.
@@ -216,20 +214,20 @@ export class MultiStepInput<S> implements IMultiStepInput<S> {
 				}
 			}),
 			input.onDidChangeSelection((selectedItems) =>
-				deferred.resolve(selectedItems[0])
+				deferred.resolve(selectedItems[0]),
 			),
 			input.onDidHide(() => {
 				if (!deferred.completed) {
 					deferred.resolve(undefined);
 				}
-			})
+			}),
 		);
 		if (acceptFilterBoxTextAsSelection) {
 			disposables.push(
 				input.onDidAccept(() => {
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					deferred.resolve(input.value as any);
-				})
+				}),
 			);
 		}
 
@@ -298,14 +296,14 @@ export class MultiStepInput<S> implements IMultiStepInput<S> {
 						}),
 						input.onDidHide(() => {
 							resolve(undefined);
-						})
+						}),
 					);
 					if (this.current) {
 						this.current.dispose();
 					}
 					this.current = input;
 					this.current.show();
-				}
+				},
 			);
 		} finally {
 			disposables.forEach((d) => d.dispose());

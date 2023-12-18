@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable } from "inversify";
 import { DiagnosticSeverity } from "vscode";
 import { IApplicationShell } from "../../common/application/types";
@@ -39,13 +37,13 @@ export class DiagnosticCommandPromptHandlerService
 	}
 	public async handle(
 		diagnostic: IDiagnostic,
-		options: MessageCommandPrompt = { commandPrompts: [] }
+		options: MessageCommandPrompt = { commandPrompts: [] },
 	): Promise<void> {
 		const prompts = options.commandPrompts.map((option) => option.prompt);
 		const response = await this.displayMessage(
 			options.message ? options.message : diagnostic.message,
 			diagnostic.severity,
-			prompts
+			prompts,
 		);
 		if (options.onClose) {
 			options.onClose(response);
@@ -54,7 +52,7 @@ export class DiagnosticCommandPromptHandlerService
 			return;
 		}
 		const selectedOption = options.commandPrompts.find(
-			(option) => option.prompt === response
+			(option) => option.prompt === response,
 		);
 		if (selectedOption && selectedOption.command) {
 			await selectedOption.command.invoke();
@@ -63,7 +61,7 @@ export class DiagnosticCommandPromptHandlerService
 	private async displayMessage(
 		message: string,
 		severity: DiagnosticSeverity,
-		prompts: string[]
+		prompts: string[],
 	): Promise<string | undefined> {
 		switch (severity) {
 			case DiagnosticSeverity.Error: {
@@ -75,7 +73,7 @@ export class DiagnosticCommandPromptHandlerService
 			default: {
 				return this.appShell.showInformationMessage(
 					message,
-					...prompts
+					...prompts,
 				);
 			}
 		}

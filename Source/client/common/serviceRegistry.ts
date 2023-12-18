@@ -1,21 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 import { IExtensionSingleActivationService } from "../activation/types";
-import {
-	IBrowserService,
-	IConfigurationService,
-	ICurrentProcess,
-	IExperimentService,
-	IExtensions,
-	IInstaller,
-	IInterpreterPathService,
-	IPathUtils,
-	IPersistentStateFactory,
-	IRandom,
-	IToolExecutionPath,
-	IsWindows,
-	ToolExecutionPath,
-} from "./types";
 import { IServiceManager } from "../ioc/types";
 import { JupyterExtensionDependencyManager } from "../jupyter/jupyterExtensionDependencyManager";
 import { ImportTracker } from "../telemetry/importTracker";
@@ -48,8 +33,8 @@ import {
 	IWorkspaceService,
 } from "./application/types";
 import { WorkspaceService } from "./application/workspace";
-import { ConfigurationService } from "./configuration/service";
 import { PipEnvExecutionPath } from "./configuration/executionSettings/pipEnvExecution";
+import { ConfigurationService } from "./configuration/service";
 import { ExperimentService } from "./experiments/service";
 import { ProductInstaller } from "./installer/productInstaller";
 import { InterpreterPathService } from "./interpreterPathService";
@@ -62,9 +47,9 @@ import { IProcessLogger } from "./process/types";
 import { TerminalActivator } from "./terminal/activator";
 import { PowershellTerminalActivationFailedHandler } from "./terminal/activator/powershellFailedHandler";
 import { Bash } from "./terminal/environmentActivationProviders/bash";
-import { Nushell } from "./terminal/environmentActivationProviders/nushell";
 import { CommandPromptAndPowerShell } from "./terminal/environmentActivationProviders/commandPrompt";
 import { CondaActivationCommandProvider } from "./terminal/environmentActivationProviders/condaActivationProvider";
+import { Nushell } from "./terminal/environmentActivationProviders/nushell";
 import { PipEnvActivationCommandProvider } from "./terminal/environmentActivationProviders/pipEnvActivationProvider";
 import { PyEnvActivationCommandProvider } from "./terminal/environmentActivationProviders/pyenvActivationProvider";
 import { TerminalServiceFactory } from "./terminal/factory";
@@ -82,191 +67,206 @@ import {
 	ITerminalServiceFactory,
 	TerminalActivationProviders,
 } from "./terminal/types";
+import {
+	IBrowserService,
+	IConfigurationService,
+	ICurrentProcess,
+	IExperimentService,
+	IExtensions,
+	IInstaller,
+	IInterpreterPathService,
+	IPathUtils,
+	IPersistentStateFactory,
+	IRandom,
+	IToolExecutionPath,
+	IsWindows,
+	ToolExecutionPath,
+} from "./types";
 
+import { RequireJupyterPrompt } from "../jupyter/requireJupyterPrompt";
+import { CreatePythonFileCommandHandler } from "./application/commands/createPythonFile";
+import { ContextKeyManager } from "./application/contextKeyManager";
+import { isWindows } from "./platform/platformService";
 import {
 	IMultiStepInputFactory,
 	MultiStepInputFactory,
 } from "./utils/multiStepInput";
 import { Random } from "./utils/random";
-import { ContextKeyManager } from "./application/contextKeyManager";
-import { CreatePythonFileCommandHandler } from "./application/commands/createPythonFile";
-import { RequireJupyterPrompt } from "../jupyter/requireJupyterPrompt";
-import { isWindows } from "./platform/platformService";
 
 export function registerTypes(serviceManager: IServiceManager): void {
 	serviceManager.addSingletonInstance<boolean>(IsWindows, isWindows());
 
 	serviceManager.addSingleton<IActiveResourceService>(
 		IActiveResourceService,
-		ActiveResourceService
+		ActiveResourceService,
 	);
 	serviceManager.addSingleton<IInterpreterPathService>(
 		IInterpreterPathService,
-		InterpreterPathService
+		InterpreterPathService,
 	);
 	serviceManager.addSingleton<IExtensions>(IExtensions, Extensions);
 	serviceManager.addSingleton<IRandom>(IRandom, Random);
 	serviceManager.addSingleton<IPersistentStateFactory>(
 		IPersistentStateFactory,
-		PersistentStateFactory
+		PersistentStateFactory,
 	);
 	serviceManager.addBinding(
 		IPersistentStateFactory,
-		IExtensionSingleActivationService
+		IExtensionSingleActivationService,
 	);
 	serviceManager.addSingleton<ITerminalServiceFactory>(
 		ITerminalServiceFactory,
-		TerminalServiceFactory
+		TerminalServiceFactory,
 	);
 	serviceManager.addSingleton<IPathUtils>(IPathUtils, PathUtils);
 	serviceManager.addSingleton<IApplicationShell>(
 		IApplicationShell,
-		ApplicationShell
+		ApplicationShell,
 	);
 	serviceManager.addSingleton<IClipboard>(IClipboard, ClipboardService);
 	serviceManager.addSingleton<ICurrentProcess>(
 		ICurrentProcess,
-		CurrentProcess
+		CurrentProcess,
 	);
 	serviceManager.addSingleton<IInstaller>(IInstaller, ProductInstaller);
 	serviceManager.addSingleton<IJupyterExtensionDependencyManager>(
 		IJupyterExtensionDependencyManager,
-		JupyterExtensionDependencyManager
+		JupyterExtensionDependencyManager,
 	);
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
-		RequireJupyterPrompt
+		RequireJupyterPrompt,
 	);
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
-		CreatePythonFileCommandHandler
+		CreatePythonFileCommandHandler,
 	);
 	serviceManager.addSingleton<ICommandManager>(
 		ICommandManager,
-		CommandManager
+		CommandManager,
 	);
 	serviceManager.addSingleton<IContextKeyManager>(
 		IContextKeyManager,
-		ContextKeyManager
+		ContextKeyManager,
 	);
 	serviceManager.addSingleton<IConfigurationService>(
 		IConfigurationService,
-		ConfigurationService
+		ConfigurationService,
 	);
 	serviceManager.addSingleton<IWorkspaceService>(
 		IWorkspaceService,
-		WorkspaceService
+		WorkspaceService,
 	);
 	serviceManager.addSingleton<IProcessLogger>(IProcessLogger, ProcessLogger);
 	serviceManager.addSingleton<IDocumentManager>(
 		IDocumentManager,
-		DocumentManager
+		DocumentManager,
 	);
 	serviceManager.addSingleton<ITerminalManager>(
 		ITerminalManager,
-		TerminalManager
+		TerminalManager,
 	);
 	serviceManager.addSingleton<IDebugService>(IDebugService, DebugService);
 	serviceManager.addSingleton<IApplicationEnvironment>(
 		IApplicationEnvironment,
-		ApplicationEnvironment
+		ApplicationEnvironment,
 	);
 	serviceManager.addSingleton<ILanguageService>(
 		ILanguageService,
-		LanguageService
+		LanguageService,
 	);
 	serviceManager.addSingleton<IBrowserService>(
 		IBrowserService,
-		BrowserService
+		BrowserService,
 	);
 	serviceManager.addSingleton<ITerminalActivator>(
 		ITerminalActivator,
-		TerminalActivator
+		TerminalActivator,
 	);
 	serviceManager.addSingleton<ITerminalActivationHandler>(
 		ITerminalActivationHandler,
-		PowershellTerminalActivationFailedHandler
+		PowershellTerminalActivationFailedHandler,
 	);
 	serviceManager.addSingleton<IExperimentService>(
 		IExperimentService,
-		ExperimentService
+		ExperimentService,
 	);
 
 	serviceManager.addSingleton<ITerminalHelper>(
 		ITerminalHelper,
-		TerminalHelper
+		TerminalHelper,
 	);
 	serviceManager.addSingleton<ITerminalActivationCommandProvider>(
 		ITerminalActivationCommandProvider,
 		Bash,
-		TerminalActivationProviders.bashCShellFish
+		TerminalActivationProviders.bashCShellFish,
 	);
 	serviceManager.addSingleton<ITerminalActivationCommandProvider>(
 		ITerminalActivationCommandProvider,
 		CommandPromptAndPowerShell,
-		TerminalActivationProviders.commandPromptAndPowerShell
+		TerminalActivationProviders.commandPromptAndPowerShell,
 	);
 	serviceManager.addSingleton<ITerminalActivationCommandProvider>(
 		ITerminalActivationCommandProvider,
 		Nushell,
-		TerminalActivationProviders.nushell
+		TerminalActivationProviders.nushell,
 	);
 	serviceManager.addSingleton<ITerminalActivationCommandProvider>(
 		ITerminalActivationCommandProvider,
 		PyEnvActivationCommandProvider,
-		TerminalActivationProviders.pyenv
+		TerminalActivationProviders.pyenv,
 	);
 	serviceManager.addSingleton<ITerminalActivationCommandProvider>(
 		ITerminalActivationCommandProvider,
 		CondaActivationCommandProvider,
-		TerminalActivationProviders.conda
+		TerminalActivationProviders.conda,
 	);
 	serviceManager.addSingleton<ITerminalActivationCommandProvider>(
 		ITerminalActivationCommandProvider,
 		PipEnvActivationCommandProvider,
-		TerminalActivationProviders.pipenv
+		TerminalActivationProviders.pipenv,
 	);
 	serviceManager.addSingleton<IToolExecutionPath>(
 		IToolExecutionPath,
 		PipEnvExecutionPath,
-		ToolExecutionPath.pipenv
+		ToolExecutionPath.pipenv,
 	);
 
 	serviceManager.addSingleton<IMultiStepInputFactory>(
 		IMultiStepInputFactory,
-		MultiStepInputFactory
+		MultiStepInputFactory,
 	);
 	serviceManager.addSingleton<IImportTracker>(IImportTracker, ImportTracker);
 	serviceManager.addBinding(
 		IImportTracker,
-		IExtensionSingleActivationService
+		IExtensionSingleActivationService,
 	);
 	serviceManager.addSingleton<IShellDetector>(
 		IShellDetector,
-		TerminalNameShellDetector
+		TerminalNameShellDetector,
 	);
 	serviceManager.addSingleton<IShellDetector>(
 		IShellDetector,
-		SettingsShellDetector
+		SettingsShellDetector,
 	);
 	serviceManager.addSingleton<IShellDetector>(
 		IShellDetector,
-		UserEnvironmentShellDetector
+		UserEnvironmentShellDetector,
 	);
 	serviceManager.addSingleton<IShellDetector>(
 		IShellDetector,
-		VSCEnvironmentShellDetector
+		VSCEnvironmentShellDetector,
 	);
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
-		ReloadVSCodeCommandHandler
+		ReloadVSCodeCommandHandler,
 	);
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
-		ReportIssueCommandHandler
+		ReportIssueCommandHandler,
 	);
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
-		DebugSessionTelemetry
+		DebugSessionTelemetry,
 	);
 }

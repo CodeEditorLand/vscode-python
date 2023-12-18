@@ -16,17 +16,17 @@ async function setShowCreateEnvButtonContextKey(): Promise<void> {
 	await executeCommand(
 		"setContext",
 		"showCreateEnvButton",
-		showCreateEnvButton
+		showCreateEnvButton,
 	);
 }
 
 export function registerCreateEnvironmentButtonFeatures(
-	disposables: IDisposableRegistry
+	disposables: IDisposableRegistry,
 ): void {
 	disposables.push(
 		onDidChangeConfiguration(async () => {
 			await setShowCreateEnvButtonContextKey();
-		})
+		}),
 	);
 
 	setShowCreateEnvButtonContextKey();

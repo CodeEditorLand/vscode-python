@@ -1,17 +1,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
-import { injectable } from "inversify";
 import * as os from "os";
-import { coerce, SemVer } from "semver";
+import { injectable } from "inversify";
+import { SemVer, coerce } from "semver";
 import { getSearchPathEnvVarNames } from "../utils/exec";
 import {
 	Architecture,
+	OSType,
 	getArchitecture,
 	getOSType,
-	OSType,
 } from "../utils/platform";
 import { parseSemVerSafe } from "../utils/version";
 import { IPlatformService } from "./types";

@@ -2,15 +2,13 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-"use strict";
-
-import { inject, injectable } from "inversify";
-import { Event, Extension, extensions } from "vscode";
-import * as stacktrace from "stack-trace";
 import * as path from "path";
-import { IExtensions } from "../types";
-import { IFileSystem } from "../platform/types";
+import { inject, injectable } from "inversify";
+import * as stacktrace from "stack-trace";
+import { Event, Extension, extensions } from "vscode";
 import { EXTENSION_ROOT_DIR } from "../constants";
+import { IFileSystem } from "../platform/types";
+import { IExtensions } from "../types";
 
 /**
  * Provides functions for tracking the list of extensions that VSCode has installed.
@@ -57,7 +55,7 @@ export class Extensions implements IExtensions {
 		if (stack) {
 			const pythonExtRoot = path.join(
 				EXTENSION_ROOT_DIR.toLowerCase(),
-				path.sep
+				path.sep,
 			);
 			const frames = stack
 				.split("\n")
@@ -70,15 +68,15 @@ export class Extensions implements IExtensions {
 				})
 				.filter(
 					(item) =>
-						item && !item.toLowerCase().startsWith(pythonExtRoot)
+						item && !item.toLowerCase().startsWith(pythonExtRoot),
 				)
 				.filter((item) =>
 					// Use cached list of extensions as we need this to be fast.
 					this.cachedExtensions.some(
 						(ext) =>
 							item!.includes(ext.extensionUri.path) ||
-							item!.includes(ext.extensionUri.fsPath)
-					)
+							item!.includes(ext.extensionUri.fsPath),
+					),
 				) as string[];
 			stacktrace.parse(new Error("Ex")).forEach((item) => {
 				const fileName = item.getFileName();
@@ -96,7 +94,7 @@ export class Extensions implements IExtensions {
 				while (dirName && dirName.length < last.length) {
 					const possiblePackageJson = path.join(
 						dirName,
-						"package.json"
+						"package.json",
 					);
 					if (await this.fs.pathExists(possiblePackageJson)) {
 						const text =

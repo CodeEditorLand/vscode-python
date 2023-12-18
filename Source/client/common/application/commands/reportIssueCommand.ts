@@ -1,28 +1,26 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
-import * as fs from "fs-extra";
 import * as os from "os";
 import * as path from "path";
+import * as fs from "fs-extra";
 import { inject, injectable } from "inversify";
 import { isEqual } from "lodash";
 import { IExtensionSingleActivationService } from "../../../activation/types";
+import { EXTENSION_ROOT_DIR } from "../../../constants";
+import { IInterpreterService } from "../../../interpreter/contracts";
+import { EnvironmentType } from "../../../pythonEnvironments/info";
+import { sendTelemetryEvent } from "../../../telemetry";
+import { EventName } from "../../../telemetry/constants";
+import { PythonSettings } from "../../configSettings";
+import { Commands } from "../../constants";
+import { IConfigurationService, IPythonSettings } from "../../types";
+import { SystemVariables } from "../../variables/systemVariables";
 import {
 	IApplicationEnvironment,
 	ICommandManager,
 	IWorkspaceService,
 } from "../types";
-import { EXTENSION_ROOT_DIR } from "../../../constants";
-import { IInterpreterService } from "../../../interpreter/contracts";
-import { Commands } from "../../constants";
-import { IConfigurationService, IPythonSettings } from "../../types";
-import { sendTelemetryEvent } from "../../../telemetry";
-import { EventName } from "../../../telemetry/constants";
-import { EnvironmentType } from "../../../pythonEnvironments/info";
-import { PythonSettings } from "../../configSettings";
-import { SystemVariables } from "../../variables/systemVariables";
 
 /**
  * Allows the user to report an issue related to the Python extension using our template.
@@ -58,27 +56,27 @@ export class ReportIssueCommandHandler
 		this.commandManager.registerCommand(
 			Commands.ReportIssue,
 			this.openReportIssue,
-			this
+			this,
 		);
 	}
 
 	private argSettingsPath = path.join(
 		EXTENSION_ROOT_DIR,
 		"resources",
-		"report_issue_user_settings.json"
+		"report_issue_user_settings.json",
 	);
 
 	private templatePath = path.join(
 		EXTENSION_ROOT_DIR,
 		"resources",
-		"report_issue_template.md"
+		"report_issue_template.md",
 	);
 
 	public async openReportIssue(): Promise<void> {
 		const settings: IPythonSettings =
 			this.configurationService.getSettings();
 		const argSettings = JSON.parse(
-			await fs.readFile(this.argSettingsPath, "utf8")
+			await fs.readFile(this.argSettingsPath, "utf8"),
 		);
 		let userSettings = "";
 		const keys: [keyof IPythonSettings] = Object.keys(settings) as [
@@ -97,35 +95,35 @@ export class ReportIssueCommandHandler
 							const prop = argSetting[item];
 							if (prop) {
 								const defaultValue = this.getDefaultValue(
-									`${property}.${item}`
+									`${property}.${item}`,
 								);
 								if (
 									defaultValue === undefined ||
 									!isEqual(
 										defaultValue,
-										argSettingsDict[item]
+										argSettingsDict[item],
 									)
 								) {
 									if (!propertyHeaderAdded) {
 										userSettings = userSettings.concat(
 											os.EOL,
 											property,
-											os.EOL
+											os.EOL,
 										);
 										propertyHeaderAdded = true;
 									}
 									const value =
 										prop === true
 											? JSON.stringify(
-													argSettingsDict[item]
-												)
+													argSettingsDict[item],
+											  )
 											: '"<placeholder>"';
 									userSettings = userSettings.concat(
 										"• ",
 										item,
 										": ",
 										value,
-										os.EOL
+										os.EOL,
 									);
 								}
 							}
@@ -146,7 +144,7 @@ export class ReportIssueCommandHandler
 							property,
 							": ",
 							value,
-							os.EOL
+							os.EOL,
 						);
 					}
 				}
@@ -177,9 +175,9 @@ export class ReportIssueCommandHandler
 					virtualEnvKind,
 					languageServer,
 					hasMultipleFoldersText,
-					userSettings
+					userSettings,
 				),
-			}
+			},
 		);
 		sendTelemetryEvent(EventName.USE_REPORT_ISSUE_COMMAND, undefined, {});
 	}
@@ -190,15 +188,15 @@ export class ReportIssueCommandHandler
 		}
 		const resource = PythonSettings.getSettingsUriAndTarget(
 			undefined,
-			this.workspaceService
+			this.workspaceService,
 		).uri;
 		const systemVariables = new SystemVariables(
 			resource,
 			undefined,
-			this.workspaceService
+			this.workspaceService,
 		);
 		return systemVariables.resolveAny(
-			this.packageJSONSettings[`python.${settingKey}`]?.default
+			this.packageJSONSettings[`python.${settingKey}`]?.default,
 		);
 	}
 }

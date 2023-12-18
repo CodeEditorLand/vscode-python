@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { Uri, Event } from "vscode";
-import { PythonEnvKind, EnvPathType } from "./pythonEnvironments/base/info";
-import {
-	ProgressNotificationEvent,
-	GetRefreshEnvironmentsOptions,
-} from "./pythonEnvironments/base/locator";
+import { Event, Uri } from "vscode";
 import { Resource } from "./api/types";
+import { EnvPathType, PythonEnvKind } from "./pythonEnvironments/base/info";
+import {
+	GetRefreshEnvironmentsOptions,
+	ProgressNotificationEvent,
+} from "./pythonEnvironments/base/locator";
 
 export interface EnvironmentDetailsOptions {
 	useCache: boolean;
@@ -84,7 +84,7 @@ export interface DeprecatedProposedAPI {
 		 * @param resource : Uri of a file or workspace
 		 */
 		getActiveEnvironmentPath(
-			resource?: Resource
+			resource?: Resource,
 		): Promise<EnvPathType | undefined>;
 		/**
 		 * Returns details for the given interpreter. Details such as absolute interpreter path,
@@ -97,7 +97,7 @@ export interface DeprecatedProposedAPI {
 		 */
 		getEnvironmentDetails(
 			path: string,
-			options?: EnvironmentDetailsOptions
+			options?: EnvironmentDetailsOptions,
 		): Promise<EnvironmentDetails | undefined>;
 		/**
 		 * Returns paths to environments that uniquely identifies an environment found by the extension
@@ -137,7 +137,7 @@ export interface DeprecatedProposedAPI {
 		 * refreshes going on.
 		 */
 		getRefreshPromise(
-			options?: GetRefreshEnvironmentsOptions
+			options?: GetRefreshEnvironmentsOptions,
 		): Promise<void> | undefined;
 		/**
 		 * This event is triggered when the known environment list changes, like when a environment

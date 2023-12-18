@@ -4,16 +4,16 @@
 import {
 	Diagnostic,
 	DiagnosticSeverity,
-	l10n,
 	Range,
 	TextDocument,
 	Uri,
+	l10n,
 } from "vscode";
 import { installedCheckScript } from "../../../common/process/internal/scripts";
 import { plainExec } from "../../../common/process/rawProcessApis";
 import { IInterpreterPathService } from "../../../common/types";
-import { traceInfo, traceVerbose, traceError } from "../../../logging";
 import { getConfiguration } from "../../../common/vscodeApis/workspaceApis";
+import { traceError, traceInfo, traceVerbose } from "../../../logging";
 
 interface PackageDiagnostic {
 	package: string;
@@ -37,13 +37,13 @@ function parseDiagnostics(data: string): Diagnostic[] {
 					item.line,
 					item.character,
 					item.endLine,
-					item.endCharacter
+					item.endCharacter,
 				),
 				l10n.t(
 					"Package `{0}` is not installed in the selected environment.",
-					item.package
+					item.package,
 				),
-				item.severity
+				item.severity,
 			);
 			d.code = {
 				value: item.code,
@@ -62,7 +62,7 @@ function getMissingPackageSeverity(doc: TextDocument): number {
 	const config = getConfiguration("python", doc.uri);
 	const severity: string = config.get<string>(
 		"missingPackage.severity",
-		"Hint"
+		"Hint",
 	);
 	if (severity === "Error") {
 		return DiagnosticSeverity.Error;
@@ -78,7 +78,7 @@ function getMissingPackageSeverity(doc: TextDocument): number {
 
 export async function getInstalledPackagesDiagnostics(
 	interpreterPathService: IInterpreterPathService,
-	doc: TextDocument
+	doc: TextDocument,
 ): Promise<Diagnostic[]> {
 	const interpreter = interpreterPathService.get(doc.uri);
 	const scriptPath = installedCheckScript();
@@ -87,7 +87,7 @@ export async function getInstalledPackagesDiagnostics(
 			"Running installed packages checker: ",
 			interpreter,
 			scriptPath,
-			doc.uri.fsPath
+			doc.uri.fsPath,
 		);
 		const result = await plainExec(
 			interpreter,
@@ -95,10 +95,10 @@ export async function getInstalledPackagesDiagnostics(
 			{
 				env: {
 					VSCODE_MISSING_PGK_SEVERITY: `${getMissingPackageSeverity(
-						doc
+						doc,
 					)}`,
 				},
-			}
+			},
 		);
 		traceVerbose("Installed packages check result:\n", result.stdout);
 		if (result.stderr) {
@@ -108,7 +108,7 @@ export async function getInstalledPackagesDiagnostics(
 	} catch (ex) {
 		traceError(
 			"Error while getting installed packages check result:\n",
-			ex
+			ex,
 		);
 	}
 	return [];

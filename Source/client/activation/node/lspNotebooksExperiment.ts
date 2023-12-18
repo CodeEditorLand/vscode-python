@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 import { inject, injectable } from "inversify";
-import { IExtensionSingleActivationService } from "../types";
-import { traceVerbose } from "../../logging";
 import { IJupyterExtensionDependencyManager } from "../../common/application/types";
-import { IServiceContainer } from "../../ioc/types";
 import { sleep } from "../../common/utils/async";
+import { IServiceContainer } from "../../ioc/types";
 import { JupyterExtensionIntegration } from "../../jupyter/jupyterIntegration";
+import { traceVerbose } from "../../logging";
+import { IExtensionSingleActivationService } from "../types";
 
 @injectable()
 export class LspNotebooksExperiment
@@ -47,7 +47,7 @@ export class LspNotebooksExperiment
 	private async waitForJupyterToRegisterPythonPathFunction(): Promise<void> {
 		const jupyterExtensionIntegration =
 			this.serviceContainer.get<JupyterExtensionIntegration>(
-				JupyterExtensionIntegration
+				JupyterExtensionIntegration,
 			);
 
 		let success = false;
@@ -56,7 +56,7 @@ export class LspNotebooksExperiment
 				jupyterExtensionIntegration.getJupyterPythonPathFunction();
 			if (jupyterPythonPathFunction) {
 				traceVerbose(
-					`Jupyter called registerJupyterPythonPathFunction`
+					`Jupyter called registerJupyterPythonPathFunction`,
 				);
 				success = true;
 				break;
@@ -67,7 +67,7 @@ export class LspNotebooksExperiment
 
 		if (!success) {
 			traceVerbose(
-				`Timed out waiting for Jupyter to call registerJupyterPythonPathFunction`
+				`Timed out waiting for Jupyter to call registerJupyterPythonPathFunction`,
 			);
 		}
 	}

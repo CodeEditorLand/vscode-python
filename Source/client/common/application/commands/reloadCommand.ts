@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable } from "inversify";
 import { IExtensionSingleActivationService } from "../../../activation/types";
 import { Common } from "../../utils/localize";
@@ -29,13 +27,13 @@ export class ReloadVSCodeCommandHandler
 		this.commandManager.registerCommand(
 			"python.reloadVSCode",
 			this.onReloadVSCode,
-			this
+			this,
 		);
 	}
 	private async onReloadVSCode(message: string) {
 		const item = await this.appShell.showInformationMessage(
 			message,
-			Common.reload
+			Common.reload,
 		);
 		if (item === Common.reload) {
 			this.commandManager

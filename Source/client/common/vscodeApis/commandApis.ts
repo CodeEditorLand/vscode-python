@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { commands, Disposable } from "vscode";
+import { Disposable, commands } from "vscode";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
@@ -9,7 +9,7 @@ import { commands, Disposable } from "vscode";
 export function registerCommand(
 	command: string,
 	callback: (...args: any[]) => any,
-	thisArg?: any
+	thisArg?: any,
 ): Disposable {
 	return commands.registerCommand(command, callback, thisArg);
 }

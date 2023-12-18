@@ -1,24 +1,22 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable } from "inversify";
-import { IDebugService } from "../../../common/application/types";
 import {
 	DebugConfiguration,
 	DebugSession,
-	l10n,
-	WorkspaceFolder,
 	DebugSessionOptions,
+	WorkspaceFolder,
+	l10n,
 } from "vscode";
+import { IDebugService } from "../../../common/application/types";
 import { noop } from "../../../common/utils/misc";
+import { showErrorMessage } from "../../../common/vscodeApis/windowApis";
+import { getWorkspaceFolders } from "../../../common/vscodeApis/workspaceApis";
 import { captureTelemetry } from "../../../telemetry";
 import { EventName } from "../../../telemetry/constants";
 import { AttachRequestArguments } from "../../types";
 import { IChildProcessAttachService } from "./types";
-import { showErrorMessage } from "../../../common/vscodeApis/windowApis";
-import { getWorkspaceFolders } from "../../../common/vscodeApis/workspaceApis";
 
 /**
  * This class is responsible for attaching the debugger to any
@@ -36,7 +34,7 @@ export class ChildProcessAttachService implements IChildProcessAttachService {
 	@captureTelemetry(EventName.DEBUGGER_ATTACH_TO_CHILD_PROCESS)
 	public async attach(
 		data: AttachRequestArguments & DebugConfiguration,
-		parentSession: DebugSession
+		parentSession: DebugSession,
 	): Promise<void> {
 		const debugConfig: AttachRequestArguments & DebugConfiguration = data;
 		const folder = this.getRelatedWorkspaceFolder(debugConfig);
@@ -47,20 +45,20 @@ export class ChildProcessAttachService implements IChildProcessAttachService {
 		const launched = await this.debugService.startDebugging(
 			folder,
 			debugConfig,
-			debugSessionOption
+			debugSessionOption,
 		);
 		if (!launched) {
 			showErrorMessage(
 				l10n.t(
 					"Failed to launch debugger for child process {0}",
-					debugConfig.subProcessId!
-				)
+					debugConfig.subProcessId!,
+				),
 			).then(noop, noop);
 		}
 	}
 
 	private getRelatedWorkspaceFolder(
-		config: AttachRequestArguments & DebugConfiguration
+		config: AttachRequestArguments & DebugConfiguration,
 	): WorkspaceFolder | undefined {
 		const workspaceFolder = config.workspaceFolder;
 
@@ -69,7 +67,7 @@ export class ChildProcessAttachService implements IChildProcessAttachService {
 			return;
 		}
 		return getWorkspaceFolders()!.find(
-			(ws) => ws.uri.fsPath === workspaceFolder
+			(ws) => ws.uri.fsPath === workspaceFolder,
 		);
 	}
 }

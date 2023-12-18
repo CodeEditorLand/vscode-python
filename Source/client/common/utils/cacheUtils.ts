@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 const globalCacheStore = new Map<string, { expiry: number; data: any }>();
 
 /**
@@ -16,7 +14,7 @@ export function getGlobalCacheStore() {
 
 export function getCacheKeyFromFunctionArgs(
 	keyPrefix: string,
-	fnArgs: any[]
+	fnArgs: any[],
 ): string {
 	const argsKey = fnArgs
 		.map((arg) => `${JSON.stringify(arg)}`)

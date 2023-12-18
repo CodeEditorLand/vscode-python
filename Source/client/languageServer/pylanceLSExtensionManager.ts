@@ -53,15 +53,15 @@ export class PylanceLSExtensionManager
 		readonly commandManager: ICommandManager,
 		fileSystem: IFileSystem,
 		private readonly extensions: IExtensions,
-		readonly applicationShell: IApplicationShell
+		readonly applicationShell: IApplicationShell,
 	) {
 		this.analysisOptions = new NodeLanguageServerAnalysisOptions(
 			outputChannel,
-			workspaceService
+			workspaceService,
 		);
 		this.clientFactory = new NodeLanguageClientFactory(
 			fileSystem,
-			extensions
+			extensions,
 		);
 		this.serverProxy = new NodeLanguageServerProxy(
 			this.clientFactory,
@@ -69,14 +69,14 @@ export class PylanceLSExtensionManager
 			interpreterPathService,
 			environmentService,
 			workspaceService,
-			extensions
+			extensions,
 		);
 		this.serverManager = new NodeLanguageServerManager(
 			serviceContainer,
 			this.analysisOptions,
 			this.serverProxy,
 			commandManager,
-			extensions
+			extensions,
 		);
 	}
 
@@ -89,7 +89,7 @@ export class PylanceLSExtensionManager
 
 	async startLanguageServer(
 		resource: Resource,
-		interpreter?: PythonEnvironment
+		interpreter?: PythonEnvironment,
 	): Promise<void> {
 		await this.serverManager.start(resource, interpreter);
 		this.serverManager.connect();
@@ -110,7 +110,7 @@ export class PylanceLSExtensionManager
 			this.applicationShell,
 			this.commandManager,
 			this.workspaceService,
-			this.configurationService
+			this.configurationService,
 		);
 
 		traceLog(Pylance.pylanceNotInstalledMessage);

@@ -3,7 +3,7 @@
 // Licensed under the MIT License.
 
 import { inject, injectable } from "inversify";
-import { ICondaService, IComponentAdapter } from "../../interpreter/contracts";
+import { IComponentAdapter, ICondaService } from "../../interpreter/contracts";
 import { IServiceContainer } from "../../ioc/types";
 import { getEnvPath } from "../../pythonEnvironments/base/info/env";
 import { ModuleInstallerType } from "../../pythonEnvironments/info";
@@ -72,7 +72,7 @@ export class CondaInstaller extends ModuleInstaller {
 	protected async getExecutionInfo(
 		moduleName: string,
 		resource?: InterpreterUri,
-		flags: ModuleInstallFlags = 0
+		flags: ModuleInstallFlags = 0,
 	): Promise<ExecutionInfo> {
 		const condaService =
 			this.serviceContainer.get<ICondaService>(ICondaService);
@@ -132,7 +132,7 @@ export class CondaInstaller extends ModuleInstaller {
 	 * Is the provided interprter a conda environment
 	 */
 	private async isCurrentEnvironmentACondaEnvironment(
-		resource?: InterpreterUri
+		resource?: InterpreterUri,
 	): Promise<boolean> {
 		const condaService =
 			this.serviceContainer.get<IComponentAdapter>(IComponentAdapter);

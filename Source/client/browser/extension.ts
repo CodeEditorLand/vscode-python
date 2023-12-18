@@ -1,17 +1,17 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import * as vscode from "vscode";
 import TelemetryReporter from "@vscode/extension-telemetry";
+import * as vscode from "vscode";
 import { LanguageClientOptions } from "vscode-languageclient";
 import { LanguageClient } from "vscode-languageclient/browser";
 import { LanguageClientMiddlewareBase } from "../activation/languageClientMiddlewareBase";
+import { PylanceApi } from "../activation/node/pylanceApi";
 import { LanguageServerType } from "../activation/types";
 import { AppinsightsKey, PYLANCE_EXTENSION_ID } from "../common/constants";
 import { EventName } from "../telemetry/constants";
+import { IBrowserExtensionApi, buildApi } from "./api";
 import { createStatusItem } from "./intellisenseStatus";
-import { PylanceApi } from "../activation/node/pylanceApi";
-import { buildApi, IBrowserExtensionApi } from "./api";
 
 interface BrowserConfig {
 	distUrl: string; // URL to Pylance's dist folder.
@@ -21,7 +21,7 @@ let languageClient: LanguageClient | undefined;
 let pylanceApi: PylanceApi | undefined;
 
 export function activate(
-	context: vscode.ExtensionContext
+	context: vscode.ExtensionContext,
 ): Promise<IBrowserExtensionApi> {
 	const reporter = getTelemetryReporter();
 
@@ -64,7 +64,7 @@ export async function deactivate(): Promise<void> {
 
 async function runPylance(
 	context: vscode.ExtensionContext,
-	pylanceExtension: vscode.Extension<PylanceApi>
+	pylanceExtension: vscode.Extension<PylanceApi>,
 ): Promise<void> {
 	context.subscriptions.push(createStatusItem());
 
@@ -81,7 +81,7 @@ async function runPylance(
 
 	try {
 		const worker = new Worker(
-			vscode.Uri.joinPath(distUrl, "browser.server.bundle.js").toString()
+			vscode.Uri.joinPath(distUrl, "browser.server.bundle.js").toString(),
 		);
 
 		// Pass the configuration as the first message to the worker so it can
@@ -96,7 +96,7 @@ async function runPylance(
 			undefined,
 			LanguageServerType.Node,
 			sendTelemetryEventBrowser,
-			packageJSON.version
+			packageJSON.version,
 		);
 		middleware.connect();
 
@@ -118,15 +118,15 @@ async function runPylance(
 			"python",
 			"Python Language Server",
 			clientOptions,
-			worker
+			worker,
 		);
 		languageClient = client;
 
 		context.subscriptions.push(
 			vscode.commands.registerCommand(
 				"python.viewLanguageServerOutput",
-				() => client.outputChannel.show()
-			)
+				() => client.outputChannel.show(),
+			),
 		);
 
 		client.onTelemetry(
@@ -144,16 +144,16 @@ async function runPylance(
 					// Replace all slashes in the method name so it doesn't get scrubbed by @vscode/extension-telemetry.
 					method: telemetryEvent.Properties.method?.replace(
 						/\//g,
-						"."
+						".",
 					),
 				};
 				sendTelemetryEventBrowser(
 					eventName,
 					telemetryEvent.Measurements,
 					formattedProperties,
-					telemetryEvent.Exception
+					telemetryEvent.Exception,
 				);
-			}
+			},
 		);
 
 		await client.start();
@@ -188,7 +188,7 @@ function sendTelemetryEventBrowser(
 	measuresOrDurationMs?: Record<string, number> | number,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	properties?: any,
-	ex?: Error
+	ex?: Error,
 ): void {
 	const reporter = getTelemetryReporter();
 	const measures =
@@ -222,7 +222,7 @@ function sendTelemetryEventBrowser(
 			} catch (exception) {
 				console.error(
 					`Failed to serialize ${prop} for ${eventName}`,
-					exception
+					exception,
 				);
 			}
 		});
@@ -242,7 +242,7 @@ function sendTelemetryEventBrowser(
 		reporter.sendTelemetryErrorEvent(
 			eventNameSent,
 			customProperties,
-			measures
+			measures,
 		);
 	} else {
 		reporter.sendTelemetryEvent(eventNameSent, customProperties, measures);
@@ -250,7 +250,7 @@ function sendTelemetryEventBrowser(
 }
 
 async function getActivatedExtension<T>(
-	extension: vscode.Extension<T>
+	extension: vscode.Extension<T>,
 ): Promise<vscode.Extension<T>> {
 	if (!extension.isActive) {
 		await extension.activate();

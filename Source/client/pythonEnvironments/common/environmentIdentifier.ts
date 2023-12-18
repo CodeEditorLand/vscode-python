@@ -4,8 +4,10 @@
 import { traceWarn } from "../../logging";
 import { PythonEnvKind } from "../base/info";
 import { getPrioritizedEnvKinds } from "../base/info/envKind";
+import { isActiveStateEnvironment } from "./environmentManagers/activestate";
 import { isCondaEnvironment } from "./environmentManagers/conda";
 import { isGloballyInstalledEnv } from "./environmentManagers/globalInstalledEnvs";
+import { isMicrosoftStoreEnvironment } from "./environmentManagers/microsoftStoreEnv";
 import { isPipenvEnvironment } from "./environmentManagers/pipenv";
 import { isPoetryEnvironment } from "./environmentManagers/poetry";
 import { isPyenvEnvironment } from "./environmentManagers/pyenv";
@@ -14,8 +16,6 @@ import {
 	isVirtualenvEnvironment as isVirtualEnvEnvironment,
 	isVirtualenvwrapperEnvironment as isVirtualEnvWrapperEnvironment,
 } from "./environmentManagers/simplevirtualenvs";
-import { isMicrosoftStoreEnvironment } from "./environmentManagers/microsoftStoreEnv";
-import { isActiveStateEnvironment } from "./environmentManagers/activestate";
 
 function getIdentifiers(): Map<
 	PythonEnvKind,
@@ -37,7 +37,7 @@ function getIdentifiers(): Map<
 	identifier.set(PythonEnvKind.Venv, isVenvEnvironment);
 	identifier.set(
 		PythonEnvKind.VirtualEnvWrapper,
-		isVirtualEnvWrapperEnvironment
+		isVirtualEnvWrapperEnvironment,
 	);
 	identifier.set(PythonEnvKind.VirtualEnv, isVirtualEnvEnvironment);
 	identifier.set(PythonEnvKind.ActiveState, isActiveStateEnvironment);
@@ -52,7 +52,7 @@ function getIdentifiers(): Map<
  * @returns {PythonEnvKind}
  */
 export async function identifyEnvironment(
-	path: string
+	path: string,
 ): Promise<PythonEnvKind> {
 	const identifiers = getIdentifiers();
 	const prioritizedEnvTypes = getPrioritizedEnvKinds();

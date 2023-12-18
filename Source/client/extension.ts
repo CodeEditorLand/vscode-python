@@ -1,5 +1,3 @@
-"use strict";
-
 // This line should always be right on top.
 
 if ((Reflect as any).metadata === undefined) {
@@ -30,10 +28,12 @@ initializeFileLogging(logDispose);
 
 import { ProgressLocation, ProgressOptions, window } from "vscode";
 import { buildApi } from "./api";
+import { PythonExtension } from "./api/types";
 import {
 	IApplicationShell,
 	IWorkspaceService,
 } from "./common/application/types";
+import { WorkspaceService } from "./common/application/workspace";
 import {
 	IDisposableRegistry,
 	IExperimentService,
@@ -41,22 +41,20 @@ import {
 } from "./common/types";
 import { createDeferred } from "./common/utils/async";
 import { Common } from "./common/utils/localize";
+import { disposeAll } from "./common/utils/resourceLifecycle";
+import { runAfterActivation } from "./common/utils/runAfterActivation";
 import { activateComponents, activateFeatures } from "./extensionActivation";
 import {
-	initializeStandard,
 	initializeComponents,
 	initializeGlobals,
+	initializeStandard,
 } from "./extensionInit";
+import { IInterpreterService } from "./interpreter/contracts";
 import { IServiceContainer } from "./ioc/types";
+import { buildProposedApi } from "./proposedApi";
+import { ProposedExtensionAPI } from "./proposedApiTypes";
 import { sendErrorTelemetry, sendStartupTelemetry } from "./startupTelemetry";
 import { IStartupDurations } from "./types";
-import { runAfterActivation } from "./common/utils/runAfterActivation";
-import { IInterpreterService } from "./interpreter/contracts";
-import { PythonExtension } from "./api/types";
-import { WorkspaceService } from "./common/application/workspace";
-import { disposeAll } from "./common/utils/resourceLifecycle";
-import { ProposedExtensionAPI } from "./proposedApiTypes";
-import { buildProposedApi } from "./proposedApi";
 
 durations.codeLoadingTime = stopWatch.elapsedTime;
 
@@ -70,7 +68,7 @@ let activatedServiceContainer: IServiceContainer | undefined;
 // public functions
 
 export async function activate(
-	context: IExtensionContext
+	context: IExtensionContext,
 ): Promise<PythonExtension> {
 	let api: PythonExtension;
 	let ready: Promise<void>;
@@ -81,12 +79,12 @@ export async function activate(
 			workspaceService.onDidGrantWorkspaceTrust(async () => {
 				await deactivate();
 				await activate(context);
-			})
+			}),
 		);
 		[api, ready, serviceContainer] = await activateUnsafe(
 			context,
 			stopWatch,
-			durations
+			durations,
 		);
 	} catch (ex) {
 		// We want to completely handle the error
@@ -108,7 +106,7 @@ export async function deactivate(): Promise<void> {
 	if (activatedServiceContainer) {
 		const disposables =
 			activatedServiceContainer.get<IDisposableRegistry>(
-				IDisposableRegistry
+				IDisposableRegistry,
 			);
 		await disposeAll(disposables);
 		// Remove everything that is already disposed.
@@ -122,7 +120,7 @@ export async function deactivate(): Promise<void> {
 async function activateUnsafe(
 	context: IExtensionContext,
 	startupStopWatch: StopWatch,
-	startupDurations: IStartupDurations
+	startupDurations: IStartupDurations,
 ): Promise<
 	[PythonExtension & ProposedExtensionAPI, Promise<void>, IServiceContainer]
 > {
@@ -169,23 +167,23 @@ async function activateUnsafe(
 		if (activatedServiceContainer) {
 			const workspaceService =
 				activatedServiceContainer.get<IWorkspaceService>(
-					IWorkspaceService
+					IWorkspaceService,
 				);
 			if (workspaceService.isTrusted) {
 				const interpreterManager =
 					activatedServiceContainer.get<IInterpreterService>(
-						IInterpreterService
+						IInterpreterService,
 					);
 				const workspaces = workspaceService.workspaceFolders ?? [];
 				await interpreterManager
 					.refresh(
-						workspaces.length > 0 ? workspaces[0].uri : undefined
+						workspaces.length > 0 ? workspaces[0].uri : undefined,
 					)
 					.catch((ex) =>
 						traceError(
 							"Python Extension: interpreterManager.refresh",
-							ex
-						)
+							ex,
+						),
 					);
 			}
 		}
@@ -197,11 +195,11 @@ async function activateUnsafe(
 		activationPromise,
 		ext.legacyIOC.serviceManager,
 		ext.legacyIOC.serviceContainer,
-		components.pythonEnvs
+		components.pythonEnvs,
 	);
 	const proposedApi = buildProposedApi(
 		components.pythonEnvs,
-		ext.legacyIOC.serviceContainer
+		ext.legacyIOC.serviceContainer,
 	);
 	return [
 		{ ...api, ...proposedApi },
@@ -223,7 +221,7 @@ function displayProgress(promise: Promise<any>) {
 
 async function handleError(ex: Error, startupDurations: IStartupDurations) {
 	notifyUser(
-		"Extension activation failed, run the 'Developer: Toggle Developer Tools' command for more information."
+		"Extension activation failed, run the 'Developer: Toggle Developer Tools' command for more information.",
 	);
 	traceError("extension activation failed", ex);
 
@@ -239,7 +237,7 @@ function notifyUser(msg: string) {
 		let appShell: IAppShell = window as any as IAppShell;
 		if (activatedServiceContainer) {
 			appShell = activatedServiceContainer.get<IApplicationShell>(
-				IApplicationShell
+				IApplicationShell,
 			) as any as IAppShell;
 		}
 		appShell.showErrorMessage(msg).ignoreErrors();

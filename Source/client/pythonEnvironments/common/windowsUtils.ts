@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { uniqBy } from "lodash";
 import * as path from "path";
+import { uniqBy } from "lodash";
 import { isTestExecution } from "../../common/constants";
 import { traceError, traceVerbose } from "../../logging";
 import {
@@ -10,9 +10,9 @@ import {
 	HKLM,
 	IRegistryKey,
 	IRegistryValue,
+	REG_SZ,
 	readRegistryKeys,
 	readRegistryValues,
-	REG_SZ,
 } from "./windowsRegistry";
 
 /* eslint-disable global-require */
@@ -54,7 +54,7 @@ export interface IRegistryInterpreterData {
 async function getInterpreterDataFromKey(
 	{ arch, hive, key }: IRegistryKey,
 	distroOrgName: string,
-	useWorkerThreads: boolean
+	useWorkerThreads: boolean,
 ): Promise<IRegistryInterpreterData | undefined> {
 	const result: IRegistryInterpreterData = {
 		interpreterPath: "",
@@ -63,7 +63,7 @@ async function getInterpreterDataFromKey(
 
 	const values: IRegistryValue[] = await readRegistryValues(
 		{ arch, hive, key },
-		useWorkerThreads
+		useWorkerThreads,
 	);
 	for (const value of values) {
 		switch (value.name) {
@@ -86,7 +86,7 @@ async function getInterpreterDataFromKey(
 
 	const subKeys: IRegistryKey[] = await readRegistryKeys(
 		{ arch, hive, key },
-		useWorkerThreads
+		useWorkerThreads,
 	);
 	const subKey = subKeys
 		.map((s) => s.key)
@@ -94,14 +94,14 @@ async function getInterpreterDataFromKey(
 	if (subKey) {
 		const subKeyValues: IRegistryValue[] = await readRegistryValues(
 			{ arch, hive, key: subKey },
-			useWorkerThreads
+			useWorkerThreads,
 		);
 		const value = subKeyValues.find((v) => v.name === "ExecutablePath");
 		if (value) {
 			result.interpreterPath = value.value;
 			if (value.type !== REG_SZ) {
 				traceVerbose(
-					`Registry interpreter path type [${value.type}]: ${value.value}`
+					`Registry interpreter path type [${value.type}]: ${value.value}`,
 				);
 			}
 		}
@@ -117,17 +117,17 @@ export async function getInterpreterDataFromRegistry(
 	arch: string,
 	hive: string,
 	key: string,
-	useWorkerThreads: boolean
+	useWorkerThreads: boolean,
 ): Promise<IRegistryInterpreterData[]> {
 	const subKeys = await readRegistryKeys(
 		{ arch, hive, key },
-		useWorkerThreads
+		useWorkerThreads,
 	);
 	const distroOrgName = key.substr(key.lastIndexOf("\\") + 1);
 	const allData = await Promise.all(
 		subKeys.map((subKey) =>
-			getInterpreterDataFromKey(subKey, distroOrgName, useWorkerThreads)
-		)
+			getInterpreterDataFromKey(subKey, distroOrgName, useWorkerThreads),
+		),
 	);
 	return (allData.filter((data) => data !== undefined) ||
 		[]) as IRegistryInterpreterData[];
@@ -142,7 +142,7 @@ let registryInterpretersCache: IRegistryInterpreterData[] | undefined;
 export function getRegistryInterpretersSync():
 	| IRegistryInterpreterData[]
 	| undefined {
-	return !isTestExecution() ? registryInterpretersCache : undefined;
+	return isTestExecution() ? undefined : registryInterpretersCache;
 }
 
 let registryInterpretersPromise:
@@ -150,7 +150,7 @@ let registryInterpretersPromise:
 	| undefined;
 
 export async function getRegistryInterpreters(
-	useWorkerThreads: boolean
+	useWorkerThreads: boolean,
 ): Promise<IRegistryInterpreterData[]> {
 	if (!isTestExecution() && registryInterpretersPromise !== undefined) {
 		return registryInterpretersPromise;
@@ -160,7 +160,7 @@ export async function getRegistryInterpreters(
 }
 
 async function getRegistryInterpretersImpl(
-	useWorkerThreads: boolean
+	useWorkerThreads: boolean,
 ): Promise<IRegistryInterpreterData[]> {
 	let registryData: IRegistryInterpreterData[] = [];
 
@@ -172,13 +172,13 @@ async function getRegistryInterpretersImpl(
 				keys = (
 					await readRegistryKeys(
 						{ arch, hive, key: root },
-						useWorkerThreads
+						useWorkerThreads,
 					)
 				).map((k) => k.key);
 			} catch (ex) {
 				traceError(
 					`Failed to access Registry: ${arch}\\${hive}\\${root}`,
-					ex
+					ex,
 				);
 			}
 
@@ -188,15 +188,15 @@ async function getRegistryInterpretersImpl(
 						arch,
 						hive,
 						key,
-						useWorkerThreads
-					)
+						useWorkerThreads,
+					),
 				);
 			}
 		}
 	}
 	registryInterpretersCache = uniqBy(
 		registryData,
-		(r: IRegistryInterpreterData) => r.interpreterPath
+		(r: IRegistryInterpreterData) => r.interpreterPath,
 	);
 	return registryInterpretersCache;
 }

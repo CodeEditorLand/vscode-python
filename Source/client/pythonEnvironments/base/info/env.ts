@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { cloneDeep, isEqual } from "lodash";
 import * as path from "path";
+import { cloneDeep, isEqual } from "lodash";
 import { Uri } from "vscode";
 import { getArchitectureDisplayName } from "../../../common/platform/registry";
 import { Architecture } from "../../../common/utils/platform";
@@ -21,13 +21,13 @@ import {
 
 import {
 	EnvPathType,
-	globallyInstalledEnvKinds,
 	PythonEnvInfo,
 	PythonEnvKind,
 	PythonEnvSource,
 	PythonEnvType,
 	PythonReleaseLevel,
 	PythonVersion,
+	globallyInstalledEnvKinds,
 	virtualEnvKinds,
 } from ".";
 import { BasicEnvInfo } from "../locator";
@@ -88,7 +88,7 @@ export function buildEnvInfo(init?: {
 
 export function areEnvsDeepEqual(
 	env1: PythonEnvInfo,
-	env2: PythonEnvInfo
+	env2: PythonEnvInfo,
 ): boolean {
 	const env1Clone = cloneDeep(env1);
 	const env2Clone = cloneDeep(env2);
@@ -117,7 +117,7 @@ export function copyEnvInfo(
 	env: PythonEnvInfo,
 	updates?: {
 		kind?: PythonEnvKind;
-	}
+	},
 ): PythonEnvInfo {
 	// We don't care whether or not extra/hidden properties
 	// get preserved, so we do the easy thing here.
@@ -137,7 +137,7 @@ function updateEnv(
 		version?: PythonVersion;
 		searchLocation?: Uri;
 		type?: PythonEnvType;
-	}
+	},
 ): void {
 	if (updates.kind !== undefined) {
 		env.kind = updates.kind;
@@ -172,7 +172,7 @@ export function setEnvDisplayString(env: PythonEnvInfo): void {
 
 function buildEnvDisplayString(
 	env: PythonEnvInfo,
-	getAllDetails = false
+	getAllDetails = false,
 ): string {
 	// main parts
 	const shouldDisplayKind =
@@ -218,7 +218,7 @@ function buildEnvDisplayString(
  * that it is not identifiable, then `undefined` is returned.
  */
 function getMinimalPartialInfo(
-	env: string | PythonEnvInfo | BasicEnvInfo
+	env: string | PythonEnvInfo | BasicEnvInfo,
 ): Partial<PythonEnvInfo> | undefined {
 	if (typeof env === "string") {
 		if (env === "") {
@@ -256,7 +256,7 @@ function getMinimalPartialInfo(
  */
 export function getEnvPath(
 	interpreterPath: string,
-	envFolderPath?: string
+	envFolderPath?: string,
 ): EnvPathType {
 	let envPath: EnvPathType = {
 		path: interpreterPath,
@@ -274,7 +274,7 @@ export function getEnvPath(
  */
 export function getEnvID(
 	interpreterPath: string,
-	envFolderPath?: string
+	envFolderPath?: string,
 ): string {
 	return normCasePath(getEnvPath(interpreterPath, envFolderPath).path);
 }
@@ -294,7 +294,7 @@ export function getEnvID(
 export function areSameEnv(
 	left: string | PythonEnvInfo | BasicEnvInfo,
 	right: string | PythonEnvInfo | BasicEnvInfo,
-	allowPartialMatch = true
+	allowPartialMatch = true,
 ): boolean | undefined {
 	const leftInfo = getMinimalPartialInfo(left);
 	const rightInfo = getMinimalPartialInfo(right);
@@ -325,7 +325,7 @@ export function areSameEnv(
 			rightFilename !== "python" &&
 			arePathsSame(
 				path.dirname(leftFilename),
-				path.dirname(rightFilename)
+				path.dirname(rightFilename),
 			);
 		if (isSameDirectory) {
 			const leftVersion =
@@ -384,10 +384,10 @@ function getPythonVersionSpecificity(version: PythonVersion): number {
  */
 export function comparePythonVersionSpecificity(
 	versionA: PythonVersion,
-	versionB: PythonVersion
+	versionB: PythonVersion,
 ): number {
 	return Math.sign(
 		getPythonVersionSpecificity(versionA) -
-			getPythonVersionSpecificity(versionB)
+			getPythonVersionSpecificity(versionB),
 	);
 }

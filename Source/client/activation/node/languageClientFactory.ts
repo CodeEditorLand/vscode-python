@@ -21,13 +21,13 @@ export const PYLANCE_NAME = "Pylance";
 export class NodeLanguageClientFactory implements ILanguageClientFactory {
 	constructor(
 		private readonly fs: IFileSystem,
-		private readonly extensions: IExtensions
+		private readonly extensions: IExtensions,
 	) {}
 
 	public async createLanguageClient(
 		_resource: Resource,
 		_interpreter: PythonEnvironment | undefined,
-		clientOptions: LanguageClientOptions
+		clientOptions: LanguageClientOptions,
 	): Promise<LanguageClient> {
 		// this must exist for node language client
 		const commandArgs = (
@@ -40,12 +40,12 @@ export class NodeLanguageClientFactory implements ILanguageClientFactory {
 		const bundlePath = path.join(
 			languageServerFolder,
 			"dist",
-			"server.bundle.js"
+			"server.bundle.js",
 		);
 		const nonBundlePath = path.join(
 			languageServerFolder,
 			"dist",
-			"server.js"
+			"server.js",
 		);
 		const modulePath = (await this.fs.fileExists(nonBundlePath))
 			? nonBundlePath
@@ -74,7 +74,7 @@ export class NodeLanguageClientFactory implements ILanguageClientFactory {
 			PYTHON_LANGUAGE,
 			PYLANCE_NAME,
 			serverOptions,
-			clientOptions
+			clientOptions,
 		);
 	}
 }

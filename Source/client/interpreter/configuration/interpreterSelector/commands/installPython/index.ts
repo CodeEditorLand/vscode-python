@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable } from "inversify";
 import { IExtensionSingleActivationService } from "../../../../../activation/types";
 import { ExtensionContextKey } from "../../../../../common/application/contextKeys";
@@ -12,11 +10,11 @@ import {
 } from "../../../../../common/application/types";
 import { PythonWelcome } from "../../../../../common/application/walkThroughs";
 import { Commands, PVSC_EXTENSION_ID } from "../../../../../common/constants";
+import { IPlatformService } from "../../../../../common/platform/types";
 import {
 	IBrowserService,
 	IDisposableRegistry,
 } from "../../../../../common/types";
-import { IPlatformService } from "../../../../../common/platform/types";
 
 @injectable()
 export class InstallPythonCommand implements IExtensionSingleActivationService {
@@ -41,8 +39,8 @@ export class InstallPythonCommand implements IExtensionSingleActivationService {
 	public async activate(): Promise<void> {
 		this.disposables.push(
 			this.commandManager.registerCommand(Commands.InstallPython, () =>
-				this._installPython()
-			)
+				this._installPython(),
+			),
 		);
 	}
 
@@ -53,7 +51,7 @@ export class InstallPythonCommand implements IExtensionSingleActivationService {
 				// OS is not Windows 8, ms-windows-store URIs are available:
 				// https://docs.microsoft.com/en-us/windows/uwp/launch-resume/launch-store-app
 				this.browserService.launch(
-					"ms-windows-store://pdp/?ProductId=9NRWMJP3717K"
+					"ms-windows-store://pdp/?ProductId=9NRWMJP3717K",
 				);
 				return;
 			}
@@ -64,7 +62,7 @@ export class InstallPythonCommand implements IExtensionSingleActivationService {
 	private showInstallPythonTile() {
 		this.contextManager.setContext(
 			ExtensionContextKey.showInstallPythonTile,
-			true
+			true,
 		);
 		let step: string;
 		if (this.platformService.isWindows) {
@@ -80,7 +78,7 @@ export class InstallPythonCommand implements IExtensionSingleActivationService {
 				category: `${PVSC_EXTENSION_ID}#${PythonWelcome.name}`,
 				step: `${PVSC_EXTENSION_ID}#${PythonWelcome.name}#${step}`,
 			},
-			false
+			false,
 		);
 	}
 }

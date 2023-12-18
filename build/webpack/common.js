@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 const glob = require("glob");
 const path = require("path");
 // eslint-disable-next-line camelcase
@@ -37,7 +35,7 @@ function getDefaultPlugins(name) {
 				generateStatsFile: true,
 				statsFilename: `${name}.stats.json`,
 				openAnalyzer: false, // Open file manually if you want to see it :)
-			})
+			}),
 		);
 	}
 	return plugins;

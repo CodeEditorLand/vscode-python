@@ -7,15 +7,15 @@ import { JediLanguageServerProxy } from "../activation/jedi/languageServerProxy"
 import { JediLanguageServerManager } from "../activation/jedi/manager";
 import { ILanguageServerOutputChannel } from "../activation/types";
 import {
-	IWorkspaceService,
 	ICommandManager,
+	IWorkspaceService,
 } from "../common/application/types";
 import {
+	IConfigurationService,
+	IDisposable,
 	IExperimentService,
 	IInterpreterPathService,
-	IConfigurationService,
 	Resource,
-	IDisposable,
 } from "../common/types";
 import { IEnvironmentVariablesProvider } from "../common/variables/types";
 import { IInterpreterService } from "../interpreter/contracts";
@@ -44,13 +44,13 @@ export class JediLSExtensionManager
 		_interpreterPathService: IInterpreterPathService,
 		interpreterService: IInterpreterService,
 		environmentService: IEnvironmentVariablesProvider,
-		commandManager: ICommandManager
+		commandManager: ICommandManager,
 	) {
 		this.analysisOptions = new JediLanguageServerAnalysisOptions(
 			environmentService,
 			outputChannel,
 			configurationService,
-			workspaceService
+			workspaceService,
 		);
 		this.clientFactory = new JediLanguageClientFactory(interpreterService);
 		this.serverProxy = new JediLanguageServerProxy(this.clientFactory);
@@ -58,7 +58,7 @@ export class JediLSExtensionManager
 			serviceContainer,
 			this.analysisOptions,
 			this.serverProxy,
-			commandManager
+			commandManager,
 		);
 	}
 
@@ -71,7 +71,7 @@ export class JediLSExtensionManager
 
 	async startLanguageServer(
 		resource: Resource,
-		interpreter?: PythonEnvironment
+		interpreter?: PythonEnvironment,
 	): Promise<void> {
 		await this.serverManager.start(resource, interpreter);
 		this.serverManager.connect();
@@ -84,11 +84,11 @@ export class JediLSExtensionManager
 
 	// eslint-disable-next-line class-methods-use-this
 	canStartLanguageServer(
-		interpreter: PythonEnvironment | undefined
+		interpreter: PythonEnvironment | undefined,
 	): boolean {
 		if (!interpreter) {
 			traceError(
-				"Unable to start Jedi language server as a valid interpreter is not selected"
+				"Unable to start Jedi language server as a valid interpreter is not selected",
 			);
 			return false;
 		}

@@ -7,13 +7,13 @@ export class WorkspaceFolderPythonPathUpdaterService
 {
 	constructor(
 		private workspaceFolder: Uri,
-		private readonly interpreterPathService: IInterpreterPathService
+		private readonly interpreterPathService: IInterpreterPathService,
 	) {}
 	public async updatePythonPath(
-		pythonPath: string | undefined
+		pythonPath: string | undefined,
 	): Promise<void> {
 		const pythonPathValue = this.interpreterPathService.inspect(
-			this.workspaceFolder
+			this.workspaceFolder,
 		);
 
 		if (
@@ -25,7 +25,7 @@ export class WorkspaceFolderPythonPathUpdaterService
 		await this.interpreterPathService.update(
 			this.workspaceFolder,
 			ConfigurationTarget.WorkspaceFolder,
-			pythonPath
+			pythonPath,
 		);
 	}
 }

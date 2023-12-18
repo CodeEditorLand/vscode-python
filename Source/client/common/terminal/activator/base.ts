@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { Terminal } from "vscode";
 import { traceVerbose } from "../../../logging";
 import { createDeferred, sleep } from "../../utils/async";
@@ -19,7 +17,7 @@ export class BaseTerminalActivator implements ITerminalActivator {
 	constructor(private readonly helper: ITerminalHelper) {}
 	public async activateEnvironmentInTerminal(
 		terminal: Terminal,
-		options?: TerminalActivationOptions
+		options?: TerminalActivationOptions,
 	): Promise<boolean> {
 		if (this.activatedTerminals.has(terminal)) {
 			return this.activatedTerminals.get(terminal)!;
@@ -32,7 +30,7 @@ export class BaseTerminalActivator implements ITerminalActivator {
 			await this.helper.getEnvironmentActivationCommands(
 				terminalShellType,
 				options?.resource,
-				options?.interpreter
+				options?.interpreter,
 			);
 		let activated = false;
 		if (activationCommands) {

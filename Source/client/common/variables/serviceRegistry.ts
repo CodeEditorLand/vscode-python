@@ -12,10 +12,10 @@ import {
 export function registerTypes(serviceManager: IServiceManager) {
 	serviceManager.addSingleton<IEnvironmentVariablesService>(
 		IEnvironmentVariablesService,
-		EnvironmentVariablesService
+		EnvironmentVariablesService,
 	);
 	serviceManager.addSingleton<IEnvironmentVariablesProvider>(
 		IEnvironmentVariablesProvider,
-		EnvironmentVariablesProvider
+		EnvironmentVariablesProvider,
 	);
 }

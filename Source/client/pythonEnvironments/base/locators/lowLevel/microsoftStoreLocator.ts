@@ -1,18 +1,18 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+import * as path from "path";
 import * as fsapi from "fs-extra";
 import * as minimatch from "minimatch";
-import * as path from "path";
-import { PythonEnvKind } from "../../info";
-import { IPythonEnvsIterator, BasicEnvInfo } from "../../locator";
-import { FSWatchingLocator } from "./fsWatchingLocator";
-import { PythonEnvStructure } from "../../../common/pythonBinariesWatcher";
-import {
-	isStorePythonInstalled,
-	getMicrosoftStoreAppsRoot,
-} from "../../../common/environmentManagers/microsoftStoreEnv";
 import { traceVerbose } from "../../../../logging";
+import {
+	getMicrosoftStoreAppsRoot,
+	isStorePythonInstalled,
+} from "../../../common/environmentManagers/microsoftStoreEnv";
+import { PythonEnvStructure } from "../../../common/pythonBinariesWatcher";
+import { PythonEnvKind } from "../../info";
+import { BasicEnvInfo, IPythonEnvsIterator } from "../../locator";
+import { FSWatchingLocator } from "./fsWatchingLocator";
 
 /**
  * This is a glob pattern which matches following file names:

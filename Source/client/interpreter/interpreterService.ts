@@ -1,6 +1,6 @@
+import * as pathUtils from "path";
 // eslint-disable-next-line max-classes-per-file
 import { inject, injectable } from "inversify";
-import * as pathUtils from "path";
 import {
 	ConfigurationChangeEvent,
 	Disposable,
@@ -11,12 +11,18 @@ import {
 	Uri,
 	WorkspaceFolder,
 } from "vscode";
-import "../common/extensions";
 import {
 	IApplicationShell,
 	IDocumentManager,
 	IWorkspaceService,
 } from "../common/application/types";
+import {
+	Commands,
+	PVSC_EXTENSION_ID,
+	PYTHON_LANGUAGE,
+} from "../common/constants";
+import "../common/extensions";
+import { IPythonExecutionFactory } from "../common/process/types";
 import {
 	IConfigurationService,
 	IDisposableRegistry,
@@ -24,8 +30,19 @@ import {
 	IInterpreterPathService,
 	Product,
 } from "../common/types";
+import { sleep } from "../common/utils/async";
+import { cache } from "../common/utils/decorators";
+import { Interpreters } from "../common/utils/localize";
+import { reportActiveInterpreterChanged } from "../environmentApi";
 import { IServiceContainer } from "../ioc/types";
+import { traceError, traceLog } from "../logging";
+import {
+	PythonLocatorQuery,
+	TriggerRefreshOptions,
+} from "../pythonEnvironments/base/locator";
 import { PythonEnvironment } from "../pythonEnvironments/info";
+import { sendTelemetryEvent } from "../telemetry";
+import { EventName } from "../telemetry/constants";
 import {
 	IActivatedEnvironmentLaunch,
 	IComponentAdapter,
@@ -34,37 +51,20 @@ import {
 	IInterpreterStatusbarVisibilityFilter,
 	PythonEnvironmentsChangedEvent,
 } from "./contracts";
-import { traceError, traceLog } from "../logging";
-import {
-	Commands,
-	PVSC_EXTENSION_ID,
-	PYTHON_LANGUAGE,
-} from "../common/constants";
-import { reportActiveInterpreterChanged } from "../environmentApi";
-import { IPythonExecutionFactory } from "../common/process/types";
-import { Interpreters } from "../common/utils/localize";
-import { sendTelemetryEvent } from "../telemetry";
-import { EventName } from "../telemetry/constants";
-import { cache } from "../common/utils/decorators";
-import {
-	PythonLocatorQuery,
-	TriggerRefreshOptions,
-} from "../pythonEnvironments/base/locator";
-import { sleep } from "../common/utils/async";
 
 type StoredPythonEnvironment = PythonEnvironment & { store?: boolean };
 
 @injectable()
 export class InterpreterService implements Disposable, IInterpreterService {
 	public async hasInterpreters(
-		filter: (e: PythonEnvironment) => Promise<boolean> = async () => true
+		filter: (e: PythonEnvironment) => Promise<boolean> = async () => true,
 	): Promise<boolean> {
 		return this.pyenvs.hasInterpreters(filter);
 	}
 
 	public triggerRefresh(
 		query?: PythonLocatorQuery,
-		options?: TriggerRefreshOptions
+		options?: TriggerRefreshOptions,
 	): Promise<void> {
 		return this.pyenvs.triggerRefresh(query, options);
 	}
@@ -139,7 +139,7 @@ export class InterpreterService implements Disposable, IInterpreterService {
 		});
 		this.ensureEnvironmentContainsPython(
 			path,
-			workspaceFolder
+			workspaceFolder,
 		).ignoreErrors();
 	}
 
@@ -156,20 +156,20 @@ export class InterpreterService implements Disposable, IInterpreterService {
 			constructor(
 				private readonly docManager: IDocumentManager,
 				private readonly configService: IConfigurationService,
-				private readonly disposablesReg: IDisposableRegistry
+				private readonly disposablesReg: IDisposableRegistry,
 			) {
 				this.disposablesReg.push(
 					this.configService.onDidChange(
 						async (event: ConfigurationChangeEvent | undefined) => {
 							if (
 								event?.affectsConfiguration(
-									"python.interpreter.infoVisibility"
+									"python.interpreter.infoVisibility",
 								)
 							) {
 								this.interpreterVisibilityEmitter.fire();
 							}
-						}
-					)
+						},
+					),
 				);
 			}
 
@@ -213,7 +213,7 @@ export class InterpreterService implements Disposable, IInterpreterService {
 						if (path === interpreter.path && !e.new) {
 							// If the active environment got deleted, notify it.
 							this.didChangeInterpreterEmitter.fire(
-								workspaceFolder?.uri
+								workspaceFolder?.uri,
 							);
 							reportActiveInterpreterChanged({
 								path,
@@ -222,7 +222,7 @@ export class InterpreterService implements Disposable, IInterpreterService {
 						}
 					}
 				}
-			})
+			}),
 		);
 		disposables.push(
 			documentManager.onDidOpenTextDocument(() => {
@@ -234,12 +234,12 @@ export class InterpreterService implements Disposable, IInterpreterService {
 				if (e && e.document) {
 					this.refresh(e.document.uri);
 				}
-			})
+			}),
 		);
 		disposables.push(
 			this.interpreterPathService.onDidChange((i) =>
-				this._onConfigChanged(i.uri)
-			)
+				this._onConfigChanged(i.uri),
+			),
 		);
 	}
 
@@ -248,7 +248,7 @@ export class InterpreterService implements Disposable, IInterpreterService {
 	}
 
 	public async getAllInterpreters(
-		resource?: Uri
+		resource?: Uri,
 	): Promise<PythonEnvironment[]> {
 		// For backwards compatibility with old Jupyter APIs, ensure a
 		// fresh refresh is always triggered when using the API. As it is
@@ -266,11 +266,11 @@ export class InterpreterService implements Disposable, IInterpreterService {
 	}
 
 	public async getActiveInterpreter(
-		resource?: Uri
+		resource?: Uri,
 	): Promise<PythonEnvironment | undefined> {
 		const activatedEnvLaunch =
 			this.serviceContainer.get<IActivatedEnvironmentLaunch>(
-				IActivatedEnvironmentLaunch
+				IActivatedEnvironmentLaunch,
 			);
 		let path =
 			await activatedEnvLaunch.selectIfLaunchedViaActivatedEnv(true);
@@ -285,7 +285,7 @@ export class InterpreterService implements Disposable, IInterpreterService {
 				// During shutdown we might not be able to get items out of the service container.
 				const pythonExecutionFactory =
 					this.serviceContainer.tryGet<IPythonExecutionFactory>(
-						IPythonExecutionFactory
+						IPythonExecutionFactory,
 					);
 				const pythonExecutionService = pythonExecutionFactory
 					? await pythonExecutionFactory.create({ resource })
@@ -308,7 +308,7 @@ export class InterpreterService implements Disposable, IInterpreterService {
 	}
 
 	public async getInterpreterDetails(
-		pythonPath: string
+		pythonPath: string,
 	): Promise<StoredPythonEnvironment | undefined> {
 		return this.pyenvs.getInterpreterDetails(pythonPath);
 	}
@@ -343,16 +343,16 @@ export class InterpreterService implements Disposable, IInterpreterService {
 			});
 			const interpreterDisplay =
 				this.serviceContainer.get<IInterpreterDisplay>(
-					IInterpreterDisplay
+					IInterpreterDisplay,
 				);
 			interpreterDisplay
 				.refresh()
 				.catch((ex) =>
-					traceError("Python Extension: display.refresh", ex)
+					traceError("Python Extension: display.refresh", ex),
 				);
 			await this.ensureEnvironmentContainsPython(
 				this._pythonPathSetting,
-				workspaceFolder
+				workspaceFolder,
 			);
 		}
 	}
@@ -360,7 +360,7 @@ export class InterpreterService implements Disposable, IInterpreterService {
 	@cache(-1, true)
 	private async ensureEnvironmentContainsPython(
 		pythonPath: string,
-		workspaceFolder: WorkspaceFolder | undefined
+		workspaceFolder: WorkspaceFolder | undefined,
 	) {
 		const installer = this.serviceContainer.get<IInstaller>(IInstaller);
 		if (!(await installer.isInstalled(Product.python))) {
@@ -373,11 +373,11 @@ export class InterpreterService implements Disposable, IInterpreterService {
 				title: `[${Interpreters.installingPython}](command:${Commands.ViewOutput})`,
 			};
 			traceLog(
-				"Conda envs without Python are known to not work well; fixing conda environment..."
+				"Conda envs without Python are known to not work well; fixing conda environment...",
 			);
 			const promise = installer.install(
 				Product.python,
-				await this.getInterpreterDetails(pythonPath)
+				await this.getInterpreterDetails(pythonPath),
 			);
 			shell.withProgress(progressOptions, () => promise);
 			promise

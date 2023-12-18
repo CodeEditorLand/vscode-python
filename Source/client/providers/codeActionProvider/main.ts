@@ -35,8 +35,8 @@ export class CodeActionProviderService
 				new LaunchJsonCodeActionProvider(),
 				{
 					providedCodeActionKinds: [vscode.CodeActionKind.QuickFix],
-				}
-			)
+				},
+			),
 		);
 	}
 }

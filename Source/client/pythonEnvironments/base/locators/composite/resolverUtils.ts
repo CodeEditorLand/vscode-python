@@ -2,8 +2,40 @@
 // Licensed under the MIT License.
 
 import * as path from "path";
-import { Uri } from "vscode";
 import { uniq } from "lodash";
+import { Uri } from "vscode";
+import {
+	Architecture,
+	OSType,
+	getOSType,
+} from "../../../../common/utils/platform";
+import { getWorkspaceFolderPaths } from "../../../../common/vscodeApis/workspaceApis";
+import { traceError, traceWarn } from "../../../../logging";
+import {
+	getEnvironmentDirFromPath,
+	getPythonVersionFromPath,
+} from "../../../common/commonUtils";
+import { ActiveState } from "../../../common/environmentManagers/activestate";
+import {
+	AnacondaCompanyName,
+	Conda,
+	getCondaInterpreterPath,
+	isCondaEnvironment,
+} from "../../../common/environmentManagers/conda";
+import {
+	getPyenvVersionsDir,
+	parsePyenvVersion,
+} from "../../../common/environmentManagers/pyenv";
+import { isVirtualEnvironment } from "../../../common/environmentManagers/simplevirtualenvs";
+import {
+	arePathsSame,
+	getFileInfo,
+	isParentPath,
+} from "../../../common/externalDependencies";
+import {
+	getRegistryInterpreters,
+	getRegistryInterpretersSync,
+} from "../../../common/windowsUtils";
 import {
 	PythonEnvInfo,
 	PythonEnvKind,
@@ -15,47 +47,15 @@ import {
 import {
 	buildEnvInfo,
 	comparePythonVersionSpecificity,
-	setEnvDisplayString,
 	getEnvID,
+	setEnvDisplayString,
 } from "../../info/env";
-import {
-	getEnvironmentDirFromPath,
-	getPythonVersionFromPath,
-} from "../../../common/commonUtils";
-import {
-	arePathsSame,
-	getFileInfo,
-	isParentPath,
-} from "../../../common/externalDependencies";
-import {
-	AnacondaCompanyName,
-	Conda,
-	getCondaInterpreterPath,
-	isCondaEnvironment,
-} from "../../../common/environmentManagers/conda";
-import {
-	getPyenvVersionsDir,
-	parsePyenvVersion,
-} from "../../../common/environmentManagers/pyenv";
-import {
-	Architecture,
-	getOSType,
-	OSType,
-} from "../../../../common/utils/platform";
+import { parseVersionFromExecutable } from "../../info/executable";
 import {
 	getPythonVersionFromPath as parsePythonVersionFromPath,
 	parseVersion,
 } from "../../info/pythonVersion";
-import {
-	getRegistryInterpreters,
-	getRegistryInterpretersSync,
-} from "../../../common/windowsUtils";
 import { BasicEnvInfo } from "../../locator";
-import { parseVersionFromExecutable } from "../../info/executable";
-import { traceError, traceWarn } from "../../../../logging";
-import { isVirtualEnvironment } from "../../../common/environmentManagers/simplevirtualenvs";
-import { getWorkspaceFolderPaths } from "../../../../common/vscodeApis/workspaceApis";
-import { ActiveState } from "../../../common/environmentManagers/activestate";
 
 function getResolvers(): Map<
 	PythonEnvKind,
@@ -84,7 +84,7 @@ function getResolvers(): Map<
  * returned could still be invalid.
  */
 export async function resolveBasicEnv(
-	env: BasicEnvInfo
+	env: BasicEnvInfo,
 ): Promise<PythonEnvInfo> {
 	const { kind, source } = env;
 	const resolvers = getResolvers();
@@ -128,7 +128,7 @@ function getSearchLocation(env: PythonEnvInfo): Uri | undefined {
 	const isRootedEnv = folders.some(
 		(f) =>
 			isParentPath(env.executable.filename, f) ||
-			isParentPath(env.location, f)
+			isParentPath(env.location, f),
 	);
 	if (isRootedEnv) {
 		// For environments inside roots, we need to set search location so they can be queried accordingly.
@@ -149,12 +149,12 @@ async function updateEnvUsingRegistry(env: PythonEnvInfo): Promise<void> {
 	let interpreters = getRegistryInterpretersSync();
 	if (!interpreters) {
 		traceError(
-			"Expected registry interpreter cache to be initialized already"
+			"Expected registry interpreter cache to be initialized already",
 		);
 		interpreters = await getRegistryInterpreters(true);
 	}
 	const data = interpreters.find((i) =>
-		arePathsSame(i.interpreterPath, env.executable.filename)
+		arePathsSame(i.interpreterPath, env.executable.filename),
 	);
 	if (data) {
 		const versionStr =
@@ -180,13 +180,13 @@ async function updateEnvUsingRegistry(env: PythonEnvInfo): Promise<void> {
 		env.source = uniq(env.source.concat(PythonEnvSource.WindowsRegistry));
 	} else {
 		traceWarn(
-			"Expected registry to find the interpreter as source was set"
+			"Expected registry to find the interpreter as source was set",
 		);
 	}
 }
 
 async function resolveGloballyInstalledEnv(
-	env: BasicEnvInfo
+	env: BasicEnvInfo,
 ): Promise<PythonEnvInfo> {
 	const { executablePath } = env;
 	let version;
@@ -222,7 +222,7 @@ async function resolveCondaEnv(env: BasicEnvInfo): Promise<PythonEnvInfo> {
 	const conda = await Conda.getConda();
 	if (conda === undefined) {
 		traceWarn(
-			`${executablePath} identified as Conda environment even though Conda is not found`
+			`${executablePath} identified as Conda environment even though Conda is not found`,
 		);
 		// Environment could still be valid, resolve as a simple env.
 		env.kind = PythonEnvKind.Unknown;
@@ -302,7 +302,7 @@ async function resolvePyenvEnv(env: BasicEnvInfo): Promise<PythonEnvInfo> {
 		// without running python itself.
 		version: await getPythonVersionFromPath(
 			executablePath,
-			versionStrings?.pythonVer
+			versionStrings?.pythonVer,
 		),
 		org:
 			versionStrings && versionStrings.distro
@@ -319,7 +319,7 @@ async function resolvePyenvEnv(env: BasicEnvInfo): Promise<PythonEnvInfo> {
 }
 
 async function resolveActiveStateEnv(
-	env: BasicEnvInfo
+	env: BasicEnvInfo,
 ): Promise<PythonEnvInfo> {
 	const info = buildEnvInfo({
 		kind: env.kind,
@@ -349,7 +349,7 @@ async function isBaseCondaPyenvEnvironment(executablePath: string) {
 }
 
 async function resolveMicrosoftStoreEnv(
-	env: BasicEnvInfo
+	env: BasicEnvInfo,
 ): Promise<PythonEnvInfo> {
 	const { executablePath } = env;
 	return buildEnvInfo({

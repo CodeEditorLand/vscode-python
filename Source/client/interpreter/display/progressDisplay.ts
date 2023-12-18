@@ -1,15 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable } from "inversify";
 import { Disposable, ProgressLocation, ProgressOptions } from "vscode";
 import { IExtensionSingleActivationService } from "../../activation/types";
 import { IApplicationShell } from "../../common/application/types";
 import { Commands } from "../../common/constants";
 import { IDisposableRegistry } from "../../common/types";
-import { createDeferred, Deferred } from "../../common/utils/async";
+import { Deferred, createDeferred } from "../../common/utils/async";
 import { Interpreters } from "../../common/utils/localize";
 import { traceDecoratorVerbose } from "../../logging";
 import { ProgressReportStage } from "../../pythonEnvironments/base/locator";
@@ -47,7 +45,7 @@ export class InterpreterLocatorProgressStatubarHandler
 				}
 			},
 			this,
-			this.disposables
+			this.disposables,
 		);
 	}
 

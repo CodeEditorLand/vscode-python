@@ -8,7 +8,7 @@ import { ExecutionResult, ShellOptions } from "./types";
 
 export function workerShellExec(
 	command: string,
-	options: ShellOptions
+	options: ShellOptions,
 ): Promise<ExecutionResult<string>> {
 	return executeWorkerFile(path.join(__dirname, "shellExec.worker.js"), {
 		command,
@@ -19,7 +19,7 @@ export function workerShellExec(
 export function workerPlainExec(
 	file: string,
 	args: string[],
-	options: SpawnOptions = {}
+	options: SpawnOptions = {},
 ): Promise<ExecutionResult<string>> {
 	return executeWorkerFile(path.join(__dirname, "plainExec.worker.js"), {
 		file,

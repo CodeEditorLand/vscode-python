@@ -22,7 +22,7 @@ export class PythonToolExecutionService implements IPythonToolExecutionService {
 	public async execObservable(
 		executionInfo: ExecutionInfo,
 		options: SpawnOptions,
-		resource: Uri
+		resource: Uri,
 	): Promise<ObservableExecutionResult<string>> {
 		if (options.env) {
 			throw new Error("Environment variables are not supported");
@@ -34,7 +34,7 @@ export class PythonToolExecutionService implements IPythonToolExecutionService {
 			return pythonExecutionService.execModuleObservable(
 				executionInfo.moduleName,
 				executionInfo.args,
-				options
+				options,
 			);
 		} else {
 			const processService = await this.serviceContainer
@@ -43,14 +43,14 @@ export class PythonToolExecutionService implements IPythonToolExecutionService {
 			return processService.execObservable(
 				executionInfo.execPath!,
 				executionInfo.args,
-				{ ...options }
+				{ ...options },
 			);
 		}
 	}
 	public async exec(
 		executionInfo: ExecutionInfo,
 		options: SpawnOptions,
-		resource: Uri
+		resource: Uri,
 	): Promise<ExecutionResult<string>> {
 		if (options.env) {
 			throw new Error("Environment variables are not supported");
@@ -62,7 +62,7 @@ export class PythonToolExecutionService implements IPythonToolExecutionService {
 			return pythonExecutionService.execModule(
 				executionInfo.moduleName,
 				executionInfo.args,
-				options
+				options,
 			);
 		} else {
 			const processService = await this.serviceContainer
@@ -71,7 +71,7 @@ export class PythonToolExecutionService implements IPythonToolExecutionService {
 			return processService.exec(
 				executionInfo.execPath!,
 				executionInfo.args,
-				{ ...options }
+				{ ...options },
 			);
 		}
 	}
@@ -79,7 +79,7 @@ export class PythonToolExecutionService implements IPythonToolExecutionService {
 	public async execForLinter(
 		executionInfo: ExecutionInfo,
 		options: SpawnOptions,
-		resource: Uri
+		resource: Uri,
 	): Promise<ExecutionResult<string>> {
 		if (options.env) {
 			throw new Error("Environment variables are not supported");
@@ -95,7 +95,7 @@ export class PythonToolExecutionService implements IPythonToolExecutionService {
 		return pythonExecutionService.execForLinter(
 			executionInfo.moduleName!,
 			executionInfo.args,
-			options
+			options,
 		);
 	}
 }

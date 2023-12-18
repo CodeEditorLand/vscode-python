@@ -54,7 +54,7 @@ export class TensorBoardPrompt {
 	}
 
 	public async showNativeTensorBoardPrompt(
-		trigger: TensorBoardEntrypointTrigger
+		trigger: TensorBoardEntrypointTrigger,
 	): Promise<void> {
 		if (
 			this.enabled &&
@@ -70,7 +70,7 @@ export class TensorBoardPrompt {
 			const selection =
 				await this.applicationShell.showInformationMessage(
 					TensorBoard.nativeTensorBoardPrompt,
-					...options
+					...options,
 				);
 			this.waitingForUserSelection = false;
 			this.enabledInCurrentSession = false;
@@ -81,7 +81,7 @@ export class TensorBoardPrompt {
 					await this.commandManager.executeCommand(
 						Commands.LaunchTensorBoard,
 						TensorBoardEntrypoint.prompt,
-						trigger
+						trigger,
 					);
 					break;
 				case doNotAskAgain:
@@ -100,7 +100,7 @@ export class TensorBoardPrompt {
 				undefined,
 				{
 					selection: telemetrySelection,
-				}
+				},
 			);
 		}
 	}

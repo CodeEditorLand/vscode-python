@@ -77,7 +77,7 @@ export class CondaProgressAndTelemetry {
 				{
 					environmentType: "conda",
 					using: "environment.yml",
-				}
+				},
 			);
 		} else if (
 			!this.condaInstallingPackagesFailedReported &&
@@ -90,7 +90,7 @@ export class CondaProgressAndTelemetry {
 				{
 					environmentType: "conda",
 					using: "environment.yml",
-				}
+				},
 			);
 			this.lastError = CREATE_FAILED_INSTALL_YML;
 		} else if (
@@ -104,7 +104,7 @@ export class CondaProgressAndTelemetry {
 				{
 					environmentType: "conda",
 					using: "environment.yml",
-				}
+				},
 			);
 		}
 	}

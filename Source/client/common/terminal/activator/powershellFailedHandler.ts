@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable, named } from "inversify";
 import { Terminal } from "vscode";
 import {
@@ -34,7 +32,7 @@ export class PowershellTerminalActivationFailedHandler
 		terminal: Terminal,
 		resource: Resource,
 		_preserveFocus: boolean,
-		activated: boolean
+		activated: boolean,
 	) {
 		if (activated || !this.platformService.isWindows) {
 			return;
@@ -50,7 +48,7 @@ export class PowershellTerminalActivationFailedHandler
 		const activationCommands =
 			await this.helper.getEnvironmentActivationCommands(
 				TerminalShellType.commandPrompt,
-				resource
+				resource,
 			);
 		if (
 			!activationCommands ||

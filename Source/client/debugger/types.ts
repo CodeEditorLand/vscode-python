@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { DebugConfiguration } from "vscode";
 import { DebugProtocol } from "vscode-debugprotocol/lib/debugProtocol";
 import { DebuggerTypeName } from "./constants";

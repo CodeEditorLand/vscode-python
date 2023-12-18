@@ -9,7 +9,7 @@ import {
 	IExtensionContext,
 	Resource,
 } from "../../../common/types";
-import { Diagnostics, Common } from "../../../common/utils/localize";
+import { Common, Diagnostics } from "../../../common/utils/localize";
 import { IServiceContainer } from "../../../ioc/types";
 import { BaseDiagnostic, BaseDiagnosticsService } from "../base";
 import { DiagnosticCodes } from "../constants";
@@ -33,7 +33,7 @@ export class PylanceDefaultDiagnostic extends BaseDiagnostic {
 			message,
 			DiagnosticSeverity.Information,
 			DiagnosticScope.Global,
-			resource
+			resource,
 		);
 	}
 }
@@ -73,7 +73,7 @@ export class PylanceDefaultDiagnosticService extends BaseDiagnosticsService {
 		return [
 			new PylanceDefaultDiagnostic(
 				Diagnostics.pylanceDefaultMessage,
-				resource
+				resource,
 			),
 		];
 	}
@@ -103,7 +103,7 @@ export class PylanceDefaultDiagnosticService extends BaseDiagnosticsService {
 	private async shouldShowPrompt(): Promise<boolean> {
 		const savedVersion: string | undefined = this.initialMementoValue;
 		const promptShown: boolean | undefined = this.context.globalState.get(
-			PYLANCE_PROMPT_MEMENTO
+			PYLANCE_PROMPT_MEMENTO,
 		);
 
 		// savedVersion being undefined means that this is the first time the user activates the extension,

@@ -2,13 +2,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { createHash } from "crypto";
+import { promisify } from "util";
 import * as fs from "fs-extra";
 import * as glob from "glob";
 import { injectable } from "inversify";
-import { promisify } from "util";
 import * as vscode from "vscode";
 import { traceError } from "../../logging";
 import "../extensions";
@@ -19,14 +17,14 @@ import {
 	isFileNotFoundError,
 	isNoPermissionsError,
 } from "./errors";
-import { FileSystemPaths, FileSystemPathUtils } from "./fs-paths";
+import { FileSystemPathUtils, FileSystemPaths } from "./fs-paths";
 import { TemporaryFileSystem } from "./fs-temp";
 import {
 	FileStat,
 	FileType,
 	IFileSystem,
-	IFileSystemPaths,
 	IFileSystemPathUtils,
+	IFileSystemPaths,
 	IFileSystemUtils,
 	IRawFileSystem,
 	ITempFileSystem,
@@ -52,7 +50,7 @@ export function convertStat(old: fs.Stats, filetype: FileType): FileStat {
 
 function filterByFileType(
 	files: [string, FileType][], // the files to filter
-	fileType: FileType // the file type to look for
+	fileType: FileType, // the file type to look for
 ): [string, FileType][] {
 	// We preserve the pre-existing behavior of following symlinks.
 	if (fileType === FileType.Unknown) {
@@ -61,7 +59,7 @@ function filterByFileType(
 		return files.filter(
 			([_file, ft]) =>
 				ft === FileType.Unknown ||
-				ft === (FileType.SymbolicLink & FileType.Unknown)
+				ft === (FileType.SymbolicLink & FileType.Unknown),
 		);
 	}
 	return files.filter(([_file, ft]) => (ft & fileType) > 0);
@@ -76,19 +74,19 @@ interface IVSCodeFileSystemAPI {
 	copy(
 		source: vscode.Uri,
 		target: vscode.Uri,
-		options?: { overwrite: boolean }
+		options?: { overwrite: boolean },
 	): Thenable<void>;
 	createDirectory(uri: vscode.Uri): Thenable<void>;
 	delete(
 		uri: vscode.Uri,
-		options?: { recursive: boolean; useTrash: boolean }
+		options?: { recursive: boolean; useTrash: boolean },
 	): Thenable<void>;
 	readDirectory(uri: vscode.Uri): Thenable<[string, FileType][]>;
 	readFile(uri: vscode.Uri): Thenable<Uint8Array>;
 	rename(
 		source: vscode.Uri,
 		target: vscode.Uri,
-		options?: { overwrite: boolean }
+		options?: { overwrite: boolean },
 	): Thenable<void>;
 	stat(uri: vscode.Uri): Thenable<FileStat>;
 	writeFile(uri: vscode.Uri, content: Uint8Array): Thenable<void>;
@@ -125,14 +123,14 @@ export class RawFileSystem implements IRawFileSystem {
 		// the VS Code FS API to use
 		protected readonly vscfs: IVSCodeFileSystemAPI,
 		// the node FS API to use
-		protected readonly fsExtra: IRawFSExtra
+		protected readonly fsExtra: IRawFSExtra,
 	) {}
 
 	// Create a new object using common-case default values.
 	public static withDefaults(
 		paths?: IRawPath, // default: a new FileSystemPaths object (using defaults)
 		vscfs?: IVSCodeFileSystemAPI, // default: the actual "vscode.workspace.fs" namespace
-		fsExtra?: IRawFSExtra // default: the "fs-extra" module
+		fsExtra?: IRawFSExtra, // default: the "fs-extra" module
 	): RawFileSystem {
 		return new RawFileSystem(
 			paths || FileSystemPaths.withDefaults(),
@@ -140,7 +138,7 @@ export class RawFileSystem implements IRawFileSystem {
 			// The "fs-extra" module is effectively equivalent to node's "fs"
 			// module (but is a bit more async-friendly).  So we use that
 			// instead of "fs".
-			fsExtra || (fs as IRawFSExtra)
+			fsExtra || (fs as IRawFSExtra),
 		);
 	}
 
@@ -335,8 +333,8 @@ export class FileSystemUtils implements IFileSystemUtils {
 		private readonly getHash: (data: string) => string,
 		private readonly globFiles: (
 			pat: string,
-			options?: { cwd: string; dot?: boolean }
-		) => Promise<string[]>
+			options?: { cwd: string; dot?: boolean },
+		) => Promise<string[]>,
 	) {}
 
 	// Create a new object using common-case default values.
@@ -347,8 +345,8 @@ export class FileSystemUtils implements IFileSystemUtils {
 		getHash?: (data: string) => string,
 		globFiles?: (
 			pat: string,
-			options?: { cwd: string }
-		) => Promise<string[]>
+			options?: { cwd: string },
+		) => Promise<string[]>,
 	): FileSystemUtils {
 		pathUtils = pathUtils || FileSystemPathUtils.withDefaults();
 		return new FileSystemUtils(
@@ -357,7 +355,7 @@ export class FileSystemUtils implements IFileSystemUtils {
 			pathUtils.paths,
 			tmp || TemporaryFileSystem.withDefaults(),
 			getHash || getHashString,
-			globFiles || promisify(glob)
+			globFiles || promisify(glob),
 		);
 	}
 
@@ -382,7 +380,7 @@ export class FileSystemUtils implements IFileSystemUtils {
 		filename: string,
 		// the file type to expect; if not provided then any file type
 		// matches; otherwise a mismatch results in a "false" value
-		fileType?: FileType
+		fileType?: FileType,
 	): Promise<boolean> {
 		if (fileType === undefined) {
 			// Do not need to run stat if not asking for file type.
@@ -469,7 +467,7 @@ export class FileSystemUtils implements IFileSystemUtils {
 	public async search(
 		globPattern: string,
 		cwd?: string,
-		dot?: boolean
+		dot?: boolean,
 	): Promise<string[]> {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		let options: any;
@@ -557,7 +555,7 @@ export class FileSystem implements IFileSystem {
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	public async writeFile(
 		filename: string,
-		data: string | Buffer
+		data: string | Buffer,
 	): Promise<void> {
 		return this.utils.raw.writeText(filename, data);
 	}
@@ -625,14 +623,14 @@ export class FileSystem implements IFileSystem {
 	public async search(
 		globPattern: string,
 		cwd?: string,
-		dot?: boolean
+		dot?: boolean,
 	): Promise<string[]> {
 		return this.utils.search(globPattern, cwd, dot);
 	}
 
 	public async createTemporaryFile(
 		suffix: string,
-		mode?: number
+		mode?: number,
 	): Promise<TemporaryFile> {
 		return this.utils.tmp.createFile(suffix, mode);
 	}

@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { IWorkspaceService } from "../common/application/types";
 import { IFileSystem } from "../common/platform/types";
 import { Resource } from "../common/types";
@@ -16,7 +14,7 @@ let envFileTelemetrySent = false;
 
 export function sendSettingTelemetry(
 	workspaceService: IWorkspaceService,
-	envFileSetting?: string
+	envFileSetting?: string,
 ): void {
 	if (
 		shouldSendTelemetry() &&
@@ -35,16 +33,16 @@ export function sendFileCreationTelemetry(): void {
 export async function sendActivationTelemetry(
 	fileSystem: IFileSystem,
 	workspaceService: IWorkspaceService,
-	resource: Resource
+	resource: Resource,
 ): Promise<void> {
 	if (shouldSendTelemetry()) {
 		const systemVariables = new SystemVariables(
 			resource,
 			undefined,
-			workspaceService
+			workspaceService,
 		);
 		const envFilePath = systemVariables.resolveAny(
-			defaultEnvFileSetting(workspaceService)
+			defaultEnvFileSetting(workspaceService),
 		)!;
 		const envFileExists = await fileSystem.fileExists(envFilePath);
 

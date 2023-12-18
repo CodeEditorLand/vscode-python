@@ -12,10 +12,10 @@ import {
 import { traceError, traceVerbose } from "../../logging";
 import {
 	CreateEnvironmentOptions,
-	CreateEnvironmentResult,
 	CreateEnvironmentProvider,
-	EnvironmentWillCreateEvent,
+	CreateEnvironmentResult,
 	EnvironmentDidCreateEvent,
+	EnvironmentWillCreateEvent,
 } from "./proposed.createEnvApis";
 
 const onCreateEnvironmentStartedEvent =
@@ -37,7 +37,7 @@ function fireStartedEvent(options?: CreateEnvironmentOptions): void {
 function fireExitedEvent(
 	result?: CreateEnvironmentResult,
 	options?: CreateEnvironmentOptions,
-	error?: Error
+	error?: Error,
 ): void {
 	startedEventCount -= 1;
 	if (result) {
@@ -61,7 +61,7 @@ export function getCreationEvents(): {
 
 async function createEnvironment(
 	provider: CreateEnvironmentProvider,
-	options: CreateEnvironmentOptions
+	options: CreateEnvironmentOptions,
 ): Promise<CreateEnvironmentResult | undefined> {
 	let result: CreateEnvironmentResult | undefined;
 	let err: Error | undefined;
@@ -71,7 +71,7 @@ async function createEnvironment(
 	} catch (ex) {
 		if (ex === QuickInputButtons.Back) {
 			traceVerbose(
-				"Create Env: User clicked back button during environment creation"
+				"Create Env: User clicked back button during environment creation",
 			);
 			if (!options.showBackButton) {
 				return undefined;
@@ -91,14 +91,14 @@ interface CreateEnvironmentProviderQuickPickItem extends QuickPickItem {
 
 async function showCreateEnvironmentQuickPick(
 	providers: readonly CreateEnvironmentProvider[],
-	options?: CreateEnvironmentOptions
+	options?: CreateEnvironmentOptions,
 ): Promise<CreateEnvironmentProvider | undefined> {
 	const items: CreateEnvironmentProviderQuickPickItem[] = providers.map(
 		(p) => ({
 			label: p.name,
 			description: p.description,
 			id: p.id,
-		})
+		}),
 	);
 
 	let selectedItem:
@@ -135,7 +135,7 @@ async function showCreateEnvironmentQuickPick(
 }
 
 function getOptionsWithDefaults(
-	options?: CreateEnvironmentOptions
+	options?: CreateEnvironmentOptions,
 ): CreateEnvironmentOptions {
 	return {
 		installPackages: true,
@@ -148,7 +148,7 @@ function getOptionsWithDefaults(
 
 export async function handleCreateEnvironmentCommand(
 	providers: readonly CreateEnvironmentProvider[],
-	options?: CreateEnvironmentOptions
+	options?: CreateEnvironmentOptions,
 ): Promise<CreateEnvironmentResult | undefined> {
 	const optionsWithDefaults = getOptionsWithDefaults(options);
 	let selectedProvider: CreateEnvironmentProvider | undefined;
@@ -159,7 +159,7 @@ export async function handleCreateEnvironmentCommand(
 				try {
 					selectedProvider = await showCreateEnvironmentQuickPick(
 						providers,
-						optionsWithDefaults
+						optionsWithDefaults,
 					);
 				} catch (ex) {
 					if (
@@ -175,7 +175,7 @@ export async function handleCreateEnvironmentCommand(
 				}
 			} else {
 				traceError(
-					"No Environment Creation providers were registered."
+					"No Environment Creation providers were registered.",
 				);
 				if (context === MultiStepAction.Back) {
 					// There are no providers to select, so just step back.
@@ -184,7 +184,7 @@ export async function handleCreateEnvironmentCommand(
 			}
 			return MultiStepAction.Continue;
 		},
-		undefined
+		undefined,
 	);
 
 	let result: CreateEnvironmentResult | undefined;
@@ -199,7 +199,7 @@ export async function handleCreateEnvironmentCommand(
 				try {
 					result = await createEnvironment(
 						selectedProvider,
-						optionsWithDefaults
+						optionsWithDefaults,
 					);
 				} catch (ex) {
 					if (
@@ -213,7 +213,7 @@ export async function handleCreateEnvironmentCommand(
 			}
 			return MultiStepAction.Continue;
 		},
-		undefined
+		undefined,
 	);
 	envTypeStep.next = createStep;
 

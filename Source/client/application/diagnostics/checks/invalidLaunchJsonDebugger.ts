@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+import * as path from "path";
 // eslint-disable-next-line max-classes-per-file
 import { inject, injectable, named } from "inversify";
-import * as path from "path";
 import { DiagnosticSeverity, WorkspaceFolder } from "vscode";
 import { IWorkspaceService } from "../../../common/application/types";
 import "../../../common/extensions";
@@ -39,7 +39,7 @@ export class InvalidLaunchJsonDebuggerDiagnostic extends BaseDiagnostic {
 			| DiagnosticCodes.ConsoleTypeDiagnostic
 			| DiagnosticCodes.ConfigPythonPathDiagnostic,
 		resource: Resource,
-		shouldShowPrompt = true
+		shouldShowPrompt = true,
 	) {
 		super(
 			code,
@@ -47,7 +47,7 @@ export class InvalidLaunchJsonDebuggerDiagnostic extends BaseDiagnostic {
 			DiagnosticSeverity.Error,
 			DiagnosticScope.WorkspaceFolder,
 			resource,
-			shouldShowPrompt
+			shouldShowPrompt,
 		);
 	}
 }
@@ -106,14 +106,14 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 		await Promise.all(
 			(this.workspaceService.workspaceFolders ?? []).map(
 				(workspaceFolder) =>
-					this.fixLaunchJsonInWorkspace(code, workspaceFolder)
-			)
+					this.fixLaunchJsonInWorkspace(code, workspaceFolder),
+			),
 		);
 	}
 
 	private async diagnoseWorkspace(
 		workspaceFolder: WorkspaceFolder,
-		resource: Resource
+		resource: Resource,
 	) {
 		const launchJson = getLaunchJsonFile(workspaceFolder);
 		if (!(await this.fs.fileExists(launchJson))) {
@@ -126,24 +126,24 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 			diagnostics.push(
 				new InvalidLaunchJsonDebuggerDiagnostic(
 					DiagnosticCodes.InvalidDebuggerTypeDiagnostic,
-					resource
-				)
+					resource,
+				),
 			);
 		}
 		if (fileContents.indexOf('"debugStdLib"') > 0) {
 			diagnostics.push(
 				new InvalidLaunchJsonDebuggerDiagnostic(
 					DiagnosticCodes.JustMyCodeDiagnostic,
-					resource
-				)
+					resource,
+				),
 			);
 		}
 		if (fileContents.indexOf('"console": "none"') > 0) {
 			diagnostics.push(
 				new InvalidLaunchJsonDebuggerDiagnostic(
 					DiagnosticCodes.ConsoleTypeDiagnostic,
-					resource
-				)
+					resource,
+				),
 			);
 		}
 		if (
@@ -155,8 +155,8 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 				new InvalidLaunchJsonDebuggerDiagnostic(
 					DiagnosticCodes.ConfigPythonPathDiagnostic,
 					resource,
-					false
-				)
+					false,
+				),
 			);
 		}
 		return diagnostics;
@@ -187,7 +187,7 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 
 	private async fixLaunchJsonInWorkspace(
 		code: DiagnosticCodes,
-		workspaceFolder: WorkspaceFolder
+		workspaceFolder: WorkspaceFolder,
 	) {
 		if (
 			(await this.diagnoseWorkspace(workspaceFolder, undefined))
@@ -202,12 +202,12 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 				fileContents = findAndReplace(
 					fileContents,
 					'"pythonExperimental"',
-					'"python"'
+					'"python"',
 				);
 				fileContents = findAndReplace(
 					fileContents,
 					'"Python Experimental:',
-					'"Python:'
+					'"Python:',
 				);
 				break;
 			}
@@ -215,12 +215,12 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 				fileContents = findAndReplace(
 					fileContents,
 					'"debugStdLib": false',
-					'"justMyCode": true'
+					'"justMyCode": true',
 				);
 				fileContents = findAndReplace(
 					fileContents,
 					'"debugStdLib": true',
-					'"justMyCode": false'
+					'"justMyCode": false',
 				);
 				break;
 			}
@@ -228,7 +228,7 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 				fileContents = findAndReplace(
 					fileContents,
 					'"console": "none"',
-					'"console": "internalConsole"'
+					'"console": "internalConsole"',
 				);
 				break;
 			}
@@ -236,17 +236,17 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 				fileContents = findAndReplace(
 					fileContents,
 					'"pythonPath":',
-					'"python":'
+					'"python":',
 				);
 				fileContents = findAndReplace(
 					fileContents,
 					"{config:python.pythonPath}",
-					"{command:python.interpreterPath}"
+					"{command:python.interpreterPath}",
 				);
 				fileContents = findAndReplace(
 					fileContents,
 					"{config:python.interpreterPath}",
-					"{command:python.interpreterPath}"
+					"{command:python.interpreterPath}",
 				);
 				break;
 			}

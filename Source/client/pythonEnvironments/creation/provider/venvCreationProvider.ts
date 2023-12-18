@@ -8,32 +8,38 @@ import { createVenvScript } from "../../../common/process/internal/scripts";
 import { execObservable } from "../../../common/process/rawProcessApis";
 import { createDeferred } from "../../../common/utils/async";
 import { Common, CreateEnv } from "../../../common/utils/localize";
+import { InputFlowAction } from "../../../common/utils/multiStepInput";
+import {
+	MultiStepAction,
+	MultiStepNode,
+	withProgress,
+} from "../../../common/vscodeApis/windowApis";
+import { IInterpreterQuickPick } from "../../../interpreter/configuration/types";
 import {
 	traceError,
 	traceInfo,
 	traceLog,
 	traceVerbose,
 } from "../../../logging";
-import { CreateEnvironmentProgress } from "../types";
-import { pickWorkspaceFolder } from "../common/workspaceSelection";
-import { IInterpreterQuickPick } from "../../../interpreter/configuration/types";
-import { EnvironmentType, PythonEnvironment } from "../../info";
-import {
-	MultiStepAction,
-	MultiStepNode,
-	withProgress,
-} from "../../../common/vscodeApis/windowApis";
 import { sendTelemetryEvent } from "../../../telemetry";
 import { EventName } from "../../../telemetry/constants";
-import {
-	VenvProgressAndTelemetry,
-	VENV_CREATED_MARKER,
-	VENV_EXISTING_MARKER,
-} from "./venvProgressAndTelemetry";
+import { EnvironmentType, PythonEnvironment } from "../../info";
 import {
 	getVenvExecutable,
 	showErrorMessageWithLogs,
 } from "../common/commonUtils";
+import { pickWorkspaceFolder } from "../common/workspaceSelection";
+import {
+	CreateEnvironmentOptions,
+	CreateEnvironmentProvider,
+	CreateEnvironmentResult,
+} from "../proposed.createEnvApis";
+import { CreateEnvironmentProgress } from "../types";
+import {
+	VENV_CREATED_MARKER,
+	VENV_EXISTING_MARKER,
+	VenvProgressAndTelemetry,
+} from "./venvProgressAndTelemetry";
 import {
 	ExistingVenvAction,
 	IPackageInstallSelection,
@@ -41,12 +47,6 @@ import {
 	pickExistingVenvAction,
 	pickPackagesToInstall,
 } from "./venvUtils";
-import { InputFlowAction } from "../../../common/utils/multiStepInput";
-import {
-	CreateEnvironmentProvider,
-	CreateEnvironmentOptions,
-	CreateEnvironmentResult,
-} from "../proposed.createEnvApis";
 
 interface IVenvCommandArgs {
 	argv: string[];
@@ -55,7 +55,7 @@ interface IVenvCommandArgs {
 
 function generateCommandArgs(
 	installInfo?: IPackageInstallSelection[],
-	addGitIgnore?: boolean
+	addGitIgnore?: boolean,
 ): IVenvCommandArgs {
 	const command: string[] = [createVenvScript()];
 	let stdin: string | undefined;
@@ -66,11 +66,12 @@ function generateCommandArgs(
 
 	if (installInfo) {
 		if (installInfo.some((i) => i.installType === "toml")) {
-			const source = installInfo.find((i) => i.installType === "toml")
-				?.source;
+			const source = installInfo.find(
+				(i) => i.installType === "toml",
+			)?.source;
 			command.push(
 				"--toml",
-				source?.fileToCommandArgumentForPythonExt() || "pyproject.toml"
+				source?.fileToCommandArgumentForPythonExt() || "pyproject.toml",
 			);
 		}
 		const extras = installInfo
@@ -110,7 +111,7 @@ function getVenvFromOutput(output: string): string | undefined {
 			.filter(
 				(s) =>
 					s.startsWith(VENV_CREATED_MARKER) ||
-					s.startsWith(VENV_EXISTING_MARKER)
+					s.startsWith(VENV_EXISTING_MARKER),
 			)[0];
 		if (envPath.includes(VENV_CREATED_MARKER)) {
 			return envPath.substring(VENV_CREATED_MARKER.length);
@@ -127,7 +128,7 @@ async function createVenv(
 	command: string,
 	args: IVenvCommandArgs,
 	progress: CreateEnvironmentProgress,
-	token?: CancellationToken
+	token?: CancellationToken,
 ): Promise<string | undefined> {
 	progress.report({
 		message: CreateEnv.Venv.creating,
@@ -172,16 +173,16 @@ async function createVenv(
 			if (proc?.exitCode !== 0) {
 				traceError(
 					"Error while running venv creation script: ",
-					progressAndTelemetry.getLastError()
+					progressAndTelemetry.getLastError(),
 				);
 				deferred.reject(
 					progressAndTelemetry.getLastError() ||
-						`Failed to create virtual environment with exitCode: ${proc?.exitCode}`
+						`Failed to create virtual environment with exitCode: ${proc?.exitCode}`,
 				);
 			} else {
 				deferred.resolve(venvPath);
 			}
-		}
+		},
 	);
 	return deferred.promise;
 }
@@ -190,7 +191,7 @@ export class VenvCreationProvider implements CreateEnvironmentProvider {
 	constructor(private readonly interpreterQuickPick: IInterpreterQuickPick) {}
 
 	public async createEnvironment(
-		options?: CreateEnvironmentOptions
+		options?: CreateEnvironmentOptions,
 	): Promise<CreateEnvironmentResult | undefined> {
 		let workspace: WorkspaceFolder | undefined;
 		const workspaceStep = new MultiStepNode(
@@ -199,7 +200,7 @@ export class VenvCreationProvider implements CreateEnvironmentProvider {
 				try {
 					workspace = (await pickWorkspaceFolder(
 						undefined,
-						context
+						context,
 					)) as WorkspaceFolder | undefined;
 				} catch (ex) {
 					if (
@@ -213,16 +214,16 @@ export class VenvCreationProvider implements CreateEnvironmentProvider {
 
 				if (workspace === undefined) {
 					traceError(
-						"Workspace was not selected or found for creating virtual environment."
+						"Workspace was not selected or found for creating virtual environment.",
 					);
 					return MultiStepAction.Cancel;
 				}
 				traceInfo(
-					`Selected workspace ${workspace.uri.fsPath} for creating virtual environment.`
+					`Selected workspace ${workspace.uri.fsPath} for creating virtual environment.`,
 				);
 				return MultiStepAction.Continue;
 			},
-			undefined
+			undefined,
 		);
 
 		let existingVenvAction: ExistingVenvAction | undefined;
@@ -248,7 +249,7 @@ export class VenvCreationProvider implements CreateEnvironmentProvider {
 				}
 				return MultiStepAction.Continue;
 			},
-			undefined
+			undefined,
 		);
 		workspaceStep.next = existingEnvStep;
 
@@ -280,7 +281,7 @@ export class VenvCreationProvider implements CreateEnvironmentProvider {
 											CreateEnv.Venv
 												.selectPythonPlaceHolder,
 										title: null,
-									}
+									},
 								);
 						} catch (ex) {
 							if (ex === InputFlowAction.back) {
@@ -303,11 +304,11 @@ export class VenvCreationProvider implements CreateEnvironmentProvider {
 					return MultiStepAction.Cancel;
 				}
 				traceInfo(
-					`Selected interpreter ${interpreter} for creating virtual environment.`
+					`Selected interpreter ${interpreter} for creating virtual environment.`,
 				);
 				return MultiStepAction.Continue;
 			},
-			undefined
+			undefined,
 		);
 		existingEnvStep.next = interpreterStep;
 
@@ -343,7 +344,7 @@ export class VenvCreationProvider implements CreateEnvironmentProvider {
 						}
 						if (!installInfo) {
 							traceVerbose(
-								"Virtual env creation exited during dependencies selection."
+								"Virtual env creation exited during dependencies selection.",
 							);
 							return MultiStepAction.Cancel;
 						}
@@ -354,7 +355,7 @@ export class VenvCreationProvider implements CreateEnvironmentProvider {
 
 				return MultiStepAction.Continue;
 			},
-			undefined
+			undefined,
 		);
 		interpreterStep.next = packagesStep;
 
@@ -379,7 +380,7 @@ export class VenvCreationProvider implements CreateEnvironmentProvider {
 						{
 							environmentType: "venv",
 							status: "deleted",
-						}
+						},
 					);
 				} else {
 					sendTelemetryEvent(
@@ -388,7 +389,7 @@ export class VenvCreationProvider implements CreateEnvironmentProvider {
 						{
 							environmentType: "venv",
 							status: "failed",
-						}
+						},
 					);
 					throw MultiStepAction.Cancel;
 				}
@@ -413,7 +414,7 @@ export class VenvCreationProvider implements CreateEnvironmentProvider {
 			},
 			async (
 				progress: CreateEnvironmentProgress,
-				token: CancellationToken
+				token: CancellationToken,
 			): Promise<CreateEnvironmentResult | undefined> => {
 				progress.report({
 					message: CreateEnv.statusStarting,
@@ -427,7 +428,7 @@ export class VenvCreationProvider implements CreateEnvironmentProvider {
 							interpreter,
 							args,
 							progress,
-							token
+							token,
 						);
 						if (envPath) {
 							return {
@@ -436,20 +437,20 @@ export class VenvCreationProvider implements CreateEnvironmentProvider {
 							};
 						}
 						throw new Error(
-							"Failed to create virtual environment. See Output > Python for more info."
+							"Failed to create virtual environment. See Output > Python for more info.",
 						);
 					}
 					throw new Error(
-						"Failed to create virtual environment. Either interpreter or workspace is undefined."
+						"Failed to create virtual environment. Either interpreter or workspace is undefined.",
 					);
 				} catch (ex) {
 					traceError(ex);
 					showErrorMessageWithLogs(
-						CreateEnv.Venv.errorCreatingEnvironment
+						CreateEnv.Venv.errorCreatingEnvironment,
 					);
 					return { error: ex as Error };
 				}
-			}
+			},
 		);
 	}
 

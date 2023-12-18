@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { Worker } from "worker_threads";
 import * as path from "path";
-import { traceVerbose, traceError } from "../../../logging/index";
+import { Worker } from "worker_threads";
+import { traceError, traceVerbose } from "../../../logging/index";
 
 /**
  * Executes a worker file. Make sure to declare the worker file as a entry in the webpack config.
@@ -14,11 +14,11 @@ import { traceVerbose, traceError } from "../../../logging/index";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
 export async function executeWorkerFile(
 	workerFileName: string,
-	workerData: any
+	workerData: any,
 ): Promise<any> {
 	if (!workerFileName.endsWith(".worker.js")) {
 		throw new Error(
-			'Worker file must end with ".worker.js" for webpack to bundle webworkers'
+			'Worker file must end with ".worker.js" for webpack to bundle webworkers',
 		);
 	}
 	return new Promise((resolve, reject) => {
@@ -26,8 +26,8 @@ export async function executeWorkerFile(
 		const id = worker.threadId;
 		traceVerbose(
 			`Worker id ${id} for file ${path.basename(
-				workerFileName
-			)} with data ${JSON.stringify(workerData)}`
+				workerFileName,
+			)} with data ${JSON.stringify(workerData)}`,
 		);
 		worker.on("message", (msg: { err: Error; res: unknown }) => {
 			if (msg.err) {
@@ -44,8 +44,8 @@ export async function executeWorkerFile(
 			if (code !== 0) {
 				reject(
 					new Error(
-						`Worker ${workerFileName} stopped with exit code ${code}`
-					)
+						`Worker ${workerFileName} stopped with exit code ${code}`,
+					),
 				);
 			}
 		});

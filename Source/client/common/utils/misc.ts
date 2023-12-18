@@ -1,6 +1,5 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-"use strict";
 import type { TextDocument, Uri } from "vscode";
 import { InteractiveInputScheme, NotebookCellScheme } from "../constants";
 import { InterpreterUri } from "../installer/types";
@@ -19,7 +18,7 @@ type DeepReadonly<T> = T extends any[]
 	? IDeepReadonlyArray<T[number]>
 	: DeepReadonlyNonArray<T>;
 type DeepReadonlyNonArray<T> = T extends object ? DeepReadonlyObject<T> : T;
-interface IDeepReadonlyArray<T> extends ReadonlyArray<DeepReadonly<T>> {}
+type IDeepReadonlyArray<T> = ReadonlyArray<DeepReadonly<T>>;
 type DeepReadonlyObject<T> = {
 	readonly [P in NonFunctionPropertyNames<T>]: DeepReadonly<T[P]>;
 };
@@ -76,7 +75,7 @@ export function getURIFilter(
 	opts: {
 		checkParent?: boolean;
 		checkChild?: boolean;
-	} = { checkParent: true }
+	} = { checkParent: true },
 ): (u: Uri) => boolean {
 	let uriPath = uri.path;
 	while (uriPath.endsWith("/")) {

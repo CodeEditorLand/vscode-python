@@ -10,7 +10,7 @@ export interface ICodeExecutionService {
 	execute(code: string, resource?: Uri): Promise<void>;
 	executeFile(
 		file: Uri,
-		options?: { newTerminalPerFile: boolean }
+		options?: { newTerminalPerFile: boolean },
 	): Promise<void>;
 	initializeRepl(resource?: Uri): Promise<void>;
 }
@@ -22,7 +22,7 @@ export interface ICodeExecutionHelper {
 	getFileToExecute(): Promise<Uri | undefined>;
 	saveFileIfDirty(file: Uri): Promise<Resource>;
 	getSelectedTextToExecute(
-		textEditor: TextEditor
+		textEditor: TextEditor,
 	): Promise<string | undefined>;
 }
 
@@ -40,7 +40,7 @@ export interface ITerminalAutoActivation extends IDisposable {
 }
 
 export const ITerminalEnvVarCollectionService = Symbol(
-	"ITerminalEnvVarCollectionService"
+	"ITerminalEnvVarCollectionService",
 );
 export interface ITerminalEnvVarCollectionService {
 	/**
@@ -59,6 +59,6 @@ export interface ITerminalDeactivateService {
 	initializeScriptParams(shell: string): Promise<void>;
 	getScriptLocation(
 		shell: string,
-		resource: Resource
+		resource: Resource,
 	): Promise<string | undefined>;
 }

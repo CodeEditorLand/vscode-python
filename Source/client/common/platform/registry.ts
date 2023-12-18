@@ -19,7 +19,7 @@ export class RegistryImplementation implements IRegistry {
 		}).catch((ex) => {
 			traceError(
 				"Fetching keys from windows registry resulted in an error",
-				ex
+				ex,
 			);
 			return [];
 		});
@@ -28,7 +28,7 @@ export class RegistryImplementation implements IRegistry {
 		key: string,
 		hive: RegistryHive,
 		arch?: Architecture,
-		name: string = ""
+		name = "",
 	) {
 		return getRegistryValue(
 			{
@@ -36,11 +36,11 @@ export class RegistryImplementation implements IRegistry {
 				arch: translateArchitecture(arch),
 				key,
 			},
-			name
+			name,
 		).catch((ex) => {
 			traceError(
 				"Fetching key value from windows registry resulted in an error",
-				ex
+				ex,
 			);
 			return undefined;
 		});
@@ -58,7 +58,7 @@ export function getArchitectureDisplayName(arch?: Architecture) {
 	}
 }
 
-async function getRegistryValue(options: Options, name: string = "") {
+async function getRegistryValue(options: Options, name = "") {
 	const Registry = require("winreg") as typeof import("winreg");
 	return new Promise<string | undefined | null>((resolve) => {
 		new Registry(options).get(name, (error, result) => {
@@ -81,13 +81,13 @@ async function getRegistryKeys(options: Options): Promise<string[]> {
 			resolve(
 				result
 					.filter((item) => typeof item.key === "string")
-					.map((item) => item.key)
+					.map((item) => item.key),
 			);
 		});
 	});
 }
 function translateArchitecture(
-	arch?: Architecture
+	arch?: Architecture,
 ): RegistryArchitectures | undefined {
 	switch (arch) {
 		case Architecture.x86:

@@ -8,8 +8,8 @@ import {
 	CondaEnvironmentInfo,
 } from "../../pythonEnvironments/common/environmentManagers/conda";
 import {
-	buildPythonExecInfo,
 	PythonExecInfo,
+	buildPythonExecInfo,
 } from "../../pythonEnvironments/exec";
 import { InterpreterInformation } from "../../pythonEnvironments/info";
 import { getExecutablePath } from "../../pythonEnvironments/info/executable";
@@ -46,25 +46,25 @@ class PythonEnvironment implements IPythonEnvironment {
 			// from ProcessService:
 			exec(
 				file: string,
-				args: string[]
+				args: string[],
 			): Promise<ExecutionResult<string>>;
 			shellExec(
 				command: string,
-				options?: ShellOptions
+				options?: ShellOptions,
 			): Promise<ExecutionResult<string>>;
-		}
+		},
 	) {}
 
 	public getExecutionInfo(
 		pythonArgs: string[] = [],
-		pythonExecutable?: string
+		pythonExecutable?: string,
 	): PythonExecInfo {
 		const python = this.deps.getPythonArgv(this.pythonPath);
 		return buildPythonExecInfo(python, pythonArgs, pythonExecutable);
 	}
 	public getExecutionObservableInfo(
 		pythonArgs: string[] = [],
-		pythonExecutable?: string
+		pythonExecutable?: string,
 	): PythonExecInfo {
 		const python = this.deps.getObservablePythonArgv(this.pythonPath);
 		return buildPythonExecInfo(python, pythonArgs, pythonExecutable);
@@ -98,7 +98,7 @@ class PythonEnvironment implements IPythonEnvironment {
 	}
 
 	public async getModuleVersion(
-		moduleName: string
+		moduleName: string,
 	): Promise<string | undefined> {
 		const [args, parse] = internalPython.getModuleVersion(moduleName);
 		const info = this.getExecutionInfo(args);
@@ -108,7 +108,7 @@ class PythonEnvironment implements IPythonEnvironment {
 		} catch (ex) {
 			traceVerbose(
 				`Error when getting version of module ${moduleName}`,
-				ex
+				ex,
 			);
 			return undefined;
 		}
@@ -117,14 +117,14 @@ class PythonEnvironment implements IPythonEnvironment {
 
 	public async isModuleInstalled(moduleName: string): Promise<boolean> {
 		// prettier-ignore
-		const [args,] = internalPython.isModuleInstalled(moduleName);
+		const [args] = internalPython.isModuleInstalled(moduleName);
 		const info = this.getExecutionInfo(args);
 		try {
 			await this.deps.exec(info.command, info.args);
 		} catch (ex) {
 			traceVerbose(
 				`Error when checking if module is installed ${moduleName}`,
-				ex
+				ex,
 			);
 			return false;
 		}
@@ -143,7 +143,7 @@ class PythonEnvironment implements IPythonEnvironment {
 		} catch (ex) {
 			traceError(
 				`Failed to get interpreter information for '${this.pythonPath}'`,
-				ex
+				ex,
 			);
 		}
 	}
@@ -157,12 +157,12 @@ function createDeps(
 	exec: (
 		file: string,
 		args: string[],
-		options?: SpawnOptions
+		options?: SpawnOptions,
 	) => Promise<ExecutionResult<string>>,
 	shellExec: (
 		command: string,
-		options?: ShellOptions
-	) => Promise<ExecutionResult<string>>
+		options?: ShellOptions,
+	) => Promise<ExecutionResult<string>>,
 ) {
 	return {
 		getPythonArgv: (python: string) => {
@@ -189,7 +189,7 @@ export function createPythonEnv(
 	pythonPath: string,
 	// These are used to generate the deps.
 	procs: IProcessService,
-	fs: IFileSystem
+	fs: IFileSystem,
 ): PythonEnvironment {
 	const deps = createDeps(
 		async (filename) => fs.pathExists(filename),
@@ -197,7 +197,7 @@ export function createPythonEnv(
 		undefined,
 		undefined,
 		(file, args, opts) => procs.exec(file, args, opts),
-		(command, opts) => procs.shellExec(command, opts)
+		(command, opts) => procs.shellExec(command, opts),
 	);
 	return new PythonEnvironment(pythonPath, deps);
 }
@@ -206,7 +206,7 @@ export async function createCondaEnv(
 	condaInfo: CondaEnvironmentInfo,
 	// These are used to generate the deps.
 	procs: IProcessService,
-	fs: IFileSystem
+	fs: IFileSystem,
 ): Promise<PythonEnvironment | undefined> {
 	const conda = await Conda.getConda();
 	const pythonArgv = await conda?.getRunPythonArgs({
@@ -221,7 +221,7 @@ export async function createCondaEnv(
 		pythonArgv,
 		pythonArgv,
 		(file, args, opts) => procs.exec(file, args, opts),
-		(command, opts) => procs.shellExec(command, opts)
+		(command, opts) => procs.shellExec(command, opts),
 	);
 	const interpreterPath = await conda?.getInterpreterPathForEnvironment({
 		name: condaInfo.name,
@@ -236,7 +236,7 @@ export async function createCondaEnv(
 export function createMicrosoftStoreEnv(
 	pythonPath: string,
 	// These are used to generate the deps.
-	procs: IProcessService
+	procs: IProcessService,
 ): PythonEnvironment {
 	const deps = createDeps(
 		/**
@@ -252,7 +252,7 @@ export function createMicrosoftStoreEnv(
 		undefined,
 		undefined,
 		(file, args, opts) => procs.exec(file, args, opts),
-		(command, opts) => procs.shellExec(command, opts)
+		(command, opts) => procs.shellExec(command, opts),
 	);
 	return new PythonEnvironment(pythonPath, deps);
 }

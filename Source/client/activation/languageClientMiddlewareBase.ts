@@ -52,7 +52,7 @@ interface SendTelemetryEventFunc {
 		eventName: EventName,
 		measuresOrDurationMs?: Record<string, number> | number,
 		properties?: any,
-		ex?: Error
+		ex?: Error,
 	): void;
 }
 
@@ -69,7 +69,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 		configuration: async (
 			params: ConfigurationParams,
 			token: CancellationToken,
-			next: ConfigurationRequest.HandlerSignature
+			next: ConfigurationRequest.HandlerSignature,
 		) => {
 			if (!this.serviceContainer) {
 				return next(params, token);
@@ -77,11 +77,11 @@ export class LanguageClientMiddlewareBase implements Middleware {
 
 			const interpreterService =
 				this.serviceContainer.get<IInterpreterService>(
-					IInterpreterService
+					IInterpreterService,
 				);
 			const envService =
 				this.serviceContainer.get<IEnvironmentVariablesProvider>(
-					IEnvironmentVariablesProvider
+					IEnvironmentVariablesProvider,
 				);
 
 			let settings = next(params, token);
@@ -130,7 +130,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 
 	// eslint-disable-next-line class-methods-use-this
 	protected async getPythonPathOverride(
-		_uri: Uri | undefined
+		_uri: Uri | undefined,
 	): Promise<string | undefined> {
 		return undefined;
 	}
@@ -138,7 +138,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 	// eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-empty-function
 	protected configurationHook(
 		_item: ConfigurationItem,
-		_settings: LSPObject
+		_settings: LSPObject,
 	): void {}
 
 	private get connected(): Promise<boolean> {
@@ -153,7 +153,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 		readonly serviceContainer: IServiceContainer | undefined,
 		serverType: LanguageServerType,
 		public readonly sendTelemetryEventFunc: SendTelemetryEventFunc,
-		public readonly serverVersion?: string
+		public readonly serverVersion?: string,
 	) {
 		this.handleDiagnostics = this.handleDiagnostics.bind(this); // VS Code calls function without context.
 		this.didOpen = this.didOpen.bind(this);
@@ -243,7 +243,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 						? result.length
 						: result.items.length;
 					return { resultLength };
-				}
+				},
 			);
 		}
 	}
@@ -254,7 +254,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 				"textDocument/hover",
 				debounceFrequentCall,
 				"provideHover",
-				arguments
+				arguments,
 			);
 		}
 	}
@@ -262,7 +262,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 	public async handleDiagnostics(
 		uri: Uri,
 		_diagnostics: Diagnostic[],
-		_next: HandleDiagnosticsSignature
+		_next: HandleDiagnosticsSignature,
 	) {
 		if (await this.connected) {
 			// Skip sending if this is a special file.
@@ -280,7 +280,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 				"completionItem/resolve",
 				debounceFrequentCall,
 				"resolveCompletionItem",
-				arguments
+				arguments,
 			);
 		}
 	}
@@ -291,7 +291,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 				"textDocument/signatureHelp",
 				debounceFrequentCall,
 				"provideSignatureHelp",
-				arguments
+				arguments,
 			);
 		}
 	}
@@ -302,7 +302,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 				"textDocument/definition",
 				debounceRareCall,
 				"provideDefinition",
-				arguments
+				arguments,
 			);
 		}
 	}
@@ -313,7 +313,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 				"textDocument/references",
 				debounceRareCall,
 				"provideReferences",
-				arguments
+				arguments,
 			);
 		}
 	}
@@ -330,7 +330,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 				"textDocument/documentSymbol",
 				debounceFrequentCall,
 				"provideDocumentSymbols",
-				arguments
+				arguments,
 			);
 		}
 	}
@@ -341,7 +341,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 				"workspace/symbol",
 				debounceRareCall,
 				"provideWorkspaceSymbols",
-				arguments
+				arguments,
 			);
 		}
 	}
@@ -352,7 +352,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 				"textDocument/codeAction",
 				debounceFrequentCall,
 				"provideCodeActions",
-				arguments
+				arguments,
 			);
 		}
 	}
@@ -363,7 +363,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 				"textDocument/codeLens",
 				debounceFrequentCall,
 				"provideCodeLenses",
-				arguments
+				arguments,
 			);
 		}
 	}
@@ -374,7 +374,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 				"codeLens/resolve",
 				debounceFrequentCall,
 				"resolveCodeLens",
-				arguments
+				arguments,
 			);
 		}
 	}
@@ -389,7 +389,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 		if (await this.connected) {
 			return this.callNext(
 				"provideDocumentRangeFormattingEdits",
-				arguments
+				arguments,
 			);
 		}
 	}
@@ -400,7 +400,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 				"textDocument/onTypeFormatting",
 				debounceFrequentCall,
 				"provideOnTypeFormattingEdits",
-				arguments
+				arguments,
 			);
 		}
 	}
@@ -411,7 +411,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 				"textDocument/rename",
 				debounceRareCall,
 				"provideRenameEdits",
-				arguments
+				arguments,
 			);
 		}
 	}
@@ -422,7 +422,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 				"textDocument/prepareRename",
 				debounceRareCall,
 				"prepareRename",
-				arguments
+				arguments,
 			);
 		}
 	}
@@ -445,7 +445,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 				"textDocument/declaration",
 				debounceRareCall,
 				"provideDeclaration",
-				arguments
+				arguments,
 			);
 		}
 	}
@@ -456,7 +456,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 				"textDocument/typeDefinition",
 				debounceRareCall,
 				"provideTypeDefinition",
-				arguments
+				arguments,
 			);
 		}
 	}
@@ -485,7 +485,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 				"textDocument/foldingRange",
 				debounceFrequentCall,
 				"provideFoldingRanges",
-				arguments
+				arguments,
 			);
 		}
 	}
@@ -496,7 +496,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 				"textDocument/selectionRange",
 				debounceRareCall,
 				"provideSelectionRanges",
-				arguments
+				arguments,
 			);
 		}
 	}
@@ -511,7 +511,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 		if (await this.connected) {
 			return this.callNext(
 				"provideCallHierarchyIncomingCalls",
-				arguments
+				arguments,
 			);
 		}
 	}
@@ -520,7 +520,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 		if (await this.connected) {
 			return this.callNext(
 				"provideCallHierarchyOutgoingCalls",
-				arguments
+				arguments,
 			);
 		}
 	}
@@ -535,7 +535,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 		if (await this.connected) {
 			return this.callNext(
 				"provideDocumentSemanticTokensEdits",
-				arguments
+				arguments,
 			);
 		}
 	}
@@ -544,7 +544,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 		if (await this.connected) {
 			return this.callNext(
 				"provideDocumentRangeSemanticTokens",
-				arguments
+				arguments,
 			);
 		}
 	}
@@ -568,7 +568,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 
 	private callNotebooksNext(
 		funcName: "didOpen" | "didSave" | "didChange" | "didClose",
-		args: IArguments
+		args: IArguments,
 	) {
 		// This function uses the last argument to call the 'next' item. If we're allowing notebook
 		// middleware, it calls into the notebook middleware first.
@@ -590,8 +590,8 @@ export class LanguageClientMiddlewareBase implements Middleware {
 		args: IArguments,
 		lazyMeasures?: (
 			this_: any,
-			result: Awaited<ReturnType<MiddleWareMethods[T]>>
-		) => Record<string, number>
+			result: Awaited<ReturnType<MiddleWareMethods[T]>>,
+		) => Record<string, number>,
 	): ReturnType<MiddleWareMethods[T]> {
 		const now = Date.now();
 		const stopWatch = new StopWatch();
@@ -618,7 +618,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 		const lastCapture = this.lastCaptured.get(lspMethod);
 
 		const sendTelemetry = (
-			result: Awaited<ReturnType<MiddleWareMethods[T]>>
+			result: Awaited<ReturnType<MiddleWareMethods[T]>>,
 		) => {
 			// Skip doing anything if not allowed
 			// We should have:
@@ -655,7 +655,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 				this.sendTelemetryEventFunc(
 					this.eventName,
 					measures,
-					properties
+					properties,
 				);
 			}
 			return result;
@@ -664,7 +664,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 		// Try to call the 'next' function in the middleware chain
 		const result: ReturnType<MiddleWareMethods[T]> = this.callNext(
 			funcName,
-			changedArgs as any
+			changedArgs as any,
 		);
 
 		// Then wait for the result before sending telemetry

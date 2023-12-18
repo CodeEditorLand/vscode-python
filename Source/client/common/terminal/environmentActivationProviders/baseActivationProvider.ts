@@ -2,8 +2,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { inject, injectable } from "inversify";
 import * as path from "path";
+import { inject, injectable } from "inversify";
 import { Uri } from "vscode";
 import { IInterpreterService } from "../../../interpreter/contracts";
 import { IServiceContainer } from "../../../ioc/types";
@@ -30,7 +30,7 @@ function getVenvExecutableFinder(
 	pathDirname: (filename: string) => string,
 	pathJoin: (...parts: string[]) => string,
 	// </path>
-	fileExists: (n: string) => Promise<boolean>
+	fileExists: (n: string) => Promise<boolean>,
 ): ExecutableFinderFunc {
 	const basenames = typeof basename === "string" ? [basename] : basename;
 	return async (python: string) => {
@@ -60,7 +60,7 @@ abstract class BaseActivationCommandProvider
 
 	public async getActivationCommands(
 		resource: Uri | undefined,
-		targetShell: TerminalShellType
+		targetShell: TerminalShellType,
 	): Promise<string[] | undefined> {
 		const interpreter = await this.serviceContainer
 			.get<IInterpreterService>(IInterpreterService)
@@ -70,13 +70,13 @@ abstract class BaseActivationCommandProvider
 		}
 		return this.getActivationCommandsForInterpreter(
 			interpreter.path,
-			targetShell
+			targetShell,
 		);
 	}
 
 	public abstract getActivationCommandsForInterpreter(
 		pythonPath: string,
-		targetShell: TerminalShellType
+		targetShell: TerminalShellType,
 	): Promise<string[] | undefined>;
 }
 
@@ -91,7 +91,7 @@ export abstract class VenvBaseActivationCommandProvider extends BaseActivationCo
 
 	protected async findScriptFile(
 		pythonPath: string,
-		targetShell: TerminalShellType
+		targetShell: TerminalShellType,
 	): Promise<string | undefined> {
 		const fs = this.serviceContainer.get<IFileSystem>(IFileSystem);
 		const candidates = this.scripts[targetShell];
@@ -103,7 +103,7 @@ export abstract class VenvBaseActivationCommandProvider extends BaseActivationCo
 			path.dirname,
 			path.join,
 			// Bind "this"!
-			(n: string) => fs.fileExists(n)
+			(n: string) => fs.fileExists(n),
 		);
 		return findScript(pythonPath);
 	}

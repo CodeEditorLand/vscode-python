@@ -2,54 +2,54 @@
 // Licensed under the MIT License.
 
 import * as path from "path";
+import { pathExists } from "fs-extra";
 import { inject, injectable } from "inversify";
 import {
-	MarkdownString,
-	WorkspaceFolder,
-	GlobalEnvironmentVariableCollection,
-	EnvironmentVariableScope,
 	EnvironmentVariableMutatorOptions,
+	EnvironmentVariableScope,
+	GlobalEnvironmentVariableCollection,
+	MarkdownString,
 	ProgressLocation,
+	WorkspaceFolder,
 } from "vscode";
-import { pathExists } from "fs-extra";
 import { IExtensionActivationService } from "../../activation/types";
+import { ProgressService } from "../../common/application/progressService";
 import {
-	IApplicationShell,
 	IApplicationEnvironment,
+	IApplicationShell,
 	IWorkspaceService,
 } from "../../common/application/types";
 import { inTerminalEnvVarExperiment } from "../../common/experiments/helpers";
+import { normCase } from "../../common/platform/fs-paths";
 import { IPlatformService } from "../../common/platform/types";
 import { identifyShellFromShellPath } from "../../common/terminal/shellDetectors/baseShellDetector";
+import { TerminalShellType } from "../../common/terminal/types";
 import {
-	IExtensionContext,
-	IExperimentService,
-	Resource,
-	IDisposableRegistry,
 	IConfigurationService,
+	IDisposableRegistry,
+	IExperimentService,
+	IExtensionContext,
 	IPathUtils,
+	Resource,
 } from "../../common/types";
+import { getSearchPathEnvVarNames } from "../../common/utils/exec";
 import { Interpreters } from "../../common/utils/localize";
-import { traceError, traceVerbose, traceWarn } from "../../logging";
-import { IInterpreterService } from "../../interpreter/contracts";
+import { OSType } from "../../common/utils/platform";
+import { EnvironmentVariables } from "../../common/variables/types";
 import { defaultShells } from "../../interpreter/activation/service";
 import { IEnvironmentActivationService } from "../../interpreter/activation/types";
+import { IInterpreterService } from "../../interpreter/contracts";
+import { traceError, traceVerbose, traceWarn } from "../../logging";
+import { PythonEnvType } from "../../pythonEnvironments/base/info";
 import {
 	EnvironmentType,
 	PythonEnvironment,
 } from "../../pythonEnvironments/info";
-import { getSearchPathEnvVarNames } from "../../common/utils/exec";
-import { EnvironmentVariables } from "../../common/variables/types";
-import { TerminalShellType } from "../../common/terminal/types";
-import { OSType } from "../../common/utils/platform";
-import { normCase } from "../../common/platform/fs-paths";
-import { PythonEnvType } from "../../pythonEnvironments/base/info";
 import {
 	IShellIntegrationService,
 	ITerminalDeactivateService,
 	ITerminalEnvVarCollectionService,
 } from "../types";
-import { ProgressService } from "../../common/application/progressService";
 
 @injectable()
 export class TerminalEnvVarCollectionService
@@ -117,7 +117,7 @@ export class TerminalEnvVarCollectionService
 							await this.handleMicroVenv(r);
 						},
 						this,
-						this.disposables
+						this.disposables,
 					);
 					this.registeredOnce = true;
 				}
@@ -129,7 +129,7 @@ export class TerminalEnvVarCollectionService
 						await this._applyCollection(r).ignoreErrors();
 					},
 					this,
-					this.disposables
+					this.disposables,
 				);
 				this.applicationEnvironment.onDidChangeShell(
 					async (shell: string) => {
@@ -138,11 +138,11 @@ export class TerminalEnvVarCollectionService
 						// on VSCode: https://github.com/microsoft/vscode/issues/160694
 						await this._applyCollection(
 							undefined,
-							shell
+							shell,
 						).ignoreErrors();
 					},
 					this,
-					this.disposables
+					this.disposables,
 				);
 				const { shell } = this.applicationEnvironment;
 				const isActive =
@@ -153,7 +153,7 @@ export class TerminalEnvVarCollectionService
 					shellType !== TerminalShellType.commandPrompt
 				) {
 					traceWarn(
-						`Shell integration is not active, environment activated maybe overriden by the shell.`
+						`Shell integration is not active, environment activated maybe overriden by the shell.`,
 					);
 				}
 				this.registeredOnce = true;
@@ -166,7 +166,7 @@ export class TerminalEnvVarCollectionService
 
 	public async _applyCollection(
 		resource: Resource,
-		shell?: string
+		shell?: string,
 	): Promise<void> {
 		this.progressService.showProgress({
 			location: ProgressLocation.Window,
@@ -181,7 +181,7 @@ export class TerminalEnvVarCollectionService
 
 	private async _applyCollectionImpl(
 		resource: Resource,
-		shell = this.applicationEnvironment.shell
+		shell = this.applicationEnvironment.shell,
 	): Promise<void> {
 		const workspaceFolder = this.getWorkspaceFolder(resource);
 		const settings = this.configurationService.getSettings(resource);
@@ -192,7 +192,7 @@ export class TerminalEnvVarCollectionService
 			envVarCollection.clear();
 			traceVerbose(
 				"Activating environments in terminal is disabled for",
-				resource?.fsPath
+				resource?.fsPath,
 			);
 			return;
 		}
@@ -201,12 +201,12 @@ export class TerminalEnvVarCollectionService
 				resource,
 				undefined,
 				undefined,
-				shell
+				shell,
 			);
 		const env = activatedEnv ? normCaseKeys(activatedEnv) : undefined;
 		traceVerbose(
 			`Activated environment variables for ${resource?.fsPath}`,
-			env
+			env,
 		);
 		if (!env) {
 			const shellType = identifyShellFromShellPath(shell);
@@ -226,7 +226,7 @@ export class TerminalEnvVarCollectionService
 			this.processEnvVars =
 				await this.environmentActivationService.getProcessEnvironmentVariables(
 					resource,
-					shell
+					shell,
 				);
 		}
 		const processEnv = normCaseKeys(this.processEnvVars);
@@ -240,7 +240,7 @@ export class TerminalEnvVarCollectionService
 		const deactivate =
 			await this.terminalDeactivateService.getScriptLocation(
 				shell,
-				resource
+				resource,
 			);
 		Object.keys(env).forEach((key) => {
 			if (shouldSkip(key)) {
@@ -253,7 +253,7 @@ export class TerminalEnvVarCollectionService
 					if (key === "PS1") {
 						// We cannot have the full PS1 without executing in terminal, which we do not. Hence prepend it.
 						traceVerbose(
-							`Prepending environment variable ${key} in collection with ${value}`
+							`Prepending environment variable ${key} in collection with ${value}`,
 						);
 						envVarCollection.prepend(key, value, prependOptions);
 						return;
@@ -270,12 +270,12 @@ export class TerminalEnvVarCollectionService
 								value = `${deactivate}${this.separator}${value}`;
 							}
 							traceVerbose(
-								`Prepending environment variable ${key} in collection with ${value}`
+								`Prepending environment variable ${key} in collection with ${value}`,
 							);
 							envVarCollection.prepend(
 								key,
 								value,
-								prependOptions
+								prependOptions,
 							);
 						} else {
 							if (!value.endsWith(this.separator)) {
@@ -285,18 +285,18 @@ export class TerminalEnvVarCollectionService
 								value = `${deactivate}${this.separator}${value}`;
 							}
 							traceVerbose(
-								`Prepending environment variable ${key} in collection to ${value}`
+								`Prepending environment variable ${key} in collection to ${value}`,
 							);
 							envVarCollection.prepend(
 								key,
 								value,
-								prependOptions
+								prependOptions,
 							);
 						}
 						return;
 					}
 					traceVerbose(
-						`Setting environment variable ${key} in collection to ${value}`
+						`Setting environment variable ${key} in collection to ${value}`,
 					);
 					envVarCollection.replace(key, value, {
 						applyAtShellIntegration: true,
@@ -308,10 +308,10 @@ export class TerminalEnvVarCollectionService
 
 		const displayPath = this.pathUtils.getDisplayName(
 			settings.pythonPath,
-			workspaceFolder?.uri.fsPath
+			workspaceFolder?.uri.fsPath,
 		);
 		const description = new MarkdownString(
-			`${Interpreters.activateTerminalDescription} \`${displayPath}\``
+			`${Interpreters.activateTerminalDescription} \`${displayPath}\``,
 		);
 		envVarCollection.description = description;
 
@@ -350,7 +350,7 @@ export class TerminalEnvVarCollectionService
 	private async trackTerminalPrompt(
 		shell: string,
 		resource: Resource,
-		env: EnvironmentVariables | undefined
+		env: EnvironmentVariables | undefined,
 	) {
 		this.terminalPromptIsUnknown(resource);
 		if (!env) {
@@ -373,7 +373,7 @@ export class TerminalEnvVarCollectionService
 			const config = await this.shellIntegrationService.isWorking(shell);
 			if (!config) {
 				traceVerbose(
-					"PS1 is not set when shell integration is disabled."
+					"PS1 is not set when shell integration is disabled.",
 				);
 				return;
 			}
@@ -384,7 +384,7 @@ export class TerminalEnvVarCollectionService
 	private async getPS1(
 		shell: string,
 		resource: Resource,
-		env: EnvironmentVariables
+		env: EnvironmentVariables,
 	) {
 		const customShellType = identifyShellFromShellPath(shell);
 		if (this.noPromptVariableShells.includes(customShellType)) {
@@ -417,7 +417,7 @@ export class TerminalEnvVarCollectionService
 			if (interpreter?.envType === EnvironmentType.Venv) {
 				const activatePath = path.join(
 					path.dirname(interpreter.path),
-					"activate"
+					"activate",
 				);
 				if (!(await pathExists(activatePath))) {
 					const envVarCollection =
@@ -433,7 +433,7 @@ export class TerminalEnvVarCollectionService
 						{
 							applyAtShellIntegration: true,
 							applyAtProcessCreation: true,
-						}
+						},
 					);
 					return;
 				}
@@ -444,13 +444,13 @@ export class TerminalEnvVarCollectionService
 		} catch (ex) {
 			traceWarn(
 				`Microvenv failed as it is using proposed API which is constantly changing`,
-				ex
+				ex,
 			);
 		}
 	}
 
 	private async getPrependOptions(
-		shell: string
+		shell: string,
 	): Promise<EnvironmentVariableMutatorOptions> {
 		const isActive = await this.shellIntegrationService.isWorking(shell);
 		// Ideally we would want to prepend exactly once, either at shell integration or process creation.
@@ -459,15 +459,15 @@ export class TerminalEnvVarCollectionService
 			? {
 					applyAtShellIntegration: true,
 					applyAtProcessCreation: false,
-				}
+			  }
 			: {
 					applyAtShellIntegration: true, // Takes care of false negatives in case manual integration is being used.
 					applyAtProcessCreation: true,
-				};
+			  };
 	}
 
 	private getEnvironmentVariableCollection(
-		scope: EnvironmentVariableScope = {}
+		scope: EnvironmentVariableScope = {},
 	) {
 		const envVarCollection = this.context
 			.environmentVariableCollection as GlobalEnvironmentVariableCollection;
@@ -475,7 +475,7 @@ export class TerminalEnvVarCollectionService
 	}
 
 	private getWorkspaceFolder(
-		resource: Resource
+		resource: Resource,
 	): WorkspaceFolder | undefined {
 		let workspaceFolder =
 			this.workspaceService.getWorkspaceFolder(resource);
@@ -492,7 +492,7 @@ export class TerminalEnvVarCollectionService
 
 function shouldPS1BeSet(
 	type: PythonEnvType | undefined,
-	env: EnvironmentVariables
+	env: EnvironmentVariables,
 ): boolean {
 	if (env.PS1) {
 		// Activated variables contain PS1, meaning it was supposed to be set.

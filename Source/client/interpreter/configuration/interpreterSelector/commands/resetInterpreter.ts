@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable } from "inversify";
 import {
 	IApplicationShell,
@@ -24,7 +22,7 @@ export class ResetInterpreterCommand extends BaseInterpreterSelectorCommand {
 		@inject(IWorkspaceService) workspaceService: IWorkspaceService,
 		@inject(IPathUtils) pathUtils: IPathUtils,
 		@inject(IConfigurationService)
-		configurationService: IConfigurationService
+		configurationService: IConfigurationService,
 	) {
 		super(
 			pythonPathUpdaterService,
@@ -32,7 +30,7 @@ export class ResetInterpreterCommand extends BaseInterpreterSelectorCommand {
 			applicationShell,
 			workspaceService,
 			pathUtils,
-			configurationService
+			configurationService,
 		);
 	}
 
@@ -40,8 +38,8 @@ export class ResetInterpreterCommand extends BaseInterpreterSelectorCommand {
 		this.disposables.push(
 			this.commandManager.registerCommand(
 				Commands.ClearWorkspaceInterpreter,
-				this.resetInterpreter.bind(this)
-			)
+				this.resetInterpreter.bind(this),
+			),
 		);
 	}
 
@@ -60,9 +58,9 @@ export class ResetInterpreterCommand extends BaseInterpreterSelectorCommand {
 					undefined,
 					configTarget,
 					"ui",
-					wkspace
+					wkspace,
 				);
-			})
+			}),
 		);
 	}
 }

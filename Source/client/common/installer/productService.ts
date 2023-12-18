@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { injectable } from "inversify";
 import { Product, ProductType } from "../types";
 import { IProductService } from "./types";
@@ -17,11 +15,11 @@ export class ProductService implements IProductService {
 		this.ProductTypes.set(Product.tensorboard, ProductType.DataScience);
 		this.ProductTypes.set(
 			Product.torchProfilerInstallName,
-			ProductType.DataScience
+			ProductType.DataScience,
 		);
 		this.ProductTypes.set(
 			Product.torchProfilerImportName,
-			ProductType.DataScience
+			ProductType.DataScience,
 		);
 		this.ProductTypes.set(Product.pip, ProductType.DataScience);
 		this.ProductTypes.set(Product.ensurepip, ProductType.DataScience);

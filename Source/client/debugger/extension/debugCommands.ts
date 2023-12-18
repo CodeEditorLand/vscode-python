@@ -8,16 +8,16 @@ import { IExtensionSingleActivationService } from "../../activation/types";
 import { ICommandManager, IDebugService } from "../../common/application/types";
 import { Commands } from "../../common/constants";
 import { IDisposableRegistry } from "../../common/types";
-import { sendTelemetryEvent } from "../../telemetry";
-import { EventName } from "../../telemetry/constants";
-import { DebugPurpose, LaunchRequestArguments } from "../types";
-import { IInterpreterService } from "../../interpreter/contracts";
 import { noop } from "../../common/utils/misc";
-import { getConfigurationsByUri } from "./configuration/launch.json/launchJsonReader";
+import { IInterpreterService } from "../../interpreter/contracts";
 import {
 	CreateEnvironmentCheckKind,
 	triggerCreateEnvironmentCheckNonBlocking,
 } from "../../pythonEnvironments/creation/createEnvironmentTrigger";
+import { sendTelemetryEvent } from "../../telemetry";
+import { EventName } from "../../telemetry/constants";
+import { DebugPurpose, LaunchRequestArguments } from "../types";
+import { getConfigurationsByUri } from "./configuration/launch.json/launchJsonReader";
 
 @injectable()
 export class DebugCommands implements IExtensionSingleActivationService {
@@ -44,13 +44,13 @@ export class DebugCommands implements IExtensionSingleActivationService {
 					sendTelemetryEvent(EventName.DEBUG_IN_TERMINAL_BUTTON);
 					const interpreter =
 						await this.interpreterService.getActiveInterpreter(
-							file
+							file,
 						);
 					if (!interpreter) {
 						this.commandManager
 							.executeCommand(
 								Commands.TriggerEnvironmentSelection,
-								file
+								file,
 							)
 							.then(noop, noop);
 						return;
@@ -58,31 +58,31 @@ export class DebugCommands implements IExtensionSingleActivationService {
 					sendTelemetryEvent(
 						EventName.ENVIRONMENT_CHECK_TRIGGER,
 						undefined,
-						{ trigger: "debug-in-terminal" }
+						{ trigger: "debug-in-terminal" },
 					);
 					triggerCreateEnvironmentCheckNonBlocking(
 						CreateEnvironmentCheckKind.File,
-						file
+						file,
 					);
 					const config =
 						await DebugCommands.getDebugConfiguration(file);
 					this.debugService.startDebugging(undefined, config);
-				}
-			)
+				},
+			),
 		);
 		return Promise.resolve();
 	}
 
 	private static async getDebugConfiguration(
-		uri?: Uri
+		uri?: Uri,
 	): Promise<DebugConfiguration> {
 		const configs = (await getConfigurationsByUri(uri)).filter(
-			(c) => c.request === "launch"
+			(c) => c.request === "launch",
 		);
 		for (const config of configs) {
 			if (
 				(config as LaunchRequestArguments).purpose?.includes(
-					DebugPurpose.DebugInTerminal
+					DebugPurpose.DebugInTerminal,
 				)
 			) {
 				if (!config.program && !config.module && !config.code) {

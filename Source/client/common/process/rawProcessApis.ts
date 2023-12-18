@@ -4,10 +4,15 @@
 import { exec, execSync, spawn } from "child_process";
 import { Readable } from "stream";
 import { Observable } from "rxjs/Observable";
+import { traceVerbose } from "../../logging";
+import { WorkspaceService } from "../application/workspace";
 import { IDisposable } from "../types";
 import { createDeferred } from "../utils/async";
+import { noop } from "../utils/misc";
 import { EnvironmentVariables } from "../variables/types";
 import { DEFAULT_ENCODING } from "./constants";
+import { decodeBuffer } from "./decoder";
+import { ProcessLogger } from "./logger";
 import {
 	ExecutionResult,
 	ObservableExecutionResult,
@@ -16,18 +21,13 @@ import {
 	SpawnOptions,
 	StdErrError,
 } from "./types";
-import { noop } from "../utils/misc";
-import { decodeBuffer } from "./decoder";
-import { traceVerbose } from "../../logging";
-import { WorkspaceService } from "../application/workspace";
-import { ProcessLogger } from "./logger";
 
 const PS_ERROR_SCREEN_BOGUS =
 	/your [0-9]+x[0-9]+ screen size is bogus\. expect trouble/;
 
 function getDefaultOptions<T extends ShellOptions | SpawnOptions>(
 	options: T,
-	defaultEnv?: EnvironmentVariables
+	defaultEnv?: EnvironmentVariables,
 ): T {
 	const defaultOptions = { ...options };
 	const execOptions = defaultOptions as SpawnOptions;
@@ -68,7 +68,7 @@ export function shellExec(
 	command: string,
 	options: ShellOptions & { doNotLog?: boolean } = {},
 	defaultEnv?: EnvironmentVariables,
-	disposables?: Set<IDisposable>
+	disposables?: Set<IDisposable>,
 ): Promise<ExecutionResult<string>> {
 	const shellOptions = getDefaultOptions(options, defaultEnv);
 	if (!options.doNotLog) {
@@ -126,7 +126,7 @@ export function plainExec(
 	args: string[],
 	options: SpawnOptions & { doNotLog?: boolean } = {},
 	defaultEnv?: EnvironmentVariables,
-	disposables?: Set<IDisposable>
+	disposables?: Set<IDisposable>,
 ): Promise<ExecutionResult<string>> {
 	const spawnOptions = getDefaultOptions(options, defaultEnv);
 	const encoding = spawnOptions.encoding ? spawnOptions.encoding : "utf8";
@@ -167,7 +167,7 @@ export function plainExec(
 
 	if (options.token) {
 		internalDisposables.push(
-			options.token.onCancellationRequested(disposable.dispose)
+			options.token.onCancellationRequested(disposable.dispose),
 		);
 	}
 
@@ -247,7 +247,7 @@ export function execObservable(
 	args: string[],
 	options: SpawnOptions & { doNotLog?: boolean } = {},
 	defaultEnv?: EnvironmentVariables,
-	disposables?: Set<IDisposable>
+	disposables?: Set<IDisposable>,
 ): ObservableExecutionResult<string> {
 	const spawnOptions = getDefaultOptions(options, defaultEnv);
 	const encoding = spawnOptions.encoding ? spawnOptions.encoding : "utf8";
@@ -293,7 +293,7 @@ export function execObservable(
 						}
 						procExited = true;
 					}
-				})
+				}),
 			);
 		}
 

@@ -19,7 +19,7 @@ export class ReplProvider implements Disposable {
 	constructor(private serviceContainer: IServiceContainer) {
 		this.activeResourceService =
 			this.serviceContainer.get<IActiveResourceService>(
-				IActiveResourceService
+				IActiveResourceService,
 			);
 		this.registerCommand();
 	}
@@ -34,7 +34,7 @@ export class ReplProvider implements Disposable {
 		const disposable = commandManager.registerCommand(
 			Commands.Start_REPL,
 			this.commandHandler,
-			this
+			this,
 		);
 		this.disposables.push(disposable);
 	}
@@ -55,7 +55,7 @@ export class ReplProvider implements Disposable {
 		}
 		const replProvider = this.serviceContainer.get<ICodeExecutionService>(
 			ICodeExecutionService,
-			"repl"
+			"repl",
 		);
 		await replProvider.initializeRepl(resource);
 	}

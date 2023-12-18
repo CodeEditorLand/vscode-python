@@ -1,22 +1,20 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import * as path from "path";
-import { chain, iterable } from "../../../../common/utils/async";
-import { PythonEnvKind } from "../../info";
-import { BasicEnvInfo, IPythonEnvsIterator } from "../../locator";
-import { getInterpreterPathFromDir } from "../../../common/commonUtils";
-import { pathExists } from "../../../common/externalDependencies";
-import {
-	isPoetryEnvironment,
-	localPoetryEnvDirName,
-	Poetry,
-} from "../../../common/environmentManagers/poetry";
 import "../../../../common/extensions";
 import { asyncFilter } from "../../../../common/utils/arrayUtils";
+import { chain, iterable } from "../../../../common/utils/async";
 import { traceError, traceVerbose } from "../../../../logging";
+import { getInterpreterPathFromDir } from "../../../common/commonUtils";
+import {
+	Poetry,
+	isPoetryEnvironment,
+	localPoetryEnvDirName,
+} from "../../../common/environmentManagers/poetry";
+import { pathExists } from "../../../common/externalDependencies";
+import { PythonEnvKind } from "../../info";
+import { BasicEnvInfo, IPythonEnvsIterator } from "../../locator";
 import { LazyResourceBasedLocator } from "../common/resourceBasedLocator";
 
 /**
@@ -33,7 +31,7 @@ async function getVirtualEnvDirs(root: string): Promise<string[]> {
 }
 
 async function getVirtualEnvKind(
-	interpreterPath: string
+	interpreterPath: string,
 ): Promise<PythonEnvKind> {
 	if (await isPoetryEnvironment(interpreterPath)) {
 		return PythonEnvKind.Poetry;
@@ -58,7 +56,7 @@ export class PoetryLocator extends LazyResourceBasedLocator {
 			const envGenerators = envDirs.map((envDir) => {
 				async function* generator() {
 					traceVerbose(
-						`Searching for poetry virtual envs in: ${envDir}`
+						`Searching for poetry virtual envs in: ${envDir}`,
 					);
 					const filename = await getInterpreterPathFromDir(envDir);
 					if (filename !== undefined) {
@@ -69,12 +67,12 @@ export class PoetryLocator extends LazyResourceBasedLocator {
 							// we can use the kind to determine this anyway.
 							yield { executablePath: filename, kind };
 							traceVerbose(
-								`Poetry Virtual Environment: [added] ${filename}`
+								`Poetry Virtual Environment: [added] ${filename}`,
 							);
 						} catch (ex) {
 							traceError(
 								`Failed to process environment: ${filename}`,
-								ex
+								ex,
 							);
 						}
 					}

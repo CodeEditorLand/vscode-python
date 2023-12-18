@@ -1,16 +1,16 @@
+import { DiscoveryUsingWorkers } from "../../../../common/experiments/groups";
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 import "../../../../common/extensions";
-import { PythonEnvKind } from "../../info";
-import { BasicEnvInfo, IPythonEnvsIterator } from "../../locator";
+import { traceError, traceVerbose } from "../../../../logging";
 import {
 	Conda,
 	getCondaEnvironmentsTxt,
 } from "../../../common/environmentManagers/conda";
-import { traceError, traceVerbose } from "../../../../logging";
-import { FSWatchingLocator } from "./fsWatchingLocator";
-import { DiscoveryUsingWorkers } from "../../../../common/experiments/groups";
 import { inExperiment } from "../../../common/externalDependencies";
+import { PythonEnvKind } from "../../info";
+import { BasicEnvInfo, IPythonEnvsIterator } from "../../locator";
+import { FSWatchingLocator } from "./fsWatchingLocator";
 
 export class CondaEnvironmentLocator extends FSWatchingLocator {
 	public readonly providerId: string = "conda-envs";
@@ -19,14 +19,14 @@ export class CondaEnvironmentLocator extends FSWatchingLocator {
 		super(
 			() => getCondaEnvironmentsTxt(),
 			async () => PythonEnvKind.Conda,
-			{ isFile: true }
+			{ isFile: true },
 		);
 	}
 
 	// eslint-disable-next-line class-methods-use-this
 	public async *doIterEnvs(
 		_: unknown,
-		useWorkerThreads = inExperiment(DiscoveryUsingWorkers.experiment)
+		useWorkerThreads = inExperiment(DiscoveryUsingWorkers.experiment),
 	): IPythonEnvsIterator<BasicEnvInfo> {
 		const conda = await Conda.getConda(undefined, useWorkerThreads);
 		if (conda === undefined) {
@@ -40,8 +40,8 @@ export class CondaEnvironmentLocator extends FSWatchingLocator {
 			try {
 				traceVerbose(
 					`Looking into conda env for executable: ${JSON.stringify(
-						env
-					)}`
+						env,
+					)}`,
 				);
 				const executablePath =
 					await conda.getInterpreterPathForEnvironment(env);
@@ -54,7 +54,7 @@ export class CondaEnvironmentLocator extends FSWatchingLocator {
 			} catch (ex) {
 				traceError(
 					`Failed to process conda env: ${JSON.stringify(env)}`,
-					ex
+					ex,
 				);
 			}
 		}

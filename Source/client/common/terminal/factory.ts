@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+import * as path from "path";
 import { inject, injectable } from "inversify";
 import { Uri } from "vscode";
-import * as path from "path";
 import { IInterpreterService } from "../../interpreter/contracts";
 import { IServiceContainer } from "../../ioc/types";
 import { PythonEnvironment } from "../../pythonEnvironments/info";
@@ -30,7 +30,7 @@ export class TerminalServiceFactory implements ITerminalServiceFactory {
 		this.terminalServices = new Map<string, TerminalService>();
 	}
 	public getTerminalService(
-		options: TerminalCreationOptions & { newTerminalPerFile?: boolean }
+		options: TerminalCreationOptions & { newTerminalPerFile?: boolean },
 	): ITerminalService {
 		const resource = options?.resource;
 		const title = options?.title;
@@ -43,7 +43,7 @@ export class TerminalServiceFactory implements ITerminalServiceFactory {
 			terminalTitle,
 			resource,
 			interpreter,
-			options.newTerminalPerFile
+			options.newTerminalPerFile,
 		);
 		if (!this.terminalServices.has(id)) {
 			if (resource && options.newTerminalPerFile) {
@@ -54,7 +54,7 @@ export class TerminalServiceFactory implements ITerminalServiceFactory {
 			options.title = terminalTitle;
 			const terminalService = new TerminalService(
 				this.serviceContainer,
-				options
+				options,
 			);
 			this.terminalServices.set(id, terminalService);
 		}
@@ -64,12 +64,12 @@ export class TerminalServiceFactory implements ITerminalServiceFactory {
 			this.fs,
 			this.interpreterService,
 			this.terminalServices.get(id)!,
-			interpreter
+			interpreter,
 		);
 	}
 	public createTerminalService(
 		resource?: Uri,
-		title?: string
+		title?: string,
 	): ITerminalService {
 		title =
 			typeof title === "string" && title.trim().length > 0
@@ -81,7 +81,7 @@ export class TerminalServiceFactory implements ITerminalServiceFactory {
 		title: string,
 		resource?: Uri,
 		interpreter?: PythonEnvironment,
-		newTerminalPerFile?: boolean
+		newTerminalPerFile?: boolean,
 	): string {
 		if (!resource && !interpreter) {
 			return title;
@@ -90,8 +90,8 @@ export class TerminalServiceFactory implements ITerminalServiceFactory {
 			.get<IWorkspaceService>(IWorkspaceService)
 			.getWorkspaceFolder(resource || undefined);
 		const fileId = resource && newTerminalPerFile ? resource.fsPath : "";
-		return `${title}:${
-			workspaceFolder?.uri.fsPath || ""
-		}:${interpreter?.path}:${fileId}`;
+		return `${title}:${workspaceFolder?.uri.fsPath || ""}:${
+			interpreter?.path
+		}:${fileId}`;
 	}
 }

@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { ModuleNotInstalledError } from "./errors/moduleNotInstalledError";
 
 export function isNotInstalledError(error: Error): boolean {

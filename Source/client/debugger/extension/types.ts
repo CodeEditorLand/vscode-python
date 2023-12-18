@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { Readable } from "stream";
 import {
 	CancellationToken,
@@ -16,14 +14,12 @@ import {
 import { DebugConfigurationArguments } from "../types";
 
 export const IDebugConfigurationService = Symbol("IDebugConfigurationService");
-export interface IDebugConfigurationService
-	extends DebugConfigurationProvider {}
+export type IDebugConfigurationService = DebugConfigurationProvider;
 
 export const IDynamicDebugConfigurationService = Symbol(
-	"IDynamicDebugConfigurationService"
+	"IDynamicDebugConfigurationService",
 );
-export interface IDynamicDebugConfigurationService
-	extends DebugConfigurationProvider {}
+export type IDynamicDebugConfigurationService = DebugConfigurationProvider;
 
 export type DebugConfigurationState = {
 	config: Partial<DebugConfigurationArguments>;
@@ -48,24 +44,21 @@ export enum PythonPathSource {
 }
 
 export const IDebugAdapterDescriptorFactory = Symbol(
-	"IDebugAdapterDescriptorFactory"
+	"IDebugAdapterDescriptorFactory",
 );
-export interface IDebugAdapterDescriptorFactory
-	extends DebugAdapterDescriptorFactory {}
+export type IDebugAdapterDescriptorFactory = DebugAdapterDescriptorFactory;
 
 export const IDebugSessionLoggingFactory = Symbol(
-	"IDebugSessionLoggingFactory"
+	"IDebugSessionLoggingFactory",
 );
 
-export interface IDebugSessionLoggingFactory
-	extends DebugAdapterTrackerFactory {}
+export type IDebugSessionLoggingFactory = DebugAdapterTrackerFactory;
 
 export const IOutdatedDebuggerPromptFactory = Symbol(
-	"IOutdatedDebuggerPromptFactory"
+	"IOutdatedDebuggerPromptFactory",
 );
 
-export interface IOutdatedDebuggerPromptFactory
-	extends DebugAdapterTrackerFactory {}
+export type IOutdatedDebuggerPromptFactory = DebugAdapterTrackerFactory;
 
 export const IProtocolParser = Symbol("IProtocolParser");
 export interface IProtocolParser extends Disposable {

@@ -11,7 +11,7 @@ export function createStatusItem(): vscode.Disposable {
 			"python.projectStatus",
 			{
 				language: "python",
-			}
+			},
 		);
 		statusItem.name = LanguageService.statusItem.name;
 		statusItem.severity = vscode.LanguageStatusSeverity.Warning;

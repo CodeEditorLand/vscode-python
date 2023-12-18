@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { injectable, unmanaged } from "inversify";
 import { Terminal } from "vscode";
 import {
@@ -56,7 +54,7 @@ export abstract class BaseShellDetector implements IShellDetector {
 	constructor(@unmanaged() public readonly priority: number) {}
 	public abstract identify(
 		telemetryProperties: ShellIdentificationTelemetry,
-		terminal?: Terminal
+		terminal?: Terminal,
 	): TerminalShellType | undefined;
 	public identifyShellFromShellPath(shellPath: string): TerminalShellType {
 		return identifyShellFromShellPath(shellPath);
@@ -64,7 +62,7 @@ export abstract class BaseShellDetector implements IShellDetector {
 }
 
 export function identifyShellFromShellPath(
-	shellPath: string
+	shellPath: string,
 ): TerminalShellType {
 	// Remove .exe extension so shells can be more consistently detected
 	// on Windows (including Cygwin).
@@ -80,7 +78,7 @@ export function identifyShellFromShellPath(
 			}
 			return matchedShell;
 		},
-		TerminalShellType.other
+		TerminalShellType.other,
 	);
 
 	return shell;

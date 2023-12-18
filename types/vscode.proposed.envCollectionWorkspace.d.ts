@@ -27,7 +27,7 @@ declare module "vscode" {
 		 * @param scope The scope to which the environment variable collection applies to.
 		 */
 		getScoped(
-			scope: EnvironmentVariableScope
+			scope: EnvironmentVariableScope,
 		): EnvironmentVariableCollection;
 	}
 

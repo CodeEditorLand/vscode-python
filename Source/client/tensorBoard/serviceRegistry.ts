@@ -3,64 +3,64 @@
 
 import { IExtensionSingleActivationService } from "../activation/types";
 import { IServiceManager } from "../ioc/types";
-import { TensorBoardImportCodeLensProvider } from "./tensorBoardImportCodeLensProvider";
+import { TensorBoardNbextensionCodeLensProvider } from "./nbextensionCodeLensProvider";
 import { TensorBoardFileWatcher } from "./tensorBoardFileWatcher";
-import { TensorBoardUsageTracker } from "./tensorBoardUsageTracker";
+import { TensorBoardImportCodeLensProvider } from "./tensorBoardImportCodeLensProvider";
 import { TensorBoardPrompt } from "./tensorBoardPrompt";
 import { TensorBoardSessionProvider } from "./tensorBoardSessionProvider";
-import { TensorBoardNbextensionCodeLensProvider } from "./nbextensionCodeLensProvider";
-import { TerminalWatcher } from "./terminalWatcher";
-import { TensorboardDependencyChecker } from "./tensorboardDependencyChecker";
+import { TensorBoardUsageTracker } from "./tensorBoardUsageTracker";
 import { TensorboardExperiment } from "./tensorboarExperiment";
+import { TensorboardDependencyChecker } from "./tensorboardDependencyChecker";
+import { TerminalWatcher } from "./terminalWatcher";
 
 export function registerTypes(serviceManager: IServiceManager): void {
 	serviceManager.addSingleton<TensorBoardSessionProvider>(
 		TensorBoardSessionProvider,
-		TensorBoardSessionProvider
+		TensorBoardSessionProvider,
 	);
 	serviceManager.addBinding(
 		TensorBoardSessionProvider,
-		IExtensionSingleActivationService
+		IExtensionSingleActivationService,
 	);
 	serviceManager.addSingleton<TensorBoardFileWatcher>(
 		TensorBoardFileWatcher,
-		TensorBoardFileWatcher
+		TensorBoardFileWatcher,
 	);
 	serviceManager.addBinding(
 		TensorBoardFileWatcher,
-		IExtensionSingleActivationService
+		IExtensionSingleActivationService,
 	);
 	serviceManager.addSingleton<TensorBoardPrompt>(
 		TensorBoardPrompt,
-		TensorBoardPrompt
+		TensorBoardPrompt,
 	);
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
-		TensorBoardUsageTracker
+		TensorBoardUsageTracker,
 	);
 	serviceManager.addSingleton<TensorBoardImportCodeLensProvider>(
 		TensorBoardImportCodeLensProvider,
-		TensorBoardImportCodeLensProvider
+		TensorBoardImportCodeLensProvider,
 	);
 	serviceManager.addBinding(
 		TensorBoardImportCodeLensProvider,
-		IExtensionSingleActivationService
+		IExtensionSingleActivationService,
 	);
 	serviceManager.addSingleton<TensorBoardNbextensionCodeLensProvider>(
 		TensorBoardNbextensionCodeLensProvider,
-		TensorBoardNbextensionCodeLensProvider
+		TensorBoardNbextensionCodeLensProvider,
 	);
 	serviceManager.addBinding(
 		TensorBoardNbextensionCodeLensProvider,
-		IExtensionSingleActivationService
+		IExtensionSingleActivationService,
 	);
 	serviceManager.addSingleton(
 		IExtensionSingleActivationService,
-		TerminalWatcher
+		TerminalWatcher,
 	);
 	serviceManager.addSingleton(
 		TensorboardDependencyChecker,
-		TensorboardDependencyChecker
+		TensorboardDependencyChecker,
 	);
 	serviceManager.addSingleton(TensorboardExperiment, TensorboardExperiment);
 }

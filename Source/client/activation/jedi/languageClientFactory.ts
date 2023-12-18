@@ -22,13 +22,13 @@ export class JediLanguageClientFactory implements ILanguageClientFactory {
 	public async createLanguageClient(
 		resource: Resource,
 		_interpreter: PythonEnvironment | undefined,
-		clientOptions: LanguageClientOptions
+		clientOptions: LanguageClientOptions,
 	): Promise<LanguageClient> {
 		// Just run the language server using a module
 		const lsScriptPath = path.join(
 			EXTENSION_ROOT_DIR,
 			"pythonFiles",
-			"run-jedi-language-server.py"
+			"run-jedi-language-server.py",
 		);
 		const interpreter =
 			await this.interpreterService.getActiveInterpreter(resource);
@@ -41,7 +41,7 @@ export class JediLanguageClientFactory implements ILanguageClientFactory {
 			PYTHON_LANGUAGE,
 			languageClientName,
 			serverOptions,
-			clientOptions
+			clientOptions,
 		);
 	}
 }

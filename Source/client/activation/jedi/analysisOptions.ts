@@ -22,7 +22,7 @@ export class JediLanguageServerAnalysisOptions extends LanguageServerAnalysisOpt
 		envVarsProvider: IEnvironmentVariablesProvider,
 		lsOutputChannel: ILanguageServerOutputChannel,
 		private readonly configurationService: IConfigurationService,
-		workspace: IWorkspaceService
+		workspace: IWorkspaceService,
 	) {
 		super(envVarsProvider, lsOutputChannel, workspace);
 		this.resource = undefined;
@@ -30,7 +30,7 @@ export class JediLanguageServerAnalysisOptions extends LanguageServerAnalysisOpt
 
 	public async initialize(
 		resource: Resource,
-		interpreter: PythonEnvironment | undefined
+		interpreter: PythonEnvironment | undefined,
 	) {
 		this.resource = resource;
 		this.interpreter = interpreter;
@@ -43,7 +43,7 @@ export class JediLanguageServerAnalysisOptions extends LanguageServerAnalysisOpt
 
 	protected async getInitializationOptions() {
 		const pythonSettings = this.configurationService.getSettings(
-			this.resource
+			this.resource,
 		);
 		const workspacePath = this.getWorkspaceFolder()?.uri.fsPath;
 		const extraPaths = pythonSettings.autoComplete
@@ -54,7 +54,7 @@ export class JediLanguageServerAnalysisOptions extends LanguageServerAnalysisOpt
 					return workspacePath
 						? path.join(workspacePath, extraPath)
 						: "";
-				})
+			  })
 			: [];
 
 		if (workspacePath) {

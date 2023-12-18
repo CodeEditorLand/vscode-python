@@ -31,7 +31,7 @@ export class TerminalManager implements ITerminalManager {
 function monkeyPatchTerminal(terminal: Terminal) {
 	if (!(terminal as any).isPatched) {
 		const oldSendText = terminal.sendText.bind(terminal);
-		terminal.sendText = (text: string, addNewLine: boolean = true) => {
+		terminal.sendText = (text: string, addNewLine = true) => {
 			traceLog(`Send text to terminal: ${text}`);
 			return oldSendText(text, addNewLine);
 		};

@@ -1,10 +1,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import * as fsapi from "fs-extra";
 import * as path from "path";
+import * as fsapi from "fs-extra";
 import * as vscode from "vscode";
 import { IWorkspaceService } from "../../common/application/types";
+import { DiscoveryUsingWorkers } from "../../common/experiments/groups";
 import {
 	ExecutionResult,
 	IProcessServiceFactory,
@@ -12,19 +13,18 @@ import {
 	SpawnOptions,
 } from "../../common/process/types";
 import {
-	IDisposable,
 	IConfigurationService,
+	IDisposable,
 	IExperimentService,
 } from "../../common/types";
 import { chain, iterable } from "../../common/utils/async";
-import { getOSType, OSType } from "../../common/utils/platform";
+import { OSType, getOSType } from "../../common/utils/platform";
 import { IServiceContainer } from "../../ioc/types";
 import { traceError, traceVerbose } from "../../logging";
-import { DiscoveryUsingWorkers } from "../../common/experiments/groups";
 
 let internalServiceContainer: IServiceContainer;
 export function initializeExternalDependencies(
-	serviceContainer: IServiceContainer
+	serviceContainer: IServiceContainer,
 ): void {
 	internalServiceContainer = serviceContainer;
 }
@@ -33,7 +33,7 @@ export function initializeExternalDependencies(
 
 export async function shellExecute(
 	command: string,
-	options: ShellOptions = {}
+	options: ShellOptions = {},
 ): Promise<ExecutionResult<string>> {
 	const useWorker = inExperiment(DiscoveryUsingWorkers.experiment);
 	const service = await internalServiceContainer
@@ -47,7 +47,7 @@ export async function exec(
 	file: string,
 	args: string[],
 	options: SpawnOptions = {},
-	useWorker = inExperiment(DiscoveryUsingWorkers.experiment)
+	useWorker = inExperiment(DiscoveryUsingWorkers.experiment),
 ): Promise<ExecutionResult<string>> {
 	const service = await internalServiceContainer
 		.get<IProcessServiceFactory>(IProcessServiceFactory)
@@ -132,13 +132,13 @@ export function arePathsSame(path1: string, path2: string): boolean {
 export async function resolveSymbolicLink(
 	absPath: string,
 	stats?: fsapi.Stats,
-	count?: number
+	count?: number,
 ): Promise<string> {
 	stats = stats ?? (await fsapi.lstat(absPath));
 	if (stats.isSymbolicLink()) {
 		if (count && count > 5) {
 			traceError(
-				`Detected a potential symbolic link loop at ${absPath}, terminating resolution.`
+				`Detected a potential symbolic link loop at ${absPath}, terminating resolution.`,
 			);
 			return absPath;
 		}
@@ -157,7 +157,7 @@ export async function resolveSymbolicLink(
 }
 
 export async function getFileInfo(
-	filePath: string
+	filePath: string,
 ): Promise<{ ctime: number; mtime: number }> {
 	try {
 		const data = await fsapi.lstat(filePath);
@@ -192,7 +192,7 @@ export async function isFile(filePath: string): Promise<boolean> {
  */
 export async function* getSubDirs(
 	root: string,
-	options?: { resolveSymlinks?: boolean }
+	options?: { resolveSymlinks?: boolean },
 ): AsyncIterableIterator<string> {
 	const dirContents = await fsapi.promises.readdir(root, {
 		withFileTypes: true,
@@ -225,7 +225,7 @@ export async function* getSubDirs(
  */
 export function getPythonSetting<T>(
 	name: string,
-	root?: string
+	root?: string,
 ): T | undefined {
 	const resource = root ? vscode.Uri.file(root) : undefined;
 	const settings = internalServiceContainer
@@ -243,7 +243,7 @@ export function getPythonSetting<T>(
 export function onDidChangePythonSetting(
 	name: string,
 	callback: () => void,
-	root?: string
+	root?: string,
 ): IDisposable {
 	return vscode.workspace.onDidChangeConfiguration(
 		(event: vscode.ConfigurationChangeEvent) => {
@@ -251,6 +251,6 @@ export function onDidChangePythonSetting(
 			if (event.affectsConfiguration(`python.${name}`, scope)) {
 				callback();
 			}
-		}
+		},
 	);
 }

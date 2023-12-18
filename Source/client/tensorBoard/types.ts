@@ -9,7 +9,7 @@ export interface ITensorBoardImportTracker {
 }
 
 export const ITensorboardDependencyChecker = Symbol(
-	"ITensorboardDependencyChecker"
+	"ITensorboardDependencyChecker",
 );
 export interface ITensorboardDependencyChecker {
 	ensureDependenciesAreInstalled(resource?: Uri): Promise<boolean>;

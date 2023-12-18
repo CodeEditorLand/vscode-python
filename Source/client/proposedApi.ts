@@ -2,15 +2,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+import { buildDeprecatedProposedApi } from "./deprecatedProposedApi";
+import { DeprecatedProposedAPI } from "./deprecatedProposedApiTypes";
 import { IServiceContainer } from "./ioc/types";
 import { ProposedExtensionAPI } from "./proposedApiTypes";
 import { IDiscoveryAPI } from "./pythonEnvironments/base/locator";
-import { buildDeprecatedProposedApi } from "./deprecatedProposedApi";
-import { DeprecatedProposedAPI } from "./deprecatedProposedApiTypes";
 
 export function buildProposedApi(
 	discoveryApi: IDiscoveryAPI,
-	serviceContainer: IServiceContainer
+	serviceContainer: IServiceContainer,
 ): ProposedExtensionAPI {
 	/**
 	 * @deprecated Will be removed soon.

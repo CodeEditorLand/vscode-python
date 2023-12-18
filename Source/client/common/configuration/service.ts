@@ -3,11 +3,11 @@
 
 import { inject, injectable } from "inversify";
 import {
+	ConfigurationChangeEvent,
 	ConfigurationTarget,
 	Event,
 	Uri,
 	WorkspaceConfiguration,
-	ConfigurationChangeEvent,
 } from "vscode";
 import { IInterpreterAutoSelectionService } from "../../interpreter/autoSelection/types";
 import { IServiceContainer } from "../../ioc/types";
@@ -41,21 +41,21 @@ export class ConfigurationService implements IConfigurationService {
 	public getSettings(resource?: Uri): IPythonSettings {
 		const InterpreterAutoSelectionService =
 			this.serviceContainer.get<IInterpreterAutoSelectionService>(
-				IInterpreterAutoSelectionService
+				IInterpreterAutoSelectionService,
 			);
 		const interpreterPathService =
 			this.serviceContainer.get<IInterpreterPathService>(
-				IInterpreterPathService
+				IInterpreterPathService,
 			);
 		const defaultLS = this.serviceContainer.tryGet<IDefaultLanguageServer>(
-			IDefaultLanguageServer
+			IDefaultLanguageServer,
 		);
 		return PythonSettings.getInstance(
 			resource,
 			InterpreterAutoSelectionService,
 			this.workspaceService,
 			interpreterPathService,
-			defaultLS
+			defaultLS,
 		);
 	}
 
@@ -64,7 +64,7 @@ export class ConfigurationService implements IConfigurationService {
 		setting: string,
 		value?: unknown,
 		resource?: Uri,
-		configTarget?: ConfigurationTarget
+		configTarget?: ConfigurationTarget,
 	): Promise<void> {
 		const defaultSetting = {
 			uri: resource,
@@ -77,14 +77,14 @@ export class ConfigurationService implements IConfigurationService {
 		) {
 			settingsInfo = PythonSettings.getSettingsUriAndTarget(
 				resource,
-				this.workspaceService
+				this.workspaceService,
 			);
 		}
 		configTarget = configTarget || settingsInfo.target;
 
 		const configSection = this.workspaceService.getConfiguration(
 			section,
-			settingsInfo.uri
+			settingsInfo.uri,
 		);
 		const currentValue = configSection.inspect(setting);
 
@@ -107,14 +107,14 @@ export class ConfigurationService implements IConfigurationService {
 		setting: string,
 		value?: unknown,
 		resource?: Uri,
-		configTarget?: ConfigurationTarget
+		configTarget?: ConfigurationTarget,
 	): Promise<void> {
 		return this.updateSectionSetting(
 			"python",
 			setting,
 			value,
 			resource,
-			configTarget
+			configTarget,
 		);
 	}
 
@@ -127,7 +127,7 @@ export class ConfigurationService implements IConfigurationService {
 		configSection: WorkspaceConfiguration,
 		target: ConfigurationTarget,
 		settingName: string,
-		value?: unknown
+		value?: unknown,
 	): Promise<void> {
 		if (this.isTestExecution() && !isUnitTestExecution()) {
 			let retries = 0;

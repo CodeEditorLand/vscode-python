@@ -2,30 +2,30 @@
 // Licensed under the MIT License.
 
 import { Uri } from "vscode";
+import { PythonEnvInfo, PythonEnvKind } from ".";
+import { OUTPUT_MARKER_SCRIPT } from "../../../common/process/internal/scripts";
 import { IDisposableRegistry } from "../../../common/types";
-import { createDeferred, Deferred, sleep } from "../../../common/utils/async";
+import { Deferred, createDeferred, sleep } from "../../../common/utils/async";
+import { Architecture } from "../../../common/utils/platform";
 import {
-	createRunningWorkerPool,
 	IWorkerPool,
 	QueuePosition,
+	createRunningWorkerPool,
 } from "../../../common/utils/workerPool";
-import { getInterpreterInfo, InterpreterInformation } from "./interpreter";
-import { buildPythonExecInfo } from "../../exec";
 import { traceError, traceVerbose, traceWarn } from "../../../logging";
 import {
-	Conda,
 	CONDA_ACTIVATION_TIMEOUT,
+	Conda,
 	isCondaEnvironment,
 } from "../../common/environmentManagers/conda";
-import { PythonEnvInfo, PythonEnvKind } from ".";
 import { normCasePath } from "../../common/externalDependencies";
-import { OUTPUT_MARKER_SCRIPT } from "../../../common/process/internal/scripts";
-import { Architecture } from "../../../common/utils/platform";
+import { buildPythonExecInfo } from "../../exec";
+import { InterpreterInformation, getInterpreterInfo } from "./interpreter";
 import { getEmptyVersion } from "./pythonVersion";
 
 export enum EnvironmentInfoServiceQueuePriority {
-	Default,
-	High,
+	Default = 0,
+	High = 1,
 }
 
 export interface IEnvironmentInfoService {
@@ -36,7 +36,7 @@ export interface IEnvironmentInfoService {
 	 */
 	getEnvironmentInfo(
 		env: PythonEnvInfo,
-		priority?: EnvironmentInfoServiceQueuePriority
+		priority?: EnvironmentInfoServiceQueuePriority,
 	): Promise<InterpreterInformation | undefined>;
 	/**
 	 * Reset any stored interpreter information for the given environment.
@@ -47,7 +47,7 @@ export interface IEnvironmentInfoService {
 
 async function buildEnvironmentInfo(
 	env: PythonEnvInfo,
-	useIsolated = true
+	useIsolated = true,
 ): Promise<InterpreterInformation | undefined> {
 	const python = [env.executable.filename];
 	if (useIsolated) {
@@ -56,13 +56,13 @@ async function buildEnvironmentInfo(
 		python.push(...[OUTPUT_MARKER_SCRIPT]);
 	}
 	const interpreterInfo = await getInterpreterInfo(
-		buildPythonExecInfo(python, undefined, env.executable.filename)
+		buildPythonExecInfo(python, undefined, env.executable.filename),
 	);
 	return interpreterInfo;
 }
 
 async function buildEnvironmentInfoUsingCondaRun(
-	env: PythonEnvInfo
+	env: PythonEnvInfo,
 ): Promise<InterpreterInformation | undefined> {
 	const conda = await Conda.getConda();
 	const path = env.location.length ? env.location : env.executable.filename;
@@ -76,7 +76,7 @@ async function buildEnvironmentInfoUsingCondaRun(
 	}
 	const interpreterInfo = await getInterpreterInfo(
 		buildPythonExecInfo(python, undefined, env.executable.filename),
-		CONDA_ACTIVATION_TIMEOUT
+		CONDA_ACTIVATION_TIMEOUT,
 	);
 	return interpreterInfo;
 }
@@ -112,7 +112,7 @@ class EnvironmentInfoService implements IEnvironmentInfoService {
 
 	public async getEnvironmentInfo(
 		env: PythonEnvInfo,
-		priority?: EnvironmentInfoServiceQueuePriority
+		priority?: EnvironmentInfoServiceQueuePriority,
 	): Promise<InterpreterInformation | undefined> {
 		const interpreterPath = env.executable.filename;
 		const result = this.cache.get(normCasePath(interpreterPath));
@@ -136,7 +136,7 @@ class EnvironmentInfoService implements IEnvironmentInfoService {
 	public async _getEnvironmentInfo(
 		env: PythonEnvInfo,
 		priority?: EnvironmentInfoServiceQueuePriority,
-		retryOnce = true
+		retryOnce = true,
 	): Promise<InterpreterInformation | undefined> {
 		if (
 			env.kind === PythonEnvKind.Conda &&
@@ -167,7 +167,7 @@ class EnvironmentInfoService implements IEnvironmentInfoService {
 			(err) => {
 				reason = err;
 				return undefined;
-			}
+			},
 		);
 
 		if (r === undefined) {
@@ -178,7 +178,7 @@ class EnvironmentInfoService implements IEnvironmentInfoService {
 				(await isCondaEnvironment(env.executable.filename));
 			if (isCondaEnv) {
 				traceVerbose(
-					`Validating ${env.executable.filename} normally failed with error, falling back to using conda run: (${reason})`
+					`Validating ${env.executable.filename} normally failed with error, falling back to using conda run: (${reason})`,
 				);
 				if (this.condaRunWorkerPool === undefined) {
 					// Create a separate queue for validation using conda, so getting environment info for
@@ -191,7 +191,7 @@ class EnvironmentInfoService implements IEnvironmentInfoService {
 				r = await addToQueue(
 					this.condaRunWorkerPool,
 					env,
-					priority
+					priority,
 				).catch((err) => {
 					traceError(err);
 					return undefined;
@@ -200,13 +200,13 @@ class EnvironmentInfoService implements IEnvironmentInfoService {
 				if (
 					reason.message.includes("Unknown option: -I") ||
 					reason.message.includes(
-						"ModuleNotFoundError: No module named 'encodings'"
+						"ModuleNotFoundError: No module named 'encodings'",
 					)
 				) {
 					traceWarn(reason);
 					if (reason.message.includes("Unknown option: -I")) {
 						traceError(
-							"Support for Python 2.7 has been dropped by the Python extension so certain features may not work, upgrade to using Python 3."
+							"Support for Python 2.7 has been dropped by the Python extension so certain features may not work, upgrade to using Python 3.",
 						);
 					}
 					return buildEnvironmentInfo(env, false).catch((err) => {
@@ -222,7 +222,7 @@ class EnvironmentInfoService implements IEnvironmentInfoService {
 			// https://github.com/microsoft/vscode-python/issues/20147 where running environment the first time
 			// failed due to unknown reasons.
 			return sleep(2000).then(() =>
-				this._getEnvironmentInfo(env, priority, false)
+				this._getEnvironmentInfo(env, priority, false),
 			);
 		}
 		return r;
@@ -242,7 +242,7 @@ class EnvironmentInfoService implements IEnvironmentInfoService {
 function addToQueue(
 	workerPool: IWorkerPool<PythonEnvInfo, InterpreterInformation | undefined>,
 	env: PythonEnvInfo,
-	priority: EnvironmentInfoServiceQueuePriority | undefined
+	priority: EnvironmentInfoServiceQueuePriority | undefined,
 ) {
 	return priority === EnvironmentInfoServiceQueuePriority.High
 		? workerPool.addToQueue(env, QueuePosition.Front)
@@ -251,7 +251,7 @@ function addToQueue(
 
 let envInfoService: IEnvironmentInfoService | undefined;
 export function getEnvironmentInfoService(
-	disposables?: IDisposableRegistry
+	disposables?: IDisposableRegistry,
 ): IEnvironmentInfoService {
 	if (envInfoService === undefined) {
 		const service = new EnvironmentInfoService();

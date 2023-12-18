@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject } from "inversify";
 import { Terminal } from "vscode";
 import { traceVerbose } from "../../../logging";
@@ -26,7 +24,7 @@ export class VSCEnvironmentShellDetector extends BaseShellDetector {
 	}
 	public identify(
 		telemetryProperties: ShellIdentificationTelemetry,
-		terminal?: Terminal
+		terminal?: Terminal,
 	): TerminalShellType | undefined {
 		const shellPath =
 			terminal?.creationOptions &&
@@ -39,7 +37,7 @@ export class VSCEnvironmentShellDetector extends BaseShellDetector {
 		}
 		const shell = this.identifyShellFromShellPath(shellPath);
 		traceVerbose(
-			`Terminal shell path '${shellPath}' identified as shell '${shell}'`
+			`Terminal shell path '${shellPath}' identified as shell '${shell}'`,
 		);
 		telemetryProperties.shellIdentificationSource =
 			shell === TerminalShellType.other

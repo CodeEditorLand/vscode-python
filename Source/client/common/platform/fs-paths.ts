@@ -2,10 +2,10 @@
 // Licensed under the MIT License.
 
 import * as nodepath from "path";
-import { getSearchPathEnvVarNames } from "../utils/exec";
 import * as fs from "fs-extra";
-import { getOSType, OSType } from "../utils/platform";
-import { IExecutables, IFileSystemPaths, IFileSystemPathUtils } from "./types";
+import { getSearchPathEnvVarNames } from "../utils/exec";
+import { OSType, getOSType } from "../utils/platform";
+import { IExecutables, IFileSystemPathUtils, IFileSystemPaths } from "./types";
 
 const untildify = require("untildify");
 
@@ -23,14 +23,14 @@ export class FileSystemPaths implements IFileSystemPaths {
 		// "true" if targeting a case-insensitive host (like Windows)
 		private readonly isCaseInsensitive: boolean,
 		// (effectively) the node "path" module to use
-		private readonly raw: INodePath
+		private readonly raw: INodePath,
 	) {}
 	// Create a new object using common-case default values.
 	// We do not use an alternate constructor because defaults in the
 	// constructor runs counter to our typical approach.
 	public static withDefaults(
 		// default: use "isWindows"
-		isCaseInsensitive?: boolean
+		isCaseInsensitive?: boolean,
 	): FileSystemPaths {
 		if (isCaseInsensitive === undefined) {
 			isCaseInsensitive = getOSType() === OSType.Windows;
@@ -38,7 +38,7 @@ export class FileSystemPaths implements IFileSystemPaths {
 		return new FileSystemPaths(
 			isCaseInsensitive,
 			// Use the actual node "path" module.
-			nodepath
+			nodepath,
 		);
 	}
 
@@ -73,7 +73,7 @@ export class Executables {
 		// the $PATH delimiter to use
 		public readonly delimiter: string,
 		// the OS type to target
-		private readonly osType: OSType
+		private readonly osType: OSType,
 	) {}
 	// Create a new object using common-case default values.
 	// We do not use an alternate constructor because defaults in the
@@ -83,7 +83,7 @@ export class Executables {
 			// Use node's value.
 			nodepath.delimiter,
 			// Use the current OS.
-			getOSType()
+			getOSType(),
 		);
 	}
 
@@ -106,14 +106,14 @@ export class FileSystemPathUtils implements IFileSystemPathUtils {
 		// the low-level OS "executables" to use (and expose)
 		public readonly executables: IExecutables,
 		// other low-level FS path operations to use
-		private readonly raw: IRawPaths
+		private readonly raw: IRawPaths,
 	) {}
 	// Create a new object using common-case default values.
 	// We do not use an alternate constructor because defaults in the
 	// constructor runs counter to our typical approach.
 	public static withDefaults(
 		// default: a new FileSystemPaths object (using defaults)
-		paths?: IFileSystemPaths
+		paths?: IFileSystemPaths,
 	): FileSystemPathUtils {
 		if (paths === undefined) {
 			paths = FileSystemPaths.withDefaults();
@@ -124,7 +124,7 @@ export class FileSystemPathUtils implements IFileSystemPathUtils {
 			paths,
 			Executables.withDefaults(),
 			// Use the actual node "path" module.
-			nodepath
+			nodepath,
 		);
 	}
 
@@ -140,7 +140,7 @@ export class FileSystemPathUtils implements IFileSystemPathUtils {
 		} else if (isParentPath(filename, this.home)) {
 			return `~${this.paths.sep}${this.raw.relative(
 				this.home,
-				filename
+				filename,
 			)}`;
 		} else {
 			return filename;

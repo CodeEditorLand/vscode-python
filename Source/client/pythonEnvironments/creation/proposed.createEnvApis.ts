@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License
 
-import { Event, Disposable, WorkspaceFolder } from "vscode";
+import { Disposable, Event, WorkspaceFolder } from "vscode";
 import { EnvironmentTools } from "../../api/types";
 
 export type CreateEnvironmentUserActions = "Back" | "Cancel";
@@ -134,7 +134,7 @@ export interface CreateEnvironmentProvider {
 	 * Python executable in the environment. Or any action taken by the user, such as back or cancel.
 	 */
 	createEnvironment(
-		options?: CreateEnvironmentOptions
+		options?: CreateEnvironmentOptions,
 	): Promise<CreateEnvironmentResult | undefined>;
 
 	/**
@@ -179,7 +179,7 @@ export interface ProposedCreateEnvironmentAPI {
 	 * providers. Based on the selection the `createEnvironment` will be called on the provider.
 	 */
 	createEnvironment(
-		options?: CreateEnvironmentOptions
+		options?: CreateEnvironmentOptions,
 	): Promise<CreateEnvironmentResult | undefined>;
 
 	/**
@@ -187,6 +187,6 @@ export interface ProposedCreateEnvironmentAPI {
 	 * a (@link Disposable} which can be used to remove the registration.
 	 */
 	registerCreateEnvironmentProvider(
-		provider: CreateEnvironmentProvider
+		provider: CreateEnvironmentProvider,
 	): Disposable;
 }

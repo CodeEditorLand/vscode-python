@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { Architecture } from "../../common/utils/platform";
 import { PythonEnvType } from "../base/info";
 import { PythonVersion } from "./pythonVersion";
@@ -93,7 +91,7 @@ export type PythonEnvironment = InterpreterInformation & {
  * Convert the Python environment type to a user-facing name.
  */
 export function getEnvironmentTypeName(
-	environmentType: EnvironmentType
+	environmentType: EnvironmentType,
 ): string {
 	switch (environmentType) {
 		case EnvironmentType.Conda: {

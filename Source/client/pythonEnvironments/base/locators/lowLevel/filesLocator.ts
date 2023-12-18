@@ -29,18 +29,18 @@ abstract class FoundFilesLocator implements ILocator<BasicEnvInfo> {
 	constructor(
 		private readonly kind: PythonEnvKind,
 		private readonly getExecutables: GetExecutablesFunc,
-		private readonly source?: PythonEnvSource[]
+		private readonly source?: PythonEnvSource[],
 	) {
 		this.onChanged = this.watcher.onChanged;
 	}
 
 	public iterEnvs(
-		_query?: PythonLocatorQuery
+		_query?: PythonLocatorQuery,
 	): IPythonEnvsIterator<BasicEnvInfo> {
 		const executables = this.getExecutables();
 		async function* generator(
 			kind: PythonEnvKind,
-			source?: PythonEnvSource[]
+			source?: PythonEnvSource[],
 		): IPythonEnvsIterator<BasicEnvInfo> {
 			for await (const executablePath of executables) {
 				yield { executablePath, kind, source };
@@ -64,7 +64,7 @@ export class DirFilesLocator extends FoundFilesLocator {
 		defaultKind: PythonEnvKind,
 		// This is put in a closure and otherwise passed through as-is.
 		getExecutables: GetDirExecutablesFunc = getExecutablesDefault,
-		source?: PythonEnvSource[]
+		source?: PythonEnvSource[],
 	) {
 		super(defaultKind, () => getExecutables(dirname), source);
 		this.providerId = `dir-files-${dirname}`;
@@ -76,7 +76,7 @@ export class DirFilesLocator extends FoundFilesLocator {
 // instance.
 
 async function* getExecutablesDefault(
-	dirname: string
+	dirname: string,
 ): AsyncIterableIterator<string> {
 	for await (const entry of iterPythonExecutablesInDir(dirname)) {
 		yield entry.filename;

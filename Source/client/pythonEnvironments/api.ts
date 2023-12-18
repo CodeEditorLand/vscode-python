@@ -23,7 +23,7 @@ class PythonEnvironments implements IDiscoveryAPI {
 
 	constructor(
 		// These are factories for the sub-components the full component is composed of:
-		private readonly getLocator: GetLocatorFunc
+		private readonly getLocator: GetLocatorFunc,
 	) {}
 
 	public async activate(): Promise<void> {
@@ -56,14 +56,14 @@ class PythonEnvironments implements IDiscoveryAPI {
 
 	public async triggerRefresh(
 		query?: PythonLocatorQuery,
-		options?: TriggerRefreshOptions
+		options?: TriggerRefreshOptions,
 	) {
 		return this.locator.triggerRefresh(query, options);
 	}
 }
 
 export async function createPythonEnvironments(
-	getLocator: GetLocatorFunc
+	getLocator: GetLocatorFunc,
 ): Promise<IDiscoveryAPI> {
 	const api = new PythonEnvironments(getLocator);
 	await api.activate();

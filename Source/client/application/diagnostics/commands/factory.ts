@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable } from "inversify";
 import { IServiceContainer } from "../../../ioc/types";
 import { IDiagnostic, IDiagnosticCommand } from "../types";
@@ -18,7 +16,7 @@ export class DiagnosticsCommandFactory implements IDiagnosticsCommandFactory {
 	) {}
 	public createCommand(
 		diagnostic: IDiagnostic,
-		options: CommandOptions
+		options: CommandOptions,
 	): IDiagnosticCommand {
 		const commandType = options.type;
 		switch (options.type) {
@@ -26,26 +24,26 @@ export class DiagnosticsCommandFactory implements IDiagnosticsCommandFactory {
 				return new IgnoreDiagnosticCommand(
 					diagnostic,
 					this.serviceContainer,
-					options.options
+					options.options,
 				);
 			}
 			case "launch": {
 				return new LaunchBrowserCommand(
 					diagnostic,
 					this.serviceContainer,
-					options.options
+					options.options,
 				);
 			}
 			case "executeVSCCommand": {
 				return new ExecuteVSCCommand(
 					diagnostic,
 					this.serviceContainer,
-					options.options
+					options.options,
 				);
 			}
 			default: {
 				throw new Error(
-					`Unknown Diagnostic command commandType '${commandType}'`
+					`Unknown Diagnostic command commandType '${commandType}'`,
 				);
 			}
 		}

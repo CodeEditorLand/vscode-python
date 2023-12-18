@@ -1,14 +1,14 @@
-import { injectable, inject } from "inversify";
+import { inject, injectable } from "inversify";
 import { IExtensionSingleActivationService } from "../../../activation/types";
+import { sendTelemetryEvent } from "../../../telemetry";
+import { EventName } from "../../../telemetry/constants";
 import { Commands } from "../../constants";
+import { IDisposableRegistry } from "../../types";
 import {
 	IApplicationShell,
 	ICommandManager,
 	IWorkspaceService,
 } from "../types";
-import { sendTelemetryEvent } from "../../../telemetry";
-import { EventName } from "../../../telemetry/constants";
-import { IDisposableRegistry } from "../../types";
 
 @injectable()
 export class CreatePythonFileCommandHandler
@@ -34,8 +34,8 @@ export class CreatePythonFileCommandHandler
 			this.commandManager.registerCommand(
 				Commands.CreateNewFile,
 				this.createPythonFile,
-				this
-			)
+				this,
+			),
 		);
 	}
 

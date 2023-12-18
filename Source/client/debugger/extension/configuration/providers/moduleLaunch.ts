@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { DebugConfigStrings } from "../../../../common/utils/localize";
 import { MultiStepInput } from "../../../../common/utils/multiStepInput";
 import { sendTelemetryEvent } from "../../../../telemetry";
@@ -13,7 +11,7 @@ import { DebugConfigurationState, DebugConfigurationType } from "../../types";
 
 export async function buildModuleLaunchConfiguration(
 	input: MultiStepInput<DebugConfigurationState>,
-	state: DebugConfigurationState
+	state: DebugConfigurationState,
 ): Promise<void> {
 	let manuallyEnteredAValue: boolean | undefined;
 	const config: Partial<LaunchRequestArguments> = {
@@ -31,7 +29,7 @@ export async function buildModuleLaunchConfiguration(
 			Promise.resolve(
 				value && value.trim().length > 0
 					? undefined
-					: DebugConfigStrings.module.enterModule.invalid
+					: DebugConfigStrings.module.enterModule.invalid,
 			),
 	});
 	if (selectedModule) {

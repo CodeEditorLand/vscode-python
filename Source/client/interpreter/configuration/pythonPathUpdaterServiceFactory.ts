@@ -27,19 +27,19 @@ export class PythonPathUpdaterServiceFactory
 		return new GlobalPythonPathUpdaterService(this.interpreterPathService);
 	}
 	public getWorkspacePythonPathConfigurationService(
-		wkspace: Uri
+		wkspace: Uri,
 	): IPythonPathUpdaterService {
 		return new WorkspacePythonPathUpdaterService(
 			wkspace,
-			this.interpreterPathService
+			this.interpreterPathService,
 		);
 	}
 	public getWorkspaceFolderPythonPathConfigurationService(
-		workspaceFolder: Uri
+		workspaceFolder: Uri,
 	): IPythonPathUpdaterService {
 		return new WorkspaceFolderPythonPathUpdaterService(
 			workspaceFolder,
-			this.interpreterPathService
+			this.interpreterPathService,
 		);
 	}
 }

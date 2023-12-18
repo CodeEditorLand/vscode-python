@@ -8,10 +8,10 @@ import {
 	CodeLens,
 	Command,
 	Disposable,
-	languages,
 	Position,
 	Range,
 	TextDocument,
+	languages,
 } from "vscode";
 import { IExtensionSingleActivationService } from "../activation/types";
 import { Commands, PYTHON } from "../common/constants";
@@ -43,8 +43,8 @@ export class TensorBoardImportCodeLensProvider
 			{
 				trigger: TensorBoardEntrypointTrigger.fileimport,
 				entrypoint: TensorBoardEntrypoint.codelens,
-			}
-		)
+			},
+		),
 	);
 
 	private readonly disposables: IDisposable[] = [];
@@ -72,7 +72,7 @@ export class TensorBoardImportCodeLensProvider
 	// eslint-disable-next-line class-methods-use-this
 	public provideCodeLenses(
 		document: TextDocument,
-		cancelToken: CancellationToken
+		cancelToken: CancellationToken,
 	): CodeLens[] {
 		const command: Command = {
 			title: TensorBoard.launchNativeTensorBoardSessionCodeLens,
@@ -93,7 +93,7 @@ export class TensorBoardImportCodeLensProvider
 			if (containsTensorBoardImport([line.text])) {
 				const range = new Range(
 					new Position(line.lineNumber, 0),
-					new Position(line.lineNumber, 1)
+					new Position(line.lineNumber, 1),
 				);
 				codelenses.push(new CodeLens(range, command));
 				this.sendTelemetryOnce();

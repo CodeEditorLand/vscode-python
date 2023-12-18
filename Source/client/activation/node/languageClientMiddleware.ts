@@ -4,8 +4,8 @@
 import { Uri } from "vscode";
 import {
 	ConfigurationItem,
-	LanguageClient,
 	LSPObject,
+	LanguageClient,
 } from "vscode-languageclient/node";
 import {
 	IJupyterExtensionDependencyManager,
@@ -31,7 +31,7 @@ export class NodeLanguageClientMiddleware extends LanguageClientMiddleware {
 	public constructor(
 		serviceContainer: IServiceContainer,
 		private getClient: () => LanguageClient | undefined,
-		serverVersion?: string
+		serverVersion?: string,
 	) {
 		super(serviceContainer, LanguageServerType.Node, serverVersion);
 
@@ -40,31 +40,31 @@ export class NodeLanguageClientMiddleware extends LanguageClientMiddleware {
 
 		this.lspNotebooksExperiment =
 			serviceContainer.get<LspNotebooksExperiment>(
-				LspNotebooksExperiment
+				LspNotebooksExperiment,
 			);
 		this.setupHidingMiddleware(serviceContainer);
 
 		this.jupyterExtensionIntegration =
 			serviceContainer.get<JupyterExtensionIntegration>(
-				JupyterExtensionIntegration
+				JupyterExtensionIntegration,
 			);
 		if (!this.notebookAddon) {
 			this.notebookAddon = new LspInteractiveWindowMiddlewareAddon(
 				this.getClient,
-				this.jupyterExtensionIntegration
+				this.jupyterExtensionIntegration,
 			);
 		}
 	}
 
 	// eslint-disable-next-line class-methods-use-this
 	protected shouldCreateHidingMiddleware(
-		_: IJupyterExtensionDependencyManager
+		_: IJupyterExtensionDependencyManager,
 	): boolean {
 		return false;
 	}
 
 	protected async onExtensionChange(
-		jupyterDependencyManager: IJupyterExtensionDependencyManager
+		jupyterDependencyManager: IJupyterExtensionDependencyManager,
 	): Promise<void> {
 		if (
 			jupyterDependencyManager &&
@@ -76,13 +76,13 @@ export class NodeLanguageClientMiddleware extends LanguageClientMiddleware {
 		if (!this.notebookAddon) {
 			this.notebookAddon = new LspInteractiveWindowMiddlewareAddon(
 				this.getClient,
-				this.jupyterExtensionIntegration
+				this.jupyterExtensionIntegration,
 			);
 		}
 	}
 
 	protected async getPythonPathOverride(
-		uri: Uri | undefined
+		uri: Uri | undefined,
 	): Promise<string | undefined> {
 		if (!uri) {
 			return undefined;
@@ -106,7 +106,7 @@ export class NodeLanguageClientMiddleware extends LanguageClientMiddleware {
 	// eslint-disable-next-line class-methods-use-this
 	protected configurationHook(
 		item: ConfigurationItem,
-		settings: LSPObject
+		settings: LSPObject,
 	): void {
 		if (item.section === "editor") {
 			if (this.workspaceService) {
@@ -115,7 +115,7 @@ export class NodeLanguageClientMiddleware extends LanguageClientMiddleware {
 				const editorConfig = this.workspaceService.getConfiguration(
 					item.section,
 					undefined,
-					/* languageSpecific */ true
+					/* languageSpecific */ true,
 				);
 
 				const settingDict: LSPObject & { formatOnType?: boolean } =

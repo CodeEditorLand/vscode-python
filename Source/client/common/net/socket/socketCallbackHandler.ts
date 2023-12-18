@@ -1,7 +1,5 @@
-"use strict";
-
-import * as net from "net";
 import { EventEmitter } from "events";
+import * as net from "net";
 import { SocketStream } from "./SocketStream";
 import { SocketServer } from "./socketServer";
 
@@ -43,12 +41,12 @@ export abstract class SocketCallbackHandler extends EventEmitter {
 
 	private HandleIncomingData(
 		buffer: Buffer,
-		socket: net.Socket
+		socket: net.Socket,
 	): boolean | undefined {
-		if (!this._stream) {
-			this._stream = new SocketStream(socket, buffer);
-		} else {
+		if (this._stream) {
 			this._stream.Append(buffer);
+		} else {
+			this._stream = new SocketStream(socket, buffer);
 		}
 
 		if (!this.handeshakeDone && !this.handleHandshake()) {
@@ -67,7 +65,7 @@ export abstract class SocketCallbackHandler extends EventEmitter {
 		}
 		this.stream.BeginTransaction();
 
-		let cmd = this.stream.ReadAsciiString(4);
+		const cmd = this.stream.ReadAsciiString(4);
 		if (this.stream.HasInsufficientDataForReading) {
 			this.stream.RollBackTransaction();
 			return;

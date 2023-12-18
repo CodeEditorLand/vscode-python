@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { inject, injectable } from "inversify";
 import * as path from "path";
+import { inject, injectable } from "inversify";
 import { Disposable, TextEditor } from "vscode";
 import { IExtensionSingleActivationService } from "../activation/types";
 import { IDocumentManager } from "../common/application/types";
@@ -58,7 +58,7 @@ export class TensorBoardUsageTracker
 		this.documentManager.onDidChangeActiveTextEditor(
 			(e) => this.onChangedActiveTextEditor(e),
 			this,
-			this.disposables
+			this.disposables,
 		);
 	}
 
@@ -76,7 +76,7 @@ export class TensorBoardUsageTracker
 			if (containsTensorBoardImport(lines)) {
 				this.prompt
 					.showNativeTensorBoardPrompt(
-						TensorBoardEntrypointTrigger.fileimport
+						TensorBoardEntrypointTrigger.fileimport,
 					)
 					.ignoreErrors();
 			}

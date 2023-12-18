@@ -2,13 +2,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { PythonEnvKind, PythonEnvSource } from "../../info";
-import { BasicEnvInfo, IPythonEnvsIterator, Locator } from "../../locator";
-import { getRegistryInterpreters } from "../../../common/windowsUtils";
+import { DiscoveryUsingWorkers } from "../../../../common/experiments/groups";
 import { traceError, traceVerbose } from "../../../../logging";
 import { isMicrosoftStoreDir } from "../../../common/environmentManagers/microsoftStoreEnv";
 import { inExperiment } from "../../../common/externalDependencies";
-import { DiscoveryUsingWorkers } from "../../../../common/experiments/groups";
+import { getRegistryInterpreters } from "../../../common/windowsUtils";
+import { PythonEnvKind, PythonEnvSource } from "../../info";
+import { BasicEnvInfo, IPythonEnvsIterator, Locator } from "../../locator";
 
 export class WindowsRegistryLocator extends Locator<BasicEnvInfo> {
 	public readonly providerId: string = "windows-registry";
@@ -16,7 +16,7 @@ export class WindowsRegistryLocator extends Locator<BasicEnvInfo> {
 	// eslint-disable-next-line class-methods-use-this
 	public iterEnvs(
 		_?: unknown,
-		useWorkerThreads = inExperiment(DiscoveryUsingWorkers.experiment)
+		useWorkerThreads = inExperiment(DiscoveryUsingWorkers.experiment),
 	): IPythonEnvsIterator<BasicEnvInfo> {
 		const iterator = async function* () {
 			traceVerbose("Searching for windows registry interpreters");
@@ -39,12 +39,12 @@ export class WindowsRegistryLocator extends Locator<BasicEnvInfo> {
 				} catch (ex) {
 					traceError(
 						`Failed to process environment: ${interpreter}`,
-						ex
+						ex,
 					);
 				}
 			}
 			traceVerbose(
-				"Finished searching for windows registry interpreters"
+				"Finished searching for windows registry interpreters",
 			);
 		};
 		return iterator();

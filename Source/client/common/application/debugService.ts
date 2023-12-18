@@ -1,13 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { injectable } from "inversify";
 import {
 	Breakpoint,
 	BreakpointsChangeEvent,
-	debug,
 	DebugAdapterDescriptorFactory,
 	DebugConfiguration,
 	DebugConsole,
@@ -16,6 +13,7 @@ import {
 	Disposable,
 	Event,
 	WorkspaceFolder,
+	debug,
 } from "vscode";
 import { IDebugService } from "./types";
 
@@ -51,21 +49,21 @@ export class DebugService implements IDebugService {
 
 	public registerDebugConfigurationProvider(
 		debugType: string,
-		provider: any
+		provider: any,
 	): Disposable {
 		return debug.registerDebugConfigurationProvider(debugType, provider);
 	}
 
 	public registerDebugAdapterTrackerFactory(
 		debugType: string,
-		provider: any
+		provider: any,
 	): Disposable {
 		return debug.registerDebugAdapterTrackerFactory(debugType, provider);
 	}
 	public startDebugging(
 		folder: WorkspaceFolder | undefined,
 		nameOrConfiguration: string | DebugConfiguration,
-		parentSession?: DebugSession
+		parentSession?: DebugSession,
 	): Thenable<boolean> {
 		return debug.startDebugging(folder, nameOrConfiguration, parentSession);
 	}
@@ -77,7 +75,7 @@ export class DebugService implements IDebugService {
 	}
 	public registerDebugAdapterDescriptorFactory(
 		debugType: string,
-		factory: DebugAdapterDescriptorFactory
+		factory: DebugAdapterDescriptorFactory,
 	): Disposable {
 		return debug.registerDebugAdapterDescriptorFactory(debugType, factory);
 	}

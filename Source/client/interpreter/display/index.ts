@@ -1,13 +1,13 @@
 import { inject, injectable } from "inversify";
 import {
 	Disposable,
-	l10n,
 	LanguageStatusItem,
 	LanguageStatusSeverity,
 	StatusBarAlignment,
 	StatusBarItem,
 	ThemeColor,
 	Uri,
+	l10n,
 } from "vscode";
 import { IExtensionSingleActivationService } from "../../activation/types";
 import {
@@ -92,7 +92,7 @@ export class InterpreterDisplay
 				"python.selectedInterpreter",
 				{
 					language: PYTHON_LANGUAGE,
-				}
+				},
 			);
 			this.languageStatus.severity = LanguageStatusSeverity.Information;
 			this.languageStatus.command = {
@@ -108,7 +108,7 @@ export class InterpreterDisplay
 			this.statusBar = application.createStatusBarItem(
 				alignment,
 				priority,
-				"python.selectedInterpreterDisplay"
+				"python.selectedInterpreterDisplay",
 			);
 			this.statusBar.command = Commands.Set_Interpreter;
 			this.disposableRegistry.push(this.statusBar);
@@ -128,7 +128,7 @@ export class InterpreterDisplay
 		await this.updateDisplay(resource);
 	}
 	public registerVisibilityFilter(
-		filter: IInterpreterStatusbarVisibilityFilter
+		filter: IInterpreterStatusbarVisibilityFilter,
 	) {
 		const disposableRegistry =
 			this.serviceContainer.get<Disposable[]>(IDisposableRegistry);
@@ -140,7 +140,7 @@ export class InterpreterDisplay
 	private onDidChangeInterpreterInformation(info: PythonEnvironment) {
 		if (this.currentlySelectedInterpreterPath === info.path) {
 			this.updateDisplay(
-				this.currentlySelectedWorkspaceFolder
+				this.currentlySelectedWorkspaceFolder,
 			).ignoreErrors();
 		}
 	}
@@ -161,7 +161,7 @@ export class InterpreterDisplay
 				this.statusBar.color = "";
 				this.statusBar.tooltip = this.pathUtils.getDisplayName(
 					interpreter.path,
-					workspaceFolder?.fsPath
+					workspaceFolder?.fsPath,
 				);
 				if (
 					this.currentlySelectedInterpreterPath !== interpreter.path
@@ -171,9 +171,9 @@ export class InterpreterDisplay
 							"Python interpreter path: {0}",
 							this.pathUtils.getDisplayName(
 								interpreter.path,
-								workspaceFolder?.fsPath
-							)
-						)
+								workspaceFolder?.fsPath,
+							),
+						),
 					);
 					this.currentlySelectedInterpreterPath = interpreter.path;
 				}
@@ -189,7 +189,7 @@ export class InterpreterDisplay
 				this.statusBar.tooltip = "";
 				this.statusBar.color = "";
 				this.statusBar.backgroundColor = new ThemeColor(
-					"statusBarItem.warningBackground"
+					"statusBarItem.warningBackground",
 				);
 				this.statusBar.text = `$(alert) ${InterpreterQuickPickList.browsePath.openButtonLabel}`;
 				this.currentlySelectedInterpreterDisplay = undefined;
@@ -198,7 +198,7 @@ export class InterpreterDisplay
 			if (interpreter) {
 				this.languageStatus.detail = this.pathUtils.getDisplayName(
 					interpreter.path,
-					workspaceFolder?.fsPath
+					workspaceFolder?.fsPath,
 				);
 				if (
 					this.currentlySelectedInterpreterPath !== interpreter.path
@@ -208,9 +208,9 @@ export class InterpreterDisplay
 							"Python interpreter path: {0}",
 							this.pathUtils.getDisplayName(
 								interpreter.path,
-								workspaceFolder?.fsPath
-							)
-						)
+								workspaceFolder?.fsPath,
+							),
+						),
 					);
 					this.currentlySelectedInterpreterPath = interpreter.path;
 				}

@@ -4,8 +4,6 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-"use strict";
-
 import { WorkspaceFolder } from "vscode";
 import { getWorkspaceFolder } from "../../../../common/vscodeApis/workspaceApis";
 
@@ -23,7 +21,7 @@ function isString(str: any): str is string {
 export function resolveVariables(
 	value: string | undefined,
 	rootFolder: string | undefined,
-	folder: WorkspaceFolder | undefined
+	folder: WorkspaceFolder | undefined,
 ): string | undefined {
 	if (value) {
 		const workspaceFolder = folder

@@ -1,12 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { Uri } from "vscode";
 
 export const IPythonInPathCommandProvider = Symbol(
-	"IPythonInPathCommandProvider"
+	"IPythonInPathCommandProvider",
 );
 export interface IPythonInPathCommandProvider {
 	getCommands(): { command: string; args?: string[] }[];
@@ -14,10 +12,10 @@ export interface IPythonInPathCommandProvider {
 export const IPipEnvServiceHelper = Symbol("IPipEnvServiceHelper");
 export interface IPipEnvServiceHelper {
 	getPipEnvInfo(
-		pythonPath: string
+		pythonPath: string,
 	): Promise<{ workspaceFolder: Uri; envName: string } | undefined>;
 	trackWorkspaceFolder(
 		pythonPath: string,
-		workspaceFolder: Uri
+		workspaceFolder: Uri,
 	): Promise<void>;
 }

@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 export function getNamesAndValues<T>(e: any): { name: string; value: T }[] {
 	return getNames(e).map((n) => ({ name: n, value: e[n] }));
 }

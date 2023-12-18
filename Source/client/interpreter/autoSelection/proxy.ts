@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-"use strict";
-
 import { inject, injectable } from "inversify";
 import { Event, EventEmitter, Uri } from "vscode";
 import { IDisposableRegistry, Resource } from "../../common/types";
@@ -24,13 +22,13 @@ export class InterpreterAutoSelectionProxyService
 	) {}
 
 	public registerInstance(
-		instance: IInterpreterAutoSelectionProxyService
+		instance: IInterpreterAutoSelectionProxyService,
 	): void {
 		this.instance = instance;
 		this.disposables.push(
 			this.instance.onDidChangeAutoSelectedInterpreter(() =>
-				this.didAutoSelectedInterpreterEmitter.fire()
-			)
+				this.didAutoSelectedInterpreterEmitter.fire(),
+			),
 		);
 	}
 
@@ -39,7 +37,7 @@ export class InterpreterAutoSelectionProxyService
 	}
 
 	public getAutoSelectedInterpreter(
-		resource: Resource
+		resource: Resource,
 	): PythonEnvironment | undefined {
 		return this.instance
 			? this.instance.getAutoSelectedInterpreter(resource)
@@ -48,7 +46,7 @@ export class InterpreterAutoSelectionProxyService
 
 	public async setWorkspaceInterpreter(
 		resource: Uri,
-		interpreter: PythonEnvironment | undefined
+		interpreter: PythonEnvironment | undefined,
 	): Promise<void> {
 		return this.instance
 			? this.instance.setWorkspaceInterpreter(resource, interpreter)
