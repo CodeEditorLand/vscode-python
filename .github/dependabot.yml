@@ -1,4 +1,5 @@
 version: 2
+enable-beta-ecosystems: true
 
 updates:
     - package-ecosystem: "github-actions"
@@ -14,6 +15,18 @@ updates:
 
     - package-ecosystem: "npm"
       directory: "/pythonExtensionApi"
+      schedule:
+          interval: "daily"
+      versioning-strategy: increase
+
+    - package-ecosystem: "pip"
+      directory: "/pythonFiles/jedilsp_requirements"
+      schedule:
+          interval: "daily"
+      versioning-strategy: increase
+
+    - package-ecosystem: "pip"
+      directory: "/"
       schedule:
           interval: "daily"
       versioning-strategy: increase
