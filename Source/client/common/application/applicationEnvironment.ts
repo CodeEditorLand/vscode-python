@@ -108,7 +108,7 @@ export class ApplicationEnvironment implements IApplicationEnvironment {
 		// Insiders versions are those that end with '-dev' or whose minor versions are odd (even is for stable)
 		return !version ||
 			version.prerelease.length > 0 ||
-			version.minor % 2 == 1
+			version.minor % 2 === 1
 			? "insiders"
 			: "stable";
 	}

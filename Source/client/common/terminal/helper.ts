@@ -158,10 +158,9 @@ export class TerminalHelper implements ITerminalHelper {
 			traceError("Failed to get activation commands", ex);
 		}
 
-		const pythonVersion =
-			interpreter && interpreter.version
-				? interpreter.version.raw
-				: undefined;
+		const pythonVersion = interpreter?.version
+			? interpreter.version.raw
+			: undefined;
 		const interpreterType = interpreter
 			? interpreter.envType
 			: EnvironmentType.Unknown;

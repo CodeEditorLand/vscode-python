@@ -241,7 +241,7 @@ export class PythonSettings implements IPythonSettings {
 			throw new Error("Dispose can only be called from unit tests");
 		}
 
-		PythonSettings.pythonSettings.forEach((item) => item && item.dispose());
+		PythonSettings.pythonSettings.forEach((item) => item?.dispose());
 		PythonSettings.pythonSettings.clear();
 	}
 
@@ -252,9 +252,11 @@ export class PythonSettings implements IPythonSettings {
 		keys.forEach((e) => {
 			const [k, v] = e;
 			if (
-				!k.includes("Manager") &&
-				!k.includes("Service") &&
-				!k.includes("onDid")
+				!(
+					k.includes("Manager") ||
+					k.includes("Service") ||
+					k.includes("onDid")
+				)
 			) {
 				clone[k] = v;
 			}
@@ -264,9 +266,7 @@ export class PythonSettings implements IPythonSettings {
 	}
 
 	public dispose(): void {
-		this.disposables.forEach(
-			(disposable) => disposable && disposable.dispose(),
-		);
+		this.disposables.forEach((disposable) => disposable?.dispose());
 		this.disposables = [];
 	}
 
@@ -509,7 +509,7 @@ export class PythonSettings implements IPythonSettings {
 
 	protected onWorkspaceFoldersChanged(): void {
 		// If an activated workspace folder was removed, delete its key
-		const workspaceKeys = this.workspace.workspaceFolders!.map(
+		const workspaceKeys = this.workspace.workspaceFolders?.map(
 			(workspaceFolder) => workspaceFolder.uri.fsPath,
 		);
 		const activatedWkspcKeys = Array.from(

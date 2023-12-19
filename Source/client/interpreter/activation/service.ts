@@ -190,7 +190,7 @@ export class EnvironmentActivationService
 		const cacheKey = `${workspaceKey}_${interpreterPath}_${shell}`;
 
 		if (this.activatedEnvVariablesCache.get(cacheKey)?.hasData) {
-			return this.activatedEnvVariablesCache.get(cacheKey)!.data;
+			return this.activatedEnvVariablesCache.get(cacheKey)?.data;
 		}
 
 		// Cache only if successful, else keep trying & failing if necessary.
@@ -332,8 +332,9 @@ export class EnvironmentActivationService
 					`Activation Commands received ${activationCommands} for shell ${shellInfo.shell}, resource ${resource?.fsPath} and interpreter ${interpreter?.path}`,
 				);
 				if (
-					!activationCommands ||
-					!Array.isArray(activationCommands) ||
+					!(
+						activationCommands && Array.isArray(activationCommands)
+					) ||
 					activationCommands.length === 0
 				) {
 					if (
@@ -449,7 +450,7 @@ export class EnvironmentActivationService
 						condaRetryMessages.find((m) => excString.includes(m)) &&
 						tryCount < 10
 					) {
-						traceInfo(`Conda is busy, attempting to retry ...`);
+						traceInfo("Conda is busy, attempting to retry ...");
 						result = undefined;
 						tryCount += 1;
 						await sleep(500);

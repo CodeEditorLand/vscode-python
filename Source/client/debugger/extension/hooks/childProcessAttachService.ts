@@ -63,10 +63,10 @@ export class ChildProcessAttachService implements IChildProcessAttachService {
 		const workspaceFolder = config.workspaceFolder;
 
 		const hasWorkspaceFolders = (getWorkspaceFolders()?.length || 0) > 0;
-		if (!hasWorkspaceFolders || !workspaceFolder) {
+		if (!(hasWorkspaceFolders && workspaceFolder)) {
 			return;
 		}
-		return getWorkspaceFolders()!.find(
+		return getWorkspaceFolders()?.find(
 			(ws) => ws.uri.fsPath === workspaceFolder,
 		);
 	}

@@ -56,7 +56,7 @@ export class LspNotebooksExperiment
 				jupyterExtensionIntegration.getJupyterPythonPathFunction();
 			if (jupyterPythonPathFunction) {
 				traceVerbose(
-					`Jupyter called registerJupyterPythonPathFunction`,
+					"Jupyter called registerJupyterPythonPathFunction",
 				);
 				success = true;
 				break;
@@ -67,7 +67,7 @@ export class LspNotebooksExperiment
 
 		if (!success) {
 			traceVerbose(
-				`Timed out waiting for Jupyter to call registerJupyterPythonPathFunction`,
+				"Timed out waiting for Jupyter to call registerJupyterPythonPathFunction",
 			);
 		}
 	}

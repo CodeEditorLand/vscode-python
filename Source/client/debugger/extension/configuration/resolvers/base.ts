@@ -197,7 +197,7 @@ export abstract class BaseConfigurationResolver<T extends DebugConfiguration>
 				debugConfiguration.pythonPath ?? debugConfiguration.python;
 		}
 
-		delete debugConfiguration.pythonPath;
+		debugConfiguration.pythonPath = undefined;
 	}
 
 	protected static debugOption(

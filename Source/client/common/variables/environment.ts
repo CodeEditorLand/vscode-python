@@ -27,7 +27,7 @@ export class EnvironmentVariablesService
 		filePath?: string,
 		baseVars?: EnvironmentVariables,
 	): Promise<EnvironmentVariables | undefined> {
-		if (!filePath || !(await this.fs.pathExists(filePath))) {
+		if (!(filePath && (await this.fs.pathExists(filePath)))) {
 			return;
 		}
 		const contents = await this.fs.readFile(filePath).catch((ex) => {
@@ -47,7 +47,7 @@ export class EnvironmentVariablesService
 		filePath?: string,
 		baseVars?: EnvironmentVariables,
 	): EnvironmentVariables | undefined {
-		if (!filePath || !pathExistsSync(filePath)) {
+		if (!(filePath && pathExistsSync(filePath))) {
 			return;
 		}
 		let contents: string | undefined;

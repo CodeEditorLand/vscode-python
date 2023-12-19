@@ -87,11 +87,7 @@ export class PersistentState<T> implements IPersistentState<T> {
 				this.key,
 				{ data: this.defaultValue! },
 			);
-			if (
-				!cachedData ||
-				!cachedData.expiry ||
-				cachedData.expiry < Date.now()
-			) {
+			if (!cachedData?.expiry || cachedData.expiry < Date.now()) {
 				return this.defaultValue!;
 			} else {
 				return cachedData.data!;
@@ -113,7 +109,7 @@ export class PersistentState<T> implements IPersistentState<T> {
 			}
 			if (
 				retryOnce &&
-				JSON.stringify(this.value) != JSON.stringify(newValue)
+				JSON.stringify(this.value) !== JSON.stringify(newValue)
 			) {
 				// Due to a VSCode bug sometimes the changes are not reflected in the storage, atleast not immediately.
 				// It is noticed however that if we reset the storage first and then update it, it works.
@@ -125,7 +121,7 @@ export class PersistentState<T> implements IPersistentState<T> {
 				);
 				await this.updateValue(undefined as any, false);
 				await this.updateValue(newValue, false);
-				if (JSON.stringify(this.value) != JSON.stringify(newValue)) {
+				if (JSON.stringify(this.value) !== JSON.stringify(newValue)) {
 					traceWarn(
 						"Retry failed, storage update failed for key",
 						this.key,

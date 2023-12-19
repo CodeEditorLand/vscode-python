@@ -295,7 +295,7 @@ export class LanguageServerWatcher
 	): ILanguageServerExtensionManager {
 		let lsManager: ILanguageServerExtensionManager;
 		switch (languageServerType) {
-			case LanguageServerType.Jedi:
+			case LanguageServerType.Jedi: {
 				lsManager = new JediLSExtensionManager(
 					this.serviceContainer,
 					this.lsOutputChannel,
@@ -308,7 +308,8 @@ export class LanguageServerWatcher
 					this.commandManager,
 				);
 				break;
-			case LanguageServerType.Node:
+			}
+			case LanguageServerType.Node: {
 				lsManager = new PylanceLSExtensionManager(
 					this.serviceContainer,
 					this.lsOutputChannel,
@@ -324,10 +325,11 @@ export class LanguageServerWatcher
 					this.applicationShell,
 				);
 				break;
-			case LanguageServerType.None:
-			default:
+			}
+			default: {
 				lsManager = new NoneLSExtensionManager();
 				break;
+			}
 		}
 
 		this.disposables.push({
@@ -367,11 +369,11 @@ export class LanguageServerWatcher
 			) ?? [];
 
 		workspacesUris.forEach(async (resource) => {
-			if (event.affectsConfiguration(`python.languageServer`, resource)) {
+			if (event.affectsConfiguration("python.languageServer", resource)) {
 				await this.refreshLanguageServer(resource);
 			} else if (
 				event.affectsConfiguration(
-					`python.analysis.pylanceLspClientEnabled`,
+					"python.analysis.pylanceLspClientEnabled",
 					resource,
 				)
 			) {
@@ -404,7 +406,7 @@ export class LanguageServerWatcher
 		const iterator = this.workspaceInterpreters.entries();
 
 		let result = iterator.next();
-		let done = result.done || false;
+		let done = result.done;
 
 		while (!done) {
 			const [resourcePath, interpreter] = result.value as [
@@ -422,7 +424,7 @@ export class LanguageServerWatcher
 				done = true;
 			} else {
 				result = iterator.next();
-				done = result.done || false;
+				done = result.done;
 			}
 		}
 	}
@@ -494,18 +496,21 @@ function logStartup(
 	const basename = path.basename(resource.fsPath);
 
 	switch (languageServerType) {
-		case LanguageServerType.Jedi:
+		case LanguageServerType.Jedi: {
 			outputLine = l10n.t(
 				"Starting Jedi language server for {0}.",
 				basename,
 			);
 			break;
-		case LanguageServerType.Node:
+		}
+		case LanguageServerType.Node: {
 			outputLine = LanguageService.startingPylance;
 			break;
-		case LanguageServerType.None:
+		}
+		case LanguageServerType.None: {
 			outputLine = LanguageService.startingNone;
 			break;
+		}
 		default:
 			throw new Error(
 				`Unknown language server type: ${languageServerType}`,

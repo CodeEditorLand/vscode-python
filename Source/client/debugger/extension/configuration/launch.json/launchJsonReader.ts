@@ -19,12 +19,14 @@ export async function getConfigurationsForWorkspace(
 		// Check launch config in the workspace file
 		const codeWorkspaceConfig = getConfiguration("launch");
 		if (
-			!codeWorkspaceConfig.configurations ||
-			!Array.isArray(codeWorkspaceConfig.configurations)
+			!(
+				codeWorkspaceConfig.configurations &&
+				Array.isArray(codeWorkspaceConfig.configurations)
+			)
 		) {
 			return [];
 		}
-		traceLog(`Using launch configuration in workspace folder.`);
+		traceLog("Using launch configuration in workspace folder.");
 		return codeWorkspaceConfig.configurations;
 	}
 
@@ -33,14 +35,14 @@ export async function getConfigurationsForWorkspace(
 		allowTrailingComma: true,
 		disallowComments: false,
 	});
-	if (!parsed.configurations || !Array.isArray(parsed.configurations)) {
+	if (!(parsed.configurations && Array.isArray(parsed.configurations))) {
 		throw Error("Missing field in launch.json: configurations");
 	}
 	if (!parsed.version) {
 		throw Error("Missing field in launch.json: version");
 	}
 	// We do not bother ensuring each item is a DebugConfiguration...
-	traceLog(`Using launch configuration in launch.json file.`);
+	traceLog("Using launch configuration in launch.json file.");
 	return parsed.configurations;
 }
 

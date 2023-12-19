@@ -9,8 +9,8 @@ export class ErrorUtils {
 		content?: string,
 	): boolean {
 		return content &&
-			(content!.indexOf(`No module named ${moduleName}`) > 0 ||
-				content!.indexOf(`No module named '${moduleName}'`) > 0)
+			(content?.indexOf(`No module named ${moduleName}`) > 0 ||
+				content?.indexOf(`No module named '${moduleName}'`) > 0)
 			? true
 			: false;
 	}

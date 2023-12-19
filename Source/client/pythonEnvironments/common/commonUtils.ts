@@ -135,7 +135,7 @@ async function readDirEntries(
 		ignoreErrors: boolean;
 	} = { ignoreErrors: true },
 ): Promise<DirEntry[]> {
-	const ignoreErrors = opts.ignoreErrors || false;
+	const ignoreErrors = opts.ignoreErrors;
 	if (opts.filterFilename && getOSType() === OSType.Windows) {
 		// Since `readdir()` using "withFileTypes" is not efficient
 		// on Windows, we take advantage of the filter.

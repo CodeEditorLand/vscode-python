@@ -183,7 +183,7 @@ export function buildEnvironmentApi(
 	disposables.push(
 		discoveryApi.onChanged((e) => {
 			const env = e.new ?? e.old;
-			if (!env || !filterUsingVSCodeContext(env)) {
+			if (!(env && filterUsingVSCodeContext(env))) {
 				// Filter out environments that are not in the current workspace.
 				return;
 			}

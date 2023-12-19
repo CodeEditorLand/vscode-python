@@ -119,7 +119,7 @@ export class InterpreterDisplay
 	public async refresh(resource?: Uri) {
 		// Use the workspace Uri if available
 		if (resource && this.workspaceService.getWorkspaceFolder(resource)) {
-			resource = this.workspaceService.getWorkspaceFolder(resource)!.uri;
+			resource = this.workspaceService.getWorkspaceFolder(resource)?.uri;
 		}
 		if (!resource) {
 			const wkspc = this.helper.getActiveWorkspaceUri(resource);
@@ -234,7 +234,7 @@ export class InterpreterDisplay
 		this.updateVisibility();
 	}
 	private updateVisibility() {
-		if (!this.statusBar || !this.statusBarCanBeDisplayed) {
+		if (!(this.statusBar && this.statusBarCanBeDisplayed)) {
 			return;
 		}
 		if (

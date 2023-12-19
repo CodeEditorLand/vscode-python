@@ -130,7 +130,7 @@ function traceDecorator(
 		descriptor.value = function (...args: unknown[]) {
 			const call = {
 				kind: "Class",
-				name: _ && _.constructor ? _.constructor.name : "",
+				name: _?.constructor ? _.constructor.name : "",
 				args,
 			};
 			return tracing(
@@ -236,18 +236,22 @@ function logResult(logInfo: LogInfo, traced: TraceInfo, call?: CallInfo) {
 
 export function logTo(logLevel: LogLevel, ...args: Arguments): void {
 	switch (logLevel) {
-		case LogLevel.Error:
+		case LogLevel.Error: {
 			traceError(...args);
 			break;
-		case LogLevel.Warning:
+		}
+		case LogLevel.Warning: {
 			traceWarn(...args);
 			break;
-		case LogLevel.Info:
+		}
+		case LogLevel.Info: {
 			traceInfo(...args);
 			break;
-		case LogLevel.Debug:
+		}
+		case LogLevel.Debug: {
 			traceVerbose(...args);
 			break;
+		}
 		default:
 			break;
 	}

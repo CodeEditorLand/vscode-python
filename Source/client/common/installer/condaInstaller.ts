@@ -104,11 +104,11 @@ export class CondaInstaller extends ModuleInstaller {
 		) {
 			args.push("-c", "conda-forge");
 		}
-		if (info && info.name) {
+		if (info?.name) {
 			// If we have the name of the conda environment, then use that.
 			args.push("--name");
 			args.push(info.name.toCommandArgumentForPythonExt());
-		} else if (info && info.path) {
+		} else if (info?.path) {
 			// Else provide the full path to the environment path.
 			args.push("--prefix");
 			args.push(info.path.fileToCommandArgumentForPythonExt());

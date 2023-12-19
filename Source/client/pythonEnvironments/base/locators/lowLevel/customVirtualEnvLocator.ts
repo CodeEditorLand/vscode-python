@@ -158,7 +158,7 @@ export class CustomVirtualEnvironmentLocator extends FSWatchingLocator {
 			});
 
 			yield* iterable(chain(envGenerators));
-			traceVerbose(`Finished searching for custom virtual envs`);
+			traceVerbose("Finished searching for custom virtual envs");
 		}
 
 		return iterator();

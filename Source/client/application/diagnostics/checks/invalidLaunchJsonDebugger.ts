@@ -88,7 +88,7 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 		}
 		const workspaceFolder = resource
 			? this.workspaceService.getWorkspaceFolder(resource)!
-			: this.workspaceService.workspaceFolders![0];
+			: this.workspaceService.workspaceFolders?.[0];
 		return this.diagnoseWorkspace(workspaceFolder, resource);
 	}
 

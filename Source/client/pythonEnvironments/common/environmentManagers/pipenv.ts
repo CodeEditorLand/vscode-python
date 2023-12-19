@@ -20,7 +20,7 @@ function getSearchHeight() {
 	}
 	const maxDepth = parseInt(maxDepthStr, 10);
 	// eslint-disable-next-line no-restricted-globals
-	if (isNaN(maxDepth)) {
+	if (Number.isNaN(maxDepth)) {
 		traceError(
 			`PIPENV_MAX_DEPTH is incorrectly set. Converting value '${maxDepthStr}' to number results in NaN`,
 		);

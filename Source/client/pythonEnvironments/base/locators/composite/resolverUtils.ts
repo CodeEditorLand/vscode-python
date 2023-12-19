@@ -304,10 +304,7 @@ async function resolvePyenvEnv(env: BasicEnvInfo): Promise<PythonEnvInfo> {
 			executablePath,
 			versionStrings?.pythonVer,
 		),
-		org:
-			versionStrings && versionStrings.distro
-				? versionStrings.distro
-				: "",
+		org: versionStrings?.distro ? versionStrings.distro : "",
 	});
 
 	if (await isBaseCondaPyenvEnvironment(executablePath)) {

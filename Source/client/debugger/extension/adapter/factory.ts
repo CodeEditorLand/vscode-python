@@ -229,10 +229,10 @@ export class DebugAdapterDescriptorFactory
 		if (!selection) {
 			return;
 		}
-		if (selection == Interpreters.changePythonInterpreter) {
+		if (selection === Interpreters.changePythonInterpreter) {
 			await this.commandManager.executeCommand(Commands.Set_Interpreter);
 		}
-		if (selection == Common.doNotShowAgain) {
+		if (selection === Common.doNotShowAgain) {
 			// Never show the message again
 			await this.persistentState
 				.createGlobalPersistentState(

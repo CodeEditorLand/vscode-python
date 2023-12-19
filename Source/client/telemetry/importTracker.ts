@@ -86,7 +86,7 @@ export class ImportTracker implements IExtensionSingleActivationService {
 	}
 
 	public static hasModuleImport(moduleName: string): boolean {
-		return this.sentMatches.has(moduleName);
+		return ImportTracker.sentMatches.has(moduleName);
 	}
 
 	private onOpenedOrSavedDocument(document: TextDocument) {

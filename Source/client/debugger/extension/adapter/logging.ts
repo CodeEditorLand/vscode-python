@@ -70,7 +70,7 @@ class DebugSessionLoggingTracker implements DebugAdapterTracker {
 
 	private log(message: string) {
 		if (this.enabled) {
-			this.stream!.write(`${this.timer.elapsedTime} ${message}`); // NOSONAR
+			this.stream?.write(`${this.timer.elapsedTime} ${message}`); // NOSONAR
 		}
 	}
 

@@ -56,8 +56,10 @@ export class WindowsPathEnvVarLocator
 						// 2. Filter out pyenv shims: They are not actual python binaries, they are used to launch
 						//    the binaries specified in .python-version file in the cwd. We should not be reporting
 						//    those binaries as environments.
-						!isMicrosoftStoreDir(dirname) &&
-						!isPyenvShimDir(dirname),
+						!(
+							isMicrosoftStoreDir(dirname) ||
+							isPyenvShimDir(dirname)
+						),
 				)
 				// Build a locator for each directory.
 				.map((dirname) =>
@@ -82,11 +84,11 @@ export class WindowsPathEnvVarLocator
 		// are valid executables.  That is left to callers (e.g. composite
 		// locators).
 		async function* iterator(it: IPythonEnvsIterator<BasicEnvInfo>) {
-			traceVerbose(`Searching windows known paths locator`);
+			traceVerbose("Searching windows known paths locator");
 			for await (const env of it) {
 				yield env;
 			}
-			traceVerbose(`Finished searching windows known paths locator`);
+			traceVerbose("Finished searching windows known paths locator");
 		}
 		return iterator(this.locators.iterEnvs(query));
 	}

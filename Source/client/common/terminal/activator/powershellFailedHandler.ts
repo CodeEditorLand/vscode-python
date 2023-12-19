@@ -51,8 +51,7 @@ export class PowershellTerminalActivationFailedHandler
 				resource,
 			);
 		if (
-			!activationCommands ||
-			!Array.isArray(activationCommands) ||
+			!(activationCommands && Array.isArray(activationCommands)) ||
 			activationCommands.length === 0
 		) {
 			return;

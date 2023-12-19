@@ -64,14 +64,14 @@ export class ActiveState {
 	}
 
 	private static async locate(): Promise<ActiveState | undefined> {
-		const stateToolDir = this.getStateToolDir();
+		const stateToolDir = ActiveState.getStateToolDir();
 		const stateCommand =
 			getPythonSetting<string>(ACTIVESTATETOOLPATH_SETTING_KEY) ??
 			ActiveState.defaultStateCommand;
 		if (
 			stateToolDir &&
 			((await pathExists(stateToolDir)) ||
-				stateCommand !== this.defaultStateCommand)
+				stateCommand !== ActiveState.defaultStateCommand)
 		) {
 			return new ActiveState();
 		}
@@ -121,11 +121,11 @@ export class ActiveState {
 	private static cachedProjectInfo: ProjectInfo[] = [];
 
 	public static getCachedProjectInfo(): ProjectInfo[] {
-		return this.cachedProjectInfo;
+		return ActiveState.cachedProjectInfo;
 	}
 
 	private static setCachedProjectInfo(projects: ProjectInfo[]): void {
-		this.cachedProjectInfo = projects;
+		ActiveState.cachedProjectInfo = projects;
 	}
 }
 

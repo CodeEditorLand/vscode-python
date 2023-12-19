@@ -40,13 +40,13 @@ export class SocketServer extends EventEmitter implements ISocketServer {
 		const port = typeof options.port === "number" ? options.port! : 0;
 		const host =
 			typeof options.host === "string" ? options.host! : "localhost";
-		this.socketServer!.on("error", (ex) => {
+		this.socketServer?.on("error", (ex) => {
 			const msg = `Failed to start the socket server. (Error: ${ex.message})`;
 
 			def.reject(msg);
 		});
-		this.socketServer!.listen({ port, host }, () => {
-			def.resolve((this.socketServer!.address() as net.AddressInfo).port);
+		this.socketServer?.listen({ port, host }, () => {
+			def.resolve((this.socketServer?.address() as net.AddressInfo).port);
 		});
 
 		return def.promise;

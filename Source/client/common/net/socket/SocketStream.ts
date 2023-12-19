@@ -126,9 +126,10 @@ export class SocketStream {
 		switch (type) {
 			case "N": // null string
 				return null as any;
-			case "U":
+			case "U": {
 				isUnicode = true;
 				break;
+			}
 			case "A": {
 				isUnicode = false;
 				break;
@@ -154,7 +155,7 @@ export class SocketStream {
 			this.bytesRead + len,
 		);
 		if (this.isInTransaction) {
-			this.bytesRead = this.bytesRead + len;
+			this.bytesRead += len;
 		} else {
 			this.buffer = this.buffer.slice(len);
 		}
@@ -176,7 +177,7 @@ export class SocketStream {
 		const buf = this.buffer.slice(this.bytesRead, this.bytesRead + 8);
 
 		if (this.isInTransaction) {
-			this.bytesRead = this.bytesRead + 8;
+			this.bytesRead += 8;
 		} else {
 			this.buffer = this.buffer.slice(8);
 		}
@@ -194,7 +195,7 @@ export class SocketStream {
 			this.bytesRead + length,
 		);
 		if (this.isInTransaction) {
-			this.bytesRead = this.bytesRead + length;
+			this.bytesRead += length;
 		} else {
 			this.buffer = this.buffer.slice(length);
 		}

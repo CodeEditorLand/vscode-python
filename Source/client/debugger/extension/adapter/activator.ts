@@ -70,10 +70,11 @@ export class DebugAdapterActivator
 					this.shouldTerminalFocusOnStart(
 						debugSession.workspaceFolder?.uri,
 					)
-				)
+				) {
 					this.commandManager.executeCommand(
 						"workbench.action.terminal.focus",
 					);
+				}
 			}),
 		);
 	}

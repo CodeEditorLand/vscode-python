@@ -39,7 +39,7 @@ export class ShellIntegrationService implements IShellIntegrationService {
 	public async isWorking(shell: string): Promise<boolean> {
 		return this._isWorking(shell).catch((ex) => {
 			traceError(
-				`Failed to determine if shell supports shell integration`,
+				"Failed to determine if shell supports shell integration",
 				shell,
 				ex,
 			);
@@ -93,7 +93,7 @@ export class ShellIntegrationService implements IShellIntegrationService {
 			return success;
 		} catch (ex) {
 			traceVerbose(
-				`Proposed API is not available, failed to subscribe to onDidExecuteTerminalCommand`,
+				"Proposed API is not available, failed to subscribe to onDidExecuteTerminalCommand",
 				ex,
 			);
 			// Proposed API is not available, assume shell integration is working at this point.

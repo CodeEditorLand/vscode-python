@@ -90,7 +90,7 @@ export async function deleteEnvironmentWindows(
 
 		traceInfo(`Attempting to delete ".venv" again: ${venvPath}`);
 		const ms = 500;
-		for (let i = 0; i < 5; i = i + 1) {
+		for (let i = 0; i < 5; i += 1) {
 			traceInfo(
 				`Waiting for ${ms}ms to let processes exit, before a delete attempt.`,
 			);

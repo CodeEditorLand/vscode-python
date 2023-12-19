@@ -101,9 +101,9 @@ export class LaunchConfigurationResolver extends BaseConfigurationResolver<Launc
 
 		if (Array.isArray(debugConfiguration.debugOptions)) {
 			debugConfiguration.debugOptions =
-				debugConfiguration.debugOptions!.filter(
+				debugConfiguration.debugOptions?.filter(
 					(item, pos) =>
-						debugConfiguration.debugOptions!.indexOf(item) === pos,
+						debugConfiguration.debugOptions?.indexOf(item) === pos,
 				);
 		}
 		sendTelemetryEvent(EventName.ENVIRONMENT_CHECK_TRIGGER, undefined, {
@@ -131,7 +131,7 @@ export class LaunchConfigurationResolver extends BaseConfigurationResolver<Launc
 			debugConfiguration.debugLauncherPython =
 				debugConfiguration.pythonPath;
 		}
-		delete debugConfiguration.pythonPath;
+		debugConfiguration.pythonPath = undefined;
 
 		if (typeof debugConfiguration.cwd !== "string" && workspaceFolder) {
 			debugConfiguration.cwd = workspaceFolder.fsPath;

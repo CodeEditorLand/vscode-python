@@ -38,8 +38,11 @@ export class LaunchJsonUpdaterServiceHelper {
 		const activeTextEditor = getActiveTextEditor();
 		if (activeTextEditor && activeTextEditor.document === document) {
 			const folder = getWorkspaceFolder(document.uri);
-			const configs = await this.configurationProvider
-				.provideDebugConfigurations!(folder, token);
+			const configs =
+				await this.configurationProvider.provideDebugConfigurations?.(
+					folder,
+					token,
+				);
 
 			if (
 				!token.isCancellationRequested &&
@@ -154,8 +157,7 @@ export class LaunchJsonUpdaterServiceHelper {
 			configurations: [];
 		};
 		return (
-			!configuration ||
-			!Array.isArray(configuration.configurations) ||
+			!(configuration && Array.isArray(configuration.configurations)) ||
 			configuration.configurations.length === 0
 		);
 	}

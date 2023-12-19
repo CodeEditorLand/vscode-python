@@ -49,7 +49,7 @@ export abstract class SocketCallbackHandler extends EventEmitter {
 			this._stream = new SocketStream(socket, buffer);
 		}
 
-		if (!this.handeshakeDone && !this.handleHandshake()) {
+		if (!(this.handeshakeDone || this.handleHandshake())) {
 			return;
 		}
 

@@ -231,7 +231,7 @@ export class InterpreterService implements Disposable, IInterpreterService {
 			}),
 			documentManager.onDidChangeActiveTextEditor((e): void => {
 				filter.interpreterVisibilityEmitter.fire();
-				if (e && e.document) {
+				if (e?.document) {
 					this.refresh(e.document.uri);
 				}
 			}),

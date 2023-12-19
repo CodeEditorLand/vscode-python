@@ -432,7 +432,7 @@ export class DataScienceInstaller extends BaseInstaller {
 						envType: interpreter.envType,
 					},
 				);
-				traceError(`Unable to install pip when its required.`);
+				traceError("Unable to install pip when its required.");
 			}
 		}
 
@@ -456,12 +456,14 @@ export class DataScienceInstaller extends BaseInstaller {
 			requiredInstaller = ModuleInstallerType.Pip;
 		} else {
 			switch (interpreter.envType) {
-				case EnvironmentType.Pipenv:
+				case EnvironmentType.Pipenv: {
 					requiredInstaller = ModuleInstallerType.Pipenv;
 					break;
-				case EnvironmentType.Poetry:
+				}
+				case EnvironmentType.Poetry: {
 					requiredInstaller = ModuleInstallerType.Poetry;
 					break;
+				}
 				default:
 					requiredInstaller = ModuleInstallerType.Pip;
 			}
@@ -587,7 +589,7 @@ export class PythonInstaller implements IBaseInstaller {
 		const condaInstaller = installers.find(
 			(installer) => installer.type === ModuleInstallerType.Conda,
 		);
-		if (!condaInstaller || !(await condaInstaller.isSupported(resource))) {
+		if (!(condaInstaller && (await condaInstaller.isSupported(resource)))) {
 			traceError(
 				"Conda installer not available for installing python in the given environment",
 			);

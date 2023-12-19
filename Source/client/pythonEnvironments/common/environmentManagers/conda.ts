@@ -341,7 +341,7 @@ export class Conda {
 		shellPath?: string,
 		useWorkerThreads = true,
 	): Promise<Conda | undefined> {
-		traceVerbose(`Searching for conda.`);
+		traceVerbose("Searching for conda.");
 		const home = getUserHomeDir();
 		let customCondaPath: string | undefined = "conda";
 		try {
@@ -528,7 +528,7 @@ export class Conda {
 	 */
 	public async getInfo(useCache?: boolean): Promise<CondaInfo> {
 		let condaInfoCached = this.condaInfoCached.get(this.shellPath);
-		if (!useCache || !condaInfoCached) {
+		if (!(useCache && condaInfoCached)) {
 			condaInfoCached = this.getInfoImpl(this.command, this.shellPath);
 			this.condaInfoCached.set(this.shellPath, condaInfoCached);
 		}
@@ -688,7 +688,7 @@ export class Conda {
 			() => undefined,
 		);
 		let versionString: string | undefined;
-		if (info && info.conda_version) {
+		if (info?.conda_version) {
 			versionString = info.conda_version;
 		} else {
 			const stdOut = await exec(this.command, ["--version"], {
@@ -697,17 +697,16 @@ export class Conda {
 				.then((result) => result.stdout.trim())
 				.catch<string | undefined>(() => undefined);
 
-			versionString =
-				stdOut && stdOut.startsWith("conda ")
-					? stdOut.substring("conda ".length).trim()
-					: stdOut;
+			versionString = stdOut?.startsWith("conda ")
+				? stdOut.substring("conda ".length).trim()
+				: stdOut;
 		}
 		if (!versionString) {
 			return undefined;
 		}
 		const pattern = /(?<major>\d+)\.(?<minor>\d+)\.(?<micro>\d+)(?:.*)?/;
 		const match = versionString.match(pattern);
-		if (match && match.groups) {
+		if (match?.groups) {
 			const versionStringParsed = match.groups.major.concat(
 				".",
 				match.groups.minor,

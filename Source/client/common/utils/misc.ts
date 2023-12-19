@@ -18,7 +18,7 @@ type DeepReadonly<T> = T extends any[]
 	? IDeepReadonlyArray<T[number]>
 	: DeepReadonlyNonArray<T>;
 type DeepReadonlyNonArray<T> = T extends object ? DeepReadonlyObject<T> : T;
-type IDeepReadonlyArray<T> = ReadonlyArray<DeepReadonly<T>>;
+type IDeepReadonlyArray<T> = readonly DeepReadonly<T>[];
 type DeepReadonlyObject<T> = {
 	readonly [P in NonFunctionPropertyNames<T>]: DeepReadonly<T[P]>;
 };

@@ -262,11 +262,7 @@ export abstract class ModuleInstaller implements IModuleInstaller {
 			? await interpreterService.getActiveInterpreter(resource)
 			: resource;
 		// If installing pylint on python 2.x, then use pylint~=1.9.0
-		if (
-			interpreter &&
-			interpreter.version &&
-			interpreter.version.major === 2
-		) {
+		if (interpreter?.version && interpreter.version.major === 2) {
 			const newArgs = [...args];
 			// This command could be sent to the terminal, hence '<' needs to be escaped for UNIX.
 			newArgs[indexOfPylint] = '"pylint<2.0.0"';

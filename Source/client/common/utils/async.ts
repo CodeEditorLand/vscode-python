@@ -174,18 +174,18 @@ export async function* chain<T>(
 				await onError(err, index);
 			}
 			// XXX Log the error.
-		} else if (result!.done) {
+		} else if (result?.done) {
 			promises[index] = NEVER as Promise<NextResult<T>>;
 			numRunning -= 1;
 			// If R is void then result.value will be undefined.
-			if (result!.value !== undefined) {
-				yield result!.value;
+			if (result?.value !== undefined) {
+				yield result?.value;
 			}
 		} else {
 			promises[index] = getNext(iterators[index], index);
 			// Only the "return" result can be undefined (void),
 			// so we're okay here.
-			yield result!.value as T;
+			yield result?.value as T;
 		}
 	}
 }

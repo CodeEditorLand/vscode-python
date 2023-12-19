@@ -74,8 +74,8 @@ export class Extensions implements IExtensions {
 					// Use cached list of extensions as we need this to be fast.
 					this.cachedExtensions.some(
 						(ext) =>
-							item!.includes(ext.extensionUri.path) ||
-							item!.includes(ext.extensionUri.fsPath),
+							item?.includes(ext.extensionUri.path) ||
+							item?.includes(ext.extensionUri.fsPath),
 					),
 				) as string[];
 			stacktrace.parse(new Error("Ex")).forEach((item) => {

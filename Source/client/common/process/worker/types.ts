@@ -11,12 +11,7 @@ export interface IDisposable {
 	dispose(): void | undefined | Promise<void>;
 }
 export type EnvironmentVariables = Record<string, string | undefined>;
-export class StdErrError extends Error {
-	// eslint-disable-next-line @typescript-eslint/no-useless-constructor
-	constructor(message: string) {
-		super(message);
-	}
-}
+export class StdErrError extends Error {}
 
 export type SpawnOptions = ChildProcessSpawnOptions & {
 	encoding?: string;

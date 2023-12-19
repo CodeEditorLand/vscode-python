@@ -50,7 +50,7 @@ export class CustomWorkspaceLocator extends FSWatchingLocator {
 				return;
 			}
 			yield { kind: PythonEnvKind.Unknown, executablePath: filename };
-			traceVerbose(`Finished searching for custom workspace envs`);
+			traceVerbose("Finished searching for custom workspace envs");
 		};
 		return iterator(this.root);
 	}

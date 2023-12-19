@@ -218,7 +218,7 @@ export function parseBasicVersionInfo<T extends BasicVersionInfo>(
 	}
 	// Ignore the first element (the full match).
 	const [, before, majorStr, minorStr, microStr, after] = match;
-	if (before && before.endsWith(".")) {
+	if (before?.endsWith(".")) {
 		return undefined;
 	}
 

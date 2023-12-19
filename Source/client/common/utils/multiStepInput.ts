@@ -151,13 +151,13 @@ export class MultiStepInput<S> implements IMultiStepInput<S> {
 		const input = this.shell.createQuickPick<T>();
 		input.title = title;
 		input.step = step;
-		input.sortByLabel = sortByLabel || false;
+		input.sortByLabel = sortByLabel;
 		input.totalSteps = totalSteps;
 		input.placeholder = placeholder;
 		input.ignoreFocusOut = true;
 		input.items = items;
-		input.matchOnDescription = matchOnDescription || false;
-		input.matchOnDetail = matchOnDetail || false;
+		input.matchOnDescription = matchOnDescription;
+		input.matchOnDetail = matchOnDetail;
 		input.buttons = this.steps.length > 1 ? [QuickInputButtons.Back] : [];
 		if (customButtonSetups) {
 			for (const customButtonSetup of customButtonSetups) {

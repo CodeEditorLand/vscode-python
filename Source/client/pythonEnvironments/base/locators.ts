@@ -38,7 +38,7 @@ export function combineIterators<I>(
 		const disposables = new Disposables();
 		let numActive = events.length;
 		events.forEach((event) => {
-			const disposable = event!(
+			const disposable = event?.(
 				(e: PythonEnvUpdatedEvent<I> | ProgressNotificationEvent) => {
 					// NOSONAR
 					if (isProgressEvent(e)) {
@@ -78,7 +78,7 @@ export class Locators<I = PythonEnvInfo>
 
 	constructor(
 		// The locators will be watched as well as iterated.
-		private readonly locators: ReadonlyArray<ILocator<I>>,
+		private readonly locators: readonly ILocator<I>[],
 	) {
 		super(locators);
 		this.providerId = locators.map((loc) => loc.providerId).join("+");

@@ -28,8 +28,8 @@ export class AttachConfigurationResolver extends BaseConfigurationResolver<Attac
 
 		const dbgConfig = debugConfiguration;
 		if (Array.isArray(dbgConfig.debugOptions)) {
-			dbgConfig.debugOptions = dbgConfig.debugOptions!.filter(
-				(item, pos) => dbgConfig.debugOptions!.indexOf(item) === pos,
+			dbgConfig.debugOptions = dbgConfig.debugOptions?.filter(
+				(item, pos) => dbgConfig.debugOptions?.indexOf(item) === pos,
 			);
 		}
 		if (debugConfiguration.clientOS === undefined) {
@@ -47,8 +47,11 @@ export class AttachConfigurationResolver extends BaseConfigurationResolver<Attac
 			debugConfiguration.debugOptions = [];
 		}
 		if (
-			!(debugConfiguration.connect || debugConfiguration.listen) &&
-			!debugConfiguration.host
+			!(
+				debugConfiguration.connect ||
+				debugConfiguration.listen ||
+				debugConfiguration.host
+			)
 		) {
 			// Connect and listen cannot be mixed with host property.
 			debugConfiguration.host = "localhost";

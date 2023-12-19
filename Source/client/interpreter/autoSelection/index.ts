@@ -64,7 +64,7 @@ export class InterpreterAutoSelectionService
 		@inject(IInterpreterHelper)
 		private readonly interpreterHelper: IInterpreterHelper
 	) {
-		proxy.registerInstance!(this);
+		proxy.registerInstance?.(this);
 	}
 
 	/**
@@ -95,7 +95,7 @@ export class InterpreterAutoSelectionService
 			},
 		);
 
-		return this.autoSelectedWorkspacePromises.get(key)!.promise;
+		return this.autoSelectedWorkspacePromises.get(key)?.promise;
 	}
 
 	public get onDidChangeAutoSelectedInterpreter(): Event<void> {
@@ -109,7 +109,7 @@ export class InterpreterAutoSelectionService
 		// This method gets invoked from settings class, and this class in turn uses classes that relies on settings.
 		// I.e. we can end up in a recursive loop.
 		const workspaceState = this.getWorkspaceState(resource);
-		if (workspaceState && workspaceState.value) {
+		if (workspaceState?.value) {
 			return workspaceState.value;
 		}
 
@@ -141,8 +141,7 @@ export class InterpreterAutoSelectionService
 	): Promise<void> {
 		const stateStore = this.getWorkspaceState(resource);
 		if (
-			stateStore &&
-			stateStore.value &&
+			stateStore?.value &&
 			!(await this.fs.fileExists(stateStore.value.path))
 		) {
 			await stateStore.updateValue(undefined);
@@ -157,8 +156,7 @@ export class InterpreterAutoSelectionService
 		if (workspaceFolderPath === workspacePathNameForGlobalWorkspaces) {
 			// Update store only if this version is better.
 			if (
-				this.globallyPreferredInterpreter.value &&
-				this.globallyPreferredInterpreter.value.version &&
+				this.globallyPreferredInterpreter.value?.version &&
 				interpreter &&
 				interpreter.version &&
 				compareSemVerLikeVersions(
@@ -249,7 +247,7 @@ export class InterpreterAutoSelectionService
 	private getAutoSelectionQueriedOnceState(): IPersistentState<
 		boolean | undefined
 	> {
-		const key = `autoSelectionInterpretersQueriedOnce`;
+		const key = "autoSelectionInterpretersQueriedOnce";
 		return this.stateFactory.createWorkspacePersistentState(key, undefined);
 	}
 

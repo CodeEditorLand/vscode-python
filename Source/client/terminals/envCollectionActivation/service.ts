@@ -153,14 +153,14 @@ export class TerminalEnvVarCollectionService
 					shellType !== TerminalShellType.commandPrompt
 				) {
 					traceWarn(
-						`Shell integration is not active, environment activated maybe overriden by the shell.`,
+						"Shell integration is not active, environment activated maybe overriden by the shell.",
 					);
 				}
 				this.registeredOnce = true;
 			}
 			this._applyCollection(resource).ignoreErrors();
 		} catch (ex) {
-			traceError(`Activating terminal env collection failed`, ex);
+			traceError("Activating terminal env collection failed", ex);
 		}
 	}
 
@@ -173,7 +173,7 @@ export class TerminalEnvVarCollectionService
 			title: Interpreters.activatingTerminals,
 		});
 		await this._applyCollectionImpl(resource, shell).catch((ex) => {
-			traceError(`Failed to apply terminal env vars`, shell, ex);
+			traceError("Failed to apply terminal env vars", shell, ex);
 			return Promise.reject(ex); // Ensures progress indicator does not disappear in case of errors, so we can catch issues faster.
 		});
 		this.progressService.hideProgress();
@@ -319,7 +319,7 @@ export class TerminalEnvVarCollectionService
 		await this.terminalDeactivateService
 			.initializeScriptParams(shell)
 			.catch((ex) => {
-				traceError(`Failed to initialize deactivate script`, shell, ex);
+				traceError("Failed to initialize deactivate script", shell, ex);
 			});
 	}
 
@@ -443,7 +443,7 @@ export class TerminalEnvVarCollectionService
 			}
 		} catch (ex) {
 			traceWarn(
-				`Microvenv failed as it is using proposed API which is constantly changing`,
+				"Microvenv failed as it is using proposed API which is constantly changing",
 				ex,
 			);
 		}

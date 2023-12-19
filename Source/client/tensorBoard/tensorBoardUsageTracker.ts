@@ -63,7 +63,7 @@ export class TensorBoardUsageTracker
 	}
 
 	private onChangedActiveTextEditor(editor: TextEditor | undefined): void {
-		if (!editor || !editor.document) {
+		if (!editor?.document) {
 			return;
 		}
 		const { document } = editor;

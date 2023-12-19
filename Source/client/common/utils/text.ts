@@ -21,7 +21,7 @@ export function getWindowsLineEndingCount(
 		let endAt: Position;
 		if (offsetDiff >= readBlock) {
 			endAt = document.positionAt(pos + readBlock);
-			offsetDiff = offsetDiff - readBlock;
+			offsetDiff -= readBlock;
 		} else {
 			endAt = document.positionAt(pos + offsetDiff);
 		}
@@ -118,7 +118,7 @@ export function parsePosition(raw: string | number): Position {
  */
 export function getIndent(line: string): string {
 	const found = line.match(/^ */);
-	return found![0];
+	return found?.[0];
 }
 
 /**

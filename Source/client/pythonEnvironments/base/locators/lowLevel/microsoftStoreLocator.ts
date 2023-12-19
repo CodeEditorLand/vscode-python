@@ -95,7 +95,7 @@ export class MicrosoftStoreLocator extends FSWatchingLocator {
 				kind,
 				executablePath,
 			}));
-			traceVerbose(`Finished searching for windows store envs`);
+			traceVerbose("Finished searching for windows store envs");
 		};
 		return iterator(this.kind);
 	}

@@ -222,7 +222,7 @@ export class JupyterExtensionIntegration {
 
 	private getPylanceApi(): PylanceApi | undefined {
 		const api = this.pylanceExtension?.exports;
-		return api && api.notebook && api.client && api.client.isEnabled()
+		return api?.notebook && api.client && api.client.isEnabled()
 			? api
 			: undefined;
 	}
@@ -234,7 +234,7 @@ export class JupyterExtensionIntegration {
 
 		const api = this.getPylanceApi();
 		if (api) {
-			api.notebook!.registerJupyterPythonPathFunction(func);
+			api.notebook?.registerJupyterPythonPathFunction(func);
 		}
 	}
 
@@ -251,7 +251,7 @@ export class JupyterExtensionIntegration {
 
 		const api = this.getPylanceApi();
 		if (api) {
-			api.notebook!.registerGetNotebookUriForTextDocumentUriFunction(
+			api.notebook?.registerGetNotebookUriForTextDocumentUriFunction(
 				func,
 			);
 		}

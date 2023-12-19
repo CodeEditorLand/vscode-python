@@ -130,7 +130,7 @@ export class CondaActivationCommandProvider
 					await this.condaService.getCondaFile(),
 				);
 
-			default:
+			default: {
 				if (this.platform.isWindows) {
 					return this.getWindowsCommands(condaEnv);
 				}
@@ -138,6 +138,7 @@ export class CondaActivationCommandProvider
 					condaEnv,
 					await this.condaService.getCondaFile(),
 				);
+			}
 		}
 	}
 

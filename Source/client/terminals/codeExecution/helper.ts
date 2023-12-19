@@ -164,7 +164,7 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
 			) {
 				const lineOffset =
 					object.nextBlockLineno -
-					activeEditor!.selection.start.line -
+					activeEditor?.selection.start.line -
 					1;
 				await this.moveToNextBlock(lineOffset, activeEditor);
 			}

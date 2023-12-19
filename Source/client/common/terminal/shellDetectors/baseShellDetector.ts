@@ -72,7 +72,7 @@ export function identifyShellFromShellPath(
 		(matchedShell, shellToDetect) => {
 			if (matchedShell === TerminalShellType.other) {
 				const pat = detectableShells.get(shellToDetect);
-				if (pat && pat.test(basePath)) {
+				if (pat?.test(basePath)) {
 					return shellToDetect;
 				}
 			}

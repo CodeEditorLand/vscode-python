@@ -67,18 +67,22 @@ async function getInterpreterDataFromKey(
 	);
 	for (const value of values) {
 		switch (value.name) {
-			case "SysArchitecture":
+			case "SysArchitecture": {
 				result.bitnessStr = value.value;
 				break;
-			case "SysVersion":
+			}
+			case "SysVersion": {
 				result.sysVersionStr = value.value;
 				break;
-			case "Version":
+			}
+			case "Version": {
 				result.versionStr = value.value;
 				break;
-			case "DisplayName":
+			}
+			case "DisplayName": {
 				result.companyDisplayName = value.value;
 				break;
+			}
 			default:
 				break;
 		}

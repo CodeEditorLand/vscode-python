@@ -116,12 +116,14 @@ export class EnvironmentTypeComparer implements IInterpreterComparer {
 			}
 			if (
 				i.envType === EnvironmentType.ActiveState &&
-				(!i.path ||
-					!workspaceUri ||
-					!isActiveStateEnvironmentForWorkspace(
+				!(
+					i.path &&
+					workspaceUri &&
+					isActiveStateEnvironmentForWorkspace(
 						i.path,
 						workspaceUri.folderUri.fsPath,
-					))
+					)
+				)
 			) {
 				return false;
 			}
@@ -289,7 +291,7 @@ function compareEnvironmentType(
 	a: PythonEnvironment,
 	b: PythonEnvironment,
 ): number {
-	if (!a.type && !b.type) {
+	if (!(a.type || b.type)) {
 		// Return 0 if two global interpreters are being compared.
 		return 0;
 	}

@@ -85,7 +85,7 @@ export class DebugCommands implements IExtensionSingleActivationService {
 					DebugPurpose.DebugInTerminal,
 				)
 			) {
-				if (!config.program && !config.module && !config.code) {
+				if (!(config.program || config.module || config.code)) {
 					// This is only needed if people reuse debug-test for debug-in-terminal
 					config.program = uri?.fsPath ?? "${file}";
 				}

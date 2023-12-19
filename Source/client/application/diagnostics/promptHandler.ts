@@ -54,7 +54,7 @@ export class DiagnosticCommandPromptHandlerService
 		const selectedOption = options.commandPrompts.find(
 			(option) => option.prompt === response,
 		);
-		if (selectedOption && selectedOption.command) {
+		if (selectedOption?.command) {
 			await selectedOption.command.invoke();
 		}
 	}

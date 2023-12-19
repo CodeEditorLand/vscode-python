@@ -174,16 +174,18 @@ export class EnvsCollectionService
 			const listener = iterator.onUpdated(async (event) => {
 				if (isProgressEvent(event)) {
 					switch (event.stage) {
-						case ProgressReportStage.discoveryFinished:
+						case ProgressReportStage.discoveryFinished: {
 							state.done = true;
 							listener.dispose();
 							break;
-						case ProgressReportStage.allPathsDiscovered:
+						}
+						case ProgressReportStage.allPathsDiscovered: {
 							if (!query) {
 								// Only mark as all paths discovered when querying for all envs.
 								this.progress.fire(event);
 							}
 							break;
+						}
 						default:
 							this.progress.fire(event);
 					}
@@ -298,7 +300,7 @@ export class EnvsCollectionService
 		query: PythonLocatorQuery | undefined,
 		stopWatch: StopWatch,
 	) {
-		if (!query && !this.hasRefreshFinished(query)) {
+		if (!(query || this.hasRefreshFinished(query))) {
 			// Intent is to capture time taken for discovery of all envs to complete the first time.
 			sendTelemetryEvent(
 				EventName.PYTHON_INTERPRETER_DISCOVERY,

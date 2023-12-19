@@ -83,7 +83,7 @@ export class TerminalServiceFactory implements ITerminalServiceFactory {
 		interpreter?: PythonEnvironment,
 		newTerminalPerFile?: boolean,
 	): string {
-		if (!resource && !interpreter) {
+		if (!(resource || interpreter)) {
 			return title;
 		}
 		const workspaceFolder = this.serviceContainer

@@ -126,7 +126,7 @@ export class SetInterpreterCommand
 
 	private readonly tipToReloadWindow: ISpecialQuickPickItem = {
 		label: `${Octicons.Lightbulb} Reload the window if you installed Python but don't see it`,
-		detail: `Click to run \`Developer: Reload Window\` command`,
+		detail: "Click to run `Developer: Reload Window` command",
 		alwaysShow: true,
 	};
 

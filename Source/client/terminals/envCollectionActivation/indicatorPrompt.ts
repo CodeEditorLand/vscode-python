@@ -118,7 +118,7 @@ export class TerminalIndicatorPrompt
 		const prompts = [Common.doNotShowAgain];
 		const interpreter =
 			await this.interpreterService.getActiveInterpreter(resource);
-		if (!interpreter || !interpreter.type) {
+		if (!interpreter?.type) {
 			return;
 		}
 		const terminalPromptName = getPromptName(interpreter);

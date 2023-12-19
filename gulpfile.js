@@ -156,7 +156,7 @@ gulp.task("updateBuildNumber", async () => {
 });
 
 async function updateBuildNumber(args) {
-	if (args && args.buildNumber) {
+	if (args?.buildNumber) {
 		// Edit the version number from the package.json
 		const packageJsonContents = await fsExtra.readFile(
 			"package.json",

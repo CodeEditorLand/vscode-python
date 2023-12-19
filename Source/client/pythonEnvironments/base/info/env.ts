@@ -93,8 +93,8 @@ export function areEnvsDeepEqual(
 	const env1Clone = cloneDeep(env1);
 	const env2Clone = cloneDeep(env2);
 	// Cannot compare searchLocation as they are Uri objects.
-	delete env1Clone.searchLocation;
-	delete env2Clone.searchLocation;
+	env1Clone.searchLocation = undefined;
+	env2Clone.searchLocation = undefined;
 	env1Clone.source = env1Clone.source.sort();
 	env2Clone.source = env2Clone.source.sort();
 	const searchLocation1 = env1.searchLocation?.fsPath ?? "";
@@ -301,8 +301,8 @@ export function areSameEnv(
 	if (leftInfo === undefined || rightInfo === undefined) {
 		return undefined;
 	}
-	const leftFilename = leftInfo.executable!.filename;
-	const rightFilename = rightInfo.executable!.filename;
+	const leftFilename = leftInfo.executable?.filename;
+	const rightFilename = rightInfo.executable?.filename;
 
 	if (leftInfo.id && leftInfo.id === rightInfo.id) {
 		// In case IDs are available, use it.

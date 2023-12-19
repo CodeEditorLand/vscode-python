@@ -158,7 +158,7 @@ export class Poetry {
 					yield customPoetryPath;
 				}
 			} catch (ex) {
-				traceError(`Failed to get poetry setting`, ex);
+				traceError("Failed to get poetry setting", ex);
 			}
 			// Check unqualified filename, in case it's on PATH.
 			yield "poetry";

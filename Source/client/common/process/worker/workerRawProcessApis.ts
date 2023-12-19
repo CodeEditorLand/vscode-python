@@ -34,7 +34,7 @@ function getDefaultOptions<T extends ShellOptions | SpawnOptions>(
 				? execOptions.encoding
 				: DEFAULT_ENCODING;
 		const { encoding } = execOptions;
-		delete execOptions.encoding;
+		execOptions.encoding = undefined;
 		execOptions.encoding = encoding;
 	}
 	if (!defaultOptions.env || Object.keys(defaultOptions.env).length === 0) {
@@ -44,7 +44,7 @@ function getDefaultOptions<T extends ShellOptions | SpawnOptions>(
 		defaultOptions.env = { ...defaultOptions.env };
 	}
 
-	if (execOptions && execOptions.extraVariables) {
+	if (execOptions?.extraVariables) {
 		defaultOptions.env = {
 			...defaultOptions.env,
 			...execOptions.extraVariables,
@@ -98,7 +98,7 @@ export function _workerShellExecImpl(
 		const disposable: IDisposable = {
 			dispose: () => {
 				// If process has not exited nor killed, force kill it.
-				if (!procExited && !proc.killed) {
+				if (!(procExited || proc.killed)) {
 					if (proc.pid) {
 						killPid(proc.pid);
 					} else {
@@ -131,7 +131,7 @@ export function _workerPlainExecImpl(
 	const disposable: IDisposable = {
 		dispose: () => {
 			// If process has not exited nor killed, force kill it.
-			if (!proc.killed && !deferred.completed) {
+			if (!(proc.killed || deferred.completed)) {
 				if (proc.pid) {
 					killPid(proc.pid);
 				} else {

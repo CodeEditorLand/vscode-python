@@ -122,10 +122,9 @@ async function getActivationTelemetryProps(
 	const interpreter = await interpreterService
 		.getActiveInterpreter()
 		.catch<PythonEnvironment | undefined>(() => undefined);
-	const pythonVersion =
-		interpreter && interpreter.version
-			? interpreter.version.raw
-			: undefined;
+	const pythonVersion = interpreter?.version
+		? interpreter.version.raw
+		: undefined;
 	const interpreterType = interpreter ? interpreter.envType : undefined;
 	if (interpreterType === EnvironmentType.Unknown) {
 		traceError(

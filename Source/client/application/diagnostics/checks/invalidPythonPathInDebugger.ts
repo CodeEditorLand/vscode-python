@@ -206,7 +206,7 @@ export class InvalidPythonPathInDebuggerService
 							diagnostic,
 							invoke: async (): Promise<void> => {
 								const launchJson = getLaunchJsonFile(
-									workspc.workspaceFolders![0],
+									workspc.workspaceFolders?.[0],
 								);
 								const doc =
 									await this.documentManager.openTextDocument(

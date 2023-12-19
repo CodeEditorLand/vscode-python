@@ -107,8 +107,7 @@ export function makeDebounceAsyncDecorator(wait?: number) {
 			}
 
 			// Clear previous timer.
-			const existingDeferredCompleted =
-				existingDeferred && existingDeferred.completed;
+			const existingDeferredCompleted = existingDeferred?.completed;
 			const deferred = (state.deferred =
 				!existingDeferred || existingDeferredCompleted
 					? createDeferred<any>()

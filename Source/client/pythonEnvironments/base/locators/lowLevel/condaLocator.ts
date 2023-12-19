@@ -58,6 +58,6 @@ export class CondaEnvironmentLocator extends FSWatchingLocator {
 				);
 			}
 		}
-		traceVerbose(`Finished searching for conda environments`);
+		traceVerbose("Finished searching for conda environments");
 	}
 }

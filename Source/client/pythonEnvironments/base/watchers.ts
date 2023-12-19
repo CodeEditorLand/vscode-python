@@ -23,7 +23,7 @@ export class PythonEnvsWatchers implements IPythonEnvsWatcher, IDisposable {
 
 	private readonly disposables = new Disposables();
 
-	constructor(watchers: ReadonlyArray<IPythonEnvsWatcher>) {
+	constructor(watchers: readonly IPythonEnvsWatcher[]) {
 		this.onChanged = this.watcher.onChanged;
 		watchers.forEach((w) => {
 			const disposable = w.onChanged((e) => this.watcher.fire(e));

@@ -68,7 +68,7 @@ export class DebugEnvironmentVariablesHelper
 
 		if (
 			typeof env[pathVariableName] === "string" &&
-			env[pathVariableName]!.length > 0
+			env[pathVariableName]?.length > 0
 		) {
 			// Now merge this path with the current system path.
 			// We need to do this to ensure the PATH variable always has the system PATHs as well.

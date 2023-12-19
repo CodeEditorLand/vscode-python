@@ -94,10 +94,11 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 								cmd === Commands.Exec_In_Separate_Terminal,
 						})
 							.then(() => {
-								if (this.shouldTerminalFocusOnStart(file))
+								if (this.shouldTerminalFocusOnStart(file)) {
 									this.commandManager.executeCommand(
 										"workbench.action.terminal.focus",
 									);
+								}
 							})
 							.catch((ex) =>
 								traceError(
@@ -138,10 +139,11 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 						file,
 					);
 					await this.executeSelectionInTerminal().then(() => {
-						if (this.shouldTerminalFocusOnStart(file))
+						if (this.shouldTerminalFocusOnStart(file)) {
 							this.commandManager.executeCommand(
 								"workbench.action.terminal.focus",
 							);
+						}
 					});
 				},
 			),
@@ -175,10 +177,11 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 						file,
 					);
 					await this.executeSelectionInDjangoShell().then(() => {
-						if (this.shouldTerminalFocusOnStart(file))
+						if (this.shouldTerminalFocusOnStart(file)) {
 							this.commandManager.executeCommand(
 								"workbench.action.terminal.focus",
 							);
+						}
 					});
 				},
 			),
@@ -265,7 +268,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 		const codeToExecute =
 			await codeExecutionHelper.getSelectedTextToExecute(activeEditor!);
 		let wholeFileContent = "";
-		if (activeEditor && activeEditor.document) {
+		if (activeEditor?.document) {
 			wholeFileContent = activeEditor.document.getText();
 		}
 		const normalizedCode = await codeExecutionHelper.normalizeLines(
@@ -286,7 +289,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 
 		await executionService.execute(
 			normalizedCode,
-			activeEditor!.document.uri,
+			activeEditor?.document.uri,
 		);
 	}
 

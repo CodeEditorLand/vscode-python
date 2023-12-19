@@ -50,7 +50,7 @@ export async function deactivate(): Promise<void> {
 	if (pylanceApi) {
 		const api = pylanceApi;
 		pylanceApi = undefined;
-		await api.client!.stop();
+		await api.client?.stop();
 	}
 
 	if (languageClient) {
@@ -70,7 +70,7 @@ async function runPylance(
 
 	pylanceExtension = await getActivatedExtension(pylanceExtension);
 	const api = pylanceExtension.exports;
-	if (api.client && api.client.isEnabled()) {
+	if (api.client?.isEnabled()) {
 		pylanceApi = api;
 		await api.client.start();
 		return;
@@ -209,15 +209,18 @@ function sendTelemetryEventBrowser(
 				// If there are any errors in serializing one property, ignore that and move on.
 				// Else nothing will be sent.
 				switch (typeof data[prop]) {
-					case "string":
+					case "string": {
 						customProperties[prop] = data[prop];
 						break;
-					case "object":
+					}
+					case "object": {
 						customProperties[prop] = "object";
 						break;
-					default:
+					}
+					default: {
 						customProperties[prop] = data[prop].toString();
 						break;
+					}
 				}
 			} catch (exception) {
 				console.error(

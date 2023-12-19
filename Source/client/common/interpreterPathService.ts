@@ -174,7 +174,7 @@ export class InterpreterPathService implements IInterpreterPathService {
 				this.workspaceService.getConfiguration("python");
 			const globalValue = pythonConfig.inspect<string>(
 				"defaultInterpreterPath",
-			)!.globalValue;
+			)?.globalValue;
 			if (globalValue !== pythonPath) {
 				await pythonConfig.update(
 					"defaultInterpreterPath",

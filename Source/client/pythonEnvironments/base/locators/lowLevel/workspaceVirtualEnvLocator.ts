@@ -114,7 +114,7 @@ export class WorkspaceVirtualEnvironmentLocator extends FSWatchingLocator {
 			});
 
 			yield* iterable(chain(envGenerators));
-			traceVerbose(`Finished searching for workspace virtual envs`);
+			traceVerbose("Finished searching for workspace virtual envs");
 		}
 
 		return iterator(this.root);

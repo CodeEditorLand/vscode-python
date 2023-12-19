@@ -110,7 +110,7 @@ export async function deactivate(): Promise<void> {
 			);
 		await disposeAll(disposables);
 		// Remove everything that is already disposed.
-		while (disposables.pop());
+		while (disposables.pop()) {}
 	}
 }
 

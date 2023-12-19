@@ -67,14 +67,14 @@ export class TerminalCodeExecutionProvider implements ICodeExecutionService {
 			return;
 		}
 		await this.initializeRepl(resource);
-		if (code == "deprecated") {
+		if (code === "deprecated") {
 			// If user is trying to smart send deprecated code show warning
 			const selection = await showWarningMessage(
 				Diagnostics.invalidSmartSendMessage,
 				Repl.disableSmartSend,
 			);
 			traceInfo(
-				`Selected file contains invalid Python or Deprecated Python 2 code`,
+				"Selected file contains invalid Python or Deprecated Python 2 code",
 			);
 			if (selection === Repl.disableSmartSend) {
 				this.configurationService.updateSetting(

@@ -84,21 +84,21 @@ export class TerminalService implements ITerminalService, Disposable {
 			args,
 		);
 		if (!this.options?.hideFromUser) {
-			this.terminal!.show(true);
+			this.terminal?.show(true);
 		}
-		this.terminal!.sendText(text, true);
+		this.terminal?.sendText(text, true);
 	}
 	public async sendText(text: string): Promise<void> {
 		await this.ensureTerminal();
 		if (!this.options?.hideFromUser) {
-			this.terminal!.show(true);
+			this.terminal?.show(true);
 		}
-		this.terminal!.sendText(text);
+		this.terminal?.sendText(text);
 	}
 	public async show(preserveFocus = true): Promise<void> {
 		await this.ensureTerminal(preserveFocus);
 		if (!this.options?.hideFromUser) {
-			this.terminal!.show(preserveFocus);
+			this.terminal?.show(preserveFocus);
 		}
 	}
 	public async ensureTerminal(preserveFocus = true): Promise<void> {
@@ -129,7 +129,7 @@ export class TerminalService implements ITerminalService, Disposable {
 		);
 
 		if (!this.options?.hideFromUser) {
-			this.terminal!.show(preserveFocus);
+			this.terminal?.show(preserveFocus);
 		}
 
 		this.sendTelemetry().ignoreErrors();
@@ -150,10 +150,9 @@ export class TerminalService implements ITerminalService, Disposable {
 			(await this.serviceContainer
 				.get<IInterpreterService>(IInterpreterService)
 				.getInterpreterDetails(pythonPath));
-		const pythonVersion =
-			interpreterInfo && interpreterInfo.version
-				? interpreterInfo.version.raw
-				: undefined;
+		const pythonVersion = interpreterInfo?.version
+			? interpreterInfo.version.raw
+			: undefined;
 		const interpreterType = interpreterInfo
 			? interpreterInfo.envType
 			: undefined;

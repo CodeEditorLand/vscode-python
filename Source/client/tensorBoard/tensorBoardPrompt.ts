@@ -76,7 +76,7 @@ export class TensorBoardPrompt {
 			this.enabledInCurrentSession = false;
 			let telemetrySelection = TensorBoardPromptSelection.None;
 			switch (selection) {
-				case yes:
+				case yes: {
 					telemetrySelection = TensorBoardPromptSelection.Yes;
 					await this.commandManager.executeCommand(
 						Commands.LaunchTensorBoard,
@@ -84,14 +84,17 @@ export class TensorBoardPrompt {
 						trigger,
 					);
 					break;
-				case doNotAskAgain:
+				}
+				case doNotAskAgain: {
 					telemetrySelection =
 						TensorBoardPromptSelection.DoNotAskAgain;
 					await this.disablePrompt();
 					break;
-				case no:
+				}
+				case no: {
 					telemetrySelection = TensorBoardPromptSelection.No;
 					break;
+				}
 				default:
 					break;
 			}

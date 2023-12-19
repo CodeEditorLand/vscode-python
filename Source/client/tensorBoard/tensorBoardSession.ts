@@ -345,7 +345,7 @@ export class TensorBoardSession {
 			profilerPluginInstallStatus !== ProductInstallStatus.Installed
 		) {
 			traceError(
-				`Failed to install torch-tb-plugin. Profiler plugin will not appear in TensorBoard session.`,
+				"Failed to install torch-tb-plugin. Profiler plugin will not appear in TensorBoard session.",
 			);
 		}
 		return tensorboardInstallStatus === ProductInstallStatus.Installed;
@@ -490,7 +490,7 @@ export class TensorBoardSession {
 		);
 
 		switch (result) {
-			case "canceled":
+			case "canceled": {
 				traceVerbose("Canceled starting TensorBoard session.");
 				sendTelemetryEvent(
 					EventName.TENSORBOARD_SESSION_DAEMON_STARTUP_DURATION,
@@ -501,7 +501,8 @@ export class TensorBoardSession {
 				);
 				observable.dispose();
 				return false;
-			case "success":
+			}
+			case "success": {
 				this.process = observable.proc;
 				sendTelemetryEvent(
 					EventName.TENSORBOARD_SESSION_DAEMON_STARTUP_DURATION,
@@ -511,7 +512,8 @@ export class TensorBoardSession {
 					},
 				);
 				return true;
-			case timeout:
+			}
+			case timeout: {
 				sendTelemetryEvent(
 					EventName.TENSORBOARD_SESSION_DAEMON_STARTUP_DURATION,
 					sessionStartStopwatch.elapsedTime,
@@ -524,6 +526,7 @@ export class TensorBoardSession {
 						timeout / 1000
 					} seconds waiting for TensorBoard to launch.`,
 				);
+			}
 			default:
 				// We should never get here
 				throw new Error(
@@ -543,7 +546,7 @@ export class TensorBoardSession {
 					const match = output.out.match(
 						/TensorBoard started at (.*)/,
 					);
-					if (match && match[1]) {
+					if (match?.[1]) {
 						// eslint-disable-next-line prefer-destructuring
 						this.url = match[1];
 						urlThatTensorBoardIsRunningAt.resolve("success");
@@ -613,12 +616,13 @@ export class TensorBoardSession {
 			webviewPanel.webview.onDidReceiveMessage((message) => {
 				// Handle messages posted from the webview
 				switch (message.command) {
-					case Messages.JumpToSource:
+					case Messages.JumpToSource: {
 						void this.jumpToSource(
 							message.args.filename,
 							message.args.line,
 						);
 						break;
+					}
 					default:
 						break;
 				}

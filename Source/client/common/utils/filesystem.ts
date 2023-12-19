@@ -120,7 +120,7 @@ export function getFileFilter(
 ): FileFilterFunc | undefined {
 	const ignoreFileType = normalizeFileTypes(opts.ignoreFileType);
 
-	if (!opts.ignoreMissing && !ignoreFileType) {
+	if (!(opts.ignoreMissing || ignoreFileType)) {
 		// Do not filter.
 		return undefined;
 	}
@@ -135,7 +135,7 @@ export function getFileFilter(
 			entry = { filename, filetype: FileType.Unknown };
 		}
 		if (ignoreFileType) {
-			if (ignoreFileType.includes(entry!.filetype)) {
+			if (ignoreFileType.includes(entry?.filetype)) {
 				return false;
 			}
 		}

@@ -268,7 +268,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 			// Skip sending if this is a special file.
 			const filePath = uri.fsPath;
 			const baseName = filePath ? path.basename(filePath) : undefined;
-			if (!baseName || !baseName.startsWith(HiddenFilePrefix)) {
+			if (!baseName?.startsWith(HiddenFilePrefix)) {
 				return this.callNext("handleDiagnostics", arguments);
 			}
 		}

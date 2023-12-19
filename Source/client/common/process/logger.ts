@@ -107,8 +107,9 @@ function replaceMatchesWithCharacter(
 			if (
 				regexIndex > 0 &&
 				isPrevioustoMatchRegexALetter(chunked[i], regexIndex - 1)
-			)
+			) {
 				regex = getRegex(match.substring(1));
+			}
 			chunked[i] = chunked[i].replace(regex, character);
 		}
 	}

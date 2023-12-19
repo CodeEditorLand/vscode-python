@@ -66,10 +66,7 @@ export class NodeLanguageClientMiddleware extends LanguageClientMiddleware {
 	protected async onExtensionChange(
 		jupyterDependencyManager: IJupyterExtensionDependencyManager,
 	): Promise<void> {
-		if (
-			jupyterDependencyManager &&
-			jupyterDependencyManager.isJupyterExtensionInstalled
-		) {
+		if (jupyterDependencyManager?.isJupyterExtensionInstalled) {
 			await this.lspNotebooksExperiment.onJupyterInstalled();
 		}
 

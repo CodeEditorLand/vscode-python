@@ -141,7 +141,7 @@ class ComponentAdapter implements IComponentAdapter {
 			? vscode.workspace.getWorkspaceFolder(resource)
 			: undefined;
 		return this.api.onChanged((e) => {
-			if (!workspaceFolder || !e.searchLocation) {
+			if (!(workspaceFolder && e.searchLocation)) {
 				return;
 			}
 			traceVerbose(

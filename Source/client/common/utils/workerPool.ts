@@ -67,7 +67,6 @@ class Worker<T, R> implements IWorker {
 				// Next got rejected. Likely worker pool is shutting down.
 				// continue here and worker will exit if the worker pool is shutting down.
 				traceError(`Error while running worker[${this.name}].`, ex);
-				continue;
 			}
 		}
 	}
@@ -193,7 +192,7 @@ class WorkerPool<T, R> implements IWorkerPool<T, R> {
 					`${this.name} ${num}`,
 				),
 			);
-			num = num - 1;
+			num -= 1;
 		}
 		this.workers.forEach(async (w) => w.start());
 	}

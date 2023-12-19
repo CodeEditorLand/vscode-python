@@ -63,7 +63,7 @@ export function isObject(obj: any): obj is any {
 export function isNumber(obj: any): obj is number {
 	if (
 		(typeof obj === _typeof.number || obj instanceof Number) &&
-		!isNaN(obj)
+		!Number.isNaN(obj)
 	) {
 		return true;
 	}

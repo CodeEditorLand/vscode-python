@@ -11,7 +11,7 @@ function getRandom(): number {
 	const buf: Buffer = crypto.randomBytes(2);
 	num = (buf.readUInt8(0) << 8) + buf.readUInt8(1);
 
-	const maxValue: number = Math.pow(16, 4) - 1;
+	const maxValue: number = 16 ** 4 - 1;
 	return num / maxValue;
 }
 

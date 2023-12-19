@@ -177,11 +177,7 @@ export type ShellExecFunc = (
 	options?: ShellOptions | undefined,
 ) => Promise<ExecutionResult<string>>;
 
-export class StdErrError extends Error {
-	constructor(message: string) {
-		super(message);
-	}
-}
+export class StdErrError extends Error {}
 
 export const IPythonToolExecutionService = Symbol("IPythonToolRunnerService");
 

@@ -136,15 +136,18 @@ export function sendTelemetryEvent<
 				// If there are any errors in serializing one property, ignore that and move on.
 				// Else nothing will be sent.
 				switch (typeof data[prop]) {
-					case "string":
+					case "string": {
 						customProperties[prop] = data[prop];
 						break;
-					case "object":
+					}
+					case "object": {
 						customProperties[prop] = "object";
 						break;
-					default:
+					}
+					default: {
 						customProperties[prop] = data[prop].toString();
 						break;
+					}
 				}
 			} catch (exception) {
 				console.error(
@@ -173,7 +176,7 @@ export function sendTelemetryEvent<
 		reporter.sendTelemetryEvent(eventNameSent, customProperties, measures);
 	}
 
-	if (process.env && process.env.VSC_PYTHON_LOG_TELEMETRY) {
+	if (process.env?.VSC_PYTHON_LOG_TELEMETRY) {
 		console.info(
 			`Telemetry Event : ${eventNameSent} Measures: ${JSON.stringify(
 				measures,
@@ -236,7 +239,7 @@ export function captureTelemetry<
 		descriptor.value = function (this: This, ...args: any[]) {
 			// Legacy case; fast path that sends event before method executes.
 			// Does not set "failed" if the result is a Promise and throws an exception.
-			if (!captureDuration && !lazyProperties && !lazyMeasures) {
+			if (!(captureDuration || lazyProperties || lazyMeasures)) {
 				sendTelemetryEvent(eventName, undefined, properties);
 
 				return originalMethod.apply(this, args);
@@ -319,7 +322,7 @@ export function sendTelemetryWhenDone<
 			(data) => {
 				sendTelemetryEvent(
 					eventName,
-					stopWatch!.elapsedTime,
+					stopWatch?.elapsedTime,
 					properties,
 				);
 				return data;
@@ -327,7 +330,7 @@ export function sendTelemetryWhenDone<
 			(ex) => {
 				sendTelemetryEvent(
 					eventName,
-					stopWatch!.elapsedTime,
+					stopWatch?.elapsedTime,
 					properties,
 					ex,
 				);

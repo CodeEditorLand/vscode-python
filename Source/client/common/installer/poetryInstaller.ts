@@ -63,8 +63,7 @@ export class PoetryInstaller extends ModuleInstaller {
 			? this.workspaceService.getWorkspaceFolder(resource)
 			: undefined;
 		if (
-			!interpreter ||
-			!workspaceFolder ||
+			!(interpreter && workspaceFolder) ||
 			interpreter.envType !== EnvironmentType.Poetry
 		) {
 			return false;

@@ -151,7 +151,7 @@ function checkIfFinishedAndNotify(
 	if (state.done && state.pending === 0) {
 		didUpdate.fire({ stage: ProgressReportStage.discoveryFinished });
 		didUpdate.dispose();
-		traceVerbose(`Finished with environment reducer`);
+		traceVerbose("Finished with environment reducer");
 	}
 }
 

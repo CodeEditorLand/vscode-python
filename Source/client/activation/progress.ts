@@ -36,7 +36,7 @@ export class ProgressReporting implements Disposable {
 				if (!this.progress) {
 					this.beginProgress();
 				}
-				this.progress!.report({ message: m }); // NOSONAR
+				this.progress?.report({ message: m }); // NOSONAR
 			},
 		);
 
@@ -65,7 +65,7 @@ export class ProgressReporting implements Disposable {
 			},
 			(progress) => {
 				this.progress = progress;
-				return this.progressDeferred!.promise;
+				return this.progressDeferred?.promise;
 			},
 		);
 	}

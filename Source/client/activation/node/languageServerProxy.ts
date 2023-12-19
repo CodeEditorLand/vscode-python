@@ -106,7 +106,7 @@ export class NodeLanguageServerProxy implements ILanguageServerProxy {
 		this.lsVersion = extension?.packageJSON.version || "0";
 
 		const api = extension?.exports;
-		if (api && api.client && api.client.isEnabled()) {
+		if (api?.client?.isEnabled()) {
 			this.pylanceApi = api;
 			await api.client.start();
 			return;
@@ -142,7 +142,7 @@ export class NodeLanguageServerProxy implements ILanguageServerProxy {
 		if (this.pylanceApi) {
 			const api = this.pylanceApi;
 			this.pylanceApi = undefined;
-			await api.client!.stop();
+			await api.client?.stop();
 		}
 
 		while (this.disposables.length > 0) {

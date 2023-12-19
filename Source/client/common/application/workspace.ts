@@ -103,9 +103,9 @@ export class WorkspaceService implements IWorkspaceService {
 	}
 
 	public get isVirtualWorkspace(): boolean {
-		const isVirtualWorkspace =
-			workspace.workspaceFolders &&
-			workspace.workspaceFolders.every((f) => f.uri.scheme !== "file");
+		const isVirtualWorkspace = workspace.workspaceFolders?.every(
+			(f) => f.uri.scheme !== "file",
+		);
 		return !!isVirtualWorkspace;
 	}
 
