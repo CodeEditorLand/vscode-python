@@ -1,23 +1,18 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import {
-	DebugConfiguration,
-	DebugSession,
-	DebugSessionCustomEvent,
-} from "vscode";
-import { AttachRequestArguments } from "../../types";
+'use strict';
 
-export const IDebugSessionEventHandlers = Symbol("IDebugSessionEventHandlers");
+import { DebugConfiguration, DebugSession, DebugSessionCustomEvent } from 'vscode';
+import { AttachRequestArguments } from '../../types';
+
+export const IDebugSessionEventHandlers = Symbol('IDebugSessionEventHandlers');
 export interface IDebugSessionEventHandlers {
-	handleCustomEvent?(e: DebugSessionCustomEvent): Promise<void>;
-	handleTerminateEvent?(e: DebugSession): Promise<void>;
+    handleCustomEvent?(e: DebugSessionCustomEvent): Promise<void>;
+    handleTerminateEvent?(e: DebugSession): Promise<void>;
 }
 
-export const IChildProcessAttachService = Symbol("IChildProcessAttachService");
+export const IChildProcessAttachService = Symbol('IChildProcessAttachService');
 export interface IChildProcessAttachService {
-	attach(
-		data: AttachRequestArguments & DebugConfiguration,
-		parentSession: DebugSession,
-	): Promise<void>;
+    attach(data: AttachRequestArguments & DebugConfiguration, parentSession: DebugSession): Promise<void>;
 }

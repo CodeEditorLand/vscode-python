@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+'use strict';
+
 /* Generate a RegExp from a "verbose" pattern.
  *
  * All whitespace in the pattern is removed, including newlines.  This
@@ -19,7 +21,7 @@
  * end of the line.
  */
 export function verboseRegExp(pattern: string, flags?: string): RegExp {
-	pattern = pattern.replace(/(^| {2})# .*$/gm, "");
-	pattern = pattern.replace(/\s+?/g, "");
-	return RegExp(pattern, flags);
+    pattern = pattern.replace(/(^| {2})# .*$/gm, '');
+    pattern = pattern.replace(/\s+?/g, '');
+    return RegExp(pattern, flags);
 }

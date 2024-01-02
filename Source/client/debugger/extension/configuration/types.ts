@@ -1,21 +1,21 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { CancellationToken, DebugConfiguration, WorkspaceFolder } from "vscode";
+'use strict';
 
-export const IDebugConfigurationResolver = Symbol(
-	"IDebugConfigurationResolver",
-);
+import { CancellationToken, DebugConfiguration, WorkspaceFolder } from 'vscode';
+
+export const IDebugConfigurationResolver = Symbol('IDebugConfigurationResolver');
 export interface IDebugConfigurationResolver<T extends DebugConfiguration> {
-	resolveDebugConfiguration(
-		folder: WorkspaceFolder | undefined,
-		debugConfiguration: T,
-		token?: CancellationToken,
-	): Promise<T | undefined>;
+    resolveDebugConfiguration(
+        folder: WorkspaceFolder | undefined,
+        debugConfiguration: T,
+        token?: CancellationToken,
+    ): Promise<T | undefined>;
 
-	resolveDebugConfigurationWithSubstitutedVariables(
-		folder: WorkspaceFolder | undefined,
-		debugConfiguration: T,
-		token?: CancellationToken,
-	): Promise<T | undefined>;
+    resolveDebugConfigurationWithSubstitutedVariables(
+        folder: WorkspaceFolder | undefined,
+        debugConfiguration: T,
+        token?: CancellationToken,
+    ): Promise<T | undefined>;
 }

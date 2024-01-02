@@ -1,13 +1,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { IExtensionSingleActivationService } from "../activation/types";
-import { IServiceManager } from "../ioc/types";
-import { CodeActionProviderService } from "./codeActionProvider/main";
+'use strict';
+
+import { IExtensionSingleActivationService } from '../activation/types';
+import { IServiceManager } from '../ioc/types';
+import { CodeActionProviderService } from './codeActionProvider/main';
 
 export function registerTypes(serviceManager: IServiceManager): void {
-	serviceManager.addSingleton<IExtensionSingleActivationService>(
-		IExtensionSingleActivationService,
-		CodeActionProviderService,
-	);
+    serviceManager.addSingleton<IExtensionSingleActivationService>(
+        IExtensionSingleActivationService,
+        CodeActionProviderService,
+    );
 }
