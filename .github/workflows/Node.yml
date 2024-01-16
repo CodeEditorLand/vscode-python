@@ -97,7 +97,7 @@ jobs:
             - run: pnpm run prepublishOnly
               working-directory: .
 
-            - uses: actions/upload-artifact@v4.0.0
+            - uses: actions/upload-artifact@v4.1.0
               with:
                   name: .-pythonExtensionApi-Node-${{ matrix.node-version }}-Target
                   path: ./pythonExtensionApi/Target
