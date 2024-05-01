@@ -36,7 +36,7 @@
 	"devDependencies": {
 		"@playform/build": "0.0.7",
 		"@playform/document": "0.0.6",
-		"source-map": "^0.8.0-beta.0"
+		"source-map": "0.8.0-beta.0"
 	},
 	"publishConfig": {
 		"access": "public"
