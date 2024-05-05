@@ -3,37 +3,40 @@
 	"version": "0.0.1",
 	"private": false,
 	"description": "An API facade for the Python extension in VS Code",
-	"homepage": "https://github.com/CodeEditorLand/Foundation#readme",
+	"keywords": [
+		"land"
+	],
+	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/LandPython#readme",
 	"bugs": {
-		"url": "https://github.com/CodeEditorLand/Foundation/issues"
+		"url": "HTTPS://GitHub.Com/CodeEditorLand/LandPython/issues"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/CodeEditorLand/Foundation.git"
+		"url": "git+HTTPS://github.com/CodeEditorLand/LandPython.git"
 	},
 	"license": "SEE LICENSE IN LICENSE",
 	"author": {
-		"name": "Playform",
-		"email": "Hello@Playform.Cloud",
-		"url": "https://playform.cloud"
+		"name": "🌆 — Land —",
+		"email": "Land@PlayForm.Cloud",
+		"url": "HTTPS://Land.PlayForm.Cloud"
 	},
 	"type": "module",
 	"main": "./out/main.js",
 	"types": "./out/main.d.ts",
 	"scripts": {
+		"Document": "Document 'Source/**/*.ts'",
 		"all": "npm run clean && npm run compile",
 		"all:publish": "git clean -xfd . && npm install && npm run compile && npm run formatTypings",
 		"clean": "node ../node_modules/rimraf/bin.js out",
 		"compile": "node ./node_modules/typescript/lib/tsc.js -b ./tsconfig.json",
 		"formatTypings": "node ../node_modules/eslint/bin/eslint.js --fix ./out/main.d.ts",
 		"prepack": "npm run all:publish",
-		"prepublishOnly": "TypeScriptESBuild 'Source/**/*.ts'"
+		"prepublishOnly": "Build 'Source/**/*.ts'"
 	},
 	"devDependencies": {
-		"@types/vscode": "^1.78.0",
-		"source-map": "^0.8.0-beta.0",
-		"typescript": "5.0.4",
-		"typescript-esbuild": "0.4.5"
+		"@playform/build": "0.0.7",
+		"@playform/document": "0.0.6",
+		"source-map": "0.8.0-beta.0"
 	},
 	"publishConfig": {
 		"access": "public"
