@@ -1,28 +1,8 @@
 {
 	"name": "python",
 	"displayName": "Python",
-	"version": "0.0.1",
-	"private": false,
 	"description": "Python language support with extension access points for IntelliSense (Pylance), Debugging (Python Debugger), linting, formatting, refactoring, unit tests, and more.",
-	"keywords": [
-		"land"
-	],
-	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/LandPython#readme",
-	"bugs": {
-		"url": "HTTPS://GitHub.Com/CodeEditorLand/LandPython/issues"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+HTTPS://github.com/CodeEditorLand/LandPython.git"
-	},
-	"license": "SEE LICENSE IN LICENSE",
 	"qna": "https://github.com/microsoft/vscode-python/discussions/categories/q-a",
-	"author": {
-		"name": "🛬 Land —",
-		"email": "Land@PlayForm.Cloud",
-		"url": "HTTPS://Land.PlayForm.Cloud"
-	},
-	"type": "module",
 	"main": "./out/client/extension",
 	"browser": "./dist/extension.browser.js",
 	"scripts": {
@@ -1441,7 +1421,6 @@
 	},
 	"devDependencies": {
 		"@playform/build": "0.0.7",
-		"@playform/document": "0.0.6",
 		"@types/bent": "7.3.8",
 		"@types/chai": "4.3.16",
 		"@types/chai-arrays": "2.0.3",
@@ -1482,9 +1461,6 @@
 		"uuid": "9.0.1",
 		"worker-loader": "3.0.8",
 		"yargs": "17.7.2"
-	},
-	"publishConfig": {
-		"access": "public"
 	},
 	"icon": "icon.png",
 	"galleryBanner": {
