@@ -1427,7 +1427,7 @@
 		"@iarna/toml": "2.2.5",
 		"arch": "3.0.0",
 		"fs-extra": "11.2.0",
-		"glob": "10.3.16",
+		"glob": "10.4.1",
 		"hash.js": "1.1.7",
 		"iconv-lite": "0.6.3",
 		"inversify": "6.0.2",
