@@ -7,12 +7,18 @@ pub trait Environment {
     /**
      * Only used in tests, this is the root `/`.
      */
+    #[allow(dead_code)]
     fn get_root(&self) -> Option<PathBuf>;
     fn get_env_var(&self, key: String) -> Option<String>;
     fn get_know_global_search_locations(&self) -> Vec<PathBuf>;
 }
 
 pub struct EnvironmentApi {}
+impl EnvironmentApi {
+    pub fn new() -> Self {
+        EnvironmentApi {}
+    }
+}
 
 #[cfg(windows)]
 impl Environment for EnvironmentApi {

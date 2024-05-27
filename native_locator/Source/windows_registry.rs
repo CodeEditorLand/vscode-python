@@ -12,106 +12,216 @@ use crate::messaging::{PythonEnvironment, PythonEnvironmentCategory};
 #[cfg(windows)]
 use crate::utils::PythonEnv;
 #[cfg(windows)]
+use crate::windows_store::is_windows_app_folder_in_program_files;
+#[cfg(windows)]
 use std::path::PathBuf;
 #[cfg(windows)]
 use winreg::RegKey;
 
 #[cfg(windows)]
-fn get_registry_pythons_from_key(hk: &RegKey, company: &str) -> Option<Vec<PythonEnvironment>> {
-    let python_key = hk.open_subkey("Software\\Python").ok()?;
-    let company_key = python_key.open_subkey(company).ok()?;
+fn get_registry_pythons_from_key_for_company(
+    key_container: &str,
+    company_key: &RegKey,
+    company: &str,
+    conda_locator: &mut dyn CondaLocator,
+) -> Option<LocatorResult> {
+    use log::{trace, warn};
 
-    let mut pythons = vec![];
-    for key in company_key.enum_keys().filter_map(Result::ok) {
-        if let Some(key) = company_key.open_subkey(key).ok() {
-            if let Some(install_path_key) = key.open_subkey("InstallPath").ok() {
-                let env_path: String = install_path_key.get_value("").ok().unwrap_or_default();
-                let env_path = PathBuf::from(env_path);
-                let env_path = if env_path.exists() {
-                    Some(env_path)
-                } else {
-                    None
-                };
-                let executable: String = install_path_key
-                    .get_value("ExecutablePath")
-                    .ok()
-                    .unwrap_or_default();
-                if executable.len() == 0 {
-                    continue;
-                }
-                let executable = PathBuf::from(executable);
-                if !executable.exists() {
-                    continue;
-                }
-                let version: String = key.get_value("Version").ok().unwrap_or_default();
-                let display_name: String = key.get_value("DisplayName").ok().unwrap_or_default();
+    use crate::messaging::Architecture;
+    let mut managers: Vec<EnvManager> = vec![];
+    let mut environments = vec![];
+    let company_display_name: Option<String> = company_key.get_value("DisplayName").ok();
+    for installed_python in company_key.enum_keys().filter_map(Result::ok) {
+        match company_key.open_subkey(installed_python.clone()) {
+            Ok(installed_python_key) => {
+                match installed_python_key.open_subkey("InstallPath") {
+                    Ok(install_path_key) => {
+                        let env_path: String =
+                            install_path_key.get_value("").ok().unwrap_or_default();
+                        let env_path = PathBuf::from(env_path);
+                        if is_windows_app_folder_in_program_files(&env_path) {
+                            trace!(
+                                "Found Python ({}) in {}\\Software\\Python\\{}\\{}, but skipping as this is a Windows Store Python",
+                                env_path.to_str().unwrap_or_default(),
+                                key_container,
+                                company,
+                                installed_python,
+                            );
+                            continue;
+                        }
+                        trace!(
+                            "Found Python ({}) in {}\\Software\\Python\\{}\\{}",
+                            env_path.to_str().unwrap_or_default(),
+                            key_container,
+                            company,
+                            installed_python,
+                        );
 
-                let env = PythonEnvironment::new(
-                    Some(display_name),
-                    None,
-                    Some(executable.clone()),
-                    PythonEnvironmentCategory::WindowsRegistry,
-                    if version.len() > 0 {
-                        Some(version)
-                    } else {
-                        None
-                    },
-                    env_path,
-                    None,
-                    Some(vec![executable.to_string_lossy().to_string()]),
+                        // Possible this is a conda install folder.
+                        if let Some(conda_result) = conda_locator.find_in(&env_path) {
+                            for manager in conda_result.managers {
+                                let mut mgr = manager.clone();
+                                mgr.company = Some(company.to_string());
+                                mgr.company_display_name = company_display_name.clone();
+                                managers.push(mgr)
+                            }
+                            for env in conda_result.environments {
+                                let mut env = env.clone();
+                                env.company = Some(company.to_string());
+                                env.company_display_name = company_display_name.clone();
+                                if let Some(mgr) = env.env_manager {
+                                    let mut mgr = mgr.clone();
+                                    mgr.company = Some(company.to_string());
+                                    mgr.company_display_name = company_display_name.clone();
+                                    env.env_manager = Some(mgr);
+                                }
+                                environments.push(env);
+                            }
+                            continue;
+                        }
+
+                        let env_path = if env_path.exists() {
+                            Some(env_path)
+                        } else {
+                            None
+                        };
+                        let executable: String = install_path_key
+                            .get_value("ExecutablePath")
+                            .ok()
+                            .unwrap_or_default();
+                        if executable.len() == 0 {
+                            warn!(
+                                "Executable is empty {}\\Software\\Python\\{}\\{}\\ExecutablePath",
+                                key_container, company, installed_python
+                            );
+                            continue;
+                        }
+                        let executable = PathBuf::from(executable);
+                        if !executable.exists() {
+                            warn!(
+                                "Python executable ({}) file not found for {}\\Software\\Python\\{}\\{}",
+                                executable.to_str().unwrap_or_default(),
+                                key_container,
+                                company,
+                                installed_python
+                            );
+                            continue;
+                        }
+                        let version: String = installed_python_key
+                            .get_value("Version")
+                            .ok()
+                            .unwrap_or_default();
+                        let architecture: String = installed_python_key
+                            .get_value("SysArchitecture")
+                            .ok()
+                            .unwrap_or_default();
+                        let display_name: String = installed_python_key
+                            .get_value("DisplayName")
+                            .ok()
+                            .unwrap_or_default();
+
+                        let mut env = PythonEnvironment::new(
+                            Some(display_name),
+                            None,
+                            Some(executable.clone()),
+                            PythonEnvironmentCategory::WindowsRegistry,
+                            if version.len() > 0 {
+                                Some(version)
+                            } else {
+                                None
+                            },
+                            env_path,
+                            None,
+                            Some(vec![executable.to_string_lossy().to_string()]),
+                        );
+                        if architecture.contains("32") {
+                            env.arch = Some(Architecture::X86);
+                        } else if architecture.contains("64") {
+                            env.arch = Some(Architecture::X64);
+                        }
+                        env.company = Some(company.to_string());
+                        env.company_display_name = company_display_name.clone();
+                        environments.push(env);
+                    }
+                    Err(err) => {
+                        warn!(
+                            "Failed to open {}\\Software\\Python\\{}\\{}\\InstallPath, {:?}",
+                            key_container, company, installed_python, err
+                        );
+                    }
+                }
+            }
+            Err(err) => {
+                warn!(
+                    "Failed to open {}\\Software\\Python\\{}\\{}, {:?}",
+                    key_container, company, installed_python, err
                 );
-                pythons.push(env);
             }
         }
     }
 
-    Some(pythons)
+    Some(LocatorResult {
+        environments,
+        managers,
+    })
 }
 
 #[cfg(windows)]
-pub fn get_registry_pythons(company: &str) -> Option<Vec<PythonEnvironment>> {
-    let hklm = winreg::RegKey::predef(winreg::enums::HKEY_LOCAL_MACHINE);
-    let hkcu = winreg::RegKey::predef(winreg::enums::HKEY_CURRENT_USER);
+fn get_registry_pythons(conda_locator: &mut dyn CondaLocator) -> Option<LocatorResult> {
+    use log::{trace, warn};
 
-    let mut pythons = vec![];
-    if let Some(hklm_pythons) = get_registry_pythons_from_key(&hklm, company) {
-        pythons.extend(hklm_pythons);
-    }
-    if let Some(hkcu_pythons) = get_registry_pythons_from_key(&hkcu, company) {
-        pythons.extend(hkcu_pythons);
-    }
-    Some(pythons)
-}
-
-#[cfg(windows)]
-pub fn get_registry_pythons_anaconda(conda_locator: &mut dyn CondaLocator) -> LocatorResult {
-    let hklm = winreg::RegKey::predef(winreg::enums::HKEY_LOCAL_MACHINE);
-    let hkcu = winreg::RegKey::predef(winreg::enums::HKEY_CURRENT_USER);
-
-    let mut pythons = vec![];
-    if let Some(hklm_pythons) = get_registry_pythons_from_key(&hklm, "ContinuumAnalytics") {
-        pythons.extend(hklm_pythons);
-    }
-    if let Some(hkcu_pythons) = get_registry_pythons_from_key(&hkcu, "ContinuumAnalytics") {
-        pythons.extend(hkcu_pythons);
-    }
-
-    let mut environments: Vec<PythonEnvironment> = vec![];
+    let mut environments = vec![];
     let mut managers: Vec<EnvManager> = vec![];
 
-    for env in pythons.iter() {
-        if let Some(env_path) = env.clone().env_path {
-            if let Some(mut result) = conda_locator.find_in(&env_path) {
-                environments.append(&mut result.environments);
-                managers.append(&mut result.managers);
+    struct RegistryKey {
+        pub name: &'static str,
+        pub key: winreg::RegKey,
+    }
+    let search_keys = [
+        RegistryKey {
+            name: "HKLM",
+            key: winreg::RegKey::predef(winreg::enums::HKEY_LOCAL_MACHINE),
+        },
+        RegistryKey {
+            name: "HKCU",
+            key: winreg::RegKey::predef(winreg::enums::HKEY_CURRENT_USER),
+        },
+    ];
+    for (name, key) in search_keys.iter().map(|f| (f.name, &f.key)) {
+        match key.open_subkey("Software\\Python") {
+            Ok(python_key) => {
+                for company in python_key.enum_keys().filter_map(Result::ok) {
+                    trace!("Searching {}\\Software\\Python\\{}", name, company);
+                    match python_key.open_subkey(&company) {
+                        Ok(company_key) => {
+                            if let Some(result) = get_registry_pythons_from_key_for_company(
+                                name,
+                                &company_key,
+                                &company,
+                                conda_locator,
+                            ) {
+                                managers.extend(result.managers);
+                                environments.extend(result.environments);
+                            }
+                        }
+                        Err(err) => {
+                            warn!(
+                                "Failed to open {}\\Software\\Python\\{}, {:?}",
+                                name, company, err
+                            );
+                        }
+                    }
+                }
+            }
+            Err(err) => {
+                warn!("Failed to open {}\\Software\\Python, {:?}", name, err)
             }
         }
     }
-
-    LocatorResult {
-        managers,
+    Some(LocatorResult {
         environments,
-    }
+        managers,
+    })
 }
 
 #[cfg(windows)]
@@ -134,23 +244,11 @@ impl Locator for WindowsRegistry<'_> {
     }
 
     fn find(&mut self) -> Option<LocatorResult> {
-        let mut environments: Vec<PythonEnvironment> = vec![];
-        let mut managers: Vec<EnvManager> = vec![];
-
-        let mut result = get_registry_pythons("PythonCore").unwrap_or_default();
-        environments.append(&mut result);
-
-        let mut result = get_registry_pythons_anaconda(self.conda_locator) ;
-        environments.append(&mut result.environments);
-        managers.append(&mut result.managers);
-
-        if environments.is_empty() && managers.is_empty() {
-            None
-        } else {
-            Some(LocatorResult {
-                managers,
-                environments,
-            })
+        if let Some(result) = get_registry_pythons(self.conda_locator) {
+            if !result.environments.is_empty() || !result.managers.is_empty() {
+                return Some(result);
+            }
         }
+        None
     }
 }
