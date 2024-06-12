@@ -53,14 +53,6 @@ function getSendToNativeREPLSetting(): boolean {
     const configuration = getConfiguration('python', uri);
     return configuration.get<boolean>('REPL.sendToNativeREPL', false);
 }
-
-workspace.onDidCloseNotebookDocument((nb) => {
-    if (notebookDocument && nb.uri.toString() === notebookDocument.uri.toString()) {
-        notebookEditor = undefined;
-        notebookDocument = undefined;
-    }
-});
-
 // Will only be called when user has experiment enabled.
 export async function registerReplCommands(
     disposables: Disposable[],
@@ -90,24 +82,18 @@ export async function registerReplCommands(
                 const activeEditor = window.activeTextEditor as TextEditor;
                 const code = await getSelectedTextToExecute(activeEditor);
 
-                if (!notebookEditor) {
-                    const interactiveWindowObject = (await commands.executeCommand(
-                        'interactive.open',
-                        {
-                            preserveFocus: true,
-                            viewColumn: ViewColumn.Beside,
-                        },
-                        undefined,
-                        notebookController.id,
-                        'Python REPL',
-                    )) as { notebookEditor: NotebookEditor };
-                    notebookEditor = interactiveWindowObject.notebookEditor;
-                    notebookDocument = interactiveWindowObject.notebookEditor.notebook;
-                }
-                // Handle case where user has closed REPL window, and re-opens.
-                if (notebookEditor && notebookDocument) {
-                    await window.showNotebookDocument(notebookDocument, { viewColumn: ViewColumn.Beside });
-                }
+                const interactiveWindowObject = (await commands.executeCommand(
+                    'interactive.open',
+                    {
+                        preserveFocus: true,
+                        viewColumn: ViewColumn.Beside,
+                    },
+                    undefined,
+                    notebookController.id,
+                    'Python REPL',
+                )) as { notebookEditor: NotebookEditor };
+                notebookEditor = interactiveWindowObject.notebookEditor;
+                notebookDocument = interactiveWindowObject.notebookEditor.notebook;
 
                 if (notebookDocument) {
                     notebookController.updateNotebookAffinity(notebookDocument, NotebookControllerAffinity.Default);
@@ -201,6 +187,14 @@ export async function registerReplExecuteOnEnter(
                     await commands.executeCommand('interactive.execute');
                 }
             }
+        }),
+    );
+}
+
+export async function registerReplExecuteOnShiftEnter(disposables: Disposable[]): Promise<void> {
+    disposables.push(
+        commands.registerCommand(Commands.Exec_In_REPL_Shift_Enter, async () => {
+            await commands.executeCommand(Commands.Exec_In_REPL_Enter);
         }),
     );
 }
