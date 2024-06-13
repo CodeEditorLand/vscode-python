@@ -2,7 +2,7 @@
     "name": "python",
     "displayName": "Python",
     "description": "Python language support with extension access points for IntelliSense (Pylance), Debugging (Python Debugger), linting, formatting, refactoring, unit tests, and more.",
-    "version": "2024.7.0-dev",
+    "version": "2024.9.0-dev",
     "featureFlags": {
         "usingNewInterpreterStorage": true
     },
@@ -1118,12 +1118,7 @@
             {
                 "command": "python.execInREPL",
                 "key": "shift+enter",
-                "when": "config.python.REPL.sendToNativeREPL && activeEditor != 'workbench.editor.interactive'&& editorLangId == python && editorTextFocus && !jupyter.ownsSelection"
-            },
-            {
-                "command": "python.execREPLShiftEnter",
-                "key": "shift+enter",
-                "when": "activeEditor == 'workbench.editor.interactive' && config.interactiveWindow.executeWithShiftEnter && editorLangId == python"
+                "when": "config.python.REPL.sendToNativeREPL && activeEditor != 'workbench.editor.interactive'&& editorLangId == python && editorTextFocus && !jupyter.ownsSelection && !notebookEditorFocused"
             },
             {
                 "command": "python.execInREPLEnter",
@@ -1585,7 +1580,7 @@
         "expose-loader": "^3.1.0",
         "flat": "^5.0.2",
         "get-port": "^5.1.1",
-        "gulp": "^5.0.0",
+        "gulp": "^4.0.0",
         "gulp-typescript": "^5.0.0",
         "mocha": "^9.2.2",
         "mocha-junit-reporter": "^2.0.2",
