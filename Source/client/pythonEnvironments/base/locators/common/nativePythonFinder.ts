@@ -1,28 +1,33 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { Disposable, EventEmitter, Event, workspace, Uri } from 'vscode';
+import { Disposable, EventEmitter, Event, Uri } from 'vscode';
 import * as ch from 'child_process';
 import * as path from 'path';
 import * as rpc from 'vscode-jsonrpc/node';
 import { PassThrough } from 'stream';
 import { isWindows } from '../../../../common/platform/platformService';
 import { EXTENSION_ROOT_DIR } from '../../../../constants';
-import { traceError, traceInfo, traceLog, traceVerbose, traceWarn } from '../../../../logging';
 import { createDeferred, createDeferredFrom } from '../../../../common/utils/async';
 import { DisposableBase, DisposableStore } from '../../../../common/utils/resourceLifecycle';
 import { DEFAULT_INTERPRETER_PATH_SETTING_KEY } from '../lowLevel/customWorkspaceLocator';
 import { noop } from '../../../../common/utils/misc';
-import { getConfiguration } from '../../../../common/vscodeApis/workspaceApis';
+import {
+    getConfiguration,
+    getWorkspaceFolderPaths,
+    getWorkspaceFolders,
+} from '../../../../common/vscodeApis/workspaceApis';
 import { CONDAPATH_SETTING_KEY } from '../../../common/environmentManagers/conda';
 import { VENVFOLDERS_SETTING_KEY, VENVPATH_SETTING_KEY } from '../lowLevel/customVirtualEnvLocator';
 import { getUserHomeDir } from '../../../../common/utils/platform';
+import { createLogOutputChannel } from '../../../../common/vscodeApis/windowApis';
+import { PythonEnvKind } from '../../info';
 
 const untildify = require('untildify');
 
-const NATIVE_LOCATOR = isWindows()
-    ? path.join(EXTENSION_ROOT_DIR, 'native_locator', 'bin', 'pet.exe')
-    : path.join(EXTENSION_ROOT_DIR, 'native_locator', 'bin', 'pet');
+const PYTHON_ENV_TOOLS_PATH = isWindows()
+    ? path.join(EXTENSION_ROOT_DIR, 'python-env-tools', 'bin', 'pet.exe')
+    : path.join(EXTENSION_ROOT_DIR, 'python-env-tools', 'bin', 'pet');
 
 export interface NativeEnvInfo {
     displayName?: string;
@@ -49,6 +54,7 @@ export interface NativeEnvManagerInfo {
 export interface NativeGlobalPythonFinder extends Disposable {
     resolve(executable: string): Promise<NativeEnvInfo>;
     refresh(): AsyncIterable<NativeEnvInfo>;
+    categoryToKind(category: string): PythonEnvKind;
 }
 
 interface NativeLog {
@@ -60,6 +66,8 @@ class NativeGlobalPythonFinderImpl extends DisposableBase implements NativeGloba
     private readonly connection: rpc.MessageConnection;
 
     private firstRefreshResults: undefined | (() => AsyncGenerator<NativeEnvInfo, void, unknown>);
+
+    private readonly outputChannel = this._register(createLogOutputChannel('Python Locator', { log: true }));
 
     constructor() {
         super();
@@ -75,8 +83,42 @@ class NativeGlobalPythonFinderImpl extends DisposableBase implements NativeGloba
             executable,
         });
 
-        traceInfo(`Resolved Python Environment ${environment.executable} in ${duration}ms`);
+        this.outputChannel.info(`Resolved Python Environment ${environment.executable} in ${duration}ms`);
         return environment;
+    }
+
+    categoryToKind(category: string): PythonEnvKind {
+        switch (category.toLowerCase()) {
+            case 'conda':
+                return PythonEnvKind.Conda;
+            case 'system':
+            case 'homebrew':
+            case 'mac-python-org':
+            case 'mac-command-line-tools':
+            case 'windows-registry':
+                return PythonEnvKind.System;
+            case 'pyenv':
+            case 'pyenv-other':
+                return PythonEnvKind.Pyenv;
+            case 'pipenv':
+                return PythonEnvKind.Pipenv;
+            case 'pyenv-virtualenv':
+                return PythonEnvKind.VirtualEnv;
+            case 'venv':
+                return PythonEnvKind.Venv;
+            case 'virtualenv':
+                return PythonEnvKind.VirtualEnv;
+            case 'virtualenvwrapper':
+                return PythonEnvKind.VirtualEnvWrapper;
+            case 'windows-store':
+                return PythonEnvKind.MicrosoftStore;
+            case 'unknown':
+                return PythonEnvKind.Unknown;
+            default: {
+                this.outputChannel.info(`Unknown Python Environment category '${category}' from Native Locator.`);
+                return PythonEnvKind.Unknown;
+            }
+        }
     }
 
     async *refresh(): AsyncIterable<NativeEnvInfo> {
@@ -152,19 +194,34 @@ class NativeGlobalPythonFinderImpl extends DisposableBase implements NativeGloba
 
     // eslint-disable-next-line class-methods-use-this
     private start(): rpc.MessageConnection {
-        const proc = ch.spawn(NATIVE_LOCATOR, ['server'], { env: process.env });
-        const disposables: Disposable[] = [];
+        this.outputChannel.info(`Starting Python Locator ${PYTHON_ENV_TOOLS_PATH} server`);
+
         // jsonrpc package cannot handle messages coming through too quickly.
         // Lets handle the messages and close the stream only when
         // we have got the exit event.
         const readable = new PassThrough();
-        proc.stdout.pipe(readable, { end: false });
-        proc.stderr.on('data', (data) => {
-            const err = data.toString();
-            traceError('Native Python Finder', err);
-        });
         const writable = new PassThrough();
-        writable.pipe(proc.stdin, { end: false });
+        const disposables: Disposable[] = [];
+        try {
+            const proc = ch.spawn(PYTHON_ENV_TOOLS_PATH, ['server'], { env: process.env });
+            proc.stdout.pipe(readable, { end: false });
+            proc.stderr.on('data', (data) => this.outputChannel.error(data.toString()));
+            writable.pipe(proc.stdin, { end: false });
+
+            disposables.push({
+                dispose: () => {
+                    try {
+                        if (proc.exitCode === null) {
+                            proc.kill();
+                        }
+                    } catch (ex) {
+                        this.outputChannel.error('Error disposing finder', ex);
+                    }
+                },
+            });
+        } catch (ex) {
+            this.outputChannel.error(`Error starting Python Finder ${PYTHON_ENV_TOOLS_PATH} server`, ex);
+        }
         const disposeStreams = new Disposable(() => {
             readable.end();
             writable.end();
@@ -178,40 +235,29 @@ class NativeGlobalPythonFinderImpl extends DisposableBase implements NativeGloba
             disposeStreams,
             connection.onError((ex) => {
                 disposeStreams.dispose();
-                traceError('Error in Native Python Finder', ex);
+                this.outputChannel.error('Connection Error:', ex);
             }),
             connection.onNotification('log', (data: NativeLog) => {
                 switch (data.level) {
                     case 'info':
-                        traceInfo(`Native Python Finder: ${data.message}`);
+                        this.outputChannel.info(data.message);
                         break;
                     case 'warning':
-                        traceWarn(`Native Python Finder: ${data.message}`);
+                        this.outputChannel.warn(data.message);
                         break;
                     case 'error':
-                        traceError(`Native Python Finder: ${data.message}`);
+                        this.outputChannel.error(data.message);
                         break;
                     case 'debug':
-                        traceVerbose(`Native Python Finder: ${data.message}`);
+                        this.outputChannel.debug(data.message);
                         break;
                     default:
-                        traceLog(`Native Python Finder: ${data.message}`);
+                        this.outputChannel.trace(data.message);
                 }
             }),
             connection.onClose(() => {
                 disposables.forEach((d) => d.dispose());
             }),
-            {
-                dispose: () => {
-                    try {
-                        if (proc.exitCode === null) {
-                            proc.kill();
-                        }
-                    } catch (ex) {
-                        traceVerbose('Error while disposing Native Python Finder', ex);
-                    }
-                },
-            },
         );
 
         connection.listen();
@@ -244,6 +290,8 @@ class NativeGlobalPythonFinderImpl extends DisposableBase implements NativeGloba
 
         disposable.add(
             this.connection.onNotification('environment', (data: NativeEnvInfo) => {
+                this.outputChannel.info(`Discovered env: ${data.executable || data.executable}`);
+                this.outputChannel.trace(`Discovered env info:\n ${JSON.stringify(data, undefined, 4)}`);
                 // We know that in the Python extension if either Version of Prefix is not provided by locator
                 // Then we end up resolving the information.
                 // Lets do that here,
@@ -259,10 +307,11 @@ class NativeGlobalPythonFinderImpl extends DisposableBase implements NativeGloba
                             executable: data.executable,
                         })
                         .then(({ environment, duration }) => {
-                            traceInfo(`Resolved Python Environment ${environment.executable} in ${duration}ms`);
+                            this.outputChannel.info(`Resolved ${environment.executable} in ${duration}ms`);
+                            this.outputChannel.trace(`Environment resolved:\n ${JSON.stringify(data, undefined, 4)}`);
                             discovered.fire(environment);
                         })
-                        .catch((ex) => traceError(`Error in Resolving Python Environment ${JSON.stringify(data)}`, ex));
+                        .catch((ex) => this.outputChannel.error(`Error in Resolving ${JSON.stringify(data)}`, ex));
                     trackPromiseAndNotifyOnCompletion(promise);
                 } else {
                     discovered.fire(data);
@@ -272,8 +321,8 @@ class NativeGlobalPythonFinderImpl extends DisposableBase implements NativeGloba
 
         trackPromiseAndNotifyOnCompletion(
             this.sendRefreshRequest()
-                .then(({ duration }) => traceInfo(`Native Python Finder completed in ${duration}ms`))
-                .catch((ex) => traceError('Error in Native Python Finder', ex)),
+                .then(({ duration }) => this.outputChannel.info(`Refresh completed in ${duration}ms`))
+                .catch((ex) => this.outputChannel.error('Refresh error', ex)),
         );
 
         completed.promise.finally(() => disposable.dispose());
@@ -284,7 +333,7 @@ class NativeGlobalPythonFinderImpl extends DisposableBase implements NativeGloba
     }
 
     private sendRefreshRequest() {
-        const pythonPathSettings = (workspace.workspaceFolders || []).map((w) =>
+        const pythonPathSettings = (getWorkspaceFolders() || []).map((w) =>
             getPythonSettingAndUntildify<string>(DEFAULT_INTERPRETER_PATH_SETTING_KEY, w.uri),
         );
         pythonPathSettings.push(getPythonSettingAndUntildify<string>(DEFAULT_INTERPRETER_PATH_SETTING_KEY));
@@ -306,7 +355,7 @@ class NativeGlobalPythonFinderImpl extends DisposableBase implements NativeGloba
             {
                 // This has a special meaning in locator, its lot a low priority
                 // as we treat this as workspace folders that can contain a large number of files.
-                search_paths: (workspace.workspaceFolders || []).map((w) => w.uri.fsPath),
+                search_paths: getWorkspaceFolderPaths(),
                 // Also send the python paths that are configured in the settings.
                 python_interpreter_paths: pythonSettings,
                 // We do not want to mix this with `search_paths`
