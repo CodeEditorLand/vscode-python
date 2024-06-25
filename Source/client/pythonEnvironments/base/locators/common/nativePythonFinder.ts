@@ -95,11 +95,14 @@ class NativeGlobalPythonFinderImpl extends DisposableBase implements NativeGloba
             case 'homebrew':
             case 'mac-python-org':
             case 'mac-command-line-tools':
+            case 'mac-xcode':
             case 'windows-registry':
                 return PythonEnvKind.System;
             case 'pyenv':
             case 'pyenv-other':
                 return PythonEnvKind.Pyenv;
+            case 'poetry':
+                return PythonEnvKind.Poetry;
             case 'pipenv':
                 return PythonEnvKind.Pipenv;
             case 'pyenv-virtualenv':
@@ -290,7 +293,7 @@ class NativeGlobalPythonFinderImpl extends DisposableBase implements NativeGloba
 
         disposable.add(
             this.connection.onNotification('environment', (data: NativeEnvInfo) => {
-                this.outputChannel.info(`Discovered env: ${data.executable || data.executable}`);
+                this.outputChannel.info(`Discovered env: ${data.executable || data.prefix}`);
                 this.outputChannel.trace(`Discovered env info:\n ${JSON.stringify(data, undefined, 4)}`);
                 // We know that in the Python extension if either Version of Prefix is not provided by locator
                 // Then we end up resolving the information.
