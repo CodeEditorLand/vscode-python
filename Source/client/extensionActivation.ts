@@ -32,7 +32,7 @@ import { TerminalProvider } from './providers/terminalProvider';
 import { setExtensionInstallTelemetryProperties } from './telemetry/extensionInstallTelemetry';
 import { registerTypes as tensorBoardRegisterTypes } from './tensorBoard/serviceRegistry';
 import { registerTypes as commonRegisterTerminalTypes } from './terminals/serviceRegistry';
-import { ICodeExecutionHelper, ICodeExecutionManager, ITerminalAutoActivation } from './terminals/types';
+import { ICodeExecutionManager, ITerminalAutoActivation } from './terminals/types';
 import { registerTypes as unitTestsRegisterTypes } from './testing/serviceRegistry';
 
 // components
@@ -106,8 +106,8 @@ export function activateFeatures(ext: ExtensionState, _components: Components): 
         interpreterService,
         pathUtils,
     );
-    const executionHelper = ext.legacyIOC.serviceContainer.get<ICodeExecutionHelper>(ICodeExecutionHelper);
-    registerReplCommands(ext.disposables, interpreterService, executionHelper);
+
+    registerReplCommands(ext.disposables, interpreterService);
     registerReplExecuteOnEnter(ext.disposables, interpreterService);
 }
 

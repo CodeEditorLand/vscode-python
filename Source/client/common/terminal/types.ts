@@ -15,7 +15,6 @@ export enum TerminalActivationProviders {
     pyenv = 'pyenv',
     conda = 'conda',
     pipenv = 'pipenv',
-    pixi = 'pixi',
 }
 export enum TerminalShellType {
     powershell = 'powershell',

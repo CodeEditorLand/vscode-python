@@ -50,9 +50,6 @@ export class TerminalHelper implements ITerminalHelper {
         @inject(ITerminalActivationCommandProvider)
         @named(TerminalActivationProviders.pipenv)
         private readonly pipenv: ITerminalActivationCommandProvider,
-        @inject(ITerminalActivationCommandProvider)
-        @named(TerminalActivationProviders.pixi)
-        private readonly pixi: ITerminalActivationCommandProvider,
         @multiInject(IShellDetector) shellDetectors: IShellDetector[],
     ) {
         this.shellDetector = new ShellDetector(this.platform, shellDetectors);
@@ -78,14 +75,7 @@ export class TerminalHelper implements ITerminalHelper {
         resource?: Uri,
         interpreter?: PythonEnvironment,
     ): Promise<string[] | undefined> {
-        const providers = [
-            this.pixi,
-            this.pipenv,
-            this.pyenv,
-            this.bashCShellFish,
-            this.commandPromptAndPowerShell,
-            this.nushell,
-        ];
+        const providers = [this.pipenv, this.pyenv, this.bashCShellFish, this.commandPromptAndPowerShell, this.nushell];
         const promise = this.getActivationCommands(resource || undefined, interpreter, terminalShellType, providers);
         this.sendTelemetry(
             terminalShellType,
@@ -103,7 +93,7 @@ export class TerminalHelper implements ITerminalHelper {
         if (this.platform.osType === OSType.Unknown) {
             return;
         }
-        const providers = [this.pixi, this.bashCShellFish, this.commandPromptAndPowerShell, this.nushell];
+        const providers = [this.bashCShellFish, this.commandPromptAndPowerShell, this.nushell];
         const promise = this.getActivationCommands(resource, interpreter, shell, providers);
         this.sendTelemetry(
             shell,

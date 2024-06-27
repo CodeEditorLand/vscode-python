@@ -58,7 +58,6 @@ export class TerminalService implements ITerminalService, Disposable {
         if (!this.options?.hideFromUser) {
             this.terminal!.show(true);
         }
-
         this.terminal!.sendText(text, true);
     }
     public async sendText(text: string): Promise<void> {

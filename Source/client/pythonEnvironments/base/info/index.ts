@@ -16,7 +16,6 @@ export enum PythonEnvKind {
     Pyenv = 'global-pyenv',
     Poetry = 'poetry',
     Hatch = 'hatch',
-    Pixi = 'pixi',
     ActiveState = 'activestate',
     Custom = 'global-custom',
     OtherGlobal = 'global-other',
@@ -47,7 +46,6 @@ export interface EnvPathType {
 export const virtualEnvKinds = [
     PythonEnvKind.Poetry,
     PythonEnvKind.Hatch,
-    PythonEnvKind.Pixi,
     PythonEnvKind.Pipenv,
     PythonEnvKind.Venv,
     PythonEnvKind.VirtualEnvWrapper,

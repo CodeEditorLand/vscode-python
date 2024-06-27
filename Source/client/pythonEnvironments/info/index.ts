@@ -20,7 +20,6 @@ export enum EnvironmentType {
     MicrosoftStore = 'MicrosoftStore',
     Poetry = 'Poetry',
     Hatch = 'Hatch',
-    Pixi = 'Pixi',
     VirtualEnvWrapper = 'VirtualEnvWrapper',
     ActiveState = 'ActiveState',
     Global = 'Global',
@@ -29,7 +28,7 @@ export enum EnvironmentType {
 /**
  * These envs are only created for a specific workspace, which we're able to detect.
  */
-export const workspaceVirtualEnvTypes = [EnvironmentType.Poetry, EnvironmentType.Pipenv, EnvironmentType.Pixi];
+export const workspaceVirtualEnvTypes = [EnvironmentType.Poetry, EnvironmentType.Pipenv];
 
 export const virtualEnvTypes = [
     ...workspaceVirtualEnvTypes,
@@ -49,7 +48,6 @@ export enum ModuleInstallerType {
     Pip = 'Pip',
     Poetry = 'Poetry',
     Pipenv = 'Pipenv',
-    Pixi = 'Pixi',
 }
 
 /**
@@ -124,9 +122,6 @@ export function getEnvironmentTypeName(environmentType: EnvironmentType): string
         }
         case EnvironmentType.Hatch: {
             return 'Hatch';
-        }
-        case EnvironmentType.Pixi: {
-            return 'pixi';
         }
         case EnvironmentType.VirtualEnvWrapper: {
             return 'virtualenvwrapper';
