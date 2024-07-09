@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Serializable, SendHandle, MessageOptions } from 'child_process';
-import { EventEmitter } from 'node:events';
+import { EventEmitter } from 'events';
 import { Writable, Readable, Pipe } from 'stream';
 import { FakeReadableStream } from './helper';
 

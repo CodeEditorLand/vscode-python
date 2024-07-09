@@ -51,6 +51,7 @@ jobs:
             STNOUPGRADE: 1
             STRIPE_CLI_TELEMETRY_OPTOUT: 1
             TELEMETRY_DISABLED: 1
+            TERRAFORM_TELEMETRY: 0
 
         strategy:
             matrix:
@@ -83,6 +84,9 @@ jobs:
             - run: pnpm install
               working-directory: .
 
+            - run: pnpm run test
+              working-directory: .
+
             - uses: actions/setup-node@v4.0.2
               with:
                   node-version: ${{ matrix.node-version }}
@@ -95,7 +99,7 @@ jobs:
             - run: pnpm run prepublishOnly
               working-directory: .
 
-            - uses: actions/upload-artifact@v4.3.3
+            - uses: actions/upload-artifact@v4.3.4
               with:
                   name: .-pythonExtensionApi-Node-${{ matrix.node-version }}-Target
                   path: ./pythonExtensionApi/Target
