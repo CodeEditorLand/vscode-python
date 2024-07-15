@@ -1219,10 +1219,7 @@ export interface IEventNamePropertyMapping {
         "nativeCondaRcsNotFound" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true, "owner": "donjayamanne" },
         "nativeCondaEnvDirsNotFound" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true, "owner": "donjayamanne" },
         "nativeCondaEnvDirsNotFoundHasEnvs" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true, "owner": "donjayamanne" },
-        "nativeCondaEnvDirsNotFoundHasEnvsInTxt" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true, "owner": "donjayamanne" },
-        "nativeCondaEnvTxtSame" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "owner": "donjayamanne" },
-        "nativeCondaEnvsFromTxt" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true, "owner": "donjayamanne" },
-        "nativeCondaEnvTxtExists" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "owner": "donjayamanne" }
+        "nativeCondaEnvDirsNotFoundHasEnvsInTxt" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true, "owner": "donjayamanne" }
        }
      */
     [EventName.PYTHON_INTERPRETER_DISCOVERY]: {
@@ -1490,18 +1487,6 @@ export interface IEventNamePropertyMapping {
          * Number of environments of a specific type missing in Native Locator (compared to the Stable Locator).
          */
         missingNativeCondaEnvs?: number;
-        /**
-         * Whether the env txt found by native locator is the same as that found by pythonn ext.
-         */
-        nativeCondaEnvTxtSame?: boolean;
-        /**
-         * Number of environments found from env txt by native locator.
-         */
-        nativeCondaEnvsFromTxt?: number;
-        /**
-         * Whether the env txt found by native locator exists.
-         */
-        nativeCondaEnvTxtExists?: boolean;
         /**
          * Number of environments of a specific type missing in Native Locator (compared to the Stable Locator).
          */
