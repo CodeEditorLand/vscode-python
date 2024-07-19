@@ -13,6 +13,6 @@
 		"prepublishOnly": "echo \"⛔ Can only publish from a secure pipeline ⛔\" && node ../build/fail"
 	},
 	"devDependencies": {
-		"source-map": "^0.8.0-beta.0"
+		"source-map": "0.8.0-beta.0"
 	}
 }
