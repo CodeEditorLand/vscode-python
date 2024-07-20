@@ -9,13 +9,9 @@ import { EventName } from '../telemetry/constants';
 
 const SERVER_PATH = path.join(EXTENSION_ROOT_DIR, 'python_files', 'python_server.py');
 let serverInstance: PythonServer | undefined;
-export interface ExecutionResult {
-    status: boolean;
-    output: string;
-}
 
 export interface PythonServer extends Disposable {
-    execute(code: string): Promise<ExecutionResult | undefined>;
+    execute(code: string): Promise<string>;
     interrupt(): void;
     input(): void;
     checkValidCommand(code: string): Promise<boolean>;
@@ -56,15 +52,8 @@ class PythonServerImpl implements Disposable {
     }
 
     @captureTelemetry(EventName.EXECUTION_CODE, { scope: 'selection' }, false)
-    public async execute(code: string): Promise<ExecutionResult | undefined> {
-        try {
-            const result = await this.connection.sendRequest('execute', code);
-            return result as ExecutionResult;
-        } catch (err) {
-            const error = err as Error;
-            traceError(`Error getting response from REPL server:`, error);
-        }
-        return undefined;
+    public execute(code: string): Promise<string> {
+        return this.connection.sendRequest('execute', code);
     }
 
     public interrupt(): void {

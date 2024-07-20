@@ -68,7 +68,6 @@ export interface IPythonEnvsIterator<I = PythonEnvInfo> extends IAsyncIterableIt
 }
 
 export enum ProgressReportStage {
-    idle = 'idle',
     discoveryStarted = 'discoveryStarted',
     allPathsDiscovered = 'allPathsDiscovered',
     discoveryFinished = 'discoveryFinished',
