@@ -3,6 +3,7 @@
 
 import { Disposable, EventEmitter, Event, Uri } from 'vscode';
 import * as ch from 'child_process';
+import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as rpc from 'vscode-jsonrpc/node';
 import { PassThrough } from 'stream';
@@ -18,6 +19,8 @@ import { getUserHomeDir } from '../../../../common/utils/platform';
 import { createLogOutputChannel } from '../../../../common/vscodeApis/windowApis';
 import { PythonEnvKind } from '../../info';
 import { sendNativeTelemetry, NativePythonTelemetry } from './nativePythonTelemetry';
+import { NativePythonEnvironmentKind } from './nativePythonUtils';
+import type { IExtensionContext } from '../../../../common/types';
 
 const untildify = require('untildify');
 
@@ -73,7 +76,7 @@ class NativeGlobalPythonFinderImpl extends DisposableBase implements NativeGloba
 
     private readonly outputChannel = this._register(createLogOutputChannel('Python Locator', { log: true }));
 
-    constructor() {
+    constructor(private readonly cacheDirectory?: Uri) {
         super();
         this.connection = this.start();
         void this.configure();
@@ -357,6 +360,7 @@ class NativeGlobalPythonFinderImpl extends DisposableBase implements NativeGloba
             environmentDirectories: getCustomVirtualEnvDirs(),
             condaExecutable: getPythonSettingAndUntildify<string>(CONDAPATH_SETTING_KEY),
             poetryExecutable: getPythonSettingAndUntildify<string>('poetryPath'),
+            cacheDirectory: this.cacheDirectory?.fsPath,
         };
         // No need to send a configuration request, is there are no changes.
         if (JSON.stringify(options) === JSON.stringify(this.lastConfiguration || {})) {
@@ -410,6 +414,20 @@ function getPythonSettingAndUntildify<T>(name: string, scope?: Uri): T | undefin
     return value;
 }
 
-export function createNativeGlobalPythonFinder(): NativeGlobalPythonFinder {
-    return new NativeGlobalPythonFinderImpl();
+let _finder: NativePythonFinder | undefined;
+export function getNativePythonFinder(context?: IExtensionContext): NativePythonFinder {
+    if (!_finder) {
+        const cacheDirectory = context ? getCacheDirectory(context) : undefined;
+        _finder = new NativePythonFinderImpl(cacheDirectory);
+    }
+    return _finder;
+}
+
+export function getCacheDirectory(context: IExtensionContext): Uri {
+    return Uri.joinPath(context.globalStorageUri, 'pythonLocator');
+}
+
+export async function clearCacheDirectory(context: IExtensionContext): Promise<void> {
+    const cacheDirectory = getCacheDirectory(context);
+    await fs.emptyDir(cacheDirectory.fsPath).catch(noop);
 }
