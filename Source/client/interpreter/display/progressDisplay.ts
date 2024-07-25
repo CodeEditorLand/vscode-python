@@ -39,8 +39,6 @@ export class InterpreterLocatorProgressStatubarHandler implements IExtensionSing
                     if (refreshPromise) {
                         refreshPromise.then(() => this.hideProgress());
                     }
-                } else if (event.stage === ProgressReportStage.discoveryFinished) {
-                    this.hideProgress();
                 }
             },
             this,
