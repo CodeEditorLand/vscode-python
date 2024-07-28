@@ -1,8 +1,10 @@
 {
-	"name": "@vscode/python-extension",
 	"description": "An API facade for the Python extension in VS Code",
+	"devDependencies": {
+		"source-map": "0.8.0-beta.0"
+	},
 	"main": "./out/main.js",
-	"types": "./out/main.d.ts",
+	"name": "@vscode/python-extension",
 	"scripts": {
 		"all": "npm run clean && npm run compile",
 		"all:publish": "git clean -xfd . && npm install && npm run compile && npm run formatTypings",
@@ -12,7 +14,5 @@
 		"prepack": "npm run all:publish",
 		"prepublishOnly": "echo \"⛔ Can only publish from a secure pipeline ⛔\" && node ../build/fail"
 	},
-	"devDependencies": {
-		"source-map": "0.8.0-beta.0"
-	}
+	"types": "./out/main.d.ts"
 }

@@ -1,41 +1,28 @@
 {
-	"name": "python",
-	"displayName": "Python",
-	"description": "Python language support with extension access points for IntelliSense (Pylance), Debugging (Python Debugger), linting, formatting, refactoring, unit tests, and more.",
-	"qna": "https://github.com/microsoft/vscode-python/discussions/categories/q-a",
-	"main": "./out/client/extension",
+	"activationEvents": [
+		"onDebugInitialConfigurations",
+		"onLanguage:python",
+		"onDebugResolve:python",
+		"workspaceContains:mspythonconfig.json",
+		"workspaceContains:pyproject.toml",
+		"workspaceContains:Pipfile",
+		"workspaceContains:setup.py",
+		"workspaceContains:requirements.txt",
+		"workspaceContains:manage.py",
+		"workspaceContains:app.py",
+		"workspaceContains:.venv",
+		"workspaceContains:.conda"
+	],
 	"browser": "./dist/extension.browser.js",
-	"scripts": {
-		"addExtensionPackDependencies": "gulp addExtensionPackDependencies",
-		"checkDependencies": "gulp checkDependencies",
-		"clean": "gulp clean",
-		"compile": "tsc -watch -p ./",
-		"compileApi": "node ./node_modules/typescript/lib/tsc.js -b ./pythonExtensionApi/tsconfig.json",
-		"compiled": "deemon npm run compile",
-		"format-fix": "prettier --write 'src/**/*.ts' 'build/**/*.js' '.github/**/*.yml' gulpfile.js",
-		"kill-compiled": "deemon --kill npm run compile",
-		"lint-staged": "node gulpfile.js",
-		"prePublish": "gulp clean && gulp prePublishNonBundle",
-		"preTestJediLSP": "node ./out/test/languageServers/jedi/lspSetup.js",
-		"test:cover:report": "nyc --nycrc-path ./build/.nycrc  report --reporter=text --reporter=html --reporter=text-summary --reporter=cobertura",
-		"test:functional": "mocha --require source-map-support/register --config ./build/.mocha.functional.json",
-		"test:functional:cover": "nyc --no-clean --nycrc-path ./build/.nycrc mocha --require source-map-support/register --config ./build/.mocha.functional.json",
-		"test:functional:memleak": "node --inspect-brk ./node_modules/mocha/bin/_mocha --require source-map-support/register --config ./build/.mocha.functional.json",
-		"test:functional:perf": "node --inspect-brk ./node_modules/mocha/bin/_mocha --require source-map-support/register --config ./build/.mocha.functional.perf.json",
-		"test:unittests": "mocha --config ./build/.mocha.unittests.json",
-		"test:unittests:cover": "nyc --no-clean --nycrc-path ./build/.nycrc mocha --config ./build/.mocha.unittests.json",
-		"testDebugger": "node ./out/test/testBootstrap.js ./out/test/debuggerTest.js",
-		"testDebugger:cover": "nyc --no-clean --use-spawn-wrap --nycrc-path ./build/.nycrc --require source-map-support/register node ./out/test/debuggerTest.js",
-		"testInsiders": "cross-env VSC_PYTHON_CI_TEST_VSC_CHANNEL=insiders INSTALL_PYLANCE_EXTENSION=true TEST_FILES_SUFFIX=insiders.test CODE_TESTS_WORKSPACE=src/testMultiRootWkspc/smokeTests \"node ./out/test/standardTest.js\"",
-		"testJediLSP": "node ./out/test/languageServers/jedi/lspSetup.js && cross-env CODE_TESTS_WORKSPACE=src/test VSC_PYTHON_CI_TEST_GREP='Language Server:' node ./out/test/testBootstrap.js ./out/test/standardTest.js && node ./out/test/languageServers/jedi/lspTeardown.js",
-		"testMultiWorkspace": "node ./out/test/testBootstrap.js ./out/test/multiRootTest.js",
-		"testPerformance": "node ./out/test/testBootstrap.js ./out/test/performanceTest.js",
-		"testSingleWorkspace": "node ./out/test/testBootstrap.js ./out/test/standardTest.js",
-		"testSingleWorkspace:cover": "nyc --no-clean --use-spawn-wrap --nycrc-path ./build/.nycrc --require source-map-support/register node ./out/test/standardTest.js",
-		"testSmoke": "cross-env INSTALL_JUPYTER_EXTENSION=true \"node ./out/test/smokeTest.js\"",
-		"updateBuildNumber": "gulp updateBuildNumber",
-		"verifyBundle": "gulp verifyBundle",
-		"webpack": "webpack"
+	"capabilities": {
+		"untrustedWorkspaces": {
+			"description": "Only Partial IntelliSense with Pylance is supported. Cannot execute Python with untrusted files.",
+			"supported": "limited"
+		},
+		"virtualWorkspaces": {
+			"description": "Only Partial IntelliSense supported.",
+			"supported": "limited"
+		}
 	},
 	"contributes": {
 		"breakpoints": [
@@ -1432,20 +1419,6 @@
 			}
 		]
 	},
-	"activationEvents": [
-		"onDebugInitialConfigurations",
-		"onLanguage:python",
-		"onDebugResolve:python",
-		"workspaceContains:mspythonconfig.json",
-		"workspaceContains:pyproject.toml",
-		"workspaceContains:Pipfile",
-		"workspaceContains:setup.py",
-		"workspaceContains:requirements.txt",
-		"workspaceContains:manage.py",
-		"workspaceContains:app.py",
-		"workspaceContains:.venv",
-		"workspaceContains:.conda"
-	],
 	"dependencies": {
 		"@iarna/toml": "2.2.5",
 		"arch": "2.1.0",
@@ -1473,6 +1446,7 @@
 		"winreg": "1.2.4",
 		"xml2js": "0.5.0"
 	},
+	"description": "Python language support with extension access points for IntelliSense (Pylance), Debugging (Python Debugger), linting, formatting, refactoring, unit tests, and more.",
 	"devDependencies": {
 		"@types/bent": "7.3.0",
 		"@types/chai": "4.1.2",
@@ -1515,21 +1489,7 @@
 		"worker-loader": "3.0.8",
 		"yargs": "15.3.1"
 	},
-	"icon": "icon.png",
-	"galleryBanner": {
-		"color": "#1e415e",
-		"theme": "dark"
-	},
-	"capabilities": {
-		"untrustedWorkspaces": {
-			"description": "Only Partial IntelliSense with Pylance is supported. Cannot execute Python with untrusted files.",
-			"supported": "limited"
-		},
-		"virtualWorkspaces": {
-			"description": "Only Partial IntelliSense supported.",
-			"supported": "limited"
-		}
-	},
+	"displayName": "Python",
 	"enableTelemetry": false,
 	"enabledApiProposals": [
 		"contribEditorContentMenu",
@@ -1544,5 +1504,45 @@
 	"featureFlags": {
 		"usingNewInterpreterStorage": true
 	},
-	"l10n": "./l10n"
+	"galleryBanner": {
+		"color": "#1e415e",
+		"theme": "dark"
+	},
+	"icon": "icon.png",
+	"l10n": "./l10n",
+	"main": "./out/client/extension",
+	"name": "python",
+	"qna": "https://github.com/microsoft/vscode-python/discussions/categories/q-a",
+	"scripts": {
+		"addExtensionPackDependencies": "gulp addExtensionPackDependencies",
+		"checkDependencies": "gulp checkDependencies",
+		"clean": "gulp clean",
+		"compile": "tsc -watch -p ./",
+		"compileApi": "node ./node_modules/typescript/lib/tsc.js -b ./pythonExtensionApi/tsconfig.json",
+		"compiled": "deemon npm run compile",
+		"format-fix": "prettier --write 'src/**/*.ts' 'build/**/*.js' '.github/**/*.yml' gulpfile.js",
+		"kill-compiled": "deemon --kill npm run compile",
+		"lint-staged": "node gulpfile.js",
+		"prePublish": "gulp clean && gulp prePublishNonBundle",
+		"preTestJediLSP": "node ./out/test/languageServers/jedi/lspSetup.js",
+		"test:cover:report": "nyc --nycrc-path ./build/.nycrc  report --reporter=text --reporter=html --reporter=text-summary --reporter=cobertura",
+		"test:functional": "mocha --require source-map-support/register --config ./build/.mocha.functional.json",
+		"test:functional:cover": "nyc --no-clean --nycrc-path ./build/.nycrc mocha --require source-map-support/register --config ./build/.mocha.functional.json",
+		"test:functional:memleak": "node --inspect-brk ./node_modules/mocha/bin/_mocha --require source-map-support/register --config ./build/.mocha.functional.json",
+		"test:functional:perf": "node --inspect-brk ./node_modules/mocha/bin/_mocha --require source-map-support/register --config ./build/.mocha.functional.perf.json",
+		"test:unittests": "mocha --config ./build/.mocha.unittests.json",
+		"test:unittests:cover": "nyc --no-clean --nycrc-path ./build/.nycrc mocha --config ./build/.mocha.unittests.json",
+		"testDebugger": "node ./out/test/testBootstrap.js ./out/test/debuggerTest.js",
+		"testDebugger:cover": "nyc --no-clean --use-spawn-wrap --nycrc-path ./build/.nycrc --require source-map-support/register node ./out/test/debuggerTest.js",
+		"testInsiders": "cross-env VSC_PYTHON_CI_TEST_VSC_CHANNEL=insiders INSTALL_PYLANCE_EXTENSION=true TEST_FILES_SUFFIX=insiders.test CODE_TESTS_WORKSPACE=src/testMultiRootWkspc/smokeTests \"node ./out/test/standardTest.js\"",
+		"testJediLSP": "node ./out/test/languageServers/jedi/lspSetup.js && cross-env CODE_TESTS_WORKSPACE=src/test VSC_PYTHON_CI_TEST_GREP='Language Server:' node ./out/test/testBootstrap.js ./out/test/standardTest.js && node ./out/test/languageServers/jedi/lspTeardown.js",
+		"testMultiWorkspace": "node ./out/test/testBootstrap.js ./out/test/multiRootTest.js",
+		"testPerformance": "node ./out/test/testBootstrap.js ./out/test/performanceTest.js",
+		"testSingleWorkspace": "node ./out/test/testBootstrap.js ./out/test/standardTest.js",
+		"testSingleWorkspace:cover": "nyc --no-clean --use-spawn-wrap --nycrc-path ./build/.nycrc --require source-map-support/register node ./out/test/standardTest.js",
+		"testSmoke": "cross-env INSTALL_JUPYTER_EXTENSION=true \"node ./out/test/smokeTest.js\"",
+		"updateBuildNumber": "gulp updateBuildNumber",
+		"verifyBundle": "gulp verifyBundle",
+		"webpack": "webpack"
+	}
 }
