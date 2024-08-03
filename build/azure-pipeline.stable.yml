@@ -14,11 +14,11 @@ resources:
           ref: main
           endpoint: Monaco
 
-        - repository: python-environment-tools
-          type: github
-          name: microsoft/python-environment-tools
-          ref: release/latest
-          endpoint: Monaco
+    - repository: python-environment-tools
+      type: github
+      name: microsoft/python-environment-tools
+      ref: release/2024.12
+      endpoint: Monaco
 
 parameters:
     - name: publishExtension
