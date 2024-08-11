@@ -14,6 +14,32 @@ import {
     insertNewLineToREPLInput,
     isMultiLineText,
 } from './replUtils';
+import { registerCommand } from '../common/vscodeApis/commandApis';
+
+/**
+ * Register Start Native REPL command in the command palette
+ *
+ * @param disposables
+ * @param interpreterService
+ * @param commandManager
+ * @returns Promise<void>
+ */
+export async function registerStartNativeReplCommand(
+    disposables: Disposable[],
+    interpreterService: IInterpreterService,
+): Promise<void> {
+    disposables.push(
+        registerCommand(Commands.Start_Native_REPL, async (uri: Uri) => {
+            const interpreter = await getActiveInterpreter(uri, interpreterService);
+            if (interpreter) {
+                if (interpreter) {
+                    const nativeRepl = await getNativeRepl(interpreter, disposables);
+                    await nativeRepl.sendToNativeRepl();
+                }
+            }
+        }),
+    );
+}
 
 /**
  * Registers REPL command for shift+enter if sendToNativeREPL setting is enabled.
@@ -39,7 +65,7 @@ export async function registerReplCommands(
             const interpreter = await getActiveInterpreter(uri, interpreterService);
 
             if (interpreter) {
-                const nativeRepl = getNativeRepl(interpreter, disposables);
+                const nativeRepl = await getNativeRepl(interpreter, disposables);
                 const activeEditor = window.activeTextEditor;
                 if (activeEditor) {
                     const code = await getSelectedTextToExecute(activeEditor);
@@ -76,7 +102,7 @@ export async function registerReplExecuteOnEnter(
                 return;
             }
 
-            const nativeRepl = getNativeRepl(interpreter, disposables);
+            const nativeRepl = await getNativeRepl(interpreter, disposables);
             const completeCode = await nativeRepl?.checkUserInputCompleteCode(window.activeTextEditor);
             const editor = window.activeTextEditor;
 

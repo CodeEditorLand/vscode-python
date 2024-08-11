@@ -11,18 +11,12 @@ schedules:
               - main
 
 resources:
-    repositories:
-        - repository: templates
-          type: github
-          name: microsoft/vscode-engineering
-          ref: main
-          endpoint: Monaco
-
-        - repository: python-environment-tools
-          type: github
-          name: microsoft/python-environment-tools
-          ref: main
-          endpoint: Monaco
+  repositories:
+    - repository: templates
+      type: github
+      name: microsoft/vscode-engineering
+      ref: main
+      endpoint: Monaco
 
 parameters:
     - name: publishExtension
@@ -31,17 +25,13 @@ parameters:
       default: false
 
 extends:
-    template: azure-pipelines/extension/pre-release.yml@templates
-    parameters:
-        publishExtension: ${{ parameters.publishExtension }}
-        ghCreateTag: false
-        standardizedVersioning: true
-        l10nSourcePaths: ./src/client
-        sourceRepositoriesToScan:
-            include:
-                - repository: python-environment-tools
-            exclude:
-                - repository: translations
+  template: azure-pipelines/extension/pre-release.yml@templates
+  parameters:
+    publishExtension: ${{ parameters.publishExtension }}
+    ghCreateTag: false
+    standardizedVersioning: true
+    l10nSourcePaths: ./src/client
+    needsTools: true
 
         buildPlatforms:
             - name: Linux
@@ -74,15 +64,11 @@ extends:
               packageArch: x64
               vsceTarget: win32-x64
 
-        buildSteps:
-            - checkout: self
-              displayName: Checkout Python Extension
-              path: ./s
-
-            - task: NodeTool@0
-              inputs:
-                  versionSpec: "18.17.1"
-              displayName: Select Node version
+    buildSteps:
+      - task: NodeTool@0
+        inputs:
+          versionSpec: '18.17.1'
+        displayName: Select Node version
 
             - task: UsePythonVersion@0
               inputs:
@@ -103,11 +89,8 @@ extends:
             - script: nox --session install_python_libs
               displayName: Install Jedi, get-pip, etc
 
-              # - script: python ./build/update_ext_version.py --for-publishing
-              #   displayName: Update build number
-
-            - script: python ./build/update_package_file.py
-              displayName: Update telemetry in package.json
+      - script: python ./build/update_package_file.py
+        displayName: Update telemetry in package.json
 
             - script: npm run addExtensionPackDependencies
               displayName: Update optional extension dependencies
@@ -115,9 +98,12 @@ extends:
             - script: npx gulp prePublishBundle
               displayName: Build
 
-            - checkout: python-environment-tools
-              displayName: Checkout python-environment-tools
-              path: ./s/python-env-tools
+      - script: nox --session azure_pet_checkout
+        displayName: Checkout python-environment-tools
+        env:
+            PYTHON_ENV_TOOLS_DEST: $(Build.SourcesDirectory)
+            PYTHON_ENV_TOOLS_REF: main
+            PYTHON_ENV_TOOLS_TEMP: $(Agent.TempDirectory)
 
             - script: nox --session azure_pet_build_before
               displayName: Enable cargo config for azure
