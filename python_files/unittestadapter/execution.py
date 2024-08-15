@@ -19,10 +19,10 @@ os.environ[path_var_name] = (
     sysconfig.get_paths()["scripts"] + os.pathsep + os.environ[path_var_name]
 )
 
-
-script_dir = pathlib.Path(__file__).parent.parent
+script_dir = pathlib.Path(__file__).parent
 sys.path.append(os.fspath(script_dir))
-sys.path.insert(0, os.fspath(script_dir / "lib" / "python"))
+
+from django_handler import django_execution_runner  # noqa: E402
 
 from testing_tools import process_json_util, socket_manager  # noqa: E402
 from unittestadapter.pvsc_utils import (  # noqa: E402
@@ -57,6 +57,24 @@ class UnittestTestResult(unittest.TextTestResult):
 
     def startTest(self, test: unittest.TestCase):  # noqa: N802
         super().startTest(test)
+
+    def stopTestRun(self):  # noqa: N802
+        super().stopTestRun()
+        # After stopping the test run, send EOT
+        test_run_pipe = os.getenv("TEST_RUN_PIPE")
+        if os.getenv("MANAGE_PY_PATH"):
+            # only send this if it is a Django run
+            if not test_run_pipe:
+                print(
+                    "UNITTEST ERROR: TEST_RUN_PIPE is not set at the time of unittest trying to send data. "
+                    f"TEST_RUN_PIPE = {test_run_pipe}\n",
+                    file=sys.stderr,
+                )
+                raise VSCodeUnittestError(
+                    "UNITTEST ERROR: TEST_RUN_PIPE is not set at the time of unittest trying to send data. "
+                )
+            eot_payload: EOTPayloadDict = {"command_type": "execution", "eot": True}
+            send_post_request(eot_payload, test_run_pipe)
 
     def addError(  # noqa: N802
         self,
@@ -318,9 +336,14 @@ if __name__ == "__main__":
         raise VSCodeUnittestError(msg) from e
 
     try:
-        if raw_json and "params" in raw_json:
+        if raw_json and "params" in raw_json and raw_json["params"]:
             test_ids_from_buffer = raw_json["params"]
-            if test_ids_from_buffer:
+            # Check to see if we are running django tests.
+            if manage_py_path := os.environ.get("MANAGE_PY_PATH"):
+                args = argv[index + 1 :] or []
+                django_execution_runner(manage_py_path, test_ids_from_buffer, args)
+                # the django run subprocesses sends the eot payload.
+            else:
                 # Perform test execution.
                 payload = run_tests(
                     start_dir,
@@ -331,6 +354,8 @@ if __name__ == "__main__":
                     failfast,
                     locals_,
                 )
+                eot_payload: EOTPayloadDict = {"command_type": "execution", "eot": True}
+                send_post_request(eot_payload, test_run_pipe)
         else:
             # No test ids received from buffer
             cwd = os.path.abspath(start_dir)  # noqa: PTH100
@@ -342,9 +367,9 @@ if __name__ == "__main__":
                 "result": None,
             }
             send_post_request(payload, test_run_pipe)
+            eot_payload: EOTPayloadDict = {"command_type": "execution", "eot": True}
+            send_post_request(eot_payload, test_run_pipe)
     except json.JSONDecodeError as exc:
         msg = "Error: Could not parse test ids from stdin"
         print(msg)
         raise VSCodeUnittestError(msg) from exc
-    eot_payload: EOTPayloadDict = {"command_type": "execution", "eot": True}
-    send_post_request(eot_payload, test_run_pipe)
