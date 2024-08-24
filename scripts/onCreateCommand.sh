@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Install pyenv and Python versions here to avoid using shim.
 curl https://pyenv.run | bash
@@ -7,7 +7,7 @@ echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.
 # echo 'eval "$(pyenv init -)"' >> ~/.bashrc
 
 export PYENV_ROOT="$HOME/.pyenv"
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+command -v pyenv > /dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
 # eval "$(pyenv init -)" Comment this out and DO NOT use shim.
 source ~/.bashrc
 

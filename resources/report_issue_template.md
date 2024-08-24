@@ -1,4 +1,5 @@
 <!-- Please fill in all XXX markers -->
+
 # Behaviour
 
 XXX
@@ -12,6 +13,7 @@ XXX
 -->
 
 <!-- **NOTE**: Please do provide logs from Python Output panel. -->
+
 # Diagnostic data
 
 <details>

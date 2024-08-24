@@ -23,17 +23,27 @@ export function createReplController(
         for (const cell of cells) {
             const exec = controller.createNotebookCellExecution(cell);
             exec.start(Date.now());
-
-            const result = await server.execute(cell.document.getText());
-
-            if (result?.output) {
+            try {
+                const result = await server.execute(cell.document.getText());
+                if (result !== '') {
+                    exec.replaceOutput([
+                        new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.text(result, 'text/plain')]),
+                    ]);
+                }
+                exec.end(true);
+            } catch (err) {
+                const error = err as Error;
                 exec.replaceOutput([
-                    new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.text(result.output, 'text/plain')]),
+                    new vscode.NotebookCellOutput([
+                        vscode.NotebookCellOutputItem.error({
+                            name: error.name,
+                            message: error.message,
+                            stack: error.stack,
+                        }),
+                    ]),
                 ]);
-                // TODO: Properly update via NotebookCellOutputItem.error later.
+                exec.end(false);
             }
-
-            exec.end(result?.status);
         }
     };
     disposables.push(controller);

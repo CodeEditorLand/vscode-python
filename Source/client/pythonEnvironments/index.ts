@@ -40,16 +40,8 @@ import { traceError } from '../logging';
 import { ActiveStateLocator } from './base/locators/lowLevel/activeStateLocator';
 import { CustomWorkspaceLocator } from './base/locators/lowLevel/customWorkspaceLocator';
 import { PixiLocator } from './base/locators/lowLevel/pixiLocator';
-import { getConfiguration } from '../common/vscodeApis/workspaceApis';
-import { getNativePythonFinder } from './base/locators/common/nativePythonFinder';
-import { createNativeEnvironmentsApi } from './nativeAPI';
 
 const PYTHON_ENV_INFO_CACHE_KEY = 'PYTHON_ENV_INFO_CACHEv2';
-
-export function shouldUseNativeLocator(): boolean {
-    const config = getConfiguration('python');
-    return config.get<string>('locator', 'js') === 'native';
-}
 
 /**
  * Set up the Python environments component (during extension activation).'
