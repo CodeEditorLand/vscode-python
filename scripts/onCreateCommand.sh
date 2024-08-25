@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Install pyenv and Python versions here to avoid using shim.
 curl https://pyenv.run | bash
