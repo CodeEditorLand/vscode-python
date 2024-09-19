@@ -1261,6 +1261,28 @@
 				}
 			]
 		},
+		"problemMatchers": [
+			{
+				"fileLocation": "autoDetect",
+				"name": "python",
+				"owner": "python",
+				"pattern": [
+					{
+						"file": 1,
+						"line": 2,
+						"regexp": "^.*File \\\"([^\\\"]|.*)\\\", line (\\d+).*"
+					},
+					{
+						"regexp": "^\\s*(.*)\\s*$"
+					},
+					{
+						"message": 1,
+						"regexp": "^\\s*(.*Error.*)$"
+					}
+				],
+				"source": "python"
+			}
+		],
 		"submenus": [
 			{
 				"icon": "$(play)",
@@ -1511,6 +1533,7 @@
 		"terminalDataWriteEvent",
 		"terminalExecuteCommandEvent",
 		"contribIssueReporter",
+		"notebookVariableProvider",
 		"codeActionAI"
 	],
 	"featureFlags": {
