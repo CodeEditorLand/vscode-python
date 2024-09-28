@@ -80,14 +80,14 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
         }
         const processService: IProcessService = await this.processServiceFactory.create(options.resource);
 
-        const pixiExecutionService = await this.createPixiExecutionService(pythonPath, processService);
-        if (pixiExecutionService) {
-            return pixiExecutionService;
-        }
-
         const condaExecutionService = await this.createCondaExecutionService(pythonPath, processService);
         if (condaExecutionService) {
             return condaExecutionService;
+        }
+
+        const pixiExecutionService = await this.createPixiExecutionService(pythonPath, processService);
+        if (pixiExecutionService) {
+            return pixiExecutionService;
         }
 
         const windowsStoreInterpreterCheck = this.pyenvs.isMicrosoftStoreInterpreter.bind(this.pyenvs);
@@ -122,15 +122,16 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
         processService.on('exec', this.logger.logProcess.bind(this.logger));
         this.disposables.push(processService);
 
+        const condaExecutionService = await this.createCondaExecutionService(pythonPath, processService);
+        if (condaExecutionService) {
+            return condaExecutionService;
+        }
+
         const pixiExecutionService = await this.createPixiExecutionService(pythonPath, processService);
         if (pixiExecutionService) {
             return pixiExecutionService;
         }
 
-        const condaExecutionService = await this.createCondaExecutionService(pythonPath, processService);
-        if (condaExecutionService) {
-            return condaExecutionService;
-        }
         const env = createPythonEnv(pythonPath, processService, this.fileSystem);
         return createPythonService(processService, env);
     }
@@ -161,11 +162,11 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
         }
 
         const env = await createPixiEnv(pixiEnvironment, processService, this.fileSystem);
-        if (!env) {
-            return undefined;
+        if (env) {
+            return createPythonService(processService, env);
         }
 
-        return createPythonService(processService, env);
+        return undefined;
     }
 }
 
