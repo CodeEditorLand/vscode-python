@@ -5,7 +5,6 @@
 
 //===============================================
 // loading starts here
-
 import { ProgressLocation, ProgressOptions, window } from "vscode";
 
 import { buildApi } from "./api";
