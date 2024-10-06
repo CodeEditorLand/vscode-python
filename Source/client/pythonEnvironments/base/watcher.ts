@@ -1,10 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { Event, EventEmitter, Uri } from "vscode";
-
-import { FileChangeType } from "../../common/platform/fileSystemWatcher";
-import { PythonEnvInfo, PythonEnvKind } from "./info";
+import { Event, EventEmitter, Uri } from 'vscode';
+import { FileChangeType } from '../../common/platform/fileSystemWatcher';
+import { PythonEnvInfo, PythonEnvKind } from './info';
 
 // The use cases for `BasicPythonEnvsChangedEvent` are currently
 // hypothetical.  However, there's a real chance they may prove
@@ -17,37 +16,36 @@ import { PythonEnvInfo, PythonEnvKind } from "./info";
  * @prop kind - the env kind, if any, affected by the event
  */
 export type BasicPythonEnvsChangedEvent = {
-	kind?: PythonEnvKind;
-	type?: FileChangeType;
+    kind?: PythonEnvKind;
+    type?: FileChangeType;
 };
 
 /**
  * The full set of possible info for a Python environments event.
  */
 export type PythonEnvsChangedEvent = BasicPythonEnvsChangedEvent & {
-	/**
-	 * The location, if any, affected by the event.
-	 */
-	searchLocation?: Uri;
-	/**
-	 * A specific provider, if any, affected by the event.
-	 */
-	providerId?: string;
-	/**
-	 * The env, if any, affected by the event.
-	 */
-	envPath?: string;
+    /**
+     * The location, if any, affected by the event.
+     */
+    searchLocation?: Uri;
+    /**
+     * A specific provider, if any, affected by the event.
+     */
+    providerId?: string;
+    /**
+     * The env, if any, affected by the event.
+     */
+    envPath?: string;
 };
 
-export type PythonEnvCollectionChangedEvent =
-	BasicPythonEnvCollectionChangedEvent & {
-		type?: FileChangeType;
-		searchLocation?: Uri;
-	};
+export type PythonEnvCollectionChangedEvent = BasicPythonEnvCollectionChangedEvent & {
+    type?: FileChangeType;
+    searchLocation?: Uri;
+};
 
 export type BasicPythonEnvCollectionChangedEvent = {
-	old?: PythonEnvInfo;
-	new?: PythonEnvInfo | undefined;
+    old?: PythonEnvInfo;
+    new?: PythonEnvInfo | undefined;
 };
 
 /**
@@ -59,10 +57,10 @@ export type BasicPythonEnvCollectionChangedEvent = {
  * implementation.
  */
 export interface IPythonEnvsWatcher<E = PythonEnvsChangedEvent> {
-	/**
-	 * The hook for registering event listeners (callbacks).
-	 */
-	readonly onChanged: Event<E>;
+    /**
+     * The hook for registering event listeners (callbacks).
+     */
+    readonly onChanged: Event<E>;
 }
 
 /**
@@ -80,24 +78,22 @@ export interface IPythonEnvsWatcher<E = PythonEnvsChangedEvent> {
  * should be used.  Only in low-level cases should you consider using
  * `BasicPythonEnvsChangedEvent`.
  */
-export class PythonEnvsWatcher<T = PythonEnvsChangedEvent>
-	implements IPythonEnvsWatcher<T>
-{
-	/**
-	 * The hook for registering event listeners (callbacks).
-	 */
-	public readonly onChanged: Event<T>;
+export class PythonEnvsWatcher<T = PythonEnvsChangedEvent> implements IPythonEnvsWatcher<T> {
+    /**
+     * The hook for registering event listeners (callbacks).
+     */
+    public readonly onChanged: Event<T>;
 
-	private readonly didChange = new EventEmitter<T>();
+    private readonly didChange = new EventEmitter<T>();
 
-	constructor() {
-		this.onChanged = this.didChange.event;
-	}
+    constructor() {
+        this.onChanged = this.didChange.event;
+    }
 
-	/**
-	 * Send the event to all registered listeners.
-	 */
-	public fire(event: T): void {
-		this.didChange.fire(event);
-	}
+    /**
+     * Send the event to all registered listeners.
+     */
+    public fire(event: T): void {
+        this.didChange.fire(event);
+    }
 }
