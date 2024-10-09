@@ -9,13 +9,16 @@
 ```
 {3}{4}
 ```
+
 </p>
 </details>
 
 <details>
 <summary>Installed Extensions</summary>
 
-|Extension Name|Extension Id|Version|
-|---|---|---|
+| Extension Name | Extension Id | Version |
+| -------------- | ------------ | ------- |
+
 {5}
+
 </details>
