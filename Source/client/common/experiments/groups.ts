@@ -1,26 +1,26 @@
 // Experiment to check whether to show "Extension Survey prompt" or not.
 export enum ShowExtensionSurveyPrompt {
-    experiment = 'pythonSurveyNotification',
+	experiment = "pythonSurveyNotification",
 }
 
 export enum ShowToolsExtensionPrompt {
-    experiment = 'pythonPromptNewToolsExt',
+	experiment = "pythonPromptNewToolsExt",
 }
 
 export enum TerminalEnvVarActivation {
-    experiment = 'pythonTerminalEnvVarActivation',
+	experiment = "pythonTerminalEnvVarActivation",
 }
 
 export enum DiscoveryUsingWorkers {
-    experiment = 'pythonDiscoveryUsingWorkers',
+	experiment = "pythonDiscoveryUsingWorkers",
 }
 
 // Experiment to enable the new testing rewrite.
 export enum EnableTestAdapterRewrite {
-    experiment = 'pythonTestAdapter',
+	experiment = "pythonTestAdapter",
 }
 
 // Experiment to recommend installing the tensorboard extension.
 export enum RecommendTensobardExtension {
-    experiment = 'pythonRecommendTensorboardExt',
+	experiment = "pythonRecommendTensorboardExt",
 }

@@ -1,19 +1,20 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import * as minimatch from 'minimatch';
-import * as path from 'path';
-import * as fsapi from '../../../../common/platform/fs-paths';
-import { PythonEnvKind } from '../../info';
-import { IPythonEnvsIterator, BasicEnvInfo } from '../../locator';
-import { FSWatchingLocator } from './fsWatchingLocator';
-import { PythonEnvStructure } from '../../../common/pythonBinariesWatcher';
+import * as path from "path";
+import * as minimatch from "minimatch";
+
+import * as fsapi from "../../../../common/platform/fs-paths";
+import { StopWatch } from "../../../../common/utils/stopWatch";
+import { traceInfo } from "../../../../logging";
 import {
-    isStorePythonInstalled,
-    getMicrosoftStoreAppsRoot,
-} from '../../../common/environmentManagers/microsoftStoreEnv';
-import { traceInfo } from '../../../../logging';
-import { StopWatch } from '../../../../common/utils/stopWatch';
+	getMicrosoftStoreAppsRoot,
+	isStorePythonInstalled,
+} from "../../../common/environmentManagers/microsoftStoreEnv";
+import { PythonEnvStructure } from "../../../common/pythonBinariesWatcher";
+import { PythonEnvKind } from "../../info";
+import { BasicEnvInfo, IPythonEnvsIterator } from "../../locator";
+import { FSWatchingLocator } from "./fsWatchingLocator";
 
 /**
  * This is a glob pattern which matches following file names:
@@ -26,7 +27,7 @@ import { StopWatch } from '../../../../common/utils/stopWatch';
  * python3.exe
  * python38.exe
  */
-const pythonExeGlob = 'python3.{[0-9],[0-9][0-9]}.exe';
+const pythonExeGlob = "python3.{[0-9],[0-9][0-9]}.exe";
 
 /**
  * Checks if a given path ends with python3.*.exe. Not all python executables are matched as
@@ -35,7 +36,9 @@ const pythonExeGlob = 'python3.{[0-9],[0-9][0-9]}.exe';
  * @returns {boolean} : Returns true if the path matches pattern for windows python executable.
  */
 function isMicrosoftStorePythonExePattern(interpreterPath: string): boolean {
-    return minimatch.default(path.basename(interpreterPath), pythonExeGlob, { nocase: true });
+	return minimatch.default(path.basename(interpreterPath), pythonExeGlob, {
+		nocase: true,
+	});
 }
 
 /**
@@ -55,48 +58,50 @@ function isMicrosoftStorePythonExePattern(interpreterPath: string): boolean {
  * that location.
  */
 export async function getMicrosoftStorePythonExes(): Promise<string[]> {
-    if (await isStorePythonInstalled()) {
-        const windowsAppsRoot = getMicrosoftStoreAppsRoot();
+	if (await isStorePythonInstalled()) {
+		const windowsAppsRoot = getMicrosoftStoreAppsRoot();
 
-        // Collect python*.exe directly under %LOCALAPPDATA%/Microsoft/WindowsApps
-        const files = await fsapi.readdir(windowsAppsRoot);
-        return files
-            .map((filename: string) => path.join(windowsAppsRoot, filename))
-            .filter(isMicrosoftStorePythonExePattern);
-    }
-    return [];
+		// Collect python*.exe directly under %LOCALAPPDATA%/Microsoft/WindowsApps
+		const files = await fsapi.readdir(windowsAppsRoot);
+		return files
+			.map((filename: string) => path.join(windowsAppsRoot, filename))
+			.filter(isMicrosoftStorePythonExePattern);
+	}
+	return [];
 }
 
 export class MicrosoftStoreLocator extends FSWatchingLocator {
-    public readonly providerId: string = 'microsoft-store';
+	public readonly providerId: string = "microsoft-store";
 
-    private readonly kind: PythonEnvKind = PythonEnvKind.MicrosoftStore;
+	private readonly kind: PythonEnvKind = PythonEnvKind.MicrosoftStore;
 
-    constructor() {
-        // We have to watch the directory instead of the executable here because
-        // FS events are not triggered for `*.exe` in the WindowsApps folder. The
-        // .exe files here are reparse points and not real files. Watching the
-        // PythonSoftwareFoundation directory will trigger both for new install
-        // and update case. Update is handled by deleting and recreating the
-        // PythonSoftwareFoundation directory.
-        super(getMicrosoftStoreAppsRoot, async () => this.kind, {
-            baseGlob: pythonExeGlob,
-            searchLocation: getMicrosoftStoreAppsRoot(),
-            envStructure: PythonEnvStructure.Flat,
-        });
-    }
+	constructor() {
+		// We have to watch the directory instead of the executable here because
+		// FS events are not triggered for `*.exe` in the WindowsApps folder. The
+		// .exe files here are reparse points and not real files. Watching the
+		// PythonSoftwareFoundation directory will trigger both for new install
+		// and update case. Update is handled by deleting and recreating the
+		// PythonSoftwareFoundation directory.
+		super(getMicrosoftStoreAppsRoot, async () => this.kind, {
+			baseGlob: pythonExeGlob,
+			searchLocation: getMicrosoftStoreAppsRoot(),
+			envStructure: PythonEnvStructure.Flat,
+		});
+	}
 
-    protected doIterEnvs(): IPythonEnvsIterator<BasicEnvInfo> {
-        const iterator = async function* (kind: PythonEnvKind) {
-            const stopWatch = new StopWatch();
-            traceInfo('Searching for windows store envs');
-            const exes = await getMicrosoftStorePythonExes();
-            yield* exes.map(async (executablePath: string) => ({
-                kind,
-                executablePath,
-            }));
-            traceInfo(`Finished searching for windows store envs: ${stopWatch.elapsedTime} milliseconds`);
-        };
-        return iterator(this.kind);
-    }
+	protected doIterEnvs(): IPythonEnvsIterator<BasicEnvInfo> {
+		const iterator = async function* (kind: PythonEnvKind) {
+			const stopWatch = new StopWatch();
+			traceInfo("Searching for windows store envs");
+			const exes = await getMicrosoftStorePythonExes();
+			yield* exes.map(async (executablePath: string) => ({
+				kind,
+				executablePath,
+			}));
+			traceInfo(
+				`Finished searching for windows store envs: ${stopWatch.elapsedTime} milliseconds`,
+			);
+		};
+		return iterator(this.kind);
+	}
 }

@@ -3,29 +3,29 @@
 
 /* eslint-disable class-methods-use-this */
 
-import { ILanguageServerExtensionManager } from './types';
+import { ILanguageServerExtensionManager } from "./types";
 
 // This LS manager implements ILanguageServer directly
 // instead of extending LanguageServerCapabilities because it doesn't need to do anything.
 export class NoneLSExtensionManager implements ILanguageServerExtensionManager {
-    dispose(): void {
-        // Nothing to do here.
-    }
+	dispose(): void {
+		// Nothing to do here.
+	}
 
-    startLanguageServer(): Promise<void> {
-        return Promise.resolve();
-    }
+	startLanguageServer(): Promise<void> {
+		return Promise.resolve();
+	}
 
-    stopLanguageServer(): Promise<void> {
-        return Promise.resolve();
-    }
+	stopLanguageServer(): Promise<void> {
+		return Promise.resolve();
+	}
 
-    canStartLanguageServer(): boolean {
-        return true;
-    }
+	canStartLanguageServer(): boolean {
+		return true;
+	}
 
-    languageServerNotAvailable(): Promise<void> {
-        // Nothing to do here.
-        return Promise.resolve();
-    }
+	languageServerNotAvailable(): Promise<void> {
+		// Nothing to do here.
+		return Promise.resolve();
+	}
 }

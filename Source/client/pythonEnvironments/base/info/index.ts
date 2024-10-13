@@ -1,82 +1,83 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { Uri } from 'vscode';
-import { Architecture } from '../../../common/utils/platform';
-import { BasicVersionInfo, VersionInfo } from '../../../common/utils/version';
+import { Uri } from "vscode";
+
+import { Architecture } from "../../../common/utils/platform";
+import { BasicVersionInfo, VersionInfo } from "../../../common/utils/version";
 
 /**
  * IDs for the various supported Python environments.
  */
 export enum PythonEnvKind {
-    Unknown = 'unknown',
-    // "global"
-    System = 'global-system',
-    MicrosoftStore = 'global-microsoft-store',
-    Pyenv = 'global-pyenv',
-    Poetry = 'poetry',
-    Hatch = 'hatch',
-    Pixi = 'pixi',
-    ActiveState = 'activestate',
-    Custom = 'global-custom',
-    OtherGlobal = 'global-other',
-    // "virtual"
-    Venv = 'virt-venv',
-    VirtualEnv = 'virt-virtualenv',
-    VirtualEnvWrapper = 'virt-virtualenvwrapper',
-    Pipenv = 'virt-pipenv',
-    Conda = 'virt-conda',
-    OtherVirtual = 'virt-other',
+	Unknown = "unknown",
+	// "global"
+	System = "global-system",
+	MicrosoftStore = "global-microsoft-store",
+	Pyenv = "global-pyenv",
+	Poetry = "poetry",
+	Hatch = "hatch",
+	Pixi = "pixi",
+	ActiveState = "activestate",
+	Custom = "global-custom",
+	OtherGlobal = "global-other",
+	// "virtual"
+	Venv = "virt-venv",
+	VirtualEnv = "virt-virtualenv",
+	VirtualEnvWrapper = "virt-virtualenvwrapper",
+	Pipenv = "virt-pipenv",
+	Conda = "virt-conda",
+	OtherVirtual = "virt-other",
 }
 
 export enum PythonEnvType {
-    Conda = 'Conda',
-    Virtual = 'Virtual',
+	Conda = "Conda",
+	Virtual = "Virtual",
 }
 
 export interface EnvPathType {
-    /**
-     * Path to environment folder or path to interpreter that uniquely identifies an environment.
-     * Virtual environments lacking an interpreter are identified by environment folder paths,
-     * whereas other envs can be identified using interpreter path.
-     */
-    path: string;
-    pathType: 'envFolderPath' | 'interpreterPath';
+	/**
+	 * Path to environment folder or path to interpreter that uniquely identifies an environment.
+	 * Virtual environments lacking an interpreter are identified by environment folder paths,
+	 * whereas other envs can be identified using interpreter path.
+	 */
+	path: string;
+	pathType: "envFolderPath" | "interpreterPath";
 }
 
 export const virtualEnvKinds = [
-    PythonEnvKind.Poetry,
-    PythonEnvKind.Hatch,
-    PythonEnvKind.Pixi,
-    PythonEnvKind.Pipenv,
-    PythonEnvKind.Venv,
-    PythonEnvKind.VirtualEnvWrapper,
-    PythonEnvKind.Conda,
-    PythonEnvKind.VirtualEnv,
+	PythonEnvKind.Poetry,
+	PythonEnvKind.Hatch,
+	PythonEnvKind.Pixi,
+	PythonEnvKind.Pipenv,
+	PythonEnvKind.Venv,
+	PythonEnvKind.VirtualEnvWrapper,
+	PythonEnvKind.Conda,
+	PythonEnvKind.VirtualEnv,
 ];
 
 export const globallyInstalledEnvKinds = [
-    PythonEnvKind.OtherGlobal,
-    PythonEnvKind.Unknown,
-    PythonEnvKind.MicrosoftStore,
-    PythonEnvKind.System,
-    PythonEnvKind.Custom,
+	PythonEnvKind.OtherGlobal,
+	PythonEnvKind.Unknown,
+	PythonEnvKind.MicrosoftStore,
+	PythonEnvKind.System,
+	PythonEnvKind.Custom,
 ];
 
 /**
  * Information about a file.
  */
 export type FileInfo = {
-    filename: string;
-    ctime: number;
-    mtime: number;
+	filename: string;
+	ctime: number;
+	mtime: number;
 };
 
 /**
  * Information about a Python binary/executable.
  */
 export type PythonExecutableInfo = FileInfo & {
-    sysPrefix: string;
+	sysPrefix: string;
 };
 
 /**
@@ -87,15 +88,15 @@ export type PythonExecutableInfo = FileInfo & {
  * calculate the auto-select python.
  */
 export enum PythonEnvSource {
-    /**
-     * Environment was found via PATH env variable
-     */
-    PathEnvVar = 'path env var',
-    /**
-     * Environment was found in windows registry
-     */
-    WindowsRegistry = 'windows registry',
-    // If source turns out to be useful we will expand this enum to contain more details sources.
+	/**
+	 * Environment was found via PATH env variable
+	 */
+	PathEnvVar = "path env var",
+	/**
+	 * Environment was found in windows registry
+	 */
+	WindowsRegistry = "windows registry",
+	// If source turns out to be useful we will expand this enum to contain more details sources.
 }
 
 /**
@@ -113,37 +114,37 @@ export enum PythonEnvSource {
  * @prop source - the locator[s] which found the environment.
  */
 type PythonEnvBaseInfo = {
-    id?: string;
-    kind: PythonEnvKind;
-    type?: PythonEnvType;
-    executable: PythonExecutableInfo;
-    // One of (name, location) must be non-empty.
-    name: string;
-    location: string;
-    // Other possible fields:
-    // * managed: boolean (if the env is "managed")
-    // * parent: PythonEnvBaseInfo (the env from which this one was created)
-    // * binDir: string (where env-installed executables are found)
+	id?: string;
+	kind: PythonEnvKind;
+	type?: PythonEnvType;
+	executable: PythonExecutableInfo;
+	// One of (name, location) must be non-empty.
+	name: string;
+	location: string;
+	// Other possible fields:
+	// * managed: boolean (if the env is "managed")
+	// * parent: PythonEnvBaseInfo (the env from which this one was created)
+	// * binDir: string (where env-installed executables are found)
 
-    source: PythonEnvSource[];
+	source: PythonEnvSource[];
 };
 
 /**
  * The possible Python release levels.
  */
 export enum PythonReleaseLevel {
-    Alpha = 'alpha',
-    Beta = 'beta',
-    Candidate = 'candidate',
-    Final = 'final',
+	Alpha = "alpha",
+	Beta = "beta",
+	Candidate = "candidate",
+	Final = "final",
 }
 
 /**
  * Release information for a Python version.
  */
 export type PythonVersionRelease = {
-    level: PythonReleaseLevel;
-    serial: number;
+	level: PythonReleaseLevel;
+	serial: number;
 };
 
 /**
@@ -152,16 +153,16 @@ export type PythonVersionRelease = {
  * @prop sysVersion - the raw text from `sys.version`
  */
 export type PythonVersion = BasicVersionInfo & {
-    release?: PythonVersionRelease;
-    sysVersion?: string;
+	release?: PythonVersionRelease;
+	sysVersion?: string;
 };
 
 /**
  * Information for a Python build/installation.
  */
 type PythonBuildInfo = {
-    version: PythonVersion; // incl. raw, AKA sys.version
-    arch: Architecture;
+	version: PythonVersion; // incl. raw, AKA sys.version
+	arch: Architecture;
 };
 
 /**
@@ -171,8 +172,8 @@ type PythonBuildInfo = {
  * @prop defaultDisplayName - the text to use when showing the distro to users
  */
 type PythonDistroMetaInfo = {
-    org: string;
-    defaultDisplayName?: string;
+	org: string;
+	defaultDisplayName?: string;
 };
 
 /**
@@ -182,8 +183,8 @@ type PythonDistroMetaInfo = {
  * @prop binDir - where to look for the distro's executables (i.e. tools)
  */
 export type PythonDistroInfo = PythonDistroMetaInfo & {
-    version?: VersionInfo;
-    binDir?: string;
+	version?: VersionInfo;
+	binDir?: string;
 };
 
 type _PythonEnvInfo = PythonEnvBaseInfo & PythonBuildInfo;
@@ -201,16 +202,16 @@ type _PythonEnvInfo = PythonEnvBaseInfo & PythonBuildInfo;
  * @prop searchLocation - the project to which this env is related to, if any
  */
 export type PythonEnvInfo = _PythonEnvInfo & {
-    distro: PythonDistroInfo;
-    display?: string;
-    detailedDisplayName?: string;
-    searchLocation?: Uri;
-    /**
-     * Command used to run Python in this environment.
-     * E.g. `conda run -n envName python` or `python.exe`
-     */
-    pythonRunCommand?: string[];
-    identifiedUsingNativeLocator?: boolean;
+	distro: PythonDistroInfo;
+	display?: string;
+	detailedDisplayName?: string;
+	searchLocation?: Uri;
+	/**
+	 * Command used to run Python in this environment.
+	 * E.g. `conda run -n envName python` or `python.exe`
+	 */
+	pythonRunCommand?: string[];
+	identifiedUsingNativeLocator?: boolean;
 };
 
 /**
@@ -220,10 +221,10 @@ export type PythonEnvInfo = _PythonEnvInfo & {
  * also cannot be modified by reference. For eg. `otherVersionObject.major = 3` won't work.
  */
 export const UNKNOWN_PYTHON_VERSION: PythonVersion = {
-    major: -1,
-    minor: -1,
-    micro: -1,
-    release: { level: PythonReleaseLevel.Final, serial: -1 },
-    sysVersion: undefined,
+	major: -1,
+	minor: -1,
+	micro: -1,
+	release: { level: PythonReleaseLevel.Final, serial: -1 },
+	sysVersion: undefined,
 };
 Object.freeze(UNKNOWN_PYTHON_VERSION);

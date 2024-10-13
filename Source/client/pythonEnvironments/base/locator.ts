@@ -3,34 +3,40 @@
 
 /* eslint-disable max-classes-per-file */
 
-import { Event, Uri } from 'vscode';
-import { IAsyncIterableIterator, iterEmpty } from '../../common/utils/async';
-import { PythonEnvInfo, PythonEnvKind, PythonEnvSource, PythonVersion } from './info';
+import { Event, Uri } from "vscode";
+
+import { IAsyncIterableIterator, iterEmpty } from "../../common/utils/async";
+import type { Architecture } from "../../common/utils/platform";
 import {
-    IPythonEnvsWatcher,
-    PythonEnvCollectionChangedEvent,
-    PythonEnvsChangedEvent,
-    PythonEnvsWatcher,
-} from './watcher';
-import type { Architecture } from '../../common/utils/platform';
+	PythonEnvInfo,
+	PythonEnvKind,
+	PythonEnvSource,
+	PythonVersion,
+} from "./info";
+import {
+	IPythonEnvsWatcher,
+	PythonEnvCollectionChangedEvent,
+	PythonEnvsChangedEvent,
+	PythonEnvsWatcher,
+} from "./watcher";
 
 /**
  * A single update to a previously provided Python env object.
  */
 export type PythonEnvUpdatedEvent<I = PythonEnvInfo> = {
-    /**
-     * The iteration index of The env info that was previously provided.
-     */
-    index: number;
-    /**
-     * The env info that was previously provided.
-     */
-    old?: I;
-    /**
-     * The env info that replaces the old info.
-     * Update is sent as `undefined` if we find out that the environment is no longer valid.
-     */
-    update: I | undefined;
+	/**
+	 * The iteration index of The env info that was previously provided.
+	 */
+	index: number;
+	/**
+	 * The env info that was previously provided.
+	 */
+	old?: I;
+	/**
+	 * The env info that replaces the old info.
+	 * Update is sent as `undefined` if we find out that the environment is no longer valid.
+	 */
+	update: I | undefined;
 };
 
 /**
@@ -55,33 +61,34 @@ export type PythonEnvUpdatedEvent<I = PythonEnvInfo> = {
  * Callers can usually ignore the update event entirely and rely on
  * the locator to provide sufficiently complete information.
  */
-export interface IPythonEnvsIterator<I = PythonEnvInfo> extends IAsyncIterableIterator<I> {
-    /**
-     * Provides possible updates for already-iterated envs.
-     *
-     * Once there are no more updates, `null` is emitted.
-     *
-     * If this property is not provided then it means the iterator does
-     * not support updates.
-     */
-    onUpdated?: Event<PythonEnvUpdatedEvent<I> | ProgressNotificationEvent>;
+export interface IPythonEnvsIterator<I = PythonEnvInfo>
+	extends IAsyncIterableIterator<I> {
+	/**
+	 * Provides possible updates for already-iterated envs.
+	 *
+	 * Once there are no more updates, `null` is emitted.
+	 *
+	 * If this property is not provided then it means the iterator does
+	 * not support updates.
+	 */
+	onUpdated?: Event<PythonEnvUpdatedEvent<I> | ProgressNotificationEvent>;
 }
 
 export enum ProgressReportStage {
-    idle = 'idle',
-    discoveryStarted = 'discoveryStarted',
-    allPathsDiscovered = 'allPathsDiscovered',
-    discoveryFinished = 'discoveryFinished',
+	idle = "idle",
+	discoveryStarted = "discoveryStarted",
+	allPathsDiscovered = "allPathsDiscovered",
+	discoveryFinished = "discoveryFinished",
 }
 
 export type ProgressNotificationEvent = {
-    stage: ProgressReportStage;
+	stage: ProgressReportStage;
 };
 
 export function isProgressEvent<I = PythonEnvInfo>(
-    event: PythonEnvUpdatedEvent<I> | ProgressNotificationEvent,
+	event: PythonEnvUpdatedEvent<I> | ProgressNotificationEvent,
 ): event is ProgressNotificationEvent {
-    return 'stage' in event;
+	return "stage" in event;
 }
 
 /**
@@ -96,26 +103,26 @@ export const NOOP_ITERATOR: IPythonEnvsIterator = iterEmpty<PythonEnvInfo>();
  * emitted by watchers.
  */
 type BasicPythonLocatorQuery = {
-    /**
-     * If provided, results should be limited to these env
-     * kinds; if not provided, the kind of each environment
-     * is not considered when filtering
-     */
-    kinds?: PythonEnvKind[];
+	/**
+	 * If provided, results should be limited to these env
+	 * kinds; if not provided, the kind of each environment
+	 * is not considered when filtering
+	 */
+	kinds?: PythonEnvKind[];
 };
 
 /**
  * The portion of a query related to env search locations.
  */
 type SearchLocations = {
-    /**
-     * The locations under which to look for environments.
-     */
-    roots: Uri[];
-    /**
-     * If true, only query for workspace related envs, i.e do not look for environments that do not have a search location.
-     */
-    doNotIncludeNonRooted?: boolean;
+	/**
+	 * The locations under which to look for environments.
+	 */
+	roots: Uri[];
+	/**
+	 * If true, only query for workspace related envs, i.e do not look for environments that do not have a search location.
+	 */
+	doNotIncludeNonRooted?: boolean;
 };
 
 /**
@@ -125,43 +132,45 @@ type SearchLocations = {
  * emitted by watchers.
  */
 export type PythonLocatorQuery = BasicPythonLocatorQuery & {
-    /**
-     * If provided, results should be limited to within these locations.
-     */
-    searchLocations?: SearchLocations;
-    /**
-     * If provided, results should be limited envs provided by these locators.
-     */
-    providerId?: string;
-    /**
-     * If provided, results are limited to this env.
-     */
-    envPath?: string;
+	/**
+	 * If provided, results should be limited to within these locations.
+	 */
+	searchLocations?: SearchLocations;
+	/**
+	 * If provided, results should be limited envs provided by these locators.
+	 */
+	providerId?: string;
+	/**
+	 * If provided, results are limited to this env.
+	 */
+	envPath?: string;
 };
 
-type QueryForEvent<E> = E extends PythonEnvsChangedEvent ? PythonLocatorQuery : BasicPythonLocatorQuery;
+type QueryForEvent<E> = E extends PythonEnvsChangedEvent
+	? PythonLocatorQuery
+	: BasicPythonLocatorQuery;
 
 export type BasicEnvInfo = {
-    kind: PythonEnvKind;
-    executablePath: string;
-    source?: PythonEnvSource[];
-    envPath?: string;
-    /**
-     * The project to which this env is related to, if any
-     * E.g. the project directory when dealing with pipenv virtual environments.
-     */
-    searchLocation?: Uri;
-    version?: PythonVersion;
-    name?: string;
-    /**
-     * Display name provided by locators, not generated by us.
-     * E.g. display name as provided by Windows Registry or Windows Store, etc
-     */
-    displayName?: string;
-    identifiedUsingNativeLocator?: boolean;
-    arch?: Architecture;
-    ctime?: number;
-    mtime?: number;
+	kind: PythonEnvKind;
+	executablePath: string;
+	source?: PythonEnvSource[];
+	envPath?: string;
+	/**
+	 * The project to which this env is related to, if any
+	 * E.g. the project directory when dealing with pipenv virtual environments.
+	 */
+	searchLocation?: Uri;
+	version?: PythonVersion;
+	name?: string;
+	/**
+	 * Display name provided by locators, not generated by us.
+	 * E.g. display name as provided by Windows Registry or Windows Store, etc
+	 */
+	displayName?: string;
+	identifiedUsingNativeLocator?: boolean;
+	arch?: Architecture;
+	ctime?: number;
+	mtime?: number;
 };
 
 /**
@@ -178,91 +187,102 @@ export type BasicEnvInfo = {
  * events emitted via `onChanged` do not need to provide information
  * for the specific environments that changed.
  */
-export interface ILocator<I = PythonEnvInfo, E = PythonEnvsChangedEvent> extends IPythonEnvsWatcher<E> {
-    readonly providerId: string;
-    /**
-     * Iterate over the enviroments known tos this locator.
-     *
-     * Locators are not required to have provide all info about
-     * an environment.  However, each yielded item will at least
-     * include all the `PythonEnvBaseInfo` data.  To ensure all
-     * possible information is filled in, call `ILocator.resolveEnv()`.
-     *
-     * Updates to yielded objects may be provided via the optional
-     * `onUpdated` property of the iterator.  However, callers can
-     * usually ignore the update event entirely and rely on the
-     * locator to provide sufficiently complete information.
-     *
-     * @param query - if provided, the locator will limit results to match
-     * @returns - the fast async iterator of Python envs, which may have incomplete info
-     */
-    iterEnvs(query?: QueryForEvent<E>): IPythonEnvsIterator<I>;
+export interface ILocator<I = PythonEnvInfo, E = PythonEnvsChangedEvent>
+	extends IPythonEnvsWatcher<E> {
+	readonly providerId: string;
+	/**
+	 * Iterate over the enviroments known tos this locator.
+	 *
+	 * Locators are not required to have provide all info about
+	 * an environment.  However, each yielded item will at least
+	 * include all the `PythonEnvBaseInfo` data.  To ensure all
+	 * possible information is filled in, call `ILocator.resolveEnv()`.
+	 *
+	 * Updates to yielded objects may be provided via the optional
+	 * `onUpdated` property of the iterator.  However, callers can
+	 * usually ignore the update event entirely and rely on the
+	 * locator to provide sufficiently complete information.
+	 *
+	 * @param query - if provided, the locator will limit results to match
+	 * @returns - the fast async iterator of Python envs, which may have incomplete info
+	 */
+	iterEnvs(query?: QueryForEvent<E>): IPythonEnvsIterator<I>;
 }
 
-export type ICompositeLocator<I = PythonEnvInfo, E = PythonEnvsChangedEvent> = Omit<ILocator<I, E>, 'providerId'>;
+export type ICompositeLocator<
+	I = PythonEnvInfo,
+	E = PythonEnvsChangedEvent,
+> = Omit<ILocator<I, E>, "providerId">;
 
 interface IResolver {
-    /**
-     * Find as much info about the given Python environment as possible.
-     * If path passed is invalid, then `undefined` is returned.
-     *
-     * @param path - Python executable path or environment path to resolve more information about
-     */
-    resolveEnv(path: string): Promise<PythonEnvInfo | undefined>;
+	/**
+	 * Find as much info about the given Python environment as possible.
+	 * If path passed is invalid, then `undefined` is returned.
+	 *
+	 * @param path - Python executable path or environment path to resolve more information about
+	 */
+	resolveEnv(path: string): Promise<PythonEnvInfo | undefined>;
 }
 
-export interface IResolvingLocator<I = PythonEnvInfo> extends IResolver, ICompositeLocator<I> {}
+export interface IResolvingLocator<I = PythonEnvInfo>
+	extends IResolver,
+		ICompositeLocator<I> {}
 
 export interface GetRefreshEnvironmentsOptions {
-    /**
-     * Get refresh promise which resolves once the following stage has been reached for the list of known environments.
-     */
-    stage?: ProgressReportStage;
+	/**
+	 * Get refresh promise which resolves once the following stage has been reached for the list of known environments.
+	 */
+	stage?: ProgressReportStage;
 }
 
 export type TriggerRefreshOptions = {
-    /**
-     * Only trigger a refresh if it hasn't already been triggered for this session.
-     */
-    ifNotTriggerredAlready?: boolean;
+	/**
+	 * Only trigger a refresh if it hasn't already been triggered for this session.
+	 */
+	ifNotTriggerredAlready?: boolean;
 };
 
 export interface IDiscoveryAPI {
-    readonly refreshState: ProgressReportStage;
-    /**
-     * Tracks discovery progress for current list of known environments, i.e when it starts, finishes or any other relevant
-     * stage. Note the progress for a particular query is currently not tracked or reported, this only indicates progress of
-     * the entire collection.
-     */
-    readonly onProgress: Event<ProgressNotificationEvent>;
-    /**
-     * Fires with details if the known list changes.
-     */
-    readonly onChanged: Event<PythonEnvCollectionChangedEvent>;
-    /**
-     * Resolves once environment list has finished refreshing, i.e all environments are
-     * discovered. Carries `undefined` if there is no refresh currently going on.
-     */
-    getRefreshPromise(options?: GetRefreshEnvironmentsOptions): Promise<void> | undefined;
-    /**
-     * Triggers a new refresh for query if there isn't any already running.
-     */
-    triggerRefresh(query?: PythonLocatorQuery, options?: TriggerRefreshOptions): Promise<void>;
-    /**
-     * Get current list of known environments.
-     */
-    getEnvs(query?: PythonLocatorQuery): PythonEnvInfo[];
-    /**
-     * Find as much info about the given Python environment as possible.
-     * If path passed is invalid, then `undefined` is returned.
-     *
-     * @param path - Full path of Python executable or environment folder to resolve more information about
-     */
-    resolveEnv(path: string): Promise<PythonEnvInfo | undefined>;
+	readonly refreshState: ProgressReportStage;
+	/**
+	 * Tracks discovery progress for current list of known environments, i.e when it starts, finishes or any other relevant
+	 * stage. Note the progress for a particular query is currently not tracked or reported, this only indicates progress of
+	 * the entire collection.
+	 */
+	readonly onProgress: Event<ProgressNotificationEvent>;
+	/**
+	 * Fires with details if the known list changes.
+	 */
+	readonly onChanged: Event<PythonEnvCollectionChangedEvent>;
+	/**
+	 * Resolves once environment list has finished refreshing, i.e all environments are
+	 * discovered. Carries `undefined` if there is no refresh currently going on.
+	 */
+	getRefreshPromise(
+		options?: GetRefreshEnvironmentsOptions,
+	): Promise<void> | undefined;
+	/**
+	 * Triggers a new refresh for query if there isn't any already running.
+	 */
+	triggerRefresh(
+		query?: PythonLocatorQuery,
+		options?: TriggerRefreshOptions,
+	): Promise<void>;
+	/**
+	 * Get current list of known environments.
+	 */
+	getEnvs(query?: PythonLocatorQuery): PythonEnvInfo[];
+	/**
+	 * Find as much info about the given Python environment as possible.
+	 * If path passed is invalid, then `undefined` is returned.
+	 *
+	 * @param path - Full path of Python executable or environment folder to resolve more information about
+	 */
+	resolveEnv(path: string): Promise<PythonEnvInfo | undefined>;
 }
 
 export interface IEmitter<E> {
-    fire(e: E): void;
+	fire(e: E): void;
 }
 
 /**
@@ -277,20 +297,22 @@ export interface IEmitter<E> {
  * should be used.  Only in low-level cases should you consider using
  * `BasicPythonEnvsChangedEvent`.
  */
-abstract class LocatorBase<I = PythonEnvInfo, E = PythonEnvsChangedEvent> implements ILocator<I, E> {
-    public readonly onChanged: Event<E>;
+abstract class LocatorBase<I = PythonEnvInfo, E = PythonEnvsChangedEvent>
+	implements ILocator<I, E>
+{
+	public readonly onChanged: Event<E>;
 
-    public abstract readonly providerId: string;
+	public abstract readonly providerId: string;
 
-    protected readonly emitter: IEmitter<E>;
+	protected readonly emitter: IEmitter<E>;
 
-    constructor(watcher: IPythonEnvsWatcher<E> & IEmitter<E>) {
-        this.emitter = watcher;
-        this.onChanged = watcher.onChanged;
-    }
+	constructor(watcher: IPythonEnvsWatcher<E> & IEmitter<E>) {
+		this.emitter = watcher;
+		this.onChanged = watcher.onChanged;
+	}
 
-    // eslint-disable-next-line class-methods-use-this
-    public abstract iterEnvs(query?: QueryForEvent<E>): IPythonEnvsIterator<I>;
+	// eslint-disable-next-line class-methods-use-this
+	public abstract iterEnvs(query?: QueryForEvent<E>): IPythonEnvsIterator<I>;
 }
 
 /**
@@ -306,7 +328,7 @@ abstract class LocatorBase<I = PythonEnvInfo, E = PythonEnvsChangedEvent> implem
  * using `BasicPythonEnvsChangedEvent.
  */
 export abstract class Locator<I = PythonEnvInfo> extends LocatorBase<I> {
-    constructor() {
-        super(new PythonEnvsWatcher());
-    }
+	constructor() {
+		super(new PythonEnvsWatcher());
+	}
 }

@@ -1,22 +1,22 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { IDisposableRegistry, IExtensionContext } from './common/types';
-import { IServiceContainer, IServiceManager } from './ioc/types';
+import { IDisposableRegistry, IExtensionContext } from "./common/types";
+import { IServiceContainer, IServiceManager } from "./ioc/types";
 
 /**
  * The global extension state needed by components.
  *
  */
 export type ExtensionState = {
-    context: IExtensionContext;
-    disposables: IDisposableRegistry;
-    // For now we include the objects dealing with inversify (IOC)
-    // registration.  These will be removed later.
-    legacyIOC: {
-        serviceManager: IServiceManager;
-        serviceContainer: IServiceContainer;
-    };
+	context: IExtensionContext;
+	disposables: IDisposableRegistry;
+	// For now we include the objects dealing with inversify (IOC)
+	// registration.  These will be removed later.
+	legacyIOC: {
+		serviceManager: IServiceManager;
+		serviceContainer: IServiceContainer;
+	};
 };
 
 /**
@@ -33,5 +33,5 @@ export type ExtensionState = {
  * Those are not exposed here.
  */
 export type ActivationResult = {
-    fullyReady: Promise<void>;
+	fullyReady: Promise<void>;
 };
