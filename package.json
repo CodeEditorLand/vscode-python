@@ -1513,7 +1513,7 @@
 		"@types/download": "8.0.5",
 		"@types/fs-extra": "11.0.4",
 		"@types/glob": "8.1.0",
-		"@types/lodash": "4.17.10",
+		"@types/lodash": "4.17.11",
 		"@types/node": "22.7.6",
 		"@types/semver": "7.5.8",
 		"@types/shortid": "0.0.32",
