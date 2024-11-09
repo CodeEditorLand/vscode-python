@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import atexit
+import contextlib
 import json
 import os
 import pathlib
@@ -20,13 +21,16 @@ from typing import (
 
 import pytest
 
-script_dir = pathlib.Path(__file__).parent.parent
-sys.path.append(os.fspath(script_dir))
-sys.path.append(os.fspath(script_dir / "lib" / "python"))
-from testing_tools import socket_manager  # noqa: E402
-
 if TYPE_CHECKING:
     from pluggy import Result
+
+
+USES_PYTEST_DESCRIBE = False
+
+with contextlib.suppress(ImportError):
+    from pytest_describe.plugin import DescribeBlock
+
+    USES_PYTEST_DESCRIBE = True
 
 
 class TestData(TypedDict):
@@ -162,7 +166,7 @@ def pytest_exception_interact(node, call, report):
             collected_test = TestRunResultDict()
             collected_test[node_id] = item_result
             cwd = pathlib.Path.cwd()
-            execution_post(
+            send_execution_message(
                 os.fsdecode(cwd),
                 "success",
                 collected_test if collected_test else None,
@@ -286,7 +290,7 @@ def pytest_report_teststatus(report, config):  # noqa: ARG001
             )
             collected_test = TestRunResultDict()
             collected_test[absolute_node_id] = item_result
-            execution_post(
+            send_execution_message(
                 os.fsdecode(cwd),
                 "success",
                 collected_test if collected_test else None,
@@ -320,7 +324,7 @@ def pytest_runtest_protocol(item, nextitem):  # noqa: ARG001
             )
             collected_test = TestRunResultDict()
             collected_test[absolute_node_id] = item_result
-            execution_post(
+            send_execution_message(
                 os.fsdecode(cwd),
                 "success",
                 collected_test if collected_test else None,
@@ -396,7 +400,7 @@ def pytest_sessionfinish(session, exitstatus):
                 "children": [],
                 "id_": "",
             }
-            post_response(os.fsdecode(cwd), error_node)
+            send_discovery_message(os.fsdecode(cwd), error_node)
         try:
             session_node: TestNode | None = build_test_tree(session)
             if not session_node:
@@ -404,7 +408,7 @@ def pytest_sessionfinish(session, exitstatus):
                     "Something went wrong following pytest finish, \
                         no session node was created"
                 )
-            post_response(os.fsdecode(cwd), session_node)
+            send_discovery_message(os.fsdecode(cwd), session_node)
         except Exception as e:
             ERRORS.append(
                 f"Error Occurred, traceback: {(traceback.format_exc() if e.__traceback__ else '')}"
@@ -416,7 +420,7 @@ def pytest_sessionfinish(session, exitstatus):
                 "children": [],
                 "id_": "",
             }
-            post_response(os.fsdecode(cwd), error_node)
+            send_discovery_message(os.fsdecode(cwd), error_node)
     else:
         if exitstatus == 0 or exitstatus == 1:
             exitstatus_bool = "success"
@@ -426,7 +430,7 @@ def pytest_sessionfinish(session, exitstatus):
             )
             exitstatus_bool = "error"
 
-            execution_post(
+            send_execution_message(
                 os.fsdecode(cwd),
                 exitstatus_bool,
                 None,
@@ -460,7 +464,7 @@ def pytest_sessionfinish(session, exitstatus):
             result=file_coverage_map,
             error=None,
         )
-        send_post_request(payload)
+        send_message(payload)
 
 
 def build_test_tree(session: pytest.Session) -> TestNode:
@@ -529,11 +533,15 @@ def build_test_tree(session: pytest.Session) -> TestNode:
                     parent_test_case["children"].append(function_test_node)
             # If the parent is not a file, it is a class, add the function node as the test node to handle subsequent nesting.
             test_node = function_test_node
-        if isinstance(test_case.parent, pytest.Class):
+        if isinstance(test_case.parent, pytest.Class) or (
+            USES_PYTEST_DESCRIBE and isinstance(test_case.parent, DescribeBlock)
+        ):
             case_iter = test_case.parent
             node_child_iter = test_node
             test_class_node: TestNode | None = None
-            while isinstance(case_iter, pytest.Class):
+            while isinstance(case_iter, pytest.Class) or (
+                USES_PYTEST_DESCRIBE and isinstance(case_iter, DescribeBlock)
+            ):
                 # While the given node is a class, create a class and nest the previous node as a child.
                 try:
                     test_class_node = class_nodes_dict[case_iter.nodeid]
@@ -690,7 +698,7 @@ def create_session_node(session: pytest.Session) -> TestNode:
     }
 
 
-def create_class_node(class_module: pytest.Class) -> TestNode:
+def create_class_node(class_module: pytest.Class | DescribeBlock) -> TestNode:
     """Creates a class node from a pytest class object.
 
     Keyword arguments:
@@ -824,8 +832,10 @@ __writer = None
 atexit.register(lambda: __writer.close() if __writer else None)
 
 
-def execution_post(cwd: str, status: Literal["success", "error"], tests: TestRunResultDict | None):
-    """Sends a POST request with execution payload details.
+def send_execution_message(
+    cwd: str, status: Literal["success", "error"], tests: TestRunResultDict | None
+):
+    """Sends message execution payload details.
 
     Args:
         cwd (str): Current working directory.
@@ -837,10 +847,10 @@ def execution_post(cwd: str, status: Literal["success", "error"], tests: TestRun
     )
     if ERRORS:
         payload["error"] = ERRORS
-    send_post_request(payload)
+    send_message(payload)
 
 
-def post_response(cwd: str, session_node: TestNode) -> None:
+def send_discovery_message(cwd: str, session_node: TestNode) -> None:
     """
     Sends a POST request with test session details in payload.
 
@@ -856,7 +866,7 @@ def post_response(cwd: str, session_node: TestNode) -> None:
     }
     if ERRORS is not None:
         payload["error"] = ERRORS
-    send_post_request(payload, cls_encoder=PathEncoder)
+    send_message(payload, cls_encoder=PathEncoder)
 
 
 class PathEncoder(json.JSONEncoder):
@@ -868,7 +878,7 @@ class PathEncoder(json.JSONEncoder):
         return super().default(o)
 
 
-def send_post_request(
+def send_message(
     payload: ExecutionPayloadDict | DiscoveryPayloadDict | CoveragePayloadDict,
     cls_encoder=None,
 ):
@@ -893,8 +903,7 @@ def send_post_request(
 
     if __writer is None:
         try:
-            __writer = socket_manager.PipeManager(TEST_RUN_PIPE)
-            __writer.connect()
+            __writer = open(TEST_RUN_PIPE, "w", encoding="utf-8", newline="\r\n")  # noqa: SIM115, PTH123
         except Exception as error:
             error_msg = f"Error attempting to connect to extension named pipe {TEST_RUN_PIPE}[vscode-pytest]: {error}"
             print(error_msg, file=sys.stderr)
@@ -912,10 +921,11 @@ def send_post_request(
         "params": payload,
     }
     data = json.dumps(rpc, cls=cls_encoder)
-
     try:
         if __writer:
-            __writer.write(data)
+            request = f"""content-length: {len(data)}\ncontent-type: application/json\n\n{data}"""
+            __writer.write(request)
+            __writer.flush()
         else:
             print(
                 f"Plugin error connection error[vscode-pytest], writer is None \n[vscode-pytest] data: \n{data} \n",
