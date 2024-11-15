@@ -442,13 +442,19 @@ def pytest_sessionfinish(session, exitstatus):
     if is_coverage_run == "True":
         # load the report and build the json result to return
         import coverage
+        from coverage.exceptions import NoSource
 
         cov = coverage.Coverage()
         cov.load()
+
         file_set: set[str] = cov.get_data().measured_files()
         file_coverage_map: dict[str, FileCoverageInfo] = {}
         for file in file_set:
-            analysis = cov.analysis2(file)
+            try:
+                analysis = cov.analysis2(file)
+            except NoSource:
+                # as per issue 24308 this best way to handle this edge case
+                continue
             lines_executable = {int(line_no) for line_no in analysis[1]}
             lines_missed = {int(line_no) for line_no in analysis[3]}
             lines_covered = lines_executable - lines_missed
