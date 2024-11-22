@@ -27,6 +27,7 @@ export class ProgressService {
 	private createProgress(options: ProgressOptions) {
 		this.shell.withProgress(options, () => {
 			this.deferred = createDeferred();
+
 			return this.deferred.promise;
 		});
 	}

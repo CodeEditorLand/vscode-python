@@ -26,8 +26,10 @@ export function getQueryFilter(
 		query.kinds !== undefined && query.kinds.length > 0
 			? query.kinds
 			: undefined;
+
 	const includeNonRooted = !query.searchLocations?.doNotIncludeNonRooted; // We default to `true`.
 	const locationFilters = getSearchLocationFilters(query);
+
 	function checkKind(env: PythonEnvInfo): boolean {
 		if (kinds === undefined) {
 			return true;
@@ -41,6 +43,7 @@ export function getQueryFilter(
 		}
 		// It is a "rooted" env.
 		const loc = env.searchLocation;
+
 		if (locationFilters !== undefined) {
 			// Check against the requested roots.  (There may be none.)
 			return locationFilters.some((filter) => filter(loc));
@@ -85,6 +88,7 @@ export async function getEnvs<I = PythonEnvInfo>(
 	const envs: (I | undefined)[] = [];
 
 	const updatesDone = createDeferred<void>();
+
 	if (iterator.onUpdated === undefined) {
 		updatesDone.resolve();
 	} else {
@@ -98,6 +102,7 @@ export async function getEnvs<I = PythonEnvInfo>(
 					listener.dispose();
 				} else if (event.index !== undefined) {
 					const { index, update } = event;
+
 					if (envs[index] === undefined) {
 						const json = JSON.stringify(update);
 						traceVerbose(
@@ -112,6 +117,7 @@ export async function getEnvs<I = PythonEnvInfo>(
 	}
 
 	let itemIndex = 0;
+
 	for await (const env of iterator) {
 		// We can't just push because updates might get emitted early.
 		if (envs[itemIndex] === undefined) {

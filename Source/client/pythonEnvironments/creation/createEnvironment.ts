@@ -22,6 +22,7 @@ import { CreateEnvironmentOptionsInternal } from "./types";
 
 const onCreateEnvironmentStartedEvent =
 	new EventEmitter<EnvironmentWillCreateEvent>();
+
 const onCreateEnvironmentExitedEvent =
 	new EventEmitter<EnvironmentDidCreateEvent>();
 
@@ -42,6 +43,7 @@ function fireExitedEvent(
 	error?: Error,
 ): void {
 	startedEventCount -= 1;
+
 	if (result) {
 		onCreateEnvironmentExitedEvent.fire({ options, ...result });
 	} else if (error) {
@@ -66,7 +68,9 @@ async function createEnvironment(
 	options: CreateEnvironmentOptions & CreateEnvironmentOptionsInternal,
 ): Promise<CreateEnvironmentResult | undefined> {
 	let result: CreateEnvironmentResult | undefined;
+
 	let err: Error | undefined;
+
 	try {
 		fireStartedEvent(options);
 		result = await provider.createEnvironment(options);
@@ -75,11 +79,13 @@ async function createEnvironment(
 			traceVerbose(
 				"Create Env: User clicked back button during environment creation",
 			);
+
 			if (!options.showBackButton) {
 				return undefined;
 			}
 		}
 		err = ex as Error;
+
 		throw err;
 	} finally {
 		fireExitedEvent(result, options, err);
@@ -105,6 +111,7 @@ async function showCreateEnvironmentQuickPick(
 
 	if (options?.providerId) {
 		const provider = providers.find((p) => p.id === options.providerId);
+
 		if (provider) {
 			return provider;
 		}
@@ -133,8 +140,10 @@ async function showCreateEnvironmentQuickPick(
 		const selected = Array.isArray(selectedItem)
 			? selectedItem[0]
 			: selectedItem;
+
 		if (selected) {
 			const selections = providers.filter((p) => p.id === selected.id);
+
 			if (selections.length > 0) {
 				return selections[0];
 			}
@@ -160,7 +169,9 @@ export async function handleCreateEnvironmentCommand(
 	options?: CreateEnvironmentOptions & CreateEnvironmentOptionsInternal,
 ): Promise<CreateEnvironmentResult | undefined> {
 	const optionsWithDefaults = getOptionsWithDefaults(options);
+
 	let selectedProvider: CreateEnvironmentProvider | undefined;
+
 	const envTypeStep = new MultiStepNode(
 		undefined,
 		async (context?: MultiStepAction) => {
@@ -186,6 +197,7 @@ export async function handleCreateEnvironmentCommand(
 				traceError(
 					"No Environment Creation providers were registered.",
 				);
+
 				if (context === MultiStepAction.Back) {
 					// There are no providers to select, so just step back.
 					return MultiStepAction.Back;
@@ -197,6 +209,7 @@ export async function handleCreateEnvironmentCommand(
 	);
 
 	let result: CreateEnvironmentResult | undefined;
+
 	const createStep = new MultiStepNode(
 		envTypeStep,
 		async (context?: MultiStepAction) => {
@@ -227,6 +240,7 @@ export async function handleCreateEnvironmentCommand(
 	envTypeStep.next = createStep;
 
 	const action = await MultiStepNode.run(envTypeStep);
+
 	if (options?.showBackButton) {
 		if (
 			action === MultiStepAction.Back ||

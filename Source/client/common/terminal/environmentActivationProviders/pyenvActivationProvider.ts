@@ -35,6 +35,7 @@ export class PyEnvActivationCommandProvider
 		const interpreter = await this.serviceContainer
 			.get<IInterpreterService>(IInterpreterService)
 			.getActiveInterpreter(resource);
+
 		if (
 			!interpreter ||
 			interpreter.envType !== EnvironmentType.Pyenv ||
@@ -55,6 +56,7 @@ export class PyEnvActivationCommandProvider
 		const interpreter = await this.serviceContainer
 			.get<IInterpreterService>(IInterpreterService)
 			.getInterpreterDetails(pythonPath);
+
 		if (
 			!interpreter ||
 			interpreter.envType !== EnvironmentType.Pyenv ||

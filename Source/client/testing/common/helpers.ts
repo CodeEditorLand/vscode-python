@@ -15,6 +15,7 @@ export function addPathToPythonpath(
 ): string {
 	// Split PYTHONPATH into array of paths if it exists
 	let paths: string[];
+
 	if (!launchPythonPath) {
 		paths = [];
 	} else {

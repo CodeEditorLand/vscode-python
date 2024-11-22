@@ -69,6 +69,7 @@ export async function commonPosixBinPaths(): Promise<string[]> {
 	);
 
 	const exists = await Promise.all(paths.map((p) => fsapi.pathExists(p)));
+
 	return paths.filter((_, index) => exists[index]);
 }
 
@@ -98,7 +99,9 @@ async function findPythonBinariesInDir(searchDir: string) {
  */
 function pickShortestPath(pythonPaths: string[]) {
 	let shortestLen = pythonPaths[0].length;
+
 	let shortestPath = pythonPaths[0];
+
 	for (const p of pythonPaths) {
 		if (p.length <= shortestLen) {
 			shortestLen = p.length;
@@ -119,6 +122,7 @@ export async function getPythonBinFromPosixPaths(
 	searchDirs: string[],
 ): Promise<string[]> {
 	const binToLinkMap = new Map<string, string[]>();
+
 	for (const searchDir of searchDirs) {
 		const paths = await findPythonBinariesInDir(searchDir).catch((ex) => {
 			traceWarn(
@@ -127,6 +131,7 @@ export async function getPythonBinFromPosixPaths(
 				"failed with",
 				ex,
 			);
+
 			return [];
 		});
 
@@ -137,7 +142,9 @@ export async function getPythonBinFromPosixPaths(
 				traceVerbose(
 					`Attempting to resolve symbolic link: ${filepath}`,
 				);
+
 				const resolvedBin = await resolveSymbolicLink(filepath);
+
 				if (binToLinkMap.has(resolvedBin)) {
 					binToLinkMap.get(resolvedBin)?.push(filepath);
 				} else {
@@ -161,8 +168,10 @@ export async function getPythonBinFromPosixPaths(
 	// Of the 4 possible paths to same binary (3 symlinks and 1 binary path),
 	// the code below will pick '/usr/bin/python'.
 	const keys = Array.from(binToLinkMap.keys());
+
 	const pythonPaths = keys.map((key) =>
 		pickShortestPath([key, ...(binToLinkMap.get(key) ?? [])]),
 	);
+
 	return uniq(pythonPaths);
 }

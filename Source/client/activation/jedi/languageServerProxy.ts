@@ -74,6 +74,7 @@ export class JediLanguageServerProxy implements ILanguageServerProxy {
 			this.languageClient = client;
 		} catch (ex) {
 			traceError("Failed to start language server:", ex);
+
 			throw new Error(
 				"Launching Jedi language server using python failed, see output.",
 			);
@@ -95,6 +96,7 @@ export class JediLanguageServerProxy implements ILanguageServerProxy {
 			const pid: number | undefined = (
 				(client as any)._serverProcess as ChildProcess
 			)?.pid;
+
 			const killServer = () => {
 				if (pid) {
 					killPid(pid);

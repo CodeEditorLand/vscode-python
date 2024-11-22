@@ -24,6 +24,7 @@ export async function selectTestWorkspace(
 		const workspaceFolder = await appShell.showWorkspaceFolderPick({
 			placeHolder: "Select a workspace",
 		});
+
 		return workspaceFolder ? workspaceFolder.uri : undefined;
 	}
 }
@@ -34,8 +35,10 @@ export class TestsHelper implements ITestsHelper {
 		switch (product) {
 			case Product.pytest:
 				return "pytest";
+
 			case Product.unittest:
 				return "unittest";
+
 			default: {
 				throw new Error(`Unknown Test Product ${product}`);
 			}
@@ -45,8 +48,10 @@ export class TestsHelper implements ITestsHelper {
 		switch (provider) {
 			case "pytest":
 				return Product.pytest;
+
 			case "unittest":
 				return Product.unittest;
+
 			default: {
 				throw new Error(`Unknown Test Provider ${provider}`);
 			}
@@ -56,6 +61,7 @@ export class TestsHelper implements ITestsHelper {
 		product: UnitTestProduct,
 	): TestSettingsPropertyNames {
 		const id = this.parseProviderName(product);
+
 		switch (id) {
 			case "pytest": {
 				return {

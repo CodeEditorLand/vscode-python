@@ -47,14 +47,17 @@ async function getGlobalVirtualEnvDirs(): Promise<string[]> {
 	const venvDirs: string[] = [];
 
 	let workOnHome = getEnvironmentVariable("WORKON_HOME");
+
 	if (workOnHome) {
 		workOnHome = untildify(workOnHome);
+
 		if (await pathExists(workOnHome)) {
 			venvDirs.push(workOnHome);
 		}
 	}
 
 	const homeDir = getUserHomeDir();
+
 	if (homeDir && (await pathExists(homeDir))) {
 		const subDirs = [
 			"envs",
@@ -64,6 +67,7 @@ async function getGlobalVirtualEnvDirs(): Promise<string[]> {
 			".virtualenvs",
 			path.join(".local", "share", "virtualenvs"),
 		];
+
 		const filtered = await asyncFilter(
 			subDirs.map((d) => path.join(homeDir, d)),
 			pathExists,
@@ -83,6 +87,7 @@ async function getSearchLocation(env: BasicEnvInfo): Promise<Uri | undefined> {
 		const project = await getProjectDir(
 			path.dirname(path.dirname(env.executablePath)),
 		);
+
 		if (project) {
 			return Uri.file(project);
 		}
@@ -142,7 +147,9 @@ export class GlobalVirtualEnvironmentLocator extends FSWatchingLocator {
 		async function* iterator() {
 			const stopWatch = new StopWatch();
 			traceInfo("Searching for global virtual environments");
+
 			const envRootDirs = await getGlobalVirtualEnvDirs();
+
 			const envGenerators = envRootDirs.map((envRootDir) => {
 				async function* generator() {
 					traceVerbose(
@@ -165,10 +172,12 @@ export class GlobalVirtualEnvironmentLocator extends FSWatchingLocator {
 							// check multiple times. Those checks are file system heavy and
 							// we can use the kind to determine this anyway.
 							const kind = await getVirtualEnvKind(filename);
+
 							const searchLocation = await getSearchLocation({
 								kind,
 								executablePath: filename,
 							});
+
 							try {
 								yield {
 									kind,

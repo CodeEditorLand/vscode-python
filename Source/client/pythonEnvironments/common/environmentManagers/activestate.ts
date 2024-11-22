@@ -36,7 +36,9 @@ export async function isActiveStateEnvironment(
 	interpreterPath: string,
 ): Promise<boolean> {
 	const execDir = path.dirname(interpreterPath);
+
 	const runtimeDir = path.dirname(execDir);
+
 	return pathExists(path.join(runtimeDir, "_runtime_store"));
 }
 
@@ -58,6 +60,7 @@ export class ActiveState {
 
 	public static getStateToolDir(): string | undefined {
 		const home = getUserHomeDir();
+
 		if (!home) {
 			return undefined;
 		}
@@ -68,9 +71,11 @@ export class ActiveState {
 
 	private static async locate(): Promise<ActiveState | undefined> {
 		const stateToolDir = this.getStateToolDir();
+
 		const stateCommand =
 			getPythonSetting<string>(ACTIVESTATETOOLPATH_SETTING_KEY) ??
 			ActiveState.defaultStateCommand;
+
 		if (
 			stateToolDir &&
 			((await pathExists(stateToolDir)) ||
@@ -94,26 +99,32 @@ export class ActiveState {
 			const stateCommand =
 				getPythonSetting<string>(ACTIVESTATETOOLPATH_SETTING_KEY) ??
 				ActiveState.defaultStateCommand;
+
 			const result = await shellExecute(
 				`${stateCommand} projects -o editor`,
 				{
 					timeout: STATE_GENERAL_TIMEOUT,
 				},
 			);
+
 			if (!result) {
 				return undefined;
 			}
 			let output = result.stdout.trimEnd();
+
 			if (output[output.length - 1] === "\0") {
 				// '\0' is a record separator.
 				output = output.substring(0, output.length - 1);
 			}
 			traceVerbose(`${stateCommand} projects -o editor: ${output}`);
+
 			const projects = JSON.parse(output);
 			ActiveState.setCachedProjectInfo(projects);
+
 			return projects;
 		} catch (ex) {
 			traceError(ex);
+
 			return undefined;
 		}
 	}
@@ -137,6 +148,7 @@ export function isActiveStateEnvironmentForWorkspace(
 	workspacePath: string,
 ): boolean {
 	const interpreterDir = dirname(interpreterPath);
+
 	for (const project of ActiveState.getCachedProjectInfo()) {
 		if (project.executables) {
 			for (const [i, dir] of project.executables.entries()) {

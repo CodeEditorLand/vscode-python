@@ -63,11 +63,14 @@ export class ShellIntegrationDetectionService
 			const activeShellType = identifyShellFromShellPath(
 				this.appEnvironment.shell,
 			);
+
 			const key = getKeyForShell(activeShellType);
+
 			const persistedResult =
 				this.persistentStateFactory.createGlobalPersistentState<boolean>(
 					key,
 				);
+
 			if (persistedResult.value) {
 				this.isWorkingForShell.add(activeShellType);
 			}
@@ -78,6 +81,7 @@ export class ShellIntegrationDetectionService
 						e.data.includes("\x1b]133;A\x07")
 					) {
 						let { shell } = this.appEnvironment;
+
 						if (
 							"shellPath" in e.terminal.creationOptions &&
 							e.terminal.creationOptions.shellPath
@@ -89,9 +93,11 @@ export class ShellIntegrationDetectionService
 							"Received shell integration sequence for",
 							shellType,
 						);
+
 						const wasWorking =
 							this.isWorkingForShell.has(shellType);
 						this.isWorkingForShell.add(shellType);
+
 						if (!wasWorking) {
 							// If it wasn't working previously, status has changed.
 							this.didChange.fire();
@@ -116,6 +122,7 @@ export class ShellIntegrationDetectionService
 		const isEnabled = !!this.workspaceService
 			.getConfiguration("terminal")
 			.get<boolean>("integrated.shellIntegration.enabled");
+
 		if (!isEnabled) {
 			traceVerbose("Shell integration is disabled in user settings.");
 		}
@@ -125,31 +132,38 @@ export class ShellIntegrationDetectionService
 
 	public async isWorking(): Promise<boolean> {
 		const { shell } = this.appEnvironment;
+
 		return this._isWorking(shell).catch((ex) => {
 			traceError(
 				`Failed to determine if shell supports shell integration`,
 				shell,
 				ex,
 			);
+
 			return false;
 		});
 	}
 
 	public async _isWorking(shell: string): Promise<boolean> {
 		const shellType = identifyShellFromShellPath(shell);
+
 		const isSupposedToWork = ShellIntegrationShells.includes(shellType);
+
 		if (!isSupposedToWork) {
 			return false;
 		}
 		const key = getKeyForShell(shellType);
+
 		const persistedResult =
 			this.persistentStateFactory.createGlobalPersistentState<boolean>(
 				key,
 			);
+
 		if (persistedResult.value !== undefined) {
 			return persistedResult.value;
 		}
 		const result = await this.useDataWriteApproach(shellType);
+
 		if (result) {
 			// Once we know that shell integration is working for a shell, persist it so we need not do this check every session.
 			await persistedResult.updateValue(result);
@@ -180,6 +194,7 @@ export class ShellIntegrationDetectionService
 			"?",
 			this.isWorkingForShell.has(shellType),
 		);
+
 		return this.isWorkingForShell.has(shellType);
 	}
 

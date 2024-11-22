@@ -59,8 +59,11 @@ export class SwitchToDefaultLanguageServerDiagnosticService extends BaseDiagnost
 
 	public diagnose(resource: Resource): Promise<IDiagnostic[]> {
 		let changed = false;
+
 		const config = this.workspaceService.getConfiguration("python");
+
 		const value = config.inspect<string>("languageServer");
+
 		if (value?.workspaceValue === LanguageServerType.Microsoft) {
 			config.update(
 				"languageServer",
@@ -96,6 +99,7 @@ export class SwitchToDefaultLanguageServerDiagnosticService extends BaseDiagnost
 			return;
 		}
 		const diagnostic = diagnostics[0];
+
 		if (await this.filterService.shouldIgnoreDiagnostic(diagnostic.code)) {
 			return;
 		}

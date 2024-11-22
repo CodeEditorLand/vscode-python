@@ -31,19 +31,23 @@ function getDefaultOptions<T extends ShellOptions | SpawnOptions>(
 	defaultEnv?: EnvironmentVariables,
 ): T {
 	const defaultOptions = { ...options };
+
 	const execOptions = defaultOptions as SpawnOptions;
+
 	if (execOptions) {
 		execOptions.encoding =
 			typeof execOptions.encoding === "string" &&
 			execOptions.encoding.length > 0
 				? execOptions.encoding
 				: DEFAULT_ENCODING;
+
 		const { encoding } = execOptions;
 		delete execOptions.encoding;
 		execOptions.encoding = encoding;
 	}
 	if (!defaultOptions.env || Object.keys(defaultOptions.env).length === 0) {
 		const env = defaultEnv || process.env;
+
 		defaultOptions.env = { ...env };
 	} else {
 		defaultOptions.env = { ...defaultOptions.env };
@@ -58,6 +62,7 @@ function getDefaultOptions<T extends ShellOptions | SpawnOptions>(
 
 	// Always ensure we have unbuffered output.
 	defaultOptions.env.PYTHONUNBUFFERED = "1";
+
 	if (!defaultOptions.env.PYTHONIOENCODING) {
 		defaultOptions.env.PYTHONIOENCODING = "utf-8";
 	}
@@ -72,6 +77,7 @@ export function shellExec(
 	disposables?: Set<IDisposable>,
 ): Promise<ExecutionResult<string>> {
 	const shellOptions = getDefaultOptions(options, defaultEnv);
+
 	if (!options.doNotLog) {
 		const processLogger = new ProcessLogger(new WorkspaceService());
 		processLogger.logProcess(command, undefined, shellOptions);
@@ -93,7 +99,9 @@ export function shellExec(
 				});
 			}
 		};
+
 		let procExited = false;
+
 		const proc = exec(command, shellOptions, callback); // NOSONAR
 		proc.once("close", () => {
 			procExited = true;
@@ -104,6 +112,7 @@ export function shellExec(
 		proc.once("error", () => {
 			procExited = true;
 		});
+
 		const disposable: IDisposable = {
 			dispose: () => {
 				// If process has not exited nor killed, force kill it.
@@ -116,6 +125,7 @@ export function shellExec(
 				}
 			},
 		};
+
 		if (disposables) {
 			disposables.add(disposable);
 		}
@@ -130,7 +140,9 @@ export function plainExec(
 	disposables?: Set<IDisposable>,
 ): Promise<ExecutionResult<string>> {
 	const spawnOptions = getDefaultOptions(options, defaultEnv);
+
 	const encoding = spawnOptions.encoding ? spawnOptions.encoding : "utf8";
+
 	if (!options.doNotLog) {
 		const processLogger = new ProcessLogger(new WorkspaceService());
 		processLogger.logProcess(file, args, options);
@@ -140,7 +152,9 @@ export function plainExec(
 	// Errors will be bubbled up to the `error` event in `proc`, hence no need to log.
 	proc.stdout?.on("error", noop);
 	proc.stderr?.on("error", noop);
+
 	const deferred = createDeferred<ExecutionResult<string>>();
+
 	const disposable: IDisposable = {
 		dispose: () => {
 			// If process has not exited nor killed, force kill it.
@@ -154,6 +168,7 @@ export function plainExec(
 		},
 	};
 	disposables?.add(disposable);
+
 	const internalDisposables: IDisposable[] = [];
 
 	// eslint-disable-next-line @typescript-eslint/ban-types
@@ -177,6 +192,7 @@ export function plainExec(
 		stdoutBuffers.push(data);
 		options.outputChannel?.append(data.toString());
 	});
+
 	const stderrBuffers: Buffer[] = [];
 	on(proc.stderr, "data", (data: Buffer) => {
 		if (options.mergeStdOutErr) {
@@ -196,6 +212,7 @@ export function plainExec(
 			stderrBuffers.length === 0
 				? undefined
 				: decodeBuffer(stderrBuffers, encoding);
+
 		if (
 			stderr &&
 			stderr.length > 0 &&
@@ -228,9 +245,12 @@ function filterOutputUsingCondaRunMarkers(stdout: string) {
 	// These markers are added if conda run is used or `interpreterInfo.py` is
 	// run, see `get_output_via_markers.py`.
 	const regex = />>>PYTHON-EXEC-OUTPUT([\s\S]*)<<<PYTHON-EXEC-OUTPUT/;
+
 	const match = stdout.match(regex);
+
 	const filteredOut =
 		match !== null && match.length >= 2 ? match[1].trim() : undefined;
+
 	return filteredOut !== undefined ? filteredOut : stdout;
 }
 
@@ -238,6 +258,7 @@ function removeCondaRunMarkers(out: string) {
 	out = out
 		.replace(">>>PYTHON-EXEC-OUTPUT\r\n", "")
 		.replace(">>>PYTHON-EXEC-OUTPUT\n", "");
+
 	return out
 		.replace("<<<PYTHON-EXEC-OUTPUT\r\n", "")
 		.replace("<<<PYTHON-EXEC-OUTPUT\n", "");
@@ -251,13 +272,17 @@ export function execObservable(
 	disposables?: Set<IDisposable>,
 ): ObservableExecutionResult<string> {
 	const spawnOptions = getDefaultOptions(options, defaultEnv);
+
 	const encoding = spawnOptions.encoding ? spawnOptions.encoding : "utf8";
+
 	if (!options.doNotLog) {
 		const processLogger = new ProcessLogger(new WorkspaceService());
 		processLogger.logProcess(file, args, options);
 	}
 	const proc = spawn(file, args, spawnOptions);
+
 	let procExited = false;
+
 	const disposable: IDisposable = {
 		dispose() {
 			if (proc && proc.pid && !proc.killed && !procExited) {
@@ -300,6 +325,7 @@ export function execObservable(
 
 		const sendOutput = (source: "stdout" | "stderr", data: Buffer) => {
 			let out = decodeBuffer([data], encoding);
+
 			if (source === "stderr" && options.throwOnStdErr) {
 				subscriber.error(new StdErrError(out));
 			} else {
@@ -329,6 +355,7 @@ export function execObservable(
 			subscriber.error(ex);
 			internalDisposables.forEach((d) => d.dispose());
 		});
+
 		if (options.stdinStr !== undefined) {
 			proc.stdin?.write(options.stdinStr);
 			proc.stdin?.end();

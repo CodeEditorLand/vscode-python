@@ -50,6 +50,7 @@ export class WindowsPathEnvVarLocator
 
 	constructor() {
 		const inExp = inExperiment(DiscoveryUsingWorkers.experiment);
+
 		const dirLocators: (ILocator<BasicEnvInfo> & IDisposable)[] =
 			getSearchPathEntries()
 				.filter(
@@ -93,6 +94,7 @@ export class WindowsPathEnvVarLocator
 		async function* iterator(it: IPythonEnvsIterator<BasicEnvInfo>) {
 			const stopWatch = new StopWatch();
 			traceInfo(`Searching windows known paths locator`);
+
 			for await (const env of it) {
 				yield env;
 			}
@@ -116,6 +118,7 @@ async function* oldGetExecutables(
 
 async function* getExecutables(dirname: string): AsyncIterableIterator<string> {
 	const executable = path.join(dirname, "python.exe");
+
 	if (await pathExists(executable)) {
 		yield executable;
 	}
@@ -133,7 +136,9 @@ function getDirFilesLocator(
 	// `DirFilesWatchingLocator`, but only if not \\windows\system32 and
 	// the `isDirWatchable()` (from fsWatchingLocator.ts) returns true.
 	const executableFunc = inExp ? getExecutables : oldGetExecutables;
+
 	const locator = new DirFilesLocator(dirname, kind, executableFunc, source);
+
 	const dispose = async () => undefined;
 
 	// Really we should be checking for symlinks or something more

@@ -102,7 +102,9 @@ export class UnittestRunner implements ITestsRunner {
 		runInstance.appendOutput(
 			`Running tests (unittest): ${testNodes.map((t) => t.id).join(" ; ")}\r\n`,
 		);
+
 		const testCaseNodes: TestItem[] = [];
+
 		const fileToTestCases: Map<string, TestItem[]> = new Map();
 
 		testNodes.forEach((t) => {
@@ -110,6 +112,7 @@ export class UnittestRunner implements ITestsRunner {
 			nodes.forEach((n) => {
 				if (n.uri) {
 					const fsRunIds = fileToTestCases.get(n.uri.fsPath);
+
 					if (fsRunIds) {
 						fsRunIds.push(n);
 					} else {
@@ -129,10 +132,12 @@ export class UnittestRunner implements ITestsRunner {
 			errored: 0,
 			failed: 0,
 		};
+
 		const subTestStats: Map<string, { passed: number; failed: number }> =
 			new Map();
 
 		let failFast = false;
+
 		let stopTesting = false;
 		this.server.on("error", (message: string, ...data: string[]) => {
 			traceError(`${message} ${data.join(" ")}`);
@@ -146,7 +151,9 @@ export class UnittestRunner implements ITestsRunner {
 			const testCase = testCaseNodes.find(
 				(node) => idToRawData.get(node.id)?.runId === data.test,
 			);
+
 			const rawTestCase = idToRawData.get(testCase?.id ?? "");
+
 			if (testCase && rawTestCase) {
 				counts.total += 1;
 				tested.push(rawTestCase.runId);
@@ -166,7 +173,9 @@ export class UnittestRunner implements ITestsRunner {
 					const traceback = data.traceback
 						? getTracebackForOutput(data.traceback)
 						: "";
+
 					const text = `${rawTestCase.rawId} Failed: ${data.message ?? data.outcome}\r\n${traceback}\r\n`;
+
 					const message = new TestMessage(text);
 
 					if (testCase.uri && testCase.range) {
@@ -179,6 +188,7 @@ export class UnittestRunner implements ITestsRunner {
 					runInstance.failed(testCase, message);
 					runInstance.appendOutput(fixLogLines(text));
 					counts.failed += 1;
+
 					if (failFast) {
 						stopTesting = true;
 					}
@@ -186,7 +196,9 @@ export class UnittestRunner implements ITestsRunner {
 					const traceback = data.traceback
 						? getTracebackForOutput(data.traceback)
 						: "";
+
 					const text = `${rawTestCase.rawId} Failed with Error: ${data.message}\r\n${traceback}\r\n`;
+
 					const message = new TestMessage(text);
 
 					if (testCase.uri && testCase.range) {
@@ -199,6 +211,7 @@ export class UnittestRunner implements ITestsRunner {
 					runInstance.errored(testCase, message);
 					runInstance.appendOutput(fixLogLines(text));
 					counts.errored += 1;
+
 					if (failFast) {
 						stopTesting = true;
 					}
@@ -206,12 +219,14 @@ export class UnittestRunner implements ITestsRunner {
 					const traceback = data.traceback
 						? getTracebackForOutput(data.traceback)
 						: "";
+
 					const text = `${rawTestCase.rawId} Skipped: ${data.message}\r\n${traceback}\r\n`;
 					runInstance.skipped(testCase);
 					runInstance.appendOutput(fixLogLines(text));
 					counts.skipped += 1;
 				} else if (data.outcome === "subtest-passed") {
 					const sub = subTestStats.get(data.test);
+
 					if (sub) {
 						sub.passed += 1;
 					} else {
@@ -237,6 +252,7 @@ export class UnittestRunner implements ITestsRunner {
 							data.subtest,
 							data.subtest,
 						);
+
 						if (subtest) {
 							testCase.children.add(subtest);
 							runInstance.started(subtest);
@@ -245,6 +261,7 @@ export class UnittestRunner implements ITestsRunner {
 					}
 				} else if (data.outcome === "subtest-failed") {
 					const sub = subTestStats.get(data.test);
+
 					if (sub) {
 						sub.failed += 1;
 					} else {
@@ -265,9 +282,11 @@ export class UnittestRunner implements ITestsRunner {
 						runInstance.appendOutput(
 							fixLogLines(`${data.subtest} Failed\r\n`),
 						);
+
 						const traceback = data.traceback
 							? getTracebackForOutput(data.traceback)
 							: "";
+
 						const text = `${data.subtest} Failed: ${data.message ?? data.outcome}\r\n${traceback}\r\n`;
 						runInstance.appendOutput(fixLogLines(text));
 
@@ -277,10 +296,13 @@ export class UnittestRunner implements ITestsRunner {
 							data.subtest,
 							data.subtest,
 						);
+
 						if (subtest) {
 							testCase.children.add(subtest);
 							runInstance.started(subtest);
+
 							const message = new TestMessage(text);
+
 							if (testCase.uri && testCase.range) {
 								message.location = new Location(
 									testCase.uri,
@@ -294,7 +316,9 @@ export class UnittestRunner implements ITestsRunner {
 				} else {
 					const text = `Unknown outcome type for test ${rawTestCase.rawId}: ${data.outcome}`;
 					runInstance.appendOutput(fixLogLines(text));
+
 					const message = new TestMessage(text);
+
 					if (testCase.uri && testCase.range) {
 						message.location = new Location(
 							testCase.uri,
@@ -307,12 +331,14 @@ export class UnittestRunner implements ITestsRunner {
 				const traceback = data.traceback
 					? getTracebackForOutput(data.traceback)
 					: "";
+
 				const text = `${data.test} Failed with Error: ${data.message}\r\n${traceback}\r\n`;
 				runInstance.appendOutput(fixLogLines(text));
 			}
 		});
 
 		const port = await this.server.start();
+
 		const runTestInternal = async (
 			testFilePath: string,
 			testRunIds: string[],
@@ -327,6 +353,7 @@ export class UnittestRunner implements ITestsRunner {
 
 			if (options.debug === true) {
 				testArgs.push("--debug");
+
 				const launchOptions: LaunchOptions = {
 					cwd: options.cwd,
 					args: testArgs,
@@ -334,6 +361,7 @@ export class UnittestRunner implements ITestsRunner {
 					outChannel: this.outputChannel,
 					testProvider: UNITTEST_PROVIDER,
 				};
+
 				return this.debugLauncher.launchDebugger(launchOptions);
 			}
 			const args = internalScripts.visualstudio_py_testlauncher(testArgs);
@@ -346,6 +374,7 @@ export class UnittestRunner implements ITestsRunner {
 				workspaceFolder: options.workspaceFolder,
 			};
 			await this.runner.run(UNITTEST_PROVIDER, runOptions);
+
 			return Promise.resolve();
 		};
 
@@ -356,13 +385,16 @@ export class UnittestRunner implements ITestsRunner {
 				}
 
 				const nodes = fileToTestCases.get(testFile);
+
 				if (nodes) {
 					runInstance.appendOutput(
 						`Running tests: ${nodes.map((n) => n.id).join("\r\n")}\r\n`,
 					);
+
 					const runIds: string[] = [];
 					nodes.forEach((n) => {
 						const rawNode = idToRawData.get(n.id);
+
 						if (rawNode) {
 							// VS Code API requires that we set the run state on the leaf nodes. The state of the
 							// parent nodes are computed based on the state of child nodes.

@@ -24,6 +24,7 @@ export interface IJupyterUriProvider {
 		item: QuickPickItem,
 		backEnabled: boolean,
 	): Promise<JupyterServerUriHandle | "back" | undefined>;
+
 	getServerUri(handle: JupyterServerUriHandle): Promise<IJupyterServerUri>;
 }
 
@@ -35,8 +36,11 @@ interface IDataFrameInfo {
 
 export interface IDataViewerDataProvider {
 	dispose(): void;
+
 	getDataFrameInfo(): Promise<IDataFrameInfo>;
+
 	getAllRows(): Promise<IRowsResponse>;
+
 	getRows(start: number, end: number): Promise<IRowsResponse>;
 }
 

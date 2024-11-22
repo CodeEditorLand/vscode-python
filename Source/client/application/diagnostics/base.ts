@@ -31,6 +31,7 @@ export abstract class BaseDiagnostic implements IDiagnostic {
 export abstract class BaseDiagnosticsService implements IDiagnosticsService, IDisposable {
     protected static handledDiagnosticCodeKeys: string[] = [];
     protected readonly filterService: IDiagnosticFilterService;
+
     constructor(
         @unmanaged() private readonly supportedDiagnosticCodes: string[],
         @unmanaged() protected serviceContainer: IServiceContainer,
@@ -57,16 +58,19 @@ export abstract class BaseDiagnosticsService implements IDiagnosticsService, IDi
                 return true;
             }
             const key = this.getDiagnosticsKey(item);
+
             if (BaseDiagnosticsService.handledDiagnosticCodeKeys.indexOf(key) !== -1) {
                 return false;
             }
             BaseDiagnosticsService.handledDiagnosticCodeKeys.push(key);
+
             return true;
         });
         await this.onHandle(diagnosticsToHandle);
     }
     public async canHandle(diagnostic: IDiagnostic): Promise<boolean> {
         sendTelemetryEvent(EventName.DIAGNOSTICS_MESSAGE, undefined, { code: diagnostic.code });
+
         return this.supportedDiagnosticCodes.filter((item) => item === diagnostic.code).length > 0;
     }
     protected abstract onHandle(diagnostics: IDiagnostic[]): Promise<void>;
@@ -79,7 +83,9 @@ export abstract class BaseDiagnosticsService implements IDiagnosticsService, IDi
             return diagnostic.code;
         }
         const workspace = this.serviceContainer.get<IWorkspaceService>(IWorkspaceService);
+
         const workspaceFolder = diagnostic.resource ? workspace.getWorkspaceFolder(diagnostic.resource) : undefined;
+
         return `${diagnostic.code}dbe75733-0407-4124-a1b2-ca769dc30523${
             workspaceFolder ? workspaceFolder.uri.fsPath : ''
         }`;

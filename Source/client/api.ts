@@ -31,16 +31,20 @@ export function buildApi(
     discoveryApi: IDiscoveryAPI,
 ): PythonExtension {
     const configurationService = serviceContainer.get<IConfigurationService>(IConfigurationService);
+
     const interpreterService = serviceContainer.get<IInterpreterService>(IInterpreterService);
     serviceManager.addSingleton<JupyterExtensionIntegration>(JupyterExtensionIntegration, JupyterExtensionIntegration);
     serviceManager.addSingleton<TensorboardExtensionIntegration>(
         TensorboardExtensionIntegration,
         TensorboardExtensionIntegration,
     );
+
     const jupyterIntegration = serviceContainer.get<JupyterExtensionIntegration>(JupyterExtensionIntegration);
+
     const tensorboardIntegration = serviceContainer.get<TensorboardExtensionIntegration>(
         TensorboardExtensionIntegration,
     );
+
     const outputChannel = serviceContainer.get<ILanguageServerOutputChannel>(ILanguageServerOutputChannel);
 
     const api: PythonExtension & {
@@ -101,6 +105,7 @@ export function buildApi(
         // 'ready' will propagate the exception, but we must log it here first.
         ready: ready.catch((ex) => {
             traceError('Failure during activation.', ex);
+
             return Promise.reject(ex);
         }),
         jupyter: {

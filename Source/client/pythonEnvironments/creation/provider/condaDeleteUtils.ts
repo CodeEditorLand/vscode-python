@@ -18,7 +18,9 @@ export async function deleteCondaEnvironment(
 	pathEnvVar: string,
 ): Promise<boolean> {
 	const condaEnvPath = getPrefixCondaEnvPath(workspace);
+
 	const command = interpreter;
+
 	const args = [
 		"-m",
 		"conda",
@@ -28,9 +30,11 @@ export async function deleteCondaEnvironment(
 		condaEnvPath,
 		"--yes",
 	];
+
 	try {
 		traceInfo(`Deleting conda environment: ${condaEnvPath}`);
 		traceInfo(`Running command: ${command} ${args.join(" ")}`);
+
 		const result = await plainExec(
 			command,
 			args,
@@ -38,6 +42,7 @@ export async function deleteCondaEnvironment(
 			{ ...process.env, PATH: pathEnvVar },
 		);
 		traceInfo(result.stdout);
+
 		if (await hasPrefixCondaEnv(workspace)) {
 			// If conda cannot delete files it will name the files as .conda_trash.
 			// These need to be deleted manually.
@@ -48,6 +53,7 @@ export async function deleteCondaEnvironment(
 				`Please delete the environment manually: ${condaEnvPath}`,
 			);
 			showErrorMessageWithLogs(CreateEnv.Conda.errorDeletingEnvironment);
+
 			return false;
 		}
 	} catch (err) {
@@ -56,6 +62,7 @@ export async function deleteCondaEnvironment(
 			`Deleting conda environment ${condaEnvPath} Failed with error: `,
 			err,
 		);
+
 		return false;
 	}
 	return true;

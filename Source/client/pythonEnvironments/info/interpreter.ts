@@ -35,8 +35,10 @@ function extractInterpreterInfo(
 		["alpha", "beta", "candidate"].includes(raw.versionInfo[3])
 	) {
 		rawVersion = `${rawVersion}-${raw.versionInfo[3]}`;
+
 		if (raw.versionInfo[4] !== undefined) {
 			let serial = -1;
+
 			try {
 				serial = parseInt(`${raw.versionInfo[4]}`, 10);
 			} catch (ex) {
@@ -72,7 +74,9 @@ export async function getInterpreterInfo(
 	logger?: Logger,
 ): Promise<InterpreterInformation | undefined> {
 	const [args, parse] = getInterpreterInfoCommand();
+
 	const info = copyPythonExecInfo(python, args);
+
 	const argv = [info.command, ...info.args];
 
 	// Concat these together to make a set of quoted strings
@@ -88,6 +92,7 @@ export async function getInterpreterInfo(
 	// https://github.com/microsoft/vscode-python/issues/7569
 	// https://github.com/microsoft/vscode-python/issues/7760
 	const result = await shellExec(quoted, { timeout: 15000 });
+
 	if (result.stderr) {
 		if (logger) {
 			logger.error(
@@ -96,6 +101,7 @@ export async function getInterpreterInfo(
 		}
 	}
 	const json = parse(result.stdout);
+
 	if (logger) {
 		logger.verbose(`Found interpreter for ${argv}`);
 	}

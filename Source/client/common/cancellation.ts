@@ -48,6 +48,7 @@ export function createPromiseFromCancellation<T>(options: {
  */
 export function wrapCancellationTokens(...tokens: (CancellationToken | undefined)[]): CancellationToken {
     const wrappedCancellantionToken = new CancellationTokenSource();
+
     for (const token of tokens) {
         if (!token) {
             continue;

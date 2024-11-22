@@ -23,14 +23,17 @@ export class DiagnosticFilterService implements IDiagnosticFilterService {
 		const factory = this.serviceContainer.get<IPersistentStateFactory>(
 			IPersistentStateFactory,
 		);
+
 		const globalState = factory.createGlobalPersistentState<string[]>(
 			FilterKeys.GlobalDiagnosticFilter,
 			[],
 		);
+
 		const workspaceState = factory.createWorkspacePersistentState<string[]>(
 			FilterKeys.WorkspaceDiagnosticFilter,
 			[],
 		);
+
 		return (
 			globalState.value.indexOf(code) >= 0 ||
 			workspaceState.value.indexOf(code) >= 0
@@ -43,6 +46,7 @@ export class DiagnosticFilterService implements IDiagnosticFilterService {
 		const factory = this.serviceContainer.get<IPersistentStateFactory>(
 			IPersistentStateFactory,
 		);
+
 		const state =
 			scope === DiagnosticScope.Global
 				? factory.createGlobalPersistentState<string[]>(

@@ -211,17 +211,21 @@ export class ApplicationShell implements IApplicationShell {
 		) => Thenable<R>,
 	): Thenable<R> {
 		const token = new CancellationTokenSource().token;
+
 		const statusBarProgress = this.createStatusBarItem(
 			StatusBarAlignment.Left,
 		);
+
 		const progress = {
 			report: (value: { message?: string; increment?: number }) => {
 				statusBarProgress.text = `${icon} ${value.message}`;
 			},
 		};
 		statusBarProgress.show();
+
 		return task(progress, token).then((result) => {
 			statusBarProgress.dispose();
+
 			return result;
 		});
 	}
@@ -251,6 +255,7 @@ export class ApplicationShell implements IApplicationShell {
 			return window.onDidWriteTerminalData;
 		} catch (ex) {
 			traceError("Failed to get proposed API onDidWriteTerminalData", ex);
+
 			return new EventEmitter<TerminalDataWriteEvent>().event;
 		}
 	}
@@ -264,6 +269,7 @@ export class ApplicationShell implements IApplicationShell {
 				"Failed to get proposed API TerminalExecutedCommand",
 				ex,
 			);
+
 			return undefined;
 		}
 	}

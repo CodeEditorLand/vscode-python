@@ -16,6 +16,7 @@ import {
 
 function handleCancelled(): void {
 	traceVerbose("testing configuration (in UI) cancelled");
+
 	throw Error("cancelled");
 }
 
@@ -81,9 +82,11 @@ export abstract class TestConfigurationManager
 			matchOnDetail: true,
 			placeHolder: "Select the directory containing the tests",
 		};
+
 		let items: QuickPickItem[] = subDirs
 			.map((dir) => {
 				const dirName = path.relative(rootDir, dir);
+
 				if (dirName.indexOf(".") === 0) {
 					return undefined;
 				}
@@ -97,6 +100,7 @@ export abstract class TestConfigurationManager
 
 		items = [{ label: ".", description: "Root directory" }, ...items];
 		items = customOptions.concat(items);
+
 		return this.showQuickPick(items, options);
 	}
 
@@ -107,6 +111,7 @@ export abstract class TestConfigurationManager
 			matchOnDetail: true,
 			placeHolder: "Select the pattern to identify test files",
 		};
+
 		const items: QuickPickItem[] = [
 			{
 				label: "*test.py",
@@ -135,6 +140,7 @@ export abstract class TestConfigurationManager
 
 	protected getTestDirs(rootDir: string): Promise<string[]> {
 		const fs = this.serviceContainer.get<IFileSystem>(IFileSystem);
+
 		return fs.getSubDirectories(rootDir).then((subDirs) => {
 			subDirs.sort();
 
@@ -142,6 +148,7 @@ export abstract class TestConfigurationManager
 			const possibleTestDirs = subDirs.filter((dir) =>
 				dir.match(/test/i),
 			);
+
 			const nonTestDirs = subDirs.filter(
 				(dir) => possibleTestDirs.indexOf(dir) === -1,
 			);
@@ -157,6 +164,7 @@ export abstract class TestConfigurationManager
 		options: QuickPickOptions,
 	): Promise<string> {
 		const def = createDeferred<string>();
+
 		const appShell =
 			this.serviceContainer.get<IApplicationShell>(IApplicationShell);
 		appShell.showQuickPick(items, options).then((item) => {
@@ -167,6 +175,7 @@ export abstract class TestConfigurationManager
 
 			def.resolve(item.label);
 		});
+
 		return def.promise;
 	}
 }

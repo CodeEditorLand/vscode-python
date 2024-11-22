@@ -49,6 +49,7 @@ export function interpreterInfo(): [
 	(out: string) => InterpreterInfoJson,
 ] {
 	const script = path.join(SCRIPTS_DIR, "interpreterInfo.py");
+
 	const args = [script];
 
 	function parse(out: string): InterpreterInfoJson {
@@ -66,6 +67,7 @@ export function interpreterInfo(): [
 
 export function normalizeSelection(): [string[], (out: string) => string] {
 	const script = path.join(SCRIPTS_DIR, "normalizeSelection.py");
+
 	const args = [script];
 
 	function parse(out: string) {
@@ -85,6 +87,7 @@ export function printEnvVariables(): [
 	const script = path
 		.join(SCRIPTS_DIR, "printEnvVariables.py")
 		.fileToCommandArgumentForPythonExt();
+
 	const args = [script];
 
 	function parse(out: string): NodeJS.ProcessEnv {
@@ -147,6 +150,7 @@ export function visualstudio_py_testlauncher(testArgs: string[]): string[] {
 // eslint-disable-next-line camelcase
 export function execution_py_testlauncher(testArgs: string[]): string[] {
 	const script = path.join(SCRIPTS_DIR, "unittestadapter", "execution.py");
+
 	return [script, ...testArgs];
 }
 
@@ -154,6 +158,7 @@ export function execution_py_testlauncher(testArgs: string[]): string[] {
 
 export function tensorboardLauncher(args: string[]): string[] {
 	const script = path.join(SCRIPTS_DIR, "tensorboard_launcher.py");
+
 	return [script, ...args];
 }
 
@@ -161,20 +166,24 @@ export function tensorboardLauncher(args: string[]): string[] {
 
 export function linterScript(): string {
 	const script = path.join(SCRIPTS_DIR, "linter.py");
+
 	return script;
 }
 
 export function createVenvScript(): string {
 	const script = path.join(SCRIPTS_DIR, "create_venv.py");
+
 	return script;
 }
 
 export function createCondaScript(): string {
 	const script = path.join(SCRIPTS_DIR, "create_conda.py");
+
 	return script;
 }
 
 export function installedCheckScript(): string {
 	const script = path.join(SCRIPTS_DIR, "installed_check.py");
+
 	return script;
 }

@@ -38,9 +38,12 @@ export class DebugLauncher implements ITestDebugLauncher {
         sessionOptions?: DebugSessionOptions,
     ): Promise<void> {
         const deferred = createDeferred<void>();
+
         let hasCallbackBeenCalled = false;
+
         if (options.token && options.token.isCancellationRequested) {
             hasCallbackBeenCalled = true;
+
             return undefined;
             deferred.resolve();
             callback?.();
@@ -53,11 +56,13 @@ export class DebugLauncher implements ITestDebugLauncher {
         });
 
         const workspaceFolder = DebugLauncher.resolveWorkspaceFolder(options.cwd);
+
         const launchArgs = await this.getLaunchArgs(
             options,
             workspaceFolder,
             this.configService.getSettings(workspaceFolder.uri),
         );
+
         const debugManager = this.serviceContainer.get<IDebugService>(IDebugService);
 
         let activatedDebugSession: DebugSession | undefined;
@@ -77,17 +82,21 @@ export class DebugLauncher implements ITestDebugLauncher {
                 callback?.();
             }
         });
+
         return deferred.promise;
     }
 
     private static resolveWorkspaceFolder(cwd: string): WorkspaceFolder {
         const hasWorkspaceFolders = (getWorkspaceFolders()?.length || 0) > 0;
+
         if (!hasWorkspaceFolders) {
             throw new Error('Please open a workspace');
         }
 
         const cwdUri = cwd ? Uri.file(cwd) : undefined;
+
         let workspaceFolder = getWorkspaceFolder(cwdUri);
+
         if (!workspaceFolder) {
             const [first] = getWorkspaceFolders()!;
             workspaceFolder = first;
@@ -101,6 +110,7 @@ export class DebugLauncher implements ITestDebugLauncher {
         configSettings: IPythonSettings,
     ): Promise<LaunchRequestArguments> {
         let debugConfig = await DebugLauncher.readDebugConfig(workspaceFolder);
+
         if (!debugConfig) {
             debugConfig = {
                 name: 'Debug Unit Test',
@@ -125,13 +135,16 @@ export class DebugLauncher implements ITestDebugLauncher {
     public async readAllDebugConfigs(workspace: WorkspaceFolder): Promise<DebugConfiguration[]> {
         try {
             const configs = await getConfigurationsForWorkspace(workspace);
+
             return configs;
         } catch (exc) {
             traceError('could not get debug config', exc);
+
             const appShell = this.serviceContainer.get<IApplicationShell>(IApplicationShell);
             await appShell.showErrorMessage(
                 l10n.t('Could not load unit test config from launch.json as it is missing a field'),
             );
+
             return [];
         }
     }
@@ -141,6 +154,7 @@ export class DebugLauncher implements ITestDebugLauncher {
     ): Promise<LaunchRequestArguments | undefined> {
         try {
             const configs = await getConfigurationsForWorkspace(workspaceFolder);
+
             for (const cfg of configs) {
                 if (
                     cfg.name &&
@@ -156,6 +170,7 @@ export class DebugLauncher implements ITestDebugLauncher {
         } catch (exc) {
             traceError('could not get debug config', exc);
             await showErrorMessage(l10n.t('Could not load unit test config from launch.json as it is missing a field'));
+
             return undefined;
         }
     }
@@ -183,6 +198,7 @@ export class DebugLauncher implements ITestDebugLauncher {
             cfg.stopOnEntry = false;
         }
         cfg.showReturnValue = cfg.showReturnValue !== false;
+
         if (cfg.redirectOutput === undefined) {
             cfg.redirectOutput = true;
         }
@@ -200,11 +216,16 @@ export class DebugLauncher implements ITestDebugLauncher {
         options: LaunchOptions,
     ): Promise<LaunchRequestArguments> {
         const pythonTestAdapterRewriteExperiment = pythonTestAdapterRewriteEnabled(this.serviceContainer);
+
         const configArgs = debugConfig as LaunchRequestArguments;
+
         const testArgs =
             options.testProvider === 'unittest' ? options.args.filter((item) => item !== '--debug') : options.args;
+
         const script = DebugLauncher.getTestLauncherScript(options.testProvider, pythonTestAdapterRewriteExperiment);
+
         const args = script(testArgs);
+
         const [program] = args;
         configArgs.program = program;
 
@@ -216,6 +237,7 @@ export class DebugLauncher implements ITestDebugLauncher {
             configArgs,
             options.token,
         );
+
         if (!launchArgs) {
             throw Error(`Invalid debug config "${debugConfig.name}"`);
         }
@@ -224,6 +246,7 @@ export class DebugLauncher implements ITestDebugLauncher {
             launchArgs,
             options.token,
         );
+
         if (!launchArgs) {
             throw Error(`Invalid debug config "${debugConfig.name}"`);
         }
@@ -246,6 +269,7 @@ export class DebugLauncher implements ITestDebugLauncher {
         // check if PYTHONPATH is already set in the environment variables
         if (launchArgs.env) {
             const additionalPythonPath = [pluginPath];
+
             if (launchArgs.cwd) {
                 additionalPythonPath.push(launchArgs.cwd);
             } else if (options.cwd) {

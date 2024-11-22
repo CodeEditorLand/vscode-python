@@ -24,6 +24,7 @@ export async function getDebugpyLauncherArgs(
 	const waitArgs = options.waitUntilDebuggerAttaches
 		? ["--wait-for-client"]
 		: [];
+
 	return [
 		debuggerPath.fileToCommandArgumentForPythonExt(),
 		"--listen",

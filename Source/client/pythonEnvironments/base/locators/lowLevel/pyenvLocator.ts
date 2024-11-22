@@ -19,10 +19,12 @@ import { FSWatchingLocator } from "./fsWatchingLocator";
 async function* getPyenvEnvironments(): AsyncIterableIterator<BasicEnvInfo> {
 	const stopWatch = new StopWatch();
 	traceInfo("Searching for pyenv environments");
+
 	try {
 		const pyenvVersionDir = getPyenvVersionsDir();
 
 		const subDirs = getSubDirs(pyenvVersionDir, { resolveSymlinks: true });
+
 		for await (const subDirPath of subDirs) {
 			const interpreterPath = await getInterpreterPathFromDir(subDirPath);
 

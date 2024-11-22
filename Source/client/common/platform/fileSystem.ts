@@ -156,6 +156,7 @@ export class RawFileSystem implements IRawFileSystem {
 		// stat.ctime was always 0.
 		// See: https://github.com/microsoft/vscode/issues/84525
 		const uri = vscode.Uri.file(filename);
+
 		return this.vscfs.stat(uri);
 	}
 
@@ -166,6 +167,7 @@ export class RawFileSystem implements IRawFileSystem {
 		// Note that, unlike stat(), lstat() does not include the type
 		// of the symlink's target.
 		const fileType = convertFileType(stat);
+
 		return convertStat(stat, fileType);
 	}
 
@@ -177,6 +179,7 @@ export class RawFileSystem implements IRawFileSystem {
 
 	public async move(src: string, tgt: string): Promise<void> {
 		const srcUri = vscode.Uri.file(src);
+
 		const tgtUri = vscode.Uri.file(tgt);
 		// The VS Code API will automatically create the target parent
 		// directory if it does not exist (even though the docs imply
@@ -187,6 +190,7 @@ export class RawFileSystem implements IRawFileSystem {
 		// We stick with the pre-existing behavior where files are
 		// overwritten and directories are not.
 		const options = { overwrite: false };
+
 		try {
 			await this.vscfs.rename(srcUri, tgtUri, options);
 		} catch (err) {
@@ -194,6 +198,7 @@ export class RawFileSystem implements IRawFileSystem {
 				throw err; // re-throw
 			}
 			const stat = await this.vscfs.stat(tgtUri);
+
 			if (stat.type === FileType.Directory) {
 				throw err; // re-throw
 			}
@@ -204,19 +209,25 @@ export class RawFileSystem implements IRawFileSystem {
 
 	public async readData(filename: string): Promise<Buffer> {
 		const uri = vscode.Uri.file(filename);
+
 		const data = await this.vscfs.readFile(uri);
+
 		return Buffer.from(data);
 	}
 
 	public async readText(filename: string): Promise<string> {
 		const uri = vscode.Uri.file(filename);
+
 		const result = await this.vscfs.readFile(uri);
+
 		const data = Buffer.from(result);
+
 		return data.toString(ENCODING);
 	}
 
 	public async writeText(filename: string, text: string): Promise<void> {
 		const uri = vscode.Uri.file(filename);
+
 		const data = Buffer.from(text);
 		await this.vscfs.writeFile(uri, data);
 	}
@@ -229,6 +240,7 @@ export class RawFileSystem implements IRawFileSystem {
 
 	public async copyFile(src: string, dest: string): Promise<void> {
 		const srcURI = vscode.Uri.file(src);
+
 		const destURI = vscode.Uri.file(dest);
 		// The VS Code API will automatically create the target parent
 		// directory if it does not exist (even though the docs imply
@@ -243,6 +255,7 @@ export class RawFileSystem implements IRawFileSystem {
 
 	public async rmfile(filename: string): Promise<void> {
 		const uri = vscode.Uri.file(filename);
+
 		return this.vscfs.delete(uri, {
 			recursive: false,
 			useTrash: false,
@@ -254,6 +267,7 @@ export class RawFileSystem implements IRawFileSystem {
 		// The "recursive" option disallows directories, even if they
 		// are empty.  So we have to deal with this ourselves.
 		const files = await this.vscfs.readDirectory(uri);
+
 		if (files && files.length > 0) {
 			throw createDirNotEmptyError(dirname);
 		}
@@ -270,6 +284,7 @@ export class RawFileSystem implements IRawFileSystem {
 		//   However, it happily does nothing.  So for now we have to
 		//   manually stat, just to be sure.
 		await this.vscfs.stat(uri);
+
 		return this.vscfs.delete(uri, {
 			recursive: true,
 			useTrash: false,
@@ -283,9 +298,12 @@ export class RawFileSystem implements IRawFileSystem {
 
 	public async listdir(dirname: string): Promise<[string, FileType][]> {
 		const uri = vscode.Uri.file(dirname);
+
 		const files = await this.vscfs.readDirectory(uri);
+
 		return files.map(([basename, filetype]) => {
 			const filename = this.paths.join(dirname, basename);
+
 			return [filename, filetype] as [string, FileType];
 		});
 	}
@@ -300,12 +318,15 @@ export class RawFileSystem implements IRawFileSystem {
 		// We follow the filetype behavior of the VS Code API, by
 		// acknowledging symlinks.
 		let stat = this.fsExtra.lstatSync(filename);
+
 		let filetype = FileType.Unknown;
+
 		if (stat.isSymbolicLink()) {
 			filetype = FileType.SymbolicLink;
 			stat = this.fsExtra.statSync(filename);
 		}
 		filetype |= convertFileType(stat);
+
 		return convertStat(stat, filetype);
 	}
 
@@ -354,6 +375,7 @@ export class FileSystemUtils implements IFileSystemUtils {
 		) => Promise<string[]>,
 	): FileSystemUtils {
 		pathUtils = pathUtils || FileSystemPathUtils.withDefaults();
+
 		return new FileSystemUtils(
 			raw || RawFileSystem.withDefaults(pathUtils.paths),
 			pathUtils,
@@ -392,6 +414,7 @@ export class FileSystemUtils implements IFileSystemUtils {
 			return this.raw.pathExists(filename);
 		}
 		let stat: FileStat;
+
 		try {
 			// Note that we are using stat() rather than lstat().  This
 			// means that any symlinks are getting resolved.
@@ -401,6 +424,7 @@ export class FileSystemUtils implements IFileSystemUtils {
 				return false;
 			}
 			traceError(`stat() failed for "${filename}"`, err);
+
 			return false;
 		}
 
@@ -433,19 +457,24 @@ export class FileSystemUtils implements IFileSystemUtils {
 
 	public async getSubDirectories(dirname: string): Promise<string[]> {
 		const files = await this.listdir(dirname);
+
 		const filtered = filterByFileType(files, FileType.Directory);
+
 		return filtered.map(([filename, _fileType]) => filename);
 	}
 
 	public async getFiles(dirname: string): Promise<string[]> {
 		// Note that only "regular" files are returned.
 		const files = await this.listdir(dirname);
+
 		const filtered = filterByFileType(files, FileType.File);
+
 		return filtered.map(([filename, _fileType]) => filename);
 	}
 
 	public async isDirReadonly(dirname: string): Promise<boolean> {
 		const filePath = `${dirname}${this.paths.sep}___vscpTest___`;
+
 		try {
 			await this.raw.stat(dirname);
 			await this.raw.writeText(filePath, "");
@@ -459,13 +488,16 @@ export class FileSystemUtils implements IFileSystemUtils {
 			.rmfile(filePath)
 			// Clean resources in the background.
 			.ignoreErrors();
+
 		return false;
 	}
 
 	public async getFileHash(filename: string): Promise<string> {
 		// The reason for lstat rather than stat is not clear...
 		const stat = await this.raw.lstat(filename);
+
 		const data = `${stat.ctime}-${stat.mtime}`;
+
 		return this.getHash(data);
 	}
 
@@ -476,6 +508,7 @@ export class FileSystemUtils implements IFileSystemUtils {
 	): Promise<string[]> {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		let options: any;
+
 		if (cwd) {
 			options = { ...options, cwd };
 		}
@@ -484,6 +517,7 @@ export class FileSystemUtils implements IFileSystemUtils {
 		}
 
 		const found = await this.globFiles(globPattern, options);
+
 		return Array.isArray(found) ? found : [];
 	}
 
@@ -505,6 +539,7 @@ export class FileSystemUtils implements IFileSystemUtils {
 export function getHashString(data: string): string {
 	const hash = createHash("sha512");
 	hash.update(data);
+
 	return hash.digest("hex");
 }
 

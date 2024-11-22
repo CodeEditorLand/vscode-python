@@ -40,6 +40,7 @@ export class TemporaryFileSystem implements ITempFileSystem {
 			postfix: suffix,
 			mode,
 		};
+
 		return new Promise<TemporaryFile>((resolve, reject) => {
 			this.raw.file(opts, (err, filename, _fd, cleanUp) => {
 				if (err) {

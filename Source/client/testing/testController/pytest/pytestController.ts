@@ -70,21 +70,25 @@ export class PytestController implements ITestFrameworkController {
 		token?: CancellationToken,
 	): Promise<void> {
 		const workspace = this.workspaceService.getWorkspaceFolder(item.uri);
+
 		if (workspace) {
 			// if we are still discovering then wait
 			const discovery = this.discovering.get(workspace.uri.fsPath);
+
 			if (discovery) {
 				await discovery.promise;
 			}
 
 			// see if we have raw test data
 			const rawTestData = this.testData.get(workspace.uri.fsPath);
+
 			if (rawTestData) {
 				// Refresh each node with new data
 				if (rawTestData.length === 0) {
 					const items: TestItem[] = [];
 					testController.items.forEach((i) => items.push(i));
 					items.forEach((i) => testController.items.delete(i.id));
+
 					return Promise.resolve();
 				}
 
@@ -92,6 +96,7 @@ export class PytestController implements ITestFrameworkController {
 					rawTestData.length === 1
 						? rawTestData[0].root
 						: workspace.uri.fsPath;
+
 				if (root === item.id) {
 					// This is the workspace root node
 					if (rawTestData.length === 1) {
@@ -107,6 +112,7 @@ export class PytestController implements ITestFrameworkController {
 						} else {
 							this.idToRawData.delete(item.id);
 							testController.items.delete(item.id);
+
 							return Promise.resolve();
 						}
 					} else {
@@ -120,7 +126,9 @@ export class PytestController implements ITestFrameworkController {
 
 						await asyncForEach(rawTestData, async (data) => {
 							let subRootId = data.root;
+
 							let rawId;
+
 							if (data.root === root) {
 								const subRoot = data.parents.filter(
 									(p) =>
@@ -139,6 +147,7 @@ export class PytestController implements ITestFrameworkController {
 
 							if (data.tests.length > 0) {
 								let subRootItem = item.children.get(subRootId);
+
 								if (!subRootItem) {
 									subRootItem = createWorkspaceRootTestItem(
 										testController,
@@ -189,6 +198,7 @@ export class PytestController implements ITestFrameworkController {
 						item,
 						this.idToRawData,
 					);
+
 					if (workspaceNode) {
 						await updateTestItemFromRawData(
 							item,
@@ -202,6 +212,7 @@ export class PytestController implements ITestFrameworkController {
 				}
 			} else {
 				const workspaceNode = getWorkspaceNode(item, this.idToRawData);
+
 				if (workspaceNode) {
 					testController.items.delete(workspaceNode.id);
 				}
@@ -218,16 +229,20 @@ export class PytestController implements ITestFrameworkController {
 		sendTelemetryEvent(EventName.UNITTEST_DISCOVERING, undefined, {
 			tool: "pytest",
 		});
+
 		const workspace = this.workspaceService.getWorkspaceFolder(uri);
+
 		if (workspace) {
 			// Discovery is expensive. So if it is already running then use the promise
 			// from the last run
 			const previous = this.discovering.get(workspace.uri.fsPath);
+
 			if (previous) {
 				return previous.promise;
 			}
 
 			const settings = this.configService.getSettings(workspace.uri);
+
 			const options: TestDiscoveryOptions = {
 				workspaceFolder: workspace.uri,
 				cwd:
@@ -254,6 +269,7 @@ export class PytestController implements ITestFrameworkController {
 
 			// Build options for each directory selected by the user.
 			let discoveryRunOptions: TestDiscoveryOptions[];
+
 			if (testFilesAndDirectories.length === 0) {
 				// User did not provide any directory. So we don't need to tweak arguments.
 				discoveryRunOptions = [
@@ -275,6 +291,7 @@ export class PytestController implements ITestFrameworkController {
 			this.discovering.set(workspace.uri.fsPath, deferred);
 
 			let rawTestData: RawDiscoveredTests[] = [];
+
 			try {
 				// This is where we execute pytest discovery via a common helper.
 				rawTestData = flatten(
@@ -298,10 +315,12 @@ export class PytestController implements ITestFrameworkController {
 					undefined,
 					{ tool: "pytest", failed: true },
 				);
+
 				const cancel = options.token?.isCancellationRequested
 					? "Cancelled"
 					: "Error";
 				traceError(`${cancel} discovering pytest tests:\r\n`, ex);
+
 				const message = getTestDiscoveryExceptions(
 					(ex as Error).message,
 				);
@@ -328,7 +347,9 @@ export class PytestController implements ITestFrameworkController {
 				rawTestData.length === 1
 					? rawTestData[0].root
 					: workspace.uri.fsPath;
+
 			const workspaceNode = testController.items.get(root);
+
 			if (workspaceNode) {
 				if (uri.fsPath === workspace.uri.fsPath) {
 					// this is a workspace level refresh
@@ -341,6 +362,7 @@ export class PytestController implements ITestFrameworkController {
 				} else {
 					// This is a child node refresh
 					const testNode = getNodeByUri(workspaceNode, uri);
+
 					if (testNode) {
 						// We found the node to update
 						await this.resolveChildren(
@@ -378,6 +400,7 @@ export class PytestController implements ITestFrameworkController {
 			tool: "pytest",
 			failed: false,
 		});
+
 		return Promise.resolve();
 	}
 
@@ -387,6 +410,7 @@ export class PytestController implements ITestFrameworkController {
 		token: CancellationToken,
 	): Promise<void> {
 		const settings = this.configService.getSettings(workspace.uri);
+
 		try {
 			return this.runner.runTests(
 				testRun,
@@ -403,6 +427,7 @@ export class PytestController implements ITestFrameworkController {
 			);
 		} catch (ex) {
 			sendTelemetryEvent(EventName.UNITTEST_RUN_ALL_FAILED, undefined);
+
 			throw new Error(`Failed to run tests: ${ex}`);
 		}
 	}
@@ -410,8 +435,11 @@ export class PytestController implements ITestFrameworkController {
 
 function getTestDiscoveryExceptions(content: string): string {
 	const lines = content.split(/\r?\n/g);
+
 	let start = false;
+
 	let exceptions = "";
+
 	for (const line of lines) {
 		if (start) {
 			exceptions += `${line}\r\n`;

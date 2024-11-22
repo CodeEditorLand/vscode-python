@@ -23,6 +23,7 @@ export class ActiveResourceService implements IActiveResourceService {
 
 	public getActiveResource(): Resource {
 		const editor = this.documentManager.activeTextEditor;
+
 		if (editor && !editor.document.isUntitled) {
 			return editor.document.uri;
 		}

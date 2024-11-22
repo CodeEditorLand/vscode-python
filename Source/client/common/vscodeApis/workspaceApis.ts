@@ -99,6 +99,7 @@ export function isVirtualWorkspace(): boolean {
 	const isVirtualWorkspace =
 		vscode.workspace.workspaceFolders &&
 		vscode.workspace.workspaceFolders.every((f) => f.uri.scheme !== "file");
+
 	return !!isVirtualWorkspace;
 }
 

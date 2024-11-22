@@ -23,8 +23,10 @@ export class ExecuteVSCCommand extends BaseDiagnosticCommand {
 		sendTelemetryEvent(EventName.DIAGNOSTICS_ACTION, undefined, {
 			commandName: this.commandName,
 		});
+
 		const cmdManager =
 			this.serviceContainer.get<ICommandManager>(ICommandManager);
+
 		return cmdManager
 			.executeCommand(this.commandName)
 			.then(() => undefined);

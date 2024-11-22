@@ -111,6 +111,7 @@ export class TensorBoardSessionProvider
 							entrypoint,
 						},
 					);
+
 					if (
 						this.experiment.recommendAndUseNewExtension() ===
 						"continueWithPythonExtension"
@@ -149,6 +150,7 @@ export class TensorBoardSessionProvider
 
 	private async createNewSession(): Promise<TensorBoardSession | undefined> {
 		traceVerbose("Starting new TensorBoard session...");
+
 		try {
 			const newSession = new TensorBoardSession(
 				this.installer,
@@ -174,6 +176,7 @@ export class TensorBoardSessionProvider
 			);
 			this.knownSessions.push(newSession);
 			await newSession.initialize();
+
 			return newSession;
 		} catch (e) {
 			traceError(

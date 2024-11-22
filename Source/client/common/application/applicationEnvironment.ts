@@ -26,6 +26,7 @@ export class ApplicationEnvironment implements IApplicationEnvironment {
 	public get userSettingsFile(): string | undefined {
 		const vscodeFolderName =
 			this.channel === "insiders" ? "Code - Insiders" : "Code";
+
 		switch (this.platform.osType) {
 			case OSType.OSX:
 				return path.join(
@@ -36,6 +37,7 @@ export class ApplicationEnvironment implements IApplicationEnvironment {
 					"User",
 					"settings.json",
 				);
+
 			case OSType.Linux:
 				return path.join(
 					this.pathUtils.home,
@@ -44,6 +46,7 @@ export class ApplicationEnvironment implements IApplicationEnvironment {
 					"User",
 					"settings.json",
 				);
+
 			case OSType.Windows:
 				return this.process.env.APPDATA
 					? path.join(
@@ -53,6 +56,7 @@ export class ApplicationEnvironment implements IApplicationEnvironment {
 							"settings.json",
 						)
 					: undefined;
+
 			default:
 				return;
 		}

@@ -76,12 +76,17 @@ export async function activate(
 	context: IExtensionContext,
 ): Promise<PythonExtension> {
 	let api: PythonExtension;
+
 	let ready: Promise<void>;
+
 	let serviceContainer: IServiceContainer;
+
 	let isFirstSession: boolean | undefined;
+
 	try {
 		isFirstSession =
 			context.globalState.get(GLOBAL_PERSISTENT_KEYS, []).length === 0;
+
 		const workspaceService = new WorkspaceService();
 		context.subscriptions.push(
 			workspaceService.onDidGrantWorkspaceTrust(async () => {
@@ -98,6 +103,7 @@ export async function activate(
 		// We want to completely handle the error
 		// before notifying VS Code.
 		await handleError(ex as Error, durations);
+
 		throw ex; // re-raise
 	}
 	// Send the "success" telemetry only if activation did not fail.
@@ -111,6 +117,7 @@ export async function activate(
 	)
 		// Run in the background.
 		.ignoreErrors();
+
 	return api;
 }
 
@@ -143,6 +150,7 @@ async function activateUnsafe(
 	const activationDeferred = createDeferred<void>();
 	displayProgress(activationDeferred.promise);
 	startupDurations.startActivateTime = startupStopWatch.elapsedTime;
+
 	const activationStopWatch = new StopWatch();
 
 	//===============================================
@@ -159,6 +167,7 @@ async function activateUnsafe(
 		activatedServiceContainer.get<IExperimentService>(IExperimentService);
 	// This guarantees that all experiment information has loaded & all telemetry will contain experiment info.
 	await experimentService.activate();
+
 	const components = await initializeComponents(ext);
 
 	// Then we finish activating.
@@ -170,6 +179,7 @@ async function activateUnsafe(
 	activateFeatures(ext, components);
 
 	const nonBlocking = componentsActivated.map((r) => r.fullyReady);
+
 	const activationPromise = (async () => {
 		await Promise.all(nonBlocking);
 	})();
@@ -187,11 +197,13 @@ async function activateUnsafe(
 				activatedServiceContainer.get<IWorkspaceService>(
 					IWorkspaceService,
 				);
+
 			if (workspaceService.isTrusted) {
 				const interpreterManager =
 					activatedServiceContainer.get<IInterpreterService>(
 						IInterpreterService,
 					);
+
 				const workspaces = workspaceService.workspaceFolders ?? [];
 				await interpreterManager
 					.refresh(
@@ -215,10 +227,12 @@ async function activateUnsafe(
 		ext.legacyIOC.serviceContainer,
 		components.pythonEnvs,
 	);
+
 	const proposedApi = buildProposedApi(
 		components.pythonEnvs,
 		ext.legacyIOC.serviceContainer,
 	);
+
 	return [
 		{ ...api, ...proposedApi },
 		activationPromise,
@@ -253,6 +267,7 @@ interface IAppShell {
 function notifyUser(msg: string) {
 	try {
 		let appShell: IAppShell = window as any as IAppShell;
+
 		if (activatedServiceContainer) {
 			appShell = activatedServiceContainer.get<IApplicationShell>(
 				IApplicationShell,

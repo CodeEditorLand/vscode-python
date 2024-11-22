@@ -26,6 +26,7 @@ import {
 import { removePositionalFoldersAndFiles } from "./arguments";
 
 const JunitXmlArgOld = "--junitxml";
+
 const JunitXmlArg = "--junit-xml";
 
 async function getPytestJunitXmlTempFile(
@@ -33,11 +34,13 @@ async function getPytestJunitXmlTempFile(
 	disposables: Disposable[],
 ): Promise<string> {
 	const argValues = getOptionValues(args, JunitXmlArg);
+
 	if (argValues.length === 1) {
 		return argValues[0];
 	}
 	const tempFile = await createTemporaryFile(".xml");
 	disposables.push(tempFile);
+
 	return tempFile.filePath;
 }
 
@@ -96,6 +99,7 @@ export class PytestRunner implements ITestsRunner {
 		// For pytest we currently use JUnit XML to get the results. We create a temporary file here
 		// to ensure that the file is removed when we are done reading the result.
 		const disposables: Disposable[] = [];
+
 		const junitFilePath = await getPytestJunitXmlTempFile(
 			options.args,
 			disposables,
@@ -129,6 +133,7 @@ export class PytestRunner implements ITestsRunner {
 
 			// Positional arguments control the tests to be run.
 			const rawData = idToRawData.get(testNode.id);
+
 			if (!rawData) {
 				throw new Error(`Trying to run unknown node: ${testNode.id}`);
 			}
@@ -148,6 +153,7 @@ export class PytestRunner implements ITestsRunner {
 
 			if (options.debug) {
 				const debuggerArgs = [options.cwd, "pytest"].concat(testArgs);
+
 				const launchOptions: LaunchOptions = {
 					cwd: options.cwd,
 					args: debuggerArgs,
@@ -179,6 +185,7 @@ export class PytestRunner implements ITestsRunner {
 			runInstance.appendOutput(
 				`Error while running tests: ${testNode.label}\r\n${ex}\r\n\r\n`,
 			);
+
 			return Promise.reject(ex);
 		} finally {
 			disposables.forEach((d) => d.dispose());

@@ -25,5 +25,6 @@ export interface ApiForPylance {
 	createClient(...args: any[]): BaseLanguageClient;
 	start(client: BaseLanguageClient): Promise<void>;
 	stop(client: BaseLanguageClient): Promise<void>;
+
 	getTelemetryReporter(): TelemetryReporter;
 }

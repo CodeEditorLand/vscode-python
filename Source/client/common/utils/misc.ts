@@ -33,6 +33,7 @@ export function isResource(resource?: InterpreterUri): resource is Resource {
         return true;
     }
     const uri = resource as Uri;
+
     return typeof uri.path === 'string' && typeof uri.scheme === 'string';
 }
 
@@ -47,6 +48,7 @@ function isUri(resource?: Uri | any): resource is Uri {
         return false;
     }
     const uri = resource as Uri;
+
     return typeof uri.path === 'string' && typeof uri.scheme === 'string';
 }
 
@@ -68,14 +70,17 @@ export function getURIFilter(
     } = { checkParent: true },
 ): (u: Uri) => boolean {
     let uriPath = uri.path;
+
     while (uriPath.endsWith('/')) {
         uriPath = uriPath.slice(0, -1);
     }
     const uriRoot = `${uriPath}/`;
+
     function filter(candidate: Uri): boolean {
         // Do not compare schemes as it is sometimes not available, in
         // which case file is assumed as scheme.
         let candidatePath = candidate.path;
+
         while (candidatePath.endsWith('/')) {
             candidatePath = candidatePath.slice(0, -1);
         }
@@ -84,6 +89,7 @@ export function getURIFilter(
         }
         if (opts.checkChild) {
             const candidateRoot = `${candidatePath}/`;
+
             if (isParentPath(uriPath, candidateRoot)) {
                 return true;
             }
@@ -95,5 +101,6 @@ export function getURIFilter(
 
 export function isNotebookCell(documentOrUri: TextDocument | Uri): boolean {
     const uri = isUri(documentOrUri) ? documentOrUri : documentOrUri.uri;
+
     return uri.scheme.includes(NotebookCellScheme) || uri.scheme.includes(InteractiveInputScheme);
 }

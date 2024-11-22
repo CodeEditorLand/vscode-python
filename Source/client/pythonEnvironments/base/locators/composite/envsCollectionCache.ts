@@ -115,6 +115,7 @@ export class PythonEnvInfoCache
 					cachedEnv.executable.filename,
 					cachedEnv.location,
 				);
+
 				if (await pathExists(path)) {
 					if (envs && isCompleteList) {
 						/**
@@ -144,6 +145,7 @@ export class PythonEnvInfoCache
 				return false;
 			}),
 		);
+
 		const invalidIndexes = areEnvsValid
 			.map((isValid, index) => (isValid ? -1 : index))
 			.filter((i) => i !== -1)
@@ -153,10 +155,12 @@ export class PythonEnvInfoCache
 			traceVerbose(`Removing invalid env from cache ${env.id}`);
 			this.fire({ old: env, new: undefined });
 		});
+
 		if (envs) {
 			// See if any env has updated after the last refresh and fire events.
 			envs.forEach((env) => {
 				const cachedEnv = this.envs.find((e) => e.id === env.id);
+
 				if (cachedEnv && !areEnvsDeepEqual(cachedEnv, env)) {
 					this.updateEnv(cachedEnv, env, true);
 				}
@@ -170,6 +174,7 @@ export class PythonEnvInfoCache
 
 	public addEnv(env: PythonEnvInfo, hasLatestInfo?: boolean): void {
 		const found = this.envs.find((e) => areSameEnv(e, env));
+
 		if (!found) {
 			this.envs.push(env);
 			this.fire({ new: env });
@@ -195,6 +200,7 @@ export class PythonEnvInfoCache
 			return;
 		}
 		const index = this.envs.findIndex((e) => areSameEnv(e, oldValue));
+
 		if (index !== -1) {
 			if (newValue === undefined) {
 				this.envs.splice(index, 1);
@@ -212,6 +218,7 @@ export class PythonEnvInfoCache
 		const env =
 			this.envs.find((e) => arePathsSame(e.location, path)) ??
 			this.envs.find((e) => areSameEnv(e, path));
+
 		if (
 			env?.kind === PythonEnvKind.Conda &&
 			getEnvPath(env.executable.filename, env.location).pathType ===
@@ -221,24 +228,29 @@ export class PythonEnvInfoCache
 				// This is a conda env without python in cache which actually now has a valid python, so return
 				// `undefined` and delete value from cache as cached value is not the latest anymore.
 				this.validatedEnvs.delete(env.id!);
+
 				return undefined;
 			}
 			// Do not attempt to validate these envs as they lack an executable, and consider them as validated by default.
 			this.validatedEnvs.add(env.id!);
+
 			return env;
 		}
 		if (env) {
 			if (this.validatedEnvs.has(env.id!)) {
 				traceVerbose(`Found cached env for ${path}`);
+
 				return env;
 			}
 			if (await this.validateInfo(env)) {
 				traceVerbose(`Needed to validate ${path} with latest info`);
 				this.validatedEnvs.add(env.id!);
+
 				return env;
 			}
 		}
 		traceVerbose(`No cached env found for ${path}`);
+
 		return undefined;
 	}
 
@@ -251,10 +263,12 @@ export class PythonEnvInfoCache
 		if (env) {
 			// Flush only the given env.
 			const envs = this.persistentStorage.get();
+
 			const index = envs.findIndex((e) => e.id === env.id);
 			envs[index] = env;
 			this.flushedEnvs.add(env.id!);
 			await this.persistentStorage.store(envs);
+
 			return;
 		}
 		traceVerbose("Environments added to cache", JSON.stringify(this.envs));
@@ -286,6 +300,7 @@ export class PythonEnvInfoCache
 			return false;
 		}
 		const { ctime, mtime } = await getFileInfo(env.executable.filename);
+
 		if (
 			ctime !== -1 &&
 			mtime !== -1 &&
@@ -296,6 +311,7 @@ export class PythonEnvInfoCache
 		}
 		env.executable.ctime = ctime;
 		env.executable.mtime = mtime;
+
 		return false;
 	}
 }
@@ -309,6 +325,7 @@ export async function createCollectionCache(
 	const cache = new PythonEnvInfoCache(storage);
 	cache.clearAndReloadFromStorage();
 	await validateCache(cache);
+
 	return cache;
 }
 

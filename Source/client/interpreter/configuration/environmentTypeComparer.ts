@@ -72,6 +72,7 @@ export class EnvironmentTypeComparer implements IInterpreterComparer {
 			b,
 			this.workspaceFolderPath,
 		);
+
 		if (envLocationComparison !== 0) {
 			return envLocationComparison;
 		}
@@ -83,6 +84,7 @@ export class EnvironmentTypeComparer implements IInterpreterComparer {
 			const preferredPyenv = this.preferredPyenvInterpreterPath.get(
 				this.workspaceFolderPath,
 			);
+
 			if (preferredPyenv) {
 				if (arePathsSame(preferredPyenv, b.path)) {
 					return 1;
@@ -95,6 +97,7 @@ export class EnvironmentTypeComparer implements IInterpreterComparer {
 
 		// Check environment type.
 		const envTypeComparison = compareEnvironmentType(a, b);
+
 		if (envTypeComparison !== 0) {
 			return envTypeComparison;
 		}
@@ -104,6 +107,7 @@ export class EnvironmentTypeComparer implements IInterpreterComparer {
 			a.version,
 			b.version,
 		);
+
 		if (versionComparison !== 0) {
 			return versionComparison;
 		}
@@ -119,7 +123,9 @@ export class EnvironmentTypeComparer implements IInterpreterComparer {
 
 		// Check alphabetical order.
 		const nameA = getSortName(a, this.interpreterHelper);
+
 		const nameB = getSortName(b, this.interpreterHelper);
+
 		if (nameA === nameB) {
 			return 0;
 		}
@@ -130,7 +136,9 @@ export class EnvironmentTypeComparer implements IInterpreterComparer {
 	public async initialize(resource: Resource): Promise<void> {
 		const workspaceUri =
 			this.interpreterHelper.getActiveWorkspaceUri(resource);
+
 		const cwd = workspaceUri?.folderUri.fsPath;
+
 		if (!cwd) {
 			return;
 		}
@@ -147,6 +155,7 @@ export class EnvironmentTypeComparer implements IInterpreterComparer {
 		// because we would have to add a way to match environments to a workspace.
 		const workspaceUri =
 			this.interpreterHelper.getActiveWorkspaceUri(resource);
+
 		const filteredInterpreters = interpreters.filter((i) => {
 			if (isProblematicCondaEnvironment(i)) {
 				return false;
@@ -183,6 +192,7 @@ export class EnvironmentTypeComparer implements IInterpreterComparer {
 			return true;
 		});
 		filteredInterpreters.sort(this.compare.bind(this));
+
 		return filteredInterpreters.length
 			? filteredInterpreters[0]
 			: undefined;
@@ -194,6 +204,7 @@ function getSortName(
 	interpreterHelper: IInterpreterHelper,
 ): string {
 	const sortNameParts: string[] = [];
+
 	const envSuffixParts: string[] = [];
 
 	// Sort order for interpreters is:
@@ -217,6 +228,7 @@ function getSortName(
 		const name = interpreterHelper.getInterpreterTypeDisplayName(
 			info.envType,
 		);
+
 		if (name) {
 			envSuffixParts.push(name);
 		}
@@ -227,6 +239,7 @@ function getSortName(
 
 	const envSuffix =
 		envSuffixParts.length === 0 ? "" : `(${envSuffixParts.join(": ")})`;
+
 	return `${sortNameParts.join(" ")} ${envSuffix}`.trim();
 }
 
@@ -235,8 +248,10 @@ function getArchitectureSortName(arch?: Architecture) {
 	switch (arch) {
 		case Architecture.x64:
 			return "x64";
+
 		case Architecture.x86:
 			return "x86";
+
 		default:
 			return "";
 	}
@@ -299,6 +314,7 @@ function compareEnvironmentLocation(
 	workspacePath: string,
 ): number {
 	const aHeuristic = getEnvLocationHeuristic(a, workspacePath);
+
 	const bHeuristic = getEnvLocationHeuristic(b, workspacePath);
 
 	return Math.sign(aHeuristic - bHeuristic);
@@ -346,6 +362,7 @@ function compareEnvironmentType(
 		return 0;
 	}
 	const envTypeByPriority = getPrioritizedEnvironmentType();
+
 	return Math.sign(
 		envTypeByPriority.indexOf(a.envType) -
 			envTypeByPriority.indexOf(b.envType),

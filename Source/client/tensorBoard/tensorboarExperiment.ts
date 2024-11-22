@@ -79,6 +79,7 @@ export class TensorboardExperiment {
 					);
 				}
 			});
+
 		return "usingTensorboardExtension";
 	}
 

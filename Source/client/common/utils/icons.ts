@@ -9,6 +9,7 @@ import { Uri } from "vscode";
 import { EXTENSION_ROOT_DIR } from "../../constants";
 
 const darkIconsPath = path.join(EXTENSION_ROOT_DIR, "resources", "dark");
+
 const lightIconsPath = path.join(EXTENSION_ROOT_DIR, "resources", "light");
 
 export function getIcon(fileName: string): { light: Uri; dark: Uri } {

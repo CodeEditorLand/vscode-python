@@ -19,6 +19,7 @@ export class EnvironmentKnownCache {
 
 	public addEnv(env: Environment): void {
 		const found = this._envs.find((e) => env.id === e.id);
+
 		if (!found) {
 			this._envs.push(env);
 		}
@@ -29,6 +30,7 @@ export class EnvironmentKnownCache {
 		newValue: Environment | undefined,
 	): void {
 		const index = this._envs.findIndex((e) => oldValue.id === e.id);
+
 		if (index !== -1) {
 			if (newValue === undefined) {
 				this._envs.splice(index, 1);

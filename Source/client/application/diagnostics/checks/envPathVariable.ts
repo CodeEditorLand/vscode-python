@@ -82,10 +82,12 @@ export class EnvironmentPathVariableDiagnosticsService extends BaseDiagnosticsSe
 			const env = this.serviceContainer.get<IApplicationEnvironment>(
 				IApplicationEnvironment,
 			);
+
 			const message = InvalidEnvPathVariableMessage.format(
 				this.platform.pathVariableName,
 				env.extensionName,
 			);
+
 			return [
 				new InvalidEnvironmentPathVariableDiagnostic(message, resource),
 			];
@@ -99,6 +101,7 @@ export class EnvironmentPathVariableDiagnosticsService extends BaseDiagnosticsSe
 			return;
 		}
 		const diagnostic = diagnostics[0];
+
 		if (await this.filterService.shouldIgnoreDiagnostic(diagnostic.code)) {
 			return;
 		}
@@ -106,6 +109,7 @@ export class EnvironmentPathVariableDiagnosticsService extends BaseDiagnosticsSe
 			this.serviceContainer.get<IDiagnosticsCommandFactory>(
 				IDiagnosticsCommandFactory,
 			);
+
 		const options = [
 			{
 				prompt: Common.ignore,
@@ -134,10 +138,14 @@ export class EnvironmentPathVariableDiagnosticsService extends BaseDiagnosticsSe
 	private doesPathVariableHaveInvalidEntries() {
 		const currentProc =
 			this.serviceContainer.get<ICurrentProcess>(ICurrentProcess);
+
 		const pathValue = currentProc.env[this.platform.pathVariableName];
+
 		const pathSeparator =
 			this.serviceContainer.get<IPathUtils>(IPathUtils).delimiter;
+
 		const paths = (pathValue || "").split(pathSeparator);
+
 		return paths.filter((item) => item.indexOf('"') >= 0).length > 0;
 	}
 }

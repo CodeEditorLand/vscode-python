@@ -59,6 +59,7 @@ export abstract class SocketCallbackHandler extends EventEmitter {
 		this.handeshakeDone = true;
 
 		this.HandleIncomingDataFromStream();
+
 		return true;
 	}
 
@@ -69,8 +70,10 @@ export abstract class SocketCallbackHandler extends EventEmitter {
 		this.stream.BeginTransaction();
 
 		let cmd = this.stream.ReadAsciiString(4);
+
 		if (this.stream.HasInsufficientDataForReading) {
 			this.stream.RollBackTransaction();
+
 			return;
 		}
 
@@ -84,10 +87,12 @@ export abstract class SocketCallbackHandler extends EventEmitter {
 		if (this.stream.HasInsufficientDataForReading) {
 			// Most possibly due to insufficient data
 			this.stream.RollBackTransaction();
+
 			return;
 		}
 
 		this.stream.EndTransaction();
+
 		if (this.stream.Length > 0) {
 			this.HandleIncomingDataFromStream();
 		}

@@ -16,6 +16,7 @@ export async function showErrorMessageWithLogs(message: string): Promise<void> {
 		Common.openOutputPanel,
 		Common.selectPythonInterpreter,
 	);
+
 	if (result === Common.openOutputPanel) {
 		await executeCommand(Commands.ViewOutput);
 	} else if (result === Common.selectPythonInterpreter) {

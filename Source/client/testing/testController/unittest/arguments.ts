@@ -39,10 +39,12 @@ export function unittestFilterArguments(
 	argumentToRemoveOrFilter: string[] | TestFilter,
 ): string[] {
 	const optionsWithoutArgsToRemove: string[] = [];
+
 	const optionsWithArgsToRemove: string[] = [];
 	// Positional arguments in pytest positional args are test directories and files.
 	// So if we want to run a specific test, then remove positional args.
 	let removePositionalArgs = false;
+
 	if (Array.isArray(argumentToRemoveOrFilter)) {
 		argumentToRemoveOrFilter.forEach((item) => {
 			if (OptionsWithArguments.indexOf(item) >= 0) {
@@ -57,6 +59,7 @@ export function unittestFilterArguments(
 	}
 
 	let filteredArgs = args.slice();
+
 	if (removePositionalArgs) {
 		const positionalArgs = getPositionalArguments(
 			filteredArgs,
@@ -76,10 +79,12 @@ export function unittestFilterArguments(
 
 export function unittestGetTestFolders(args: string[]): string[] {
 	const shortValue = getOptionValues(args, "-s");
+
 	if (shortValue.length === 1) {
 		return shortValue;
 	}
 	const longValue = getOptionValues(args, "--start-directory");
+
 	if (longValue.length === 1) {
 		return longValue;
 	}
@@ -88,10 +93,12 @@ export function unittestGetTestFolders(args: string[]): string[] {
 
 export function unittestGetTestPattern(args: string[]): string {
 	const shortValue = getOptionValues(args, "-p");
+
 	if (shortValue.length === 1) {
 		return shortValue[0];
 	}
 	const longValue = getOptionValues(args, "--pattern");
+
 	if (longValue.length === 1) {
 		return longValue[0];
 	}
@@ -100,10 +107,12 @@ export function unittestGetTestPattern(args: string[]): string {
 
 export function unittestGetTopLevelDirectory(args: string[]): string | null {
 	const shortValue = getOptionValues(args, "-t");
+
 	if (shortValue.length === 1) {
 		return shortValue[0];
 	}
 	const longValue = getOptionValues(args, "--top-level-directory");
+
 	if (longValue.length === 1) {
 		return longValue[0];
 	}
@@ -112,20 +121,25 @@ export function unittestGetTopLevelDirectory(args: string[]): string | null {
 
 export function getTestRunArgs(args: string[]): string[] {
 	const startTestDiscoveryDirectory = unittestGetTestFolders(args)[0];
+
 	const pattern = unittestGetTestPattern(args);
+
 	const topLevelDir = unittestGetTopLevelDirectory(args);
 
 	const failFast = args.some(
 		(arg) => arg.trim() === "-f" || arg.trim() === "--failfast",
 	);
+
 	const verbosity = args.some((arg) => arg.trim().indexOf("-v") === 0)
 		? 2
 		: 1;
+
 	const testArgs = [
 		`--us=${startTestDiscoveryDirectory}`,
 		`--up=${pattern}`,
 		`--uvInt=${verbosity}`,
 	];
+
 	if (topLevelDir) {
 		testArgs.push(`--ut=${topLevelDir}`);
 	}

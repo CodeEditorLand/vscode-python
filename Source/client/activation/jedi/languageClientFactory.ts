@@ -30,8 +30,10 @@ export class JediLanguageClientFactory implements ILanguageClientFactory {
 			"python_files",
 			"run-jedi-language-server.py",
 		);
+
 		const interpreter =
 			await this.interpreterService.getActiveInterpreter(resource);
+
 		const serverOptions: ServerOptions = {
 			command: interpreter ? interpreter.path : "python",
 			args: [lsScriptPath],

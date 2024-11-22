@@ -36,20 +36,25 @@ export class NodeLanguageClientFactory implements ILanguageClientFactory {
 		).getCommandLineArguments();
 
 		const extension = this.extensions.getExtension(PYLANCE_EXTENSION_ID);
+
 		const languageServerFolder = extension ? extension.extensionPath : "";
+
 		const bundlePath = path.join(
 			languageServerFolder,
 			"dist",
 			"server.bundle.js",
 		);
+
 		const nonBundlePath = path.join(
 			languageServerFolder,
 			"dist",
 			"server.js",
 		);
+
 		const modulePath = (await this.fs.fileExists(nonBundlePath))
 			? nonBundlePath
 			: bundlePath;
+
 		const debugOptions = { execArgv: ["--nolazy", "--inspect=6600"] };
 
 		// If the extension is launched in debug mode, then the debug server options are used.

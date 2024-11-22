@@ -8,30 +8,52 @@ import { CreateEnvironmentProgress } from "../types";
 
 export const VENV_CREATED_MARKER = "CREATED_VENV:";
 export const VENV_EXISTING_MARKER = "EXISTING_VENV:";
+
 const INSTALLING_REQUIREMENTS = "VENV_INSTALLING_REQUIREMENTS:";
+
 const INSTALLING_PYPROJECT = "VENV_INSTALLING_PYPROJECT:";
+
 const PIP_NOT_INSTALLED_MARKER = "CREATE_VENV.PIP_NOT_FOUND";
+
 const VENV_NOT_INSTALLED_MARKER = "CREATE_VENV.VENV_NOT_FOUND";
+
 const INSTALL_REQUIREMENTS_FAILED_MARKER =
 	"CREATE_VENV.PIP_FAILED_INSTALL_REQUIREMENTS";
+
 const INSTALL_PYPROJECT_FAILED_MARKER =
 	"CREATE_VENV.PIP_FAILED_INSTALL_PYPROJECT";
+
 const CREATE_VENV_FAILED_MARKER = "CREATE_VENV.VENV_FAILED_CREATION";
+
 const VENV_ALREADY_EXISTS_MARKER = "CREATE_VENV.VENV_ALREADY_EXISTS";
+
 const INSTALLED_REQUIREMENTS_MARKER = "CREATE_VENV.PIP_INSTALLED_REQUIREMENTS";
+
 const INSTALLED_PYPROJECT_MARKER = "CREATE_VENV.PIP_INSTALLED_PYPROJECT";
+
 const UPGRADE_PIP_FAILED_MARKER = "CREATE_VENV.UPGRADE_PIP_FAILED";
+
 const UPGRADING_PIP_MARKER = "CREATE_VENV.UPGRADING_PIP";
+
 const UPGRADED_PIP_MARKER = "CREATE_VENV.UPGRADED_PIP";
+
 const CREATING_MICROVENV_MARKER = "CREATE_MICROVENV.CREATING_MICROVENV";
+
 const CREATE_MICROVENV_FAILED_MARKER = "CREATE_VENV.MICROVENV_FAILED_CREATION";
+
 const CREATE_MICROVENV_FAILED_MARKER2 =
 	"CREATE_MICROVENV.MICROVENV_FAILED_CREATION";
+
 const MICROVENV_CREATED_MARKER = "CREATE_MICROVENV.CREATED_MICROVENV";
+
 const INSTALLING_PIP_MARKER = "CREATE_VENV.INSTALLING_PIP";
+
 const INSTALL_PIP_FAILED_MARKER = "CREATE_VENV.INSTALL_PIP_FAILED";
+
 const DOWNLOADING_PIP_MARKER = "CREATE_VENV.DOWNLOADING_PIP";
+
 const DOWNLOAD_PIP_FAILED_MARKER = "CREATE_VENV.DOWNLOAD_PIP_FAILED";
+
 const DISTUTILS_NOT_INSTALLED_MARKER = "CREATE_VENV.DISTUTILS_NOT_INSTALLED";
 
 export class VenvProgressAndTelemetry {
@@ -49,6 +71,7 @@ export class VenvProgressAndTelemetry {
 					environmentType: "venv",
 					reason: "created",
 				});
+
 				return undefined;
 			},
 		],
@@ -60,6 +83,7 @@ export class VenvProgressAndTelemetry {
 					environmentType: "venv",
 					reason: "existing",
 				});
+
 				return undefined;
 			},
 		],
@@ -75,6 +99,7 @@ export class VenvProgressAndTelemetry {
 						using: "requirements.txt",
 					},
 				);
+
 				return undefined;
 			},
 		],
@@ -90,6 +115,7 @@ export class VenvProgressAndTelemetry {
 						using: "pyproject.toml",
 					},
 				);
+
 				return undefined;
 			},
 		],
@@ -100,6 +126,7 @@ export class VenvProgressAndTelemetry {
 					environmentType: "venv",
 					reason: "noPip",
 				});
+
 				return PIP_NOT_INSTALLED_MARKER;
 			},
 		],
@@ -110,6 +137,7 @@ export class VenvProgressAndTelemetry {
 					environmentType: "venv",
 					reason: "noDistUtils",
 				});
+
 				return VENV_NOT_INSTALLED_MARKER;
 			},
 		],
@@ -120,6 +148,7 @@ export class VenvProgressAndTelemetry {
 					environmentType: "venv",
 					reason: "noVenv",
 				});
+
 				return VENV_NOT_INSTALLED_MARKER;
 			},
 		],
@@ -134,6 +163,7 @@ export class VenvProgressAndTelemetry {
 						using: "requirements.txt",
 					},
 				);
+
 				return INSTALL_REQUIREMENTS_FAILED_MARKER;
 			},
 		],
@@ -148,6 +178,7 @@ export class VenvProgressAndTelemetry {
 						using: "pyproject.toml",
 					},
 				);
+
 				return INSTALL_PYPROJECT_FAILED_MARKER;
 			},
 		],
@@ -158,6 +189,7 @@ export class VenvProgressAndTelemetry {
 					environmentType: "venv",
 					reason: "other",
 				});
+
 				return CREATE_VENV_FAILED_MARKER;
 			},
 		],
@@ -168,6 +200,7 @@ export class VenvProgressAndTelemetry {
 					environmentType: "venv",
 					reason: "existing",
 				});
+
 				return undefined;
 			},
 		],
@@ -182,6 +215,7 @@ export class VenvProgressAndTelemetry {
 						using: "requirements.txt",
 					},
 				);
+
 				return undefined;
 			},
 		],
@@ -196,6 +230,7 @@ export class VenvProgressAndTelemetry {
 						using: "pyproject.toml",
 					},
 				);
+
 				return undefined;
 			},
 		],
@@ -210,6 +245,7 @@ export class VenvProgressAndTelemetry {
 						using: "pipUpgrade",
 					},
 				);
+
 				return undefined;
 			},
 		],
@@ -224,6 +260,7 @@ export class VenvProgressAndTelemetry {
 						using: "pipUpgrade",
 					},
 				);
+
 				return UPGRADE_PIP_FAILED_MARKER;
 			},
 		],
@@ -239,6 +276,7 @@ export class VenvProgressAndTelemetry {
 						using: "pipDownload",
 					},
 				);
+
 				return undefined;
 			},
 		],
@@ -253,6 +291,7 @@ export class VenvProgressAndTelemetry {
 						using: "pipDownload",
 					},
 				);
+
 				return DOWNLOAD_PIP_FAILED_MARKER;
 			},
 		],
@@ -268,6 +307,7 @@ export class VenvProgressAndTelemetry {
 						using: "pipInstall",
 					},
 				);
+
 				return undefined;
 			},
 		],
@@ -282,6 +322,7 @@ export class VenvProgressAndTelemetry {
 						using: "pipInstall",
 					},
 				);
+
 				return INSTALL_PIP_FAILED_MARKER;
 			},
 		],
@@ -293,6 +334,7 @@ export class VenvProgressAndTelemetry {
 					environmentType: "microvenv",
 					pythonVersion: undefined,
 				});
+
 				return undefined;
 			},
 		],
@@ -303,6 +345,7 @@ export class VenvProgressAndTelemetry {
 					environmentType: "microvenv",
 					reason: "other",
 				});
+
 				return CREATE_MICROVENV_FAILED_MARKER;
 			},
 		],
@@ -313,6 +356,7 @@ export class VenvProgressAndTelemetry {
 					environmentType: "microvenv",
 					reason: "other",
 				});
+
 				return CREATE_MICROVENV_FAILED_MARKER2;
 			},
 		],
@@ -323,6 +367,7 @@ export class VenvProgressAndTelemetry {
 					environmentType: "microvenv",
 					reason: "created",
 				});
+
 				return undefined;
 			},
 		],
@@ -338,6 +383,7 @@ export class VenvProgressAndTelemetry {
 						using: "pipUpgrade",
 					},
 				);
+
 				return undefined;
 			},
 		],
@@ -357,8 +403,10 @@ export class VenvProgressAndTelemetry {
 		for (const key of keys) {
 			if (output.includes(key) && !this.processed.has(key)) {
 				const action = this.reportActions.get(key);
+
 				if (action) {
 					const err = action(this.progress);
+
 					if (err) {
 						this.lastError = err;
 					}

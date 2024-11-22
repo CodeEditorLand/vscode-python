@@ -60,6 +60,7 @@ export class CondaInstaller extends ModuleInstaller {
 		const condaLocator =
 			this.serviceContainer.get<ICondaService>(ICondaService);
 		this._isCondaAvailable = await condaLocator.isCondaAvailable();
+
 		if (!this._isCondaAvailable) {
 			return false;
 		}
@@ -81,6 +82,7 @@ export class CondaInstaller extends ModuleInstaller {
 		// https://github.com/conda/conda/issues/11399
 		// Execute in a shell which uses a `conda.bat` file instead, using which installation works.
 		const useShell = true;
+
 		const condaFile = await condaService.getCondaFile(useShell);
 
 		const pythonPath = isResource(resource)
@@ -88,9 +90,12 @@ export class CondaInstaller extends ModuleInstaller {
 					.get<IConfigurationService>(IConfigurationService)
 					.getSettings(resource).pythonPath
 			: (getEnvPath(resource.path, resource.envPath).path ?? "");
+
 		const condaLocatorService =
 			this.serviceContainer.get<IComponentAdapter>(IComponentAdapter);
+
 		const info = await condaLocatorService.getCondaEnvironment(pythonPath);
+
 		const args = [
 			flags & ModuleInstallFlags.upgrade ? "update" : "install",
 		];
@@ -122,6 +127,7 @@ export class CondaInstaller extends ModuleInstaller {
 		}
 		args.push(moduleName);
 		args.push("-y");
+
 		return {
 			args,
 			execPath: condaFile,
@@ -137,11 +143,13 @@ export class CondaInstaller extends ModuleInstaller {
 	): Promise<boolean> {
 		const condaService =
 			this.serviceContainer.get<IComponentAdapter>(IComponentAdapter);
+
 		const pythonPath = isResource(resource)
 			? this.serviceContainer
 					.get<IConfigurationService>(IConfigurationService)
 					.getSettings(resource).pythonPath
 			: (getEnvPath(resource.path, resource.envPath).path ?? "");
+
 		return condaService.isCondaEnvironment(pythonPath);
 	}
 }

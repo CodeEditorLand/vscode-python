@@ -27,6 +27,7 @@ const DEFAULT_OPTS: TraceOptions =
 let loggers: ILogging[] = [];
 export function registerLogger(logger: ILogging): Disposable {
 	loggers.push(logger);
+
 	return {
 		dispose: () => {
 			loggers = loggers.filter((l) => l !== logger);
@@ -137,6 +138,7 @@ function traceDecorator(
 
 			// eslint-disable-next-line @typescript-eslint/no-this-alias
 			const scope = this;
+
 			return tracing(
 				// "log()"
 				(t) => log(call, t),
@@ -152,6 +154,7 @@ function traceDecorator(
 // Call run(), call log() with the trace info, and return the result.
 function tracing<T>(log: (t: TraceInfo) => void, run: () => T): T {
 	const timer = new StopWatch();
+
 	try {
 		const result = run();
 
@@ -160,6 +163,7 @@ function tracing<T>(log: (t: TraceInfo) => void, run: () => T): T {
 			(result as unknown as Promise<void>)
 				.then((data) => {
 					log({ elapsed: timer.elapsedTime, returnValue: data });
+
 					return data;
 				})
 				.catch((ex) => {
@@ -174,6 +178,7 @@ function tracing<T>(log: (t: TraceInfo) => void, run: () => T): T {
 		return result;
 	} catch (ex) {
 		log({ elapsed: timer.elapsedTime, err: ex as Error | undefined });
+
 		throw ex;
 	}
 }
@@ -184,6 +189,7 @@ function createTracingDecorator(logInfo: LogInfo): TraceDecoratorType {
 
 function normalizeCall(call: CallInfo): CallInfo {
 	let { kind, name, args } = call;
+
 	if (!kind || kind === "") {
 		kind = "Function";
 	}
@@ -202,12 +208,14 @@ function formatMessages(
 	call?: CallInfo,
 ): string {
 	call = normalizeCall(call!);
+
 	const messages = [logInfo.message];
 	messages.push(
 		`${call.kind} name = ${call.name}`.trim(),
 		`completed in ${traced.elapsed}ms`,
 		`has a ${traced.returnValue ? "truthy" : "falsy"} return value`,
 	);
+
 	if ((logInfo.opts & TraceOptions.Arguments) === TraceOptions.Arguments) {
 		messages.push(argsToLogString(call.args));
 	}
@@ -222,6 +230,7 @@ function formatMessages(
 
 function logResult(logInfo: LogInfo, traced: TraceInfo, call?: CallInfo) {
 	const formatted = formatMessages(logInfo, traced, call);
+
 	if (traced.err === undefined) {
 		// The call did not fail.
 		if (!logInfo.level || logInfo.level > LogLevel.Error) {
@@ -242,16 +251,24 @@ export function logTo(logLevel: LogLevel, ...args: Arguments): void {
 	switch (logLevel) {
 		case LogLevel.Error:
 			traceError(...args);
+
 			break;
+
 		case LogLevel.Warning:
 			traceWarn(...args);
+
 			break;
+
 		case LogLevel.Info:
 			traceInfo(...args);
+
 			break;
+
 		case LogLevel.Debug:
 			traceVerbose(...args);
+
 			break;
+
 		default:
 			break;
 	}

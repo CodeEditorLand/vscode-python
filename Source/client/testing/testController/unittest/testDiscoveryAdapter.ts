@@ -41,7 +41,9 @@ export class UnittestTestDiscoveryAdapter implements ITestDiscoveryAdapter {
 
     public async discoverTests(uri: Uri, executionFactory?: IPythonExecutionFactory): Promise<DiscoveredTestPayload> {
         const settings = this.configSettings.getSettings(uri);
+
         const { unittestArgs } = settings.testing;
+
         const cwd = settings.testing.cwd && settings.testing.cwd.length > 0 ? settings.testing.cwd : uri.fsPath;
 
         const name = await startDiscoveryNamedPipe((data: DiscoveredTestPayload) => {
@@ -50,12 +52,14 @@ export class UnittestTestDiscoveryAdapter implements ITestDiscoveryAdapter {
 
         // set up env with the pipe name
         let env: EnvironmentVariables | undefined = await this.envVarsService?.getEnvironmentVariables(uri);
+
         if (env === undefined) {
             env = {} as EnvironmentVariables;
         }
         env.TEST_RUN_PIPE = name;
 
         const command = buildDiscoveryCommand(unittestArgs);
+
         const options: TestCommandOptions = {
             workspaceFolder: uri,
             command,
@@ -71,6 +75,7 @@ export class UnittestTestDiscoveryAdapter implements ITestDiscoveryAdapter {
         // placeholder until after the rewrite is adopted
         // TODO: remove after adoption.
         const discoveryPayload: DiscoveredTestPayload = { cwd, status: 'success' };
+
         return discoveryPayload;
     }
 
@@ -99,6 +104,7 @@ export class UnittestTestDiscoveryAdapter implements ITestDiscoveryAdapter {
             allowEnvironmentFetchExceptions: false,
             resource: options.workspaceFolder,
         };
+
         const execService = await executionFactory?.createActivatedEnvironment(creationOptions);
 
         const args = [options.command.script].concat(options.command.args);
@@ -109,6 +115,7 @@ export class UnittestTestDiscoveryAdapter implements ITestDiscoveryAdapter {
 
         try {
             traceLog(`Discovering unittest tests for workspace ${options.cwd} with arguments: ${args}\r\n`);
+
             const deferredTillExecClose = createDeferred<ExecutionResult<string>>();
 
             const result = execService?.execObservable(args, spawnOptions);

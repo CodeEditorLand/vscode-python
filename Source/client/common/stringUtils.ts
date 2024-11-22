@@ -16,6 +16,7 @@ export function splitLines(
 	splitOptions: SplitLinesOptions = { removeEmptyEntries: true, trim: true },
 ): string[] {
 	let lines = source.split(/\r?\n/g);
+
 	if (splitOptions?.trim) {
 		lines = lines.map((line) => line.trim());
 	}

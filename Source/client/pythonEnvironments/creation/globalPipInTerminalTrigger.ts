@@ -23,6 +23,7 @@ import { CreateEnvironmentResult } from "./proposed.createEnvApis";
 
 function checkCommand(command: string): boolean {
 	const lower = command.toLowerCase();
+
 	return (
 		lower.startsWith("pip install") ||
 		lower.startsWith("pip3 install") ||
@@ -39,6 +40,7 @@ export function registerTriggerForPipInTerminal(
 	}
 
 	const folders = getWorkspaceFolders();
+
 	if (!folders || folders.length === 0) {
 		return;
 	}
@@ -54,6 +56,7 @@ export function registerTriggerForPipInTerminal(
 				const workspaceFolder = getWorkspaceFolder(
 					e.shellIntegration.cwd,
 				);
+
 				if (
 					workspaceFolder &&
 					!createEnvironmentTriggered.get(
@@ -72,11 +75,13 @@ export function registerTriggerForPipInTerminal(
 						sendTelemetryEvent(
 							EventName.ENVIRONMENT_TERMINAL_GLOBAL_PIP,
 						);
+
 						const selection = await showWarningMessage(
 							CreateEnv.Trigger.globalPipInstallTriggerMessage,
 							CreateEnv.Trigger.createEnvironment,
 							Common.doNotShowAgain,
 						);
+
 						if (selection === CreateEnv.Trigger.createEnvironment) {
 							try {
 								const result: CreateEnvironmentResult =
@@ -87,6 +92,7 @@ export function registerTriggerForPipInTerminal(
 											providerId: `${PVSC_EXTENSION_ID}:venv`,
 										},
 									);
+
 								if (result.path) {
 									traceInfo(
 										"CreateEnv Trigger - Environment created: ",

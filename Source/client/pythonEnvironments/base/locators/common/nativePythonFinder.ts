@@ -116,11 +116,13 @@ class NativePythonFinderImpl extends DisposableBase implements NativePythonFinde
 
     public async resolve(executable: string): Promise<NativeEnvInfo> {
         await this.configure();
+
         const environment = await this.connection.sendRequest<NativeEnvInfo>('resolve', {
             executable,
         });
 
         this.outputChannel.info(`Resolved Python Environment ${environment.executable}`);
+
         return environment;
     }
 
@@ -131,19 +133,25 @@ class NativePythonFinderImpl extends DisposableBase implements NativePythonFinde
             // Those would have started earlier and cached in memory.
             const results = this.firstRefreshResults();
             this.firstRefreshResults = undefined;
+
             yield* results;
         } else {
             const result = this.doRefresh(options);
+
             let completed = false;
             void result.completed.finally(() => {
                 completed = true;
             });
+
             const envs: (NativeEnvInfo | NativeEnvManagerInfo)[] = [];
+
             let discovered = createDeferred();
+
             const disposable = result.discovered((data) => {
                 envs.push(data);
                 discovered.resolve();
             });
+
             do {
                 if (!envs.length) {
                     await Promise.race([result.completed, discovered.promise]);
@@ -151,6 +159,7 @@ class NativePythonFinderImpl extends DisposableBase implements NativePythonFinde
                 if (envs.length) {
                     const dataToSend = [...envs];
                     envs.length = 0;
+
                     for (const data of dataToSend) {
                         yield data;
                     }
@@ -165,9 +174,13 @@ class NativePythonFinderImpl extends DisposableBase implements NativePythonFinde
 
     refreshFirstTime() {
         const result = this.doRefresh();
+
         const completed = createDeferredFrom(result.completed);
+
         const envs: NativeEnvInfo[] = [];
+
         let discovered = createDeferred();
+
         const disposable = result.discovered((data) => {
             envs.push(data);
             discovered.resolve();
@@ -181,6 +194,7 @@ class NativePythonFinderImpl extends DisposableBase implements NativePythonFinde
                 if (envs.length) {
                     const dataToSend = [...envs];
                     envs.length = 0;
+
                     for (const data of dataToSend) {
                         yield data;
                     }
@@ -203,10 +217,14 @@ class NativePythonFinderImpl extends DisposableBase implements NativePythonFinde
         // Lets handle the messages and close the stream only when
         // we have got the exit event.
         const readable = new PassThrough();
+
         const writable = new PassThrough();
+
         const disposables: Disposable[] = [];
+
         try {
             const stopWatch = new StopWatch();
+
             const proc = ch.spawn(PYTHON_ENV_TOOLS_PATH, ['server'], { env: process.env });
             this.initialRefreshMetrics.timeToSpawn = stopWatch.elapsedTime;
             proc.stdout.pipe(readable, { end: false });
@@ -231,6 +249,7 @@ class NativePythonFinderImpl extends DisposableBase implements NativePythonFinde
             readable.end();
             writable.end();
         });
+
         const connection = rpc.createMessageConnection(
             new rpc.StreamMessageReader(readable),
             new rpc.StreamMessageWriter(writable),
@@ -246,16 +265,24 @@ class NativePythonFinderImpl extends DisposableBase implements NativePythonFinde
                 switch (data.level) {
                     case 'info':
                         this.outputChannel.info(data.message);
+
                         break;
+
                     case 'warning':
                         this.outputChannel.warn(data.message);
+
                         break;
+
                     case 'error':
                         this.outputChannel.error(data.message);
+
                         break;
+
                     case 'debug':
                         this.outputChannel.debug(data.message);
+
                         break;
+
                     default:
                         this.outputChannel.trace(data.message);
                 }
@@ -270,6 +297,7 @@ class NativePythonFinderImpl extends DisposableBase implements NativePythonFinde
 
         connection.listen();
         this._register(Disposable.from(...disposables));
+
         return connection;
     }
 
@@ -277,9 +305,13 @@ class NativePythonFinderImpl extends DisposableBase implements NativePythonFinde
         options?: NativePythonEnvironmentKind | Uri[],
     ): { completed: Promise<void>; discovered: Event<NativeEnvInfo | NativeEnvManagerInfo> } {
         const disposable = this._register(new DisposableStore());
+
         const discovered = disposable.add(new EventEmitter<NativeEnvInfo | NativeEnvManagerInfo>());
+
         const completed = createDeferred<void>();
+
         const pendingPromises: Promise<void>[] = [];
+
         const stopWatch = new StopWatch();
 
         const notifyUponCompletion = () => {
@@ -294,6 +326,7 @@ class NativePythonFinderImpl extends DisposableBase implements NativePythonFinde
                 })
                 .catch(noop);
         };
+
         const trackPromiseAndNotifyOnCompletion = (promise: Promise<void>) => {
             pendingPromises.push(promise);
             notifyUponCompletion();
@@ -342,6 +375,7 @@ class NativePythonFinderImpl extends DisposableBase implements NativePythonFinde
         };
 
         const refreshOptions: RefreshOptions = {};
+
         if (options && Array.isArray(options) && options.length > 0) {
             refreshOptions.searchPaths = options.map((item) => item.fsPath);
         } else if (options && typeof options === 'string') {
@@ -360,6 +394,7 @@ class NativePythonFinderImpl extends DisposableBase implements NativePythonFinde
         );
 
         completed.promise.finally(() => disposable.dispose());
+
         return {
             completed: completed.promise,
             discovered: discovered.event,
@@ -416,12 +451,16 @@ type ConfigurationOptions = {
  */
 function getCustomVirtualEnvDirs(): string[] {
     const venvDirs: string[] = [];
+
     const venvPath = getPythonSettingAndUntildify<string>(VENVPATH_SETTING_KEY);
+
     if (venvPath) {
         venvDirs.push(untildify(venvPath));
     }
     const venvFolders = getPythonSettingAndUntildify<string[]>(VENVFOLDERS_SETTING_KEY) ?? [];
+
     const homeDir = getUserHomeDir();
+
     if (homeDir) {
         venvFolders
             .map((item) => (item.startsWith(homeDir) ? item : path.join(homeDir, item)))
@@ -433,6 +472,7 @@ function getCustomVirtualEnvDirs(): string[] {
 
 function getPythonSettingAndUntildify<T>(name: string, scope?: Uri): T | undefined {
     const value = getConfiguration('python', scope).get<T>(name);
+
     if (typeof value === 'string') {
         return value ? ((untildify(value as string) as unknown) as T) : undefined;
     }
@@ -445,14 +485,17 @@ export function getNativePythonFinder(context?: IExtensionContext): NativePython
         return {
             async *refresh() {
                 traceError('Python discovery not supported in untrusted workspace');
+
                 yield* [];
             },
             async resolve() {
                 traceError('Python discovery not supported in untrusted workspace');
+
                 return {};
             },
             async getCondaInfo() {
                 traceError('Python discovery not supported in untrusted workspace');
+
                 return ({} as unknown) as NativeCondaInfo;
             },
             dispose() {
@@ -463,6 +506,7 @@ export function getNativePythonFinder(context?: IExtensionContext): NativePython
     if (!_finder) {
         const cacheDirectory = context ? getCacheDirectory(context) : undefined;
         _finder = new NativePythonFinderImpl(cacheDirectory);
+
         if (context) {
             context.subscriptions.push(_finder);
         }

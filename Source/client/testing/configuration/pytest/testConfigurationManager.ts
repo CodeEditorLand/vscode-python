@@ -31,8 +31,11 @@ export class ConfigurationManager extends TestConfigurationManager {
 
 	public async configure(wkspace: Uri): Promise<void> {
 		const args: string[] = [];
+
 		const configFileOptionLabel = "Use existing config file";
+
 		const options: QuickPickItem[] = [];
+
 		const configFiles = await this.getConfigFiles(wkspace.fsPath);
 		// If a config file exits, there's nothing to be configured.
 		if (
@@ -50,15 +53,18 @@ export class ConfigurationManager extends TestConfigurationManager {
 			});
 		}
 		const subDirs = await this.getTestDirs(wkspace.fsPath);
+
 		const testDir = await this.selectTestDir(
 			wkspace.fsPath,
 			subDirs,
 			options,
 		);
+
 		if (typeof testDir === "string" && testDir !== configFileOptionLabel) {
 			args.push(testDir);
 		}
 		const installed = await this.installer.isInstalled(Product.pytest);
+
 		if (!installed) {
 			await this.installer.install(Product.pytest);
 		}
@@ -71,11 +77,14 @@ export class ConfigurationManager extends TestConfigurationManager {
 
 	private async getConfigFiles(rootDir: string): Promise<string[]> {
 		const fs = this.serviceContainer.get<IFileSystem>(IFileSystem);
+
 		const promises = ["pytest.ini", "tox.ini", "setup.cfg"].map(
 			async (cfg) =>
 				(await fs.fileExists(path.join(rootDir, cfg))) ? cfg : "",
 		);
+
 		const values = await Promise.all(promises);
+
 		return values.filter((exists) => exists.length > 0);
 	}
 }

@@ -20,6 +20,7 @@ export class BufferedTestConfigSettingsService
 		args: string[],
 	): Promise<void> {
 		this.ops.push(["updateTestArgs", testDirectory, product, args]);
+
 		return Promise.resolve();
 	}
 
@@ -28,6 +29,7 @@ export class BufferedTestConfigSettingsService
 		product: UnitTestProduct,
 	): Promise<void> {
 		this.ops.push(["enable", testDirectory, product, []]);
+
 		return Promise.resolve();
 	}
 
@@ -36,6 +38,7 @@ export class BufferedTestConfigSettingsService
 		product: UnitTestProduct,
 	): Promise<void> {
 		this.ops.push(["disable", testDirectory, product, []]);
+
 		return Promise.resolve();
 	}
 
@@ -48,13 +51,19 @@ export class BufferedTestConfigSettingsService
 			switch (op) {
 				case "updateTestArgs":
 					await cfg.updateTestArgs(testDir, prod, args);
+
 					break;
+
 				case "enable":
 					await cfg.enable(testDir, prod);
+
 					break;
+
 				case "disable":
 					await cfg.disable(testDir, prod);
+
 					break;
+
 				default:
 					break;
 			}

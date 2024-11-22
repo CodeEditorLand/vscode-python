@@ -7,6 +7,7 @@ import { IAttachItem, ProcessListCommand } from "./types";
 
 export namespace PsProcessParser {
 	const secondColumnCharacters = 50;
+
 	const commColumnTitle = "".padStart(secondColumnCharacters, "a");
 
 	// Perf numbers:
@@ -42,6 +43,7 @@ export namespace PsProcessParser {
 		command: "ps",
 		args: ["axww", "-o", `pid=,comm=${commColumnTitle},args=`],
 	};
+
 	export const psDarwinCommand: ProcessListCommand = {
 		command: "ps",
 		args: ["axww", "-o", `pid=,comm=${commColumnTitle},args=`, "-c"],
@@ -49,6 +51,7 @@ export namespace PsProcessParser {
 
 	export function parseProcesses(processes: string): IAttachItem[] {
 		const lines: string[] = processes.split("\n");
+
 		return parseProcessesFromPsArray(lines);
 	}
 
@@ -58,11 +61,13 @@ export namespace PsProcessParser {
 		// lines[0] is the header of the table
 		for (let i = 1; i < processArray.length; i += 1) {
 			const line = processArray[i];
+
 			if (!line) {
 				continue;
 			}
 
 			const processEntry = parseLineFromPs(line);
+
 			if (processEntry) {
 				processEntries.push(processEntry);
 			}
@@ -83,11 +88,14 @@ export namespace PsProcessParser {
 		const psEntry: RegExp = new RegExp(
 			`^\\s*([0-9]+)\\s+(.{${secondColumnCharacters - 1}})\\s+(.*)$`,
 		);
+
 		const matches = psEntry.exec(line);
 
 		if (matches?.length === 4) {
 			const pid = matches[1].trim();
+
 			const executable = matches[2].trim();
+
 			const cmdline = matches[3].trim();
 
 			return {

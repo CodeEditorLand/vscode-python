@@ -24,18 +24,23 @@ export class SettingsShellDetector extends BaseShellDetector {
     }
     public getTerminalShellPath(): string | undefined {
         const shellConfig = this.workspace.getConfiguration('terminal.integrated.shell');
+
         let osSection = '';
+
         switch (this.platform.osType) {
             case OSType.Windows: {
                 osSection = 'windows';
+
                 break;
             }
             case OSType.OSX: {
                 osSection = 'osx';
+
                 break;
             }
             case OSType.Linux: {
                 osSection = 'linux';
+
                 break;
             }
             default: {
@@ -50,6 +55,7 @@ export class SettingsShellDetector extends BaseShellDetector {
     ): TerminalShellType | undefined {
         const shellPath = this.getTerminalShellPath();
         telemetryProperties.hasCustomShell = !!shellPath;
+
         const shell = shellPath ? this.identifyShellFromShellPath(shellPath) : TerminalShellType.other;
 
         if (shell !== TerminalShellType.other) {

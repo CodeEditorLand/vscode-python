@@ -28,8 +28,11 @@ import { LazyResourceBasedLocator } from "../common/resourceBasedLocator";
  */
 async function getVirtualEnvDirs(root: string): Promise<string[]> {
 	const envDirs = [path.join(root, localPoetryEnvDirName)];
+
 	const poetry = await Poetry.getPoetry(root);
+
 	const virtualenvs = await poetry?.getEnvList();
+
 	if (virtualenvs) {
 		envDirs.push(...virtualenvs);
 	}
@@ -59,14 +62,18 @@ export class PoetryLocator extends LazyResourceBasedLocator {
 	protected doIterEnvs(): IPythonEnvsIterator<BasicEnvInfo> {
 		async function* iterator(root: string) {
 			const envDirs = await getVirtualEnvDirs(root);
+
 			const envGenerators = envDirs.map((envDir) => {
 				async function* generator() {
 					traceVerbose(
 						`Searching for poetry virtual envs in: ${envDir}`,
 					);
+
 					const filename = await getInterpreterPathFromDir(envDir);
+
 					if (filename !== undefined) {
 						const kind = await getVirtualEnvKind(filename);
+
 						try {
 							// We should extract the kind here to avoid doing is*Environment()
 							// check multiple times. Those checks are file system heavy and

@@ -25,6 +25,7 @@ export class VSCEnvironmentShellDetector extends BaseShellDetector {
             terminal?.creationOptions && 'shellPath' in terminal.creationOptions && terminal.creationOptions.shellPath
                 ? terminal.creationOptions.shellPath
                 : this.appEnv.shell;
+
         if (!shellPath) {
             return;
         }
@@ -33,6 +34,7 @@ export class VSCEnvironmentShellDetector extends BaseShellDetector {
         telemetryProperties.shellIdentificationSource =
             shell === TerminalShellType.other ? telemetryProperties.shellIdentificationSource : 'vscode';
         telemetryProperties.failed = shell === TerminalShellType.other ? false : true;
+
         return shell;
     }
 }

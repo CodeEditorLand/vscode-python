@@ -68,6 +68,7 @@ export class ProgressReporting implements Disposable {
 			},
 			(progress) => {
 				this.progress = progress;
+
 				return this.progressDeferred!.promise;
 			},
 		);

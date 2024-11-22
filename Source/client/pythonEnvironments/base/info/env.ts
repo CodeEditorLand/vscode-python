@@ -87,10 +87,12 @@ export function buildEnvInfo(init?: {
 		pythonRunCommand: init?.pythonRunCommand,
 		identifiedUsingNativeLocator: init?.identifiedUsingNativeLocator,
 	};
+
 	if (init !== undefined) {
 		updateEnv(env, init);
 	}
 	env.id = getEnvID(env.executable.filename, env.location);
+
 	return env;
 }
 
@@ -99,16 +101,22 @@ export function areEnvsDeepEqual(
 	env2: PythonEnvInfo,
 ): boolean {
 	const env1Clone = cloneDeep(env1);
+
 	const env2Clone = cloneDeep(env2);
 	// Cannot compare searchLocation as they are Uri objects.
 	delete env1Clone.searchLocation;
 	delete env2Clone.searchLocation;
 	env1Clone.source = env1Clone.source.sort();
 	env2Clone.source = env2Clone.source.sort();
+
 	const searchLocation1 = env1.searchLocation?.fsPath ?? "";
+
 	const searchLocation2 = env2.searchLocation?.fsPath ?? "";
+
 	const searchLocation1Scheme = env1.searchLocation?.scheme ?? "";
+
 	const searchLocation2Scheme = env2.searchLocation?.scheme ?? "";
+
 	return (
 		isEqual(env1Clone, env2Clone) &&
 		arePathsSame(searchLocation1, searchLocation2) &&
@@ -130,6 +138,7 @@ export function copyEnvInfo(
 	// We don't care whether or not extra/hidden properties
 	// get preserved, so we do the easy thing here.
 	const copied = cloneDeep(env);
+
 	if (updates !== undefined) {
 		updateEnv(copied, updates);
 	}
@@ -185,13 +194,17 @@ function buildEnvDisplayString(
 	// main parts
 	const shouldDisplayKind =
 		getAllDetails || globallyInstalledEnvKinds.includes(env.kind);
+
 	const shouldDisplayArch = !virtualEnvKinds.includes(env.kind);
+
 	const displayNameParts: string[] = ["Python"];
+
 	if (env.version && !isVersionEmpty(env.version)) {
 		displayNameParts.push(getVersionDisplayString(env.version));
 	}
 	if (shouldDisplayArch) {
 		const archName = getArchitectureDisplayName(env.arch);
+
 		if (archName !== "") {
 			displayNameParts.push(archName);
 		}
@@ -201,6 +214,7 @@ function buildEnvDisplayString(
 
 	// "suffix"
 	const envSuffixParts: string[] = [];
+
 	if (env.name && env.name !== "") {
 		envSuffixParts.push(`'${env.name}'`);
 	} else if (env.location && env.location !== "") {
@@ -211,6 +225,7 @@ function buildEnvDisplayString(
 	}
 	if (shouldDisplayKind) {
 		const kindName = getKindDisplayName(env.kind);
+
 		if (kindName !== "") {
 			envSuffixParts.push(kindName);
 		}
@@ -273,6 +288,7 @@ export function getEnvPath(
 		path: interpreterPath,
 		pathType: "interpreterPath",
 	};
+
 	if (envFolderPath && !isParentPath(interpreterPath, envFolderPath)) {
 		// Executable is not inside the environment folder, env folder is the ID.
 		envPath = { path: envFolderPath, pathType: "envFolderPath" };
@@ -308,7 +324,9 @@ export function areSameEnv(
 	allowPartialMatch = true,
 ): boolean | undefined {
 	const leftInfo = getMinimalPartialInfo(left);
+
 	const rightInfo = getMinimalPartialInfo(right);
+
 	if (leftInfo === undefined || rightInfo === undefined) {
 		return undefined;
 	}
@@ -324,6 +342,7 @@ export function areSameEnv(
 	}
 
 	const leftFilename = leftInfo.executable!.filename;
+
 	const rightFilename = rightInfo.executable!.filename;
 
 	if (
@@ -344,11 +363,14 @@ export function areSameEnv(
 				path.dirname(leftFilename),
 				path.dirname(rightFilename),
 			);
+
 		if (isSameDirectory) {
 			const leftVersion =
 				typeof left === "string" ? undefined : leftInfo.version;
+
 			const rightVersion =
 				typeof right === "string" ? undefined : rightInfo.version;
+
 			if (leftVersion && rightVersion) {
 				if (
 					areIdenticalVersion(leftVersion, rightVersion) ||
@@ -371,6 +393,7 @@ export function areSameEnv(
  */
 function getPythonVersionSpecificity(version: PythonVersion): number {
 	let infoLevel = 0;
+
 	if (version.major > 0) {
 		infoLevel += 20; // W4
 	}

@@ -17,6 +17,7 @@ import { traceError } from "../../../logging";
 
 export function getPythonVersionFromPath(exe: string): PythonVersion {
 	let version = UNKNOWN_PYTHON_VERSION;
+
 	try {
 		version = parseVersion(path.basename(exe));
 	} catch (ex) {
@@ -40,11 +41,13 @@ export function getPythonVersionFromPath(exe: string): PythonVersion {
  */
 export function parseVersion(versionStr: string): PythonVersion {
 	const [version, after] = parseBasicVersion(versionStr);
+
 	if (version.micro === -1) {
 		return version;
 	}
 	const [release] = parseRelease(after);
 	version.release = release;
+
 	return version;
 }
 
@@ -54,12 +57,17 @@ export function parseRelease(
 	let after: string;
 
 	let alpha: string | undefined;
+
 	let beta: string | undefined;
+
 	let rc: string | undefined;
+
 	let fin: string | undefined;
+
 	let serialStr: string;
 
 	let match = text.match(/^(?:-?final|\.final(?:\.0)?)(.*)$/);
+
 	if (match) {
 		[, after] = match;
 		fin = "final";
@@ -71,14 +79,17 @@ export function parseRelease(
 			/^\.(?:(?:(alpha)|(beta)|(candidate))\.([1-9]\d*))(.*)$/,
 		]) {
 			match = text.match(regex);
+
 			if (match) {
 				[, alpha, beta, rc, serialStr, after] = match;
+
 				break;
 			}
 		}
 	}
 
 	let level: PythonReleaseLevel;
+
 	if (fin) {
 		level = PythonReleaseLevel.Final;
 	} else if (rc) {
@@ -92,6 +103,7 @@ export function parseRelease(
 		return [undefined, text];
 	}
 	const serial = parseInt(serialStr!, 10);
+
 	return [{ level, serial }, after!];
 }
 
@@ -104,6 +116,7 @@ export function parseBasicVersion(versionStr: string): [PythonVersion, string] {
 	const parsed = basic.parseBasicVersionInfo<PythonVersion>(
 		`ignored-${versionStr}`,
 	);
+
 	if (!parsed) {
 		if (versionStr === "") {
 			return [getEmptyVersion(), ""];
@@ -118,6 +131,7 @@ export function parseBasicVersion(versionStr: string): [PythonVersion, string] {
 		// We trust that the major version is always single-digit.
 		if (version.major > 9) {
 			const numdigits = version.major.toString().length - 1;
+
 			const factor = 10 ** numdigits;
 			version.minor = version.major % factor;
 			version.major = Math.floor(version.major / factor);
@@ -160,6 +174,7 @@ export function getVersionDisplayString(ver: PythonVersion): string {
  */
 export function getShortVersionString(ver: PythonVersion): string {
 	let verStr = basic.getVersionString(ver);
+
 	if (ver.release === undefined) {
 		return verStr;
 	}
@@ -262,7 +277,9 @@ export function toSemverLikeVersion(version: PythonVersion): {
 	prerelease: string[];
 } {
 	const versionPrefix = basic.getVersionString(version);
+
 	let preRelease: string[] = [];
+
 	if (version.release) {
 		preRelease =
 			version.release.serial < 0

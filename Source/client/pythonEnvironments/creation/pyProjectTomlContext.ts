@@ -41,6 +41,7 @@ export function registerPyProjectTomlFeatures(
 			doc.fileName.endsWith("pyproject.toml") &&
 			isPipInstallableToml(doc.getText()),
 	);
+
 	if (docs.length > 0) {
 		executeCommand("setContext", "pipInstallableToml", true);
 	} else {

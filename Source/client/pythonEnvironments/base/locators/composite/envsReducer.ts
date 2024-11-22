@@ -38,9 +38,12 @@ export class PythonEnvsReducer implements ICompositeLocator<BasicEnvInfo> {
 		const didUpdate = new EventEmitter<
 			PythonEnvUpdatedEvent<BasicEnvInfo> | ProgressNotificationEvent
 		>();
+
 		const incomingIterator = this.parentLocator.iterEnvs(query);
+
 		const iterator = iterEnvsIterator(incomingIterator, didUpdate);
 		iterator.onUpdated = didUpdate.event;
+
 		return iterator;
 	}
 }
@@ -55,6 +58,7 @@ async function* iterEnvsIterator(
 		done: false,
 		pending: 0,
 	};
+
 	const seen: BasicEnvInfo[] = [];
 
 	if (iterator.onUpdated !== undefined) {
@@ -95,9 +99,12 @@ async function* iterEnvsIterator(
 	}
 
 	let result = await iterator.next();
+
 	while (!result.done) {
 		const currEnv = result.value;
+
 		const oldIndex = seen.findIndex((s) => areSameEnv(s, currEnv));
+
 		if (oldIndex !== -1) {
 			resolveDifferencesInBackground(
 				oldIndex,
@@ -132,7 +139,9 @@ async function resolveDifferencesInBackground(
 	// It's essential we increment the pending call count before any asynchronus calls in this method.
 	// We want this to be run even when `resolveInBackground` is called in background.
 	const oldEnv = seen[oldIndex];
+
 	const merged = resolveEnvCollision(oldEnv, newEnv);
+
 	if (!isEqual(oldEnv, merged)) {
 		seen[oldIndex] = merged;
 		didUpdate.fire({ index: oldIndex, old: oldEnv, update: merged });
@@ -164,9 +173,11 @@ function resolveEnvCollision(
 	newEnv: BasicEnvInfo,
 ): BasicEnvInfo {
 	const [env] = sortEnvInfoByPriority(oldEnv, newEnv);
+
 	const merged = cloneDeep(env);
 	merged.source = uniq((oldEnv.source ?? []).concat(newEnv.source ?? []));
 	merged.searchLocation = getMergedSearchLocation(oldEnv, newEnv);
+
 	return merged;
 }
 
@@ -205,6 +216,7 @@ function sortEnvInfoByPriority(...envs: BasicEnvInfo[]): BasicEnvInfo[] {
 	// TODO: When we consolidate the PythonEnvKind and EnvironmentType we should have
 	// one location where we define priority.
 	const envKindByPriority: PythonEnvKind[] = getPrioritizedEnvKinds();
+
 	return envs.sort(
 		(a: BasicEnvInfo, b: BasicEnvInfo) =>
 			envKindByPriority.indexOf(a.kind) -

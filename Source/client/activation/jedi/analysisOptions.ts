@@ -34,6 +34,7 @@ export class JediLanguageServerAnalysisOptions extends LanguageServerAnalysisOpt
 	) {
 		this.resource = resource;
 		this.interpreter = interpreter;
+
 		return super.initialize(resource, interpreter);
 	}
 
@@ -45,7 +46,9 @@ export class JediLanguageServerAnalysisOptions extends LanguageServerAnalysisOpt
 		const pythonSettings = this.configurationService.getSettings(
 			this.resource,
 		);
+
 		const workspacePath = this.getWorkspaceFolder()?.uri.fsPath;
+
 		const extraPaths = pythonSettings.autoComplete
 			? pythonSettings.autoComplete.extraPaths.map((extraPath) => {
 					if (path.isAbsolute(extraPath)) {

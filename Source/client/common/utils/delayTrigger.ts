@@ -44,6 +44,7 @@ export class DelayedTrigger implements IDelayedTrigger, Disposable {
 
 	public trigger(...args: unknown[]): void {
 		this.triggeredCounter += 1;
+
 		if (this.timerId) {
 			clearTimeout(this.timerId);
 		}

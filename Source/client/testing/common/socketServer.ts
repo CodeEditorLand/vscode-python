@@ -59,6 +59,7 @@ export class UnitTestSocketServer
 			this.emit("error", err);
 		});
 		this.log("starting server as", "TCP");
+
 		if (host.trim().length === 0) {
 			host = "localhost";
 		}
@@ -71,6 +72,7 @@ export class UnitTestSocketServer
 			);
 			this.startedDef = undefined;
 		});
+
 		return this.startedDef?.promise;
 	}
 
@@ -93,6 +95,7 @@ export class UnitTestSocketServer
 
 			while (true) {
 				const startIndex = dataStr.indexOf("{");
+
 				if (startIndex === -1) {
 					return;
 				}
@@ -102,11 +105,13 @@ export class UnitTestSocketServer
 						.trim(),
 					10,
 				);
+
 				if (dataStr.length < startIndex + lengthOfMessage) {
 					return;
 				}
 
 				let message: any;
+
 				try {
 					message = JSON.parse(
 						dataStr.substring(
@@ -116,6 +121,7 @@ export class UnitTestSocketServer
 					);
 				} catch (jsonErr) {
 					this.emit("error", jsonErr);
+
 					return;
 				}
 				dataStr = this.ipcBuffer = dataStr.substring(
@@ -140,15 +146,18 @@ export class UnitTestSocketServer
 			}
 
 			let destroyedSocketId;
+
 			if ((socket as any).id) {
 				destroyedSocketId = (socket as any).id;
 			}
 			this.log("socket disconnected", destroyedSocketId?.toString());
+
 			if (socket && socket.destroy) {
 				socket.destroy();
 			}
 			this.sockets.splice(i, 1);
 			this.emit("socket.disconnected", socket, destroyedSocketId);
+
 			return;
 		}
 	}

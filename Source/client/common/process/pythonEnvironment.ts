@@ -43,6 +43,7 @@ class PythonEnvironment implements IPythonEnvironment {
 		// "deps" is the externally defined functionality used by the class.
 		protected readonly deps: {
 			getPythonArgv(python: string): string[];
+
 			getObservablePythonArgv(python: string): string[];
 			isValidExecutable(python: string): Promise<boolean>;
 			// from ProcessService:
@@ -62,6 +63,7 @@ class PythonEnvironment implements IPythonEnvironment {
 		pythonExecutable?: string,
 	): PythonExecInfo {
 		const python = this.deps.getPythonArgv(this.pythonPath);
+
 		return buildPythonExecInfo(python, pythonArgs, pythonExecutable);
 	}
 	public getExecutionObservableInfo(
@@ -69,6 +71,7 @@ class PythonEnvironment implements IPythonEnvironment {
 		pythonExecutable?: string,
 	): PythonExecInfo {
 		const python = this.deps.getObservablePythonArgv(this.pythonPath);
+
 		return buildPythonExecInfo(python, pythonArgs, pythonExecutable);
 	}
 
@@ -89,13 +92,16 @@ class PythonEnvironment implements IPythonEnvironment {
 			return this.pythonPath;
 		}
 		const result = cachedExecutablePath.get(this.pythonPath);
+
 		if (result !== undefined && !isTestExecution()) {
 			// Another call for this environment has already been made, return its result
 			return result;
 		}
 		const python = this.getExecutionInfo();
+
 		const promise = getExecutablePath(python, this.deps.shellExec);
 		cachedExecutablePath.set(this.pythonPath, promise);
+
 		return promise;
 	}
 
@@ -103,8 +109,11 @@ class PythonEnvironment implements IPythonEnvironment {
 		moduleName: string,
 	): Promise<string | undefined> {
 		const [args, parse] = internalPython.getModuleVersion(moduleName);
+
 		const info = this.getExecutionInfo(args);
+
 		let data: ExecutionResult<string>;
+
 		try {
 			data = await this.deps.exec(info.command, info.args);
 		} catch (ex) {
@@ -112,6 +121,7 @@ class PythonEnvironment implements IPythonEnvironment {
 				`Error when getting version of module ${moduleName}`,
 				ex,
 			);
+
 			return undefined;
 		}
 		return parse(data.stdout);
@@ -120,7 +130,9 @@ class PythonEnvironment implements IPythonEnvironment {
 	public async isModuleInstalled(moduleName: string): Promise<boolean> {
 		// prettier-ignore
 		const [args,] = internalPython.isModuleInstalled(moduleName);
+
 		const info = this.getExecutionInfo(args);
+
 		try {
 			await this.deps.exec(info.command, info.args);
 		} catch (ex) {
@@ -128,6 +140,7 @@ class PythonEnvironment implements IPythonEnvironment {
 				`Error when checking if module is installed ${moduleName}`,
 				ex,
 			);
+
 			return false;
 		}
 		return true;
@@ -138,6 +151,7 @@ class PythonEnvironment implements IPythonEnvironment {
 	> {
 		try {
 			const python = this.getExecutionInfo();
+
 			return await getInterpreterInfo(python, this.deps.shellExec, {
 				verbose: traceVerbose,
 				error: traceError,
@@ -201,6 +215,7 @@ export function createPythonEnv(
 		(file, args, opts) => procs.exec(file, args, opts),
 		(command, opts) => procs.shellExec(command, opts),
 	);
+
 	return new PythonEnvironment(pythonPath, deps);
 }
 
@@ -211,10 +226,12 @@ export async function createCondaEnv(
 	fs: IFileSystem,
 ): Promise<PythonEnvironment | undefined> {
 	const conda = await Conda.getConda();
+
 	const pythonArgv = await conda?.getRunPythonArgs({
 		name: condaInfo.name,
 		prefix: condaInfo.path,
 	});
+
 	if (!pythonArgv) {
 		return undefined;
 	}
@@ -225,10 +242,12 @@ export async function createCondaEnv(
 		(file, args, opts) => procs.exec(file, args, opts),
 		(command, opts) => procs.shellExec(command, opts),
 	);
+
 	const interpreterPath = await conda?.getInterpreterPathForEnvironment({
 		name: condaInfo.name,
 		prefix: condaInfo.path,
 	});
+
 	if (!interpreterPath) {
 		return undefined;
 	}
@@ -245,6 +264,7 @@ export async function createPixiEnv(
 		pixiEnv.manifestPath,
 		pixiEnv.envName,
 	);
+
 	const deps = createDeps(
 		async (filename) => fs.pathExists(filename),
 		pythonArgv,
@@ -252,6 +272,7 @@ export async function createPixiEnv(
 		(file, args, opts) => procs.exec(file, args, opts),
 		(command, opts) => procs.shellExec(command, opts),
 	);
+
 	return new PythonEnvironment(pixiEnv.interpreterPath, deps);
 }
 
@@ -276,5 +297,6 @@ export function createMicrosoftStoreEnv(
 		(file, args, opts) => procs.exec(file, args, opts),
 		(command, opts) => procs.shellExec(command, opts),
 	);
+
 	return new PythonEnvironment(pythonPath, deps);
 }

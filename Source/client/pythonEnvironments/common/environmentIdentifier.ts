@@ -25,6 +25,7 @@ function getIdentifiers(): Map<
 	(path: string) => Promise<boolean>
 > {
 	const defaultTrue = () => Promise.resolve(true);
+
 	const identifier: Map<PythonEnvKind, (path: string) => Promise<boolean>> =
 		new Map();
 	Object.values(PythonEnvKind).forEach((k) => {
@@ -46,12 +47,15 @@ function getIdentifiers(): Map<
 	identifier.set(PythonEnvKind.ActiveState, isActiveStateEnvironment);
 	identifier.set(PythonEnvKind.Unknown, defaultTrue);
 	identifier.set(PythonEnvKind.OtherGlobal, isGloballyInstalledEnv);
+
 	return identifier;
 }
 
 export function isIdentifierRegistered(kind: PythonEnvKind): boolean {
 	const identifiers = getIdentifiers();
+
 	const identifier = identifiers.get(kind);
+
 	if (identifier === notImplemented) {
 		return false;
 	}
@@ -67,13 +71,17 @@ export async function identifyEnvironment(
 	path: string,
 ): Promise<PythonEnvKind> {
 	const identifiers = getIdentifiers();
+
 	const prioritizedEnvTypes = getPrioritizedEnvKinds();
+
 	for (const e of prioritizedEnvTypes) {
 		const identifier = identifiers.get(e);
+
 		if (
 			identifier &&
 			(await identifier(path).catch((ex) => {
 				traceWarn(`Identifier for ${e} failed to identify ${path}`, ex);
+
 				return false;
 			}))
 		) {

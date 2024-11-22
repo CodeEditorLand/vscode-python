@@ -23,6 +23,7 @@ export function inTerminalEnvVarExperiment(
 		traceInfo(
 			"Not enabling terminal env var experiment in multiroot remote workspaces",
 		);
+
 		return false;
 	}
 	if (

@@ -24,8 +24,10 @@ export function getSearchPathEnvVarNames(
  */
 export function getSearchPathEntries(): string[] {
 	const envVars = getSearchPathEnvVarNames();
+
 	for (const envVar of envVars) {
 		const value = getEnvironmentVariable(envVar);
+
 		if (value !== undefined) {
 			return parseSearchPathEntries(value);
 		}

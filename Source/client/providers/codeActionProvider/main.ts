@@ -25,6 +25,7 @@ export class CodeActionProviderService
 	public async activate(): Promise<void> {
 		// eslint-disable-next-line global-require
 		const vscode = require("vscode") as typeof vscodeTypes;
+
 		const documentSelector: vscodeTypes.DocumentFilter = {
 			scheme: "file",
 			language: "jsonc",

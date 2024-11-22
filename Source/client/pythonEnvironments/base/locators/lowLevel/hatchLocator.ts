@@ -15,7 +15,9 @@ import { LazyResourceBasedLocator } from "../common/resourceBasedLocator";
  */
 async function getVirtualEnvDirs(root: string): Promise<string[]> {
 	const hatch = await Hatch.getHatch(root);
+
 	const envDirs = (await hatch?.getEnvList()) ?? [];
+
 	return asyncFilter(envDirs, pathExists);
 }
 
@@ -32,12 +34,15 @@ export class HatchLocator extends LazyResourceBasedLocator {
 	protected doIterEnvs(): IPythonEnvsIterator<BasicEnvInfo> {
 		async function* iterator(root: string) {
 			const envDirs = await getVirtualEnvDirs(root);
+
 			const envGenerators = envDirs.map((envDir) => {
 				async function* generator() {
 					traceVerbose(
 						`Searching for Hatch virtual envs in: ${envDir}`,
 					);
+
 					const filename = await getInterpreterPathFromDir(envDir);
+
 					if (filename !== undefined) {
 						try {
 							yield {

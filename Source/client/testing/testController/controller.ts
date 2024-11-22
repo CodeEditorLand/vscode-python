@@ -110,6 +110,7 @@ export class PythonTestController implements ITestController, IExtensionSingleAc
         const delayTrigger = new DelayedTrigger(
             (uri: Uri, invalidate: boolean) => {
                 this.refreshTestDataInternal(uri);
+
                 if (invalidate) {
                     this.invalidateTests(uri);
                 }
@@ -136,6 +137,7 @@ export class PythonTestController implements ITestController, IExtensionSingleAc
                 DebugTestTag,
             ),
         );
+
         if (pythonTestAdapterRewriteEnabled(this.serviceContainer)) {
             // only add the coverage profile if the new test adapter is enabled
             const coverageProfile = this.testController.createRunProfile(
@@ -162,6 +164,7 @@ export class PythonTestController implements ITestController, IExtensionSingleAc
             sendTelemetryEvent(EventName.UNITTEST_DISCOVERY_TRIGGER, undefined, {
                 trigger: constants.CommandSource.commandPalette,
             });
+
             return this.refreshTestData(undefined, { forceRefresh: true });
         };
     }
@@ -172,8 +175,11 @@ export class PythonTestController implements ITestController, IExtensionSingleAc
             const settings = this.configSettings.getSettings(workspace.uri);
 
             let discoveryAdapter: ITestDiscoveryAdapter;
+
             let executionAdapter: ITestExecutionAdapter;
+
             let testProvider: TestProvider;
+
             let resultResolver: PythonResultResolver;
 
             if (settings.testing.unittestEnabled) {
@@ -238,14 +244,17 @@ export class PythonTestController implements ITestController, IExtensionSingleAc
                 });
 
                 traceVerbose('Testing: Forcing test data refresh');
+
                 return this.refreshTestDataInternal(undefined);
             }
 
             traceVerbose('Testing: Forcing test data refresh');
+
             return this.refreshTestDataInternal(uri);
         }
 
         this.refreshData.trigger(uri, false);
+
         return Promise.resolve();
     }
 
@@ -263,8 +272,10 @@ export class PythonTestController implements ITestController, IExtensionSingleAc
 
     private async refreshTestDataInternal(uri?: Resource): Promise<void> {
         this.refreshingStartedEvent.fire();
+
         if (uri) {
             const settings = this.configSettings.getSettings(uri);
+
             const workspace = this.workspaceService.getWorkspaceFolder(uri);
             traceInfo(`Discover tests for workspace name: ${workspace?.name} - uri: ${uri.fsPath}`);
             // Ensure we send test telemetry if it gets disabled again
@@ -273,10 +284,13 @@ export class PythonTestController implements ITestController, IExtensionSingleAc
             if (settings.testing.pytestEnabled) {
                 if (pythonTestAdapterRewriteEnabled(this.serviceContainer)) {
                     traceInfo(`Running discovery for pytest using the new test adapter.`);
+
                     if (workspace && workspace.uri) {
                         const testAdapter = this.testAdapters.get(workspace.uri);
+
                         if (testAdapter) {
                             const testProviderInAdapter = testAdapter.getTestProvider();
+
                             if (testProviderInAdapter !== 'pytest') {
                                 traceError('Test provider in adapter is not pytest. Please reload window.');
                                 this.surfaceErrorNode(
@@ -284,6 +298,7 @@ export class PythonTestController implements ITestController, IExtensionSingleAc
                                     'Test provider types are not aligned, please reload your VS Code window.',
                                     'pytest',
                                 );
+
                                 return Promise.resolve();
                             }
                             await testAdapter.discoverTests(
@@ -305,10 +320,13 @@ export class PythonTestController implements ITestController, IExtensionSingleAc
             } else if (settings.testing.unittestEnabled) {
                 if (pythonTestAdapterRewriteEnabled(this.serviceContainer)) {
                     traceInfo(`Running discovery for unittest using the new test adapter.`);
+
                     if (workspace && workspace.uri) {
                         const testAdapter = this.testAdapters.get(workspace.uri);
+
                         if (testAdapter) {
                             const testProviderInAdapter = testAdapter.getTestProvider();
+
                             if (testProviderInAdapter !== 'unittest') {
                                 traceError('Test provider in adapter is not unittest. Please reload window.');
                                 this.surfaceErrorNode(
@@ -316,6 +334,7 @@ export class PythonTestController implements ITestController, IExtensionSingleAc
                                     'Test provider types are not aligned, please reload your VS Code window.',
                                     'unittest',
                                 );
+
                                 return Promise.resolve();
                             }
                             await testAdapter.discoverTests(
@@ -346,6 +365,7 @@ export class PythonTestController implements ITestController, IExtensionSingleAc
                     const toDelete: string[] = [];
                     this.testController.items.forEach((i: TestItem) => {
                         const w = this.workspaceService.getWorkspaceFolder(i.uri);
+
                         if (w?.uri.fsPath === workspace.uri.fsPath) {
                             toDelete.push(i.id);
                         }
@@ -355,6 +375,7 @@ export class PythonTestController implements ITestController, IExtensionSingleAc
             }
         } else {
             traceVerbose('Testing: Refreshing all test data');
+
             const workspaces: readonly WorkspaceFolder[] = this.workspaceService.workspaceFolders || [];
             await Promise.all(
                 workspaces.map(async (workspace) => {
@@ -362,6 +383,7 @@ export class PythonTestController implements ITestController, IExtensionSingleAc
                         this.commandManager
                             .executeCommand(constants.Commands.TriggerEnvironmentSelection, workspace.uri)
                             .then(noop, noop);
+
                         return;
                     }
                     await this.refreshTestDataInternal(workspace.uri);
@@ -369,13 +391,16 @@ export class PythonTestController implements ITestController, IExtensionSingleAc
             );
         }
         this.refreshingCompletedEvent.fire();
+
         return Promise.resolve();
     }
 
     private async resolveChildren(item: TestItem | undefined): Promise<void> {
         if (item) {
             traceVerbose(`Testing: Resolving item ${item.id}`);
+
             const settings = this.configSettings.getSettings(item.uri);
+
             if (settings.testing.pytestEnabled) {
                 return this.pytest.resolveChildren(this.testController, item, this.refreshCancellation.token);
             }
@@ -385,11 +410,13 @@ export class PythonTestController implements ITestController, IExtensionSingleAc
         } else {
             traceVerbose('Testing: Refreshing all test data');
             this.sendTriggerTelemetry('auto');
+
             const workspaces: readonly WorkspaceFolder[] = this.workspaceService.workspaceFolders || [];
             await Promise.all(
                 workspaces.map(async (workspace) => {
                     if (!(await this.interpreterService.getActiveInterpreter(workspace.uri))) {
                         traceError('Cannot trigger test discovery as a valid interpreter is not selected');
+
                         return;
                     }
                     await this.refreshTestDataInternal(workspace.uri);
@@ -401,6 +428,7 @@ export class PythonTestController implements ITestController, IExtensionSingleAc
 
     private async runTests(request: TestRunRequest, token: CancellationToken): Promise<void> {
         const workspaces: WorkspaceFolder[] = [];
+
         if (request.include) {
             uniq(request.include.map((r) => this.workspaceService.getWorkspaceFolder(r.uri))).forEach((w) => {
                 if (w) {
@@ -415,6 +443,7 @@ export class PythonTestController implements ITestController, IExtensionSingleAc
             `Running Tests for Workspace(s): ${workspaces.map((w) => w.uri.fsPath).join(';')}`,
             true,
         );
+
         const dispose = token.onCancellationRequested(() => {
             runInstance.appendOutput(`\nRun instance cancelled.\r\n`);
             runInstance.end();
@@ -429,6 +458,7 @@ export class PythonTestController implements ITestController, IExtensionSingleAc
                         this.commandManager
                             .executeCommand(constants.Commands.TriggerEnvironmentSelection, workspace.uri)
                             .then(noop, noop);
+
                         return undefined;
                     }
                     const testItems: TestItem[] = [];
@@ -437,12 +467,14 @@ export class PythonTestController implements ITestController, IExtensionSingleAc
                     // root test node. Include will be `undefined` in the "run all" scenario.
                     (request.include ?? this.testController.items).forEach((i: TestItem) => {
                         const w = this.workspaceService.getWorkspaceFolder(i.uri);
+
                         if (w?.uri.fsPath === workspace.uri.fsPath) {
                             testItems.push(i);
                         }
                     });
 
                     const settings = this.configSettings.getSettings(workspace.uri);
+
                     if (testItems.length > 0) {
                         const testAdapter =
                             this.testAdapters.get(workspace.uri) ||
@@ -458,6 +490,7 @@ export class PythonTestController implements ITestController, IExtensionSingleAc
                                 const details = testAdapter.resultResolver.detailedCoverageMap.get(
                                     fileCoverage.uri.fsPath,
                                 );
+
                                 if (details === undefined) {
                                     // given file has no detailed coverage data
                                     return Promise.resolve([]);
@@ -538,6 +571,7 @@ export class PythonTestController implements ITestController, IExtensionSingleAc
             runInstance.appendOutput(`Finished running tests!\r\n`);
             runInstance.end();
             dispose.dispose();
+
             if (unconfiguredWorkspaces.length > 0) {
                 this.runWithoutConfigurationEvent.fire(unconfiguredWorkspaces);
             }
@@ -547,6 +581,7 @@ export class PythonTestController implements ITestController, IExtensionSingleAc
     private invalidateTests(uri: Uri) {
         this.testController.items.forEach((root) => {
             const item = getNodeByUri(root, uri);
+
             if (item && !!item.invalidateResults) {
                 // Minimize invalidating to test case nodes for the test file where
                 // the change occurred
@@ -557,6 +592,7 @@ export class PythonTestController implements ITestController, IExtensionSingleAc
 
     private watchForSettingsChanges(workspace: WorkspaceFolder): void {
         const pattern = new RelativePattern(workspace, '**/{settings.json,pytest.ini,pyproject.toml,setup.cfg}');
+
         const watcher = this.workspaceService.createFileSystemWatcher(pattern);
         this.disposables.push(watcher);
 
@@ -622,6 +658,7 @@ export class PythonTestController implements ITestController, IExtensionSingleAc
 
     private surfaceErrorNode(workspaceUri: Uri, message: string, testProvider: TestProvider): void {
         let errorNode = this.testController.items.get(`DiscoveryError:${workspaceUri.fsPath}`);
+
         if (errorNode === undefined) {
             const options = buildErrorNodeOptions(workspaceUri, message, testProvider);
             errorNode = createErrorTestItem(this.testController, options);

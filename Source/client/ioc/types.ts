@@ -47,14 +47,17 @@ export interface IServiceManager extends IDisposable {
 		from: interfaces.ServiceIdentifier<T1>,
 		to: interfaces.ServiceIdentifier<T2>,
 	): void;
+
 	get<T>(
 		serviceIdentifier: interfaces.ServiceIdentifier<T>,
 		name?: string | number | symbol,
 	): T;
+
 	tryGet<T>(
 		serviceIdentifier: interfaces.ServiceIdentifier<T>,
 		name?: string | number | symbol,
 	): T | undefined;
+
 	getAll<T>(
 		serviceIdentifier: interfaces.ServiceIdentifier<T>,
 		name?: string | number | symbol,
@@ -82,10 +85,12 @@ export interface IServiceContainer {
 		serviceIdentifier: interfaces.ServiceIdentifier<T>,
 		name?: string | number | symbol,
 	): T;
+
 	getAll<T>(
 		serviceIdentifier: interfaces.ServiceIdentifier<T>,
 		name?: string | number | symbol,
 	): T[];
+
 	tryGet<T>(
 		serviceIdentifier: interfaces.ServiceIdentifier<T>,
 		name?: string | number | symbol,

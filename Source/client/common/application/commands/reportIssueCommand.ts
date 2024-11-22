@@ -86,28 +86,36 @@ export class ReportIssueCommandHandler
 	public async openReportIssue(): Promise<void> {
 		const settings: IPythonSettings =
 			this.configurationService.getSettings();
+
 		const argSettings = JSON.parse(
 			await fs.readFile(this.argSettingsPath, "utf8"),
 		);
+
 		let userSettings = "";
+
 		const keys: [keyof IPythonSettings] = Object.keys(settings) as [
 			keyof IPythonSettings,
 		];
 		keys.forEach((property) => {
 			const argSetting = argSettings[property];
+
 			if (argSetting) {
 				if (typeof argSetting === "object") {
 					let propertyHeaderAdded = false;
+
 					const argSettingsDict = settings[
 						property
 					] as unknown as Record<string, unknown>;
+
 					if (typeof argSettingsDict === "object") {
 						Object.keys(argSetting).forEach((item) => {
 							const prop = argSetting[item];
+
 							if (prop) {
 								const defaultValue = this.getDefaultValue(
 									`${property}.${item}`,
 								);
+
 								if (
 									defaultValue === undefined ||
 									!isEqual(
@@ -142,6 +150,7 @@ export class ReportIssueCommandHandler
 					}
 				} else {
 					const defaultValue = this.getDefaultValue(property);
+
 					if (
 						defaultValue === undefined ||
 						!isEqual(defaultValue, settings[property])
@@ -161,22 +170,29 @@ export class ReportIssueCommandHandler
 				}
 			}
 		});
+
 		const template = await fs.readFile(this.templatePath, "utf8");
+
 		const userTemplate = await fs.readFile(
 			this.userDataTemplatePath,
 			"utf8",
 		);
+
 		const interpreter =
 			await this.interpreterService.getActiveInterpreter();
+
 		const pythonVersion = interpreter?.version?.raw ?? "";
+
 		const languageServer =
 			this.workspaceService
 				.getConfiguration("python")
 				.get<string>("languageServer") || "Not Found";
+
 		const virtualEnvKind = interpreter?.envType || EnvironmentType.Unknown;
 
 		const hasMultipleFolders =
 			(this.workspaceService.workspaceFolders?.length ?? 0) > 1;
+
 		const hasMultipleFoldersText =
 			hasMultipleFolders && userSettings !== ""
 				? `Multiroot scenario, following user settings may not apply:${os.EOL}`
@@ -223,11 +239,13 @@ export class ReportIssueCommandHandler
 			undefined,
 			this.workspaceService,
 		).uri;
+
 		const systemVariables = new SystemVariables(
 			resource,
 			undefined,
 			this.workspaceService,
 		);
+
 		return systemVariables.resolveAny(
 			this.packageJSONSettings[`python.${settingKey}`]?.default,
 		);

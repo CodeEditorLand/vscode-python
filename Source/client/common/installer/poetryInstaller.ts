@@ -62,9 +62,11 @@ export class PoetryInstaller extends ModuleInstaller {
 		const interpreter = await this.serviceContainer
 			.get<IInterpreterService>(IInterpreterService)
 			.getActiveInterpreter(resource);
+
 		const workspaceFolder = resource
 			? this.workspaceService.getWorkspaceFolder(resource)
 			: undefined;
+
 		if (
 			!interpreter ||
 			!workspaceFolder ||
@@ -87,7 +89,9 @@ export class PoetryInstaller extends ModuleInstaller {
 		const execPath = this.configurationService.getSettings(
 			isResource(resource) ? resource : undefined,
 		).poetryPath;
+
 		const args = ["add", "--group", "dev", moduleName];
+
 		return {
 			args,
 			execPath,

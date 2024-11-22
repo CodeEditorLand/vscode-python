@@ -46,10 +46,12 @@ export class DebugEnvironmentVariablesHelper
 			args.env && Object.keys(args.env).length > 0
 				? ({ ...args.env } as Record<string, string>)
 				: ({} as Record<string, string>);
+
 		const envFileVars = await this.envParser.parseFile(
 			args.envFile,
 			debugLaunchEnvVars,
 		);
+
 		const env = envFileVars ? { ...envFileVars } : {};
 
 		// "overwrite: true" to ensure that debug-configuration env variable values
@@ -57,6 +59,7 @@ export class DebugEnvironmentVariablesHelper
 		this.envParser.mergeVariables(debugLaunchEnvVars, env, {
 			overwrite: true,
 		});
+
 		if (baseVars) {
 			this.envParser.mergeVariables(baseVars, env, { mergeAll: true });
 		}
@@ -121,6 +124,7 @@ export class DebugEnvironmentVariablesHelper
 
 export function getProgram(): string | undefined {
 	const activeTextEditor = getActiveTextEditor();
+
 	if (
 		activeTextEditor &&
 		activeTextEditor.document.languageId === PYTHON_LANGUAGE

@@ -30,6 +30,7 @@ export interface IComponentAdapter {
 		query?: PythonLocatorQuery,
 		options?: TriggerRefreshOptions,
 	): Promise<void>;
+
 	getRefreshPromise(
 		options?: GetRefreshEnvironmentsOptions,
 	): Promise<void> | undefined;
@@ -40,6 +41,7 @@ export interface IComponentAdapter {
 	hasInterpreters(
 		filter?: (e: PythonEnvironment) => Promise<boolean>,
 	): Promise<boolean>;
+
 	getInterpreters(
 		resource?: Uri,
 		source?: PythonEnvSource[],
@@ -80,16 +82,21 @@ export const ICondaService = Symbol("ICondaService");
  */
 export interface ICondaService {
 	getCondaFile(forShellExecution?: boolean): Promise<string>;
+
 	getCondaInfo(): Promise<CondaInfo | undefined>;
 	isCondaAvailable(): Promise<boolean>;
+
 	getCondaVersion(): Promise<SemVer | undefined>;
+
 	getInterpreterPathForEnvironment(
 		condaEnv: CondaEnvironmentInfo,
 	): Promise<string | undefined>;
+
 	getCondaFileFromInterpreter(
 		interpreterPath?: string,
 		envName?: string,
 	): Promise<string | undefined>;
+
 	getActivationScriptFromInterpreter(
 		interpreterPath?: string,
 		envName?: string,
@@ -105,6 +112,7 @@ export interface IInterpreterService {
 		options?: TriggerRefreshOptions,
 	): Promise<void>;
 	readonly refreshPromise: Promise<void> | undefined;
+
 	getRefreshPromise(
 		options?: GetRefreshEnvironmentsOptions,
 	): Promise<void> | undefined;
@@ -119,14 +127,17 @@ export interface IInterpreterService {
 	hasInterpreters(
 		filter?: (e: PythonEnvironment) => Promise<boolean>,
 	): Promise<boolean>;
+
 	getInterpreters(resource?: Uri): PythonEnvironment[];
 	/**
 	 * @deprecated Only exists for old Jupyter integration.
 	 */
 	getAllInterpreters(resource?: Uri): Promise<PythonEnvironment[]>;
+
 	getActiveInterpreter(
 		resource?: Uri,
 	): Promise<PythonEnvironment | undefined>;
+
 	getInterpreterDetails(
 		pythonPath: string,
 		resoure?: Uri,
@@ -146,13 +157,16 @@ export interface IInterpreterDisplay {
 export const IInterpreterHelper = Symbol("IInterpreterHelper");
 export interface IInterpreterHelper {
 	getActiveWorkspaceUri(resource: Resource): WorkspacePythonPath | undefined;
+
 	getInterpreterInformation(
 		pythonPath: string,
 	): Promise<undefined | Partial<PythonEnvironment>>;
 	isMacDefaultPythonPath(pythonPath: string): Promise<boolean>;
+
 	getInterpreterTypeDisplayName(
 		interpreterType: EnvironmentType,
 	): string | undefined;
+
 	getBestInterpreter(
 		interpreters?: PythonEnvironment[],
 	): PythonEnvironment | undefined;

@@ -20,6 +20,7 @@ import { BaseTerminalActivator } from "./base";
 export class TerminalActivator implements ITerminalActivator {
 	protected baseActivator!: ITerminalActivator;
 	private pendingActivations = new WeakMap<Terminal, Promise<boolean>>();
+
 	constructor(
 		@inject(ITerminalHelper) readonly helper: ITerminalHelper,
 		@multiInject(ITerminalActivationHandler)
@@ -36,11 +37,13 @@ export class TerminalActivator implements ITerminalActivator {
 		options?: TerminalActivationOptions,
 	): Promise<boolean> {
 		let promise = this.pendingActivations.get(terminal);
+
 		if (promise) {
 			return promise;
 		}
 		promise = this.activateEnvironmentInTerminalImpl(terminal, options);
 		this.pendingActivations.set(terminal, promise);
+
 		return promise;
 	}
 	private async activateEnvironmentInTerminalImpl(
@@ -50,9 +53,11 @@ export class TerminalActivator implements ITerminalActivator {
 		const settings = this.configurationService.getSettings(
 			options?.resource,
 		);
+
 		const activateEnvironment =
 			settings.terminal.activateEnvironment &&
 			!inTerminalEnvVarExperiment(this.experimentService);
+
 		if (!activateEnvironment || options?.hideFromUser) {
 			return false;
 		}
@@ -72,6 +77,7 @@ export class TerminalActivator implements ITerminalActivator {
 				)
 				.ignoreErrors(),
 		);
+
 		return activated;
 	}
 	protected initialize() {

@@ -43,6 +43,7 @@ Things we are ignoring the following for simplicity/performance:
 */
 const ImportRegEx =
 	/^\s*(from (?<fromImport>\w+)(?:\.\w+)* import \w+(?:, \w+)*(?: as \w+)?|import (?<importImport>\w+(?:, \w+)*)(?: as \w+)?)$/;
+
 const MAX_DOCUMENT_LINES = 1000;
 
 // Capture isTestExecution on module load so that a test can turn it off and still
@@ -111,6 +112,7 @@ export class ImportTracker implements IExtensionSingleActivationService {
 	private scheduleCheck(file: string, check: () => void) {
 		// If already scheduled, cancel.
 		const currentTimeout = this.pendingChecks.get(file);
+
 		if (currentTimeout) {
 			clearTimeout(currentTimeout);
 			this.pendingChecks.delete(file);
@@ -128,6 +130,7 @@ export class ImportTracker implements IExtensionSingleActivationService {
 
 	private checkDocument(document: TextDocument) {
 		this.pendingChecks.delete(document.fileName);
+
 		const lines = getDocumentLines(document);
 		this.lookForImports(lines);
 	}
@@ -150,6 +153,7 @@ export class ImportTracker implements IExtensionSingleActivationService {
 		try {
 			for (const s of lines) {
 				const match = s ? ImportRegEx.exec(s) : null;
+
 				if (match !== null && match.groups !== undefined) {
 					if (match.groups.fromImport !== undefined) {
 						// `from pkg ...`
@@ -182,9 +186,11 @@ export function getDocumentLines(
 	const array = Array<string>(
 		Math.min(document.lineCount, MAX_DOCUMENT_LINES),
 	).fill("");
+
 	return array
 		.map((_a: string, i: number) => {
 			const line = document.lineAt(i);
+
 			if (line && !line.isEmptyOrWhitespace) {
 				return line.text;
 			}

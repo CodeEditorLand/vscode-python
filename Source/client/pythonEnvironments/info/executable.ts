@@ -20,7 +20,9 @@ export async function getExecutablePath(
 ): Promise<string | undefined> {
 	try {
 		const [args, parse] = getExecutable();
+
 		const info = copyPythonExecInfo(python, args);
+
 		const argv = [info.command, ...info.args];
 		// Concat these together to make a set of quoted strings
 		const quoted = argv.reduce(
@@ -30,14 +32,18 @@ export async function getExecutablePath(
 					: `${c.toCommandArgumentForPythonExt()}`,
 			"",
 		);
+
 		const result = await shellExec(quoted, { timeout: 15000 });
+
 		const executable = parse(result.stdout.trim());
+
 		if (executable === "") {
 			throw new Error(`${quoted} resulted in empty stdout`);
 		}
 		return executable;
 	} catch (ex) {
 		traceError(ex);
+
 		return undefined;
 	}
 }

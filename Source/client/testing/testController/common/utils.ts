@@ -25,11 +25,13 @@ import { EXTENSION_ROOT_DIR } from '../../../constants';
 
 export function fixLogLines(content: string): string {
     const lines = content.split(/\r?\n/g);
+
     return `${lines.join('\r\n')}\r\n`;
 }
 
 export function fixLogLinesNoTrailing(content: string): string {
     const lines = content.split(/\r?\n/g);
+
     return `${lines.join('\r\n')}`;
 }
 export interface IJSONRPCData {
@@ -79,7 +81,9 @@ export function extractJsonPayload(rawData: string, uuids: Array<string>): Extra
 
     // separate out the data within context length of the given payload from the remaining data in the buffer
     const rpcContent: IJSONRPCData = ExtractJsonRPCData(payloadLength, rpcHeaders.remainingRawData);
+
     const cleanedJsonData = rpcContent.extractedJSON;
+
     const { remainingRawData } = rpcContent;
 
     // if the given payload has the complete json, process it otherwise wait for the rest in the buffer
@@ -119,15 +123,21 @@ export function parseJsonRPCHeadersAndData(rawData: string): ParsedRPCHeadersAnd
      * remaining raw data after the headers.
      */
     const lines = rawData.split('\n');
+
     let remainingRawData = '';
+
     const headerMap = new Map<string, string>();
+
     for (let i = 0; i < lines.length; i += 1) {
         const line = lines[i];
+
         if (line === '') {
             remainingRawData = lines.slice(i + 1).join('\n');
+
             break;
         }
         const [key, value] = line.split(':');
+
         if (value && value.trim()) {
             if ([JSONRPC_UUID_HEADER, JSONRPC_CONTENT_LENGTH_HEADER, JSONRPC_CONTENT_TYPE_HEADER].includes(key)) {
                 headerMap.set(key.trim(), value.trim());
@@ -156,8 +166,11 @@ export function ExtractJsonRPCData(payloadLength: string | undefined, rawData: s
      * @returns {IJSONRPCContent} An object containing the extracted JSON content and any remaining raw data.
      */
     const length = parseInt(payloadLength ?? '0', 10);
+
     const data = rawData.slice(0, length);
+
     const remainingRawData = rawData.slice(length);
+
     return {
         extractedJSON: data,
         remainingRawData,
@@ -166,6 +179,7 @@ export function ExtractJsonRPCData(payloadLength: string | undefined, rawData: s
 
 export function pythonTestAdapterRewriteEnabled(serviceContainer: IServiceContainer): boolean {
     const experiment = serviceContainer.get<IExperimentService>(IExperimentService);
+
     return experiment.inExperimentSync(EnableTestAdapterRewrite.experiment);
 }
 
@@ -182,9 +196,11 @@ interface ExecutionResultMessage extends Message {
 export async function writeTestIdsFile(testIds: string[]): Promise<string> {
     // temp file name in format of test-ids-<randomSuffix>.txt
     const randomSuffix = crypto.randomBytes(10).toString('hex');
+
     const tempName = `test-ids-${randomSuffix}.txt`;
     // create temp file
     let tempFileName: string;
+
     try {
         traceLog('Attempting to use temp directory for test ids file, file name:', tempName);
         tempFileName = path.join(os.tmpdir(), tempName);
@@ -209,11 +225,14 @@ export async function startRunResultNamedPipe(
     cancellationToken?: CancellationToken,
 ): Promise<string> {
     traceVerbose('Starting Test Result named pipe');
+
     const pipeName: string = generateRandomPipeName('python-test-results');
 
     const reader = await createReaderPipe(pipeName, cancellationToken);
     traceVerbose(`Test Results named pipe ${pipeName} connected`);
+
     let disposables: Disposable[] = [];
+
     const disposable = new Disposable(() => {
         traceVerbose(`Test Results named pipe ${pipeName} disposed`);
         disposables.forEach((d) => d.dispose());
@@ -260,11 +279,15 @@ export async function startDiscoveryNamedPipe(
 ): Promise<string> {
     traceVerbose('Starting Test Discovery named pipe');
     // const pipeName: string = '/Users/eleanorboyd/testingFiles/inc_dec_example/temp33.txt';
+
     const pipeName: string = generateRandomPipeName('python-test-discovery');
+
     const reader = await createReaderPipe(pipeName, cancellationToken);
 
     traceVerbose(`Test Discovery named pipe ${pipeName} connected`);
+
     let disposables: Disposable[] = [];
+
     const disposable = new Disposable(() => {
         traceVerbose(`Test Discovery named pipe ${pipeName} disposed`);
         disposables.forEach((d) => d.dispose());
@@ -294,6 +317,7 @@ export async function startDiscoveryNamedPipe(
             traceError(`Test Discovery named pipe ${pipeName} error:`, error);
         }),
     );
+
     return pipeName;
 }
 
@@ -336,26 +360,32 @@ export async function startTestIdServer(testIds: string[]): Promise<number> {
 
     // Start the server and wait until it is listening
     let returnPort = 0;
+
     try {
         await startServer()
             .then((assignedPort) => {
                 traceVerbose(`Server started for pytest test ids server and listening on port ${assignedPort}`);
+
                 returnPort = assignedPort;
             })
             .catch((error) => {
                 traceError('Error starting server for pytest test ids server:', error);
+
                 return 0;
             })
             .finally(() => returnPort);
+
         return returnPort;
     } catch {
         traceError('Error starting server for pytest test ids server, cannot get port.');
+
         return returnPort;
     }
 }
 
 export function buildErrorNodeOptions(uri: Uri, message: string, testType: string): ErrorTestItemOptions {
     const labelText = testType === 'pytest' ? 'pytest Discovery Error' : 'Unittest Discovery Error';
+
     return {
         id: `DiscoveryError:${uri.fsPath}`,
         label: `${labelText} [${path.basename(uri.fsPath)}]`,
@@ -468,7 +498,9 @@ export function splitTestNameWithRegex(testName: string): [string, string] {
     // If a match is found, return the parent test name and the subtest (whichever was captured between parenthesis or square brackets).
     // Otherwise, return the entire testName for the parent and entire testName for the subtest.
     const regex = /^(.*?) ([\[(].*[\])])$/;
+
     const match = testName.match(regex);
+
     if (match) {
         return [match[1].trim(), match[2] || match[3] || testName];
     }
@@ -486,6 +518,7 @@ export function addValueIfKeyNotExist(args: string[], key: string, value: string
     for (const arg of args) {
         if (arg.includes(key)) {
             traceInfo(`arg: ${key} already exists in args, not adding.`);
+
             return args;
         }
     }
@@ -530,14 +563,17 @@ export async function hasSymlinkParent(currentPath: string): Promise<boolean> {
         }
         // Check if the parent directory is a symlink
         const stats = await fs.promises.lstat(parentDirectory);
+
         if (stats.isSymbolicLink()) {
             traceLog(`Symlink found at: ${parentDirectory}`);
+
             return true;
         }
         // Recurse up the directory tree
         return await hasSymlinkParent(parentDirectory);
     } catch (error) {
         console.error('Error checking symlinks:', error);
+
         return false;
     }
 }

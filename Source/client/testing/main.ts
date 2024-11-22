@@ -51,6 +51,7 @@ export class TestingService implements ITestingService {
 		product: Product,
 	): TestSettingsPropertyNames {
 		const helper = this.serviceContainer.get<ITestsHelper>(ITestsHelper);
+
 		return helper.getSettingsPropertyNames(product);
 	}
 }
@@ -130,6 +131,7 @@ export class UnitTestManagementService implements IExtensionActivationService {
 				async (unconfigured: WorkspaceFolder[]) => {
 					const workspaces =
 						this.workspaceService.workspaceFolders ?? [];
+
 					if (unconfigured.length === workspaces.length) {
 						const commandManager =
 							this.serviceContainer.get<ICommandManager>(
@@ -145,10 +147,12 @@ export class UnitTestManagementService implements IExtensionActivationService {
 							this.serviceContainer.get<IApplicationShell>(
 								IApplicationShell,
 							);
+
 						const response = await app.showInformationMessage(
 							Testing.testNotConfigured,
 							Testing.configureTests,
 						);
+
 						if (response === Testing.configureTests) {
 							await commandManager.executeCommand(
 								constants.Commands.Tests_Configure,
@@ -180,6 +184,7 @@ export class UnitTestManagementService implements IExtensionActivationService {
 		eventArgs: ConfigurationChangeEvent,
 	) {
 		const workspaces = this.workspaceService.workspaceFolders ?? [];
+
 		const changedWorkspaces: Uri[] = workspaces
 			.filter((w) =>
 				eventArgs.affectsConfiguration("python.testing", w.uri),
@@ -196,6 +201,7 @@ export class UnitTestManagementService implements IExtensionActivationService {
 	@captureTelemetry(EventName.UNITTEST_CONFIGURE, undefined, false)
 	private async configureTests(resource?: Uri) {
 		let wkspace: Uri | undefined;
+
 		if (resource) {
 			const wkspaceFolder =
 				this.workspaceService.getWorkspaceFolder(resource);
@@ -210,13 +216,16 @@ export class UnitTestManagementService implements IExtensionActivationService {
 		}
 		const interpreterService =
 			this.serviceContainer.get<IInterpreterService>(IInterpreterService);
+
 		const commandManager =
 			this.serviceContainer.get<ICommandManager>(ICommandManager);
+
 		if (!(await interpreterService.getActiveInterpreter(wkspace))) {
 			commandManager.executeCommand(
 				constants.Commands.TriggerEnvironmentSelection,
 				wkspace,
 			);
+
 			return;
 		}
 		const configurationService =
@@ -260,6 +269,7 @@ export class UnitTestManagementService implements IExtensionActivationService {
 					const wkspaceFolder =
 						this.workspaceService.getWorkspaceFolder(resource) ||
 						this.workspaceService.workspaceFolders?.at(0);
+
 					if (!wkspaceFolder) {
 						return undefined;
 					}
@@ -268,6 +278,7 @@ export class UnitTestManagementService implements IExtensionActivationService {
 						this.serviceContainer.get<ITestConfigurationService>(
 							ITestConfigurationService,
 						);
+
 					if (
 						configurationService.hasConfiguredTests(
 							wkspaceFolder.uri,

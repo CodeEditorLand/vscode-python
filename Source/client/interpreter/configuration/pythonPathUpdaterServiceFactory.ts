@@ -10,6 +10,7 @@ import { IPythonPathUpdaterService, IPythonPathUpdaterServiceFactory } from './t
 @injectable()
 export class PythonPathUpdaterServiceFactory implements IPythonPathUpdaterServiceFactory {
     private readonly interpreterPathService: IInterpreterPathService;
+
     constructor(@inject(IServiceContainer) serviceContainer: IServiceContainer) {
         this.interpreterPathService = serviceContainer.get<IInterpreterPathService>(IInterpreterPathService);
     }

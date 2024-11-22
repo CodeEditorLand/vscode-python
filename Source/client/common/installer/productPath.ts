@@ -16,6 +16,7 @@ import { IProductPathService } from "./types";
 export abstract class BaseProductPathsService implements IProductPathService {
 	protected readonly configService: IConfigurationService;
 	protected readonly productInstaller: IInstaller;
+
 	constructor(
 		@inject(IServiceContainer)
 		protected serviceContainer: IServiceContainer,
@@ -31,6 +32,7 @@ export abstract class BaseProductPathsService implements IProductPathService {
 	): string;
 	public isExecutableAModule(product: Product, resource?: Uri): boolean {
 		let moduleName: string | undefined;
+
 		try {
 			moduleName =
 				this.productInstaller.translateProductToModuleName(product);
@@ -63,12 +65,15 @@ export class TestFrameworkProductPathService extends BaseProductPathsService {
 	): string {
 		const testHelper =
 			this.serviceContainer.get<ITestingService>(ITestingService);
+
 		const settingsPropNames = testHelper.getSettingsPropertyNames(product);
+
 		if (!settingsPropNames.pathName) {
 			// E.g. in the case of UnitTests we don't allow customizing the paths.
 			return this.productInstaller.translateProductToModuleName(product);
 		}
 		const settings = this.configService.getSettings(resource);
+
 		return settings.testing[settingsPropNames.pathName] as string;
 	}
 }

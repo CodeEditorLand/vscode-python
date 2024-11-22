@@ -25,6 +25,7 @@ export class VariableRequester {
 		const scriptLines = (await getContentsOfVariablesScript()).split(
 			/(?:\r\n|\n)/,
 		);
+
 		if (parent) {
 			const printCall = `import json;return json.dumps(getAllChildrenDescriptions(\'${
 				parent.root
@@ -41,6 +42,7 @@ export class VariableRequester {
 		}
 
 		const script = wrapScriptInFunction(scriptLines);
+
 		const result = await this.pythonServer.executeSilently(script);
 
 		if (result?.output && !token.isCancellationRequested) {
@@ -64,5 +66,6 @@ async function getContentsOfVariablesScript(): Promise<string> {
 	}
 	const contents = await fsapi.readFile(VARIABLE_SCRIPT_LOCATION, "utf-8");
 	VariableRequester.scriptContents = contents;
+
 	return VariableRequester.scriptContents;
 }

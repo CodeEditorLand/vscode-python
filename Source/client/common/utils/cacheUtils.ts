@@ -12,6 +12,7 @@ export function getGlobalCacheStore() {
 
 export function getCacheKeyFromFunctionArgs(keyPrefix: string, fnArgs: any[]): string {
     const argsKey = fnArgs.map((arg) => `${JSON.stringify(arg)}`).join('-Arg-Separator-');
+
     return `KeyPrefix=${keyPrefix}-Args=${argsKey}`;
 }
 
@@ -34,6 +35,7 @@ export class InMemoryCache<T> {
     public get hasData() {
         if (!this.cacheData || this.hasExpired(this.cacheData.expiry)) {
             this.cacheData = undefined;
+
             return false;
         }
         return true;

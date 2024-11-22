@@ -23,7 +23,9 @@ export function combineIterators<I>(
 	iterators: IPythonEnvsIterator<I>[],
 ): IPythonEnvsIterator<I> {
 	const result: IPythonEnvsIterator<I> = chain(iterators);
+
 	const events = iterators.map((it) => it.onUpdated).filter((v) => v);
+
 	if (!events || events.length === 0) {
 		// There are no sub-events, so we leave `onUpdated` undefined.
 		return result;
@@ -36,6 +38,7 @@ export function combineIterators<I>(
 		) => any,
 	) => {
 		const disposables = new Disposables();
+
 		let numActive = events.length;
 		events.forEach((event) => {
 			const disposable = event!(
@@ -44,6 +47,7 @@ export function combineIterators<I>(
 					if (isProgressEvent(e)) {
 						if (e.stage === ProgressReportStage.discoveryFinished) {
 							numActive -= 1;
+
 							if (numActive === 0) {
 								// All the sub-events are done so we're done.
 								handleEvent({
@@ -60,8 +64,10 @@ export function combineIterators<I>(
 			);
 			disposables.push(disposable);
 		});
+
 		return disposables;
 	};
+
 	return result;
 }
 
@@ -86,6 +92,7 @@ export class Locators<I = PythonEnvInfo>
 
 	public iterEnvs(query?: PythonLocatorQuery): IPythonEnvsIterator<I> {
 		const iterators = this.locators.map((loc) => loc.iterEnvs(query));
+
 		return combineIterators(iterators);
 	}
 }

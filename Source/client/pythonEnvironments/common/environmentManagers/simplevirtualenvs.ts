@@ -93,7 +93,9 @@ export async function isVirtualenvEnvironment(
 	// |__ activate, activate.*  <--- check if any of these files exist
 	// |__ python  <--- interpreterPath
 	const directory = path.dirname(interpreterPath);
+
 	const files = await fsapi.readdir(directory);
+
 	const regex = /^activate(\.([A-z]|\d)+)?$/i;
 
 	return files.find((file) => regex.test(file)) !== undefined;
@@ -109,6 +111,7 @@ async function getDefaultVirtualenvwrapperDir(): Promise<string> {
 		// ~/Envs with uppercase 'E' is the default home dir for
 		// virtualEnvWrapper.
 		const envs = path.join(homeDir, "Envs");
+
 		if (await pathExists(envs)) {
 			return envs;
 		}
@@ -120,6 +123,7 @@ function getWorkOnHome(): Promise<string> {
 	// The WORKON_HOME variable contains the path to the root directory of all virtualenvwrapper environments.
 	// If the interpreter path belongs to one of them then it is a virtualenvwrapper type of environment.
 	const workOnHome = getEnvironmentVariable("WORKON_HOME");
+
 	if (workOnHome) {
 		return Promise.resolve(workOnHome);
 	}
@@ -158,6 +162,7 @@ export async function getPythonVersionFromPyvenvCfg(
 	interpreterPath: string,
 ): Promise<PythonVersion> {
 	const configPaths = getPyvenvConfigPathsFrom(interpreterPath);
+
 	let version = UNKNOWN_PYTHON_VERSION;
 
 	// We want to check each of those locations in the order. There is no need to look at
@@ -170,9 +175,12 @@ export async function getPythonVersionFromPyvenvCfg(
 				const pythonVersions = lines
 					.map((line) => {
 						const parts = line.split("=");
+
 						if (parts.length === 2) {
 							const name = parts[0].toLowerCase().trim();
+
 							const value = parts[1].trim();
+
 							if (name === "version") {
 								try {
 									return parseVersion(value);
@@ -226,7 +234,9 @@ export async function getPythonVersionFromPyvenvCfg(
  */
 function parseVersionInfo(versionInfoStr: string): PythonVersion {
 	let version: PythonVersion;
+
 	let after: string;
+
 	try {
 		[version, after] = parseBasicVersion(versionInfoStr);
 	} catch {

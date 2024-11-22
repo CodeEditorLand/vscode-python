@@ -44,8 +44,10 @@ export interface CreateEnvironmentTriggerOptions {
 
 async function createEnvironmentCheckForWorkspace(uri: Uri): Promise<void> {
 	const workspace = getWorkspaceFolder(uri);
+
 	if (!workspace) {
 		traceInfo(`CreateEnv Trigger - Workspace not found for ${uri.fsPath}`);
+
 		return;
 	}
 
@@ -76,12 +78,14 @@ async function createEnvironmentCheckForWorkspace(uri: Uri): Promise<void> {
 			result: "criteria-not-met",
 		});
 		traceInfo(`CreateEnv Trigger - Skipping for ${uri.fsPath}`);
+
 		return;
 	}
 
 	sendTelemetryEvent(EventName.ENVIRONMENT_CHECK_RESULT, undefined, {
 		result: "criteria-met",
 	});
+
 	const selection = await showInformationMessage(
 		CreateEnv.Trigger.workspaceTriggerMessage,
 		CreateEnv.Trigger.createEnvironment,
@@ -115,6 +119,7 @@ function runOnceWorkspaceCheck(
 	traceVerbose(
 		"CreateEnv Trigger - skipping this because it was already run",
 	);
+
 	return Promise.resolve();
 }
 
@@ -145,6 +150,7 @@ export async function triggerCreateEnvironmentCheck(
 			result: "no-uri",
 		});
 		traceVerbose("CreateEnv Trigger - Skipping No URI provided");
+
 		return;
 	}
 

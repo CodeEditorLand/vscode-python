@@ -74,6 +74,7 @@ export async function parseCondaInfo(
 	// The root of the conda environment is itself a Python interpreter
 	// envs reported as e.g.: /Users/bob/miniconda3/envs/someEnv.
 	const envs = Array.isArray(info.envs) ? info.envs : [];
+
 	if (info.default_prefix && info.default_prefix.length > 0) {
 		envs.push(info.default_prefix);
 	}
@@ -85,6 +86,7 @@ export async function parseCondaInfo(
 			return undefined;
 		}
 		const details = await getPythonInfo(pythonPath);
+
 		if (!details) {
 			return undefined;
 		}
@@ -189,10 +191,12 @@ export async function isCondaEnvironment(
  */
 export async function getCondaEnvironmentsTxt(): Promise<string[]> {
 	const homeDir = getUserHomeDir();
+
 	if (!homeDir) {
 		return [];
 	}
 	const environmentsTxt = path.join(homeDir, ".conda", "environments.txt");
+
 	return [environmentsTxt];
 }
 
@@ -210,6 +214,7 @@ export async function getPythonVersionFromConda(
 	const configPaths = getCondaMetaPaths(interpreterPath).map((p) =>
 		path.join(p, "history"),
 	);
+
 	const pattern = /\:python-(([\d\.a-z]?)+)/;
 
 	// We want to check each of those locations in the order. There is no need to look at
@@ -241,6 +246,7 @@ export async function getPythonVersionFromConda(
 
 				if (pythonVersionStrings.length > 0) {
 					const last = pythonVersionStrings.length - 1;
+
 					return parseVersion(pythonVersionStrings[last].trim());
 				}
 			} catch (ex) {
@@ -264,13 +270,16 @@ export function getCondaInterpreterPath(condaEnvironmentPath: string): string {
 		getOSType() === OSType.Windows
 			? "python.exe"
 			: path.join("bin", "python");
+
 	const filePath = path.join(condaEnvironmentPath, relativePath);
+
 	return filePath;
 }
 
 // Minimum version number of conda required to be able to use 'conda run' with '--no-capture-output' flag.
 export const CONDA_RUN_VERSION = "4.9.0";
 export const CONDA_ACTIVATION_TIMEOUT = 45000;
+
 const CONDA_GENERAL_TIMEOUT = 45000;
 
 /** Wraps the "conda" utility, and exposes its functionality.
@@ -350,8 +359,11 @@ export class Conda {
 		shellPath?: string,
 	): Promise<Conda | undefined> {
 		traceVerbose(`Searching for conda.`);
+
 		const home = getUserHomeDir();
+
 		let customCondaPath: string | undefined = "conda";
+
 		try {
 			customCondaPath = getPythonSetting<string>(CONDAPATH_SETTING_KEY);
 		} catch (ex) {
@@ -368,15 +380,18 @@ export class Conda {
 			}
 			// Check unqualified filename first, in case it's on PATH.
 			yield "conda";
+
 			if (getOSType() === OSType.Windows) {
 				yield* getCandidatesFromRegistry();
 			}
 			yield* getCandidatesFromKnownPaths();
+
 			yield* getCandidatesFromEnvironmentsTxt();
 		}
 
 		async function* getCandidatesFromRegistry() {
 			const interps = await getRegistryInterpreters();
+
 			const candidates = interps
 				.filter(
 					(interp) =>
@@ -389,6 +404,7 @@ export class Conda {
 						suffix,
 					),
 				);
+
 			yield* candidates;
 		}
 
@@ -399,10 +415,12 @@ export class Conda {
 			// and the glob module doesn't understand globs with drive letters in them, producing wrong results
 			// for "C:/*" etc.
 			const prefixes: string[] = [];
+
 			if (getOSType() === OSType.Windows) {
 				const programData =
 					getEnvironmentVariable("PROGRAMDATA") || "C:\\ProgramData";
 				prefixes.push(programData);
+
 				if (home) {
 					const localAppData =
 						getEnvironmentVariable("LOCALAPPDATA") ||
@@ -416,6 +434,7 @@ export class Conda {
 					"/opt",
 					"/opt/homebrew/bin",
 				);
+
 				if (home) {
 					prefixes.push(home, path.join(home, "opt"));
 				}
@@ -423,6 +442,7 @@ export class Conda {
 
 			for (const prefix of prefixes) {
 				let items: string[] | undefined;
+
 				try {
 					items = await fsapi.readdir(prefix);
 				} catch (ex) {
@@ -445,6 +465,7 @@ export class Conda {
 			}
 
 			let contents: string;
+
 			try {
 				contents = await fsapi.readFile(
 					path.join(home, ".conda", "environments.txt"),
@@ -466,12 +487,14 @@ export class Conda {
 
 		async function getCondaBatFile(file: string) {
 			const fileDir = path.dirname(file);
+
 			const possibleBatch = path.join(
 				fileDir,
 				"..",
 				"condabin",
 				"conda.bat",
 			);
+
 			if (await pathExists(possibleBatch)) {
 				return possibleBatch;
 			}
@@ -481,9 +504,12 @@ export class Conda {
 		// Probe the candidates, and pick the first one that exists and does what we need.
 		for await (const condaPath of getCandidates()) {
 			traceVerbose(`Probing conda binary: ${condaPath}`);
+
 			let conda = new Conda(condaPath, undefined, shellPath);
+
 			try {
 				await conda.getInfo();
+
 				if (
 					getOSType() === OSType.Windows &&
 					(isTestExecution() || condaPath !== customCondaPath)
@@ -491,6 +517,7 @@ export class Conda {
 					// Prefer to use .bat files over .exe on windows as that is what cmd works best on.
 					// Do not translate to `.bat` file if the setting explicitly sets the executable.
 					const condaBatFile = await getCondaBatFile(condaPath);
+
 					try {
 						if (condaBatFile) {
 							const condaBat = new Conda(
@@ -516,6 +543,7 @@ export class Conda {
 				traceVerbose(
 					`Found conda via filesystem probing: ${condaPath}`,
 				);
+
 				return conda;
 			} catch (ex) {
 				// Failed to spawn because the binary doesn't exist or isn't on PATH, or the current
@@ -527,6 +555,7 @@ export class Conda {
 
 		// Didn't find anything.
 		traceVerbose("Couldn't locate the conda binary.");
+
 		return undefined;
 	}
 
@@ -536,6 +565,7 @@ export class Conda {
 	 */
 	public async getInfo(useCache?: boolean): Promise<CondaInfo> {
 		let condaInfoCached = this.condaInfoCached.get(this.shellPath);
+
 		if (!useCache || !condaInfoCached) {
 			condaInfoCached = this.getInfoImpl(this.command, this.shellPath);
 			this.condaInfoCached.set(this.shellPath, condaInfoCached);
@@ -553,6 +583,7 @@ export class Conda {
 		shellPath: string | undefined,
 	): Promise<CondaInfo> {
 		const options: SpawnOptions = { timeout: CONDA_GENERAL_TIMEOUT };
+
 		if (shellPath) {
 			options.shell = shellPath;
 		}
@@ -568,9 +599,11 @@ export class Conda {
 			resultPromise.then(() => true),
 			sleep(CONDA_GENERAL_TIMEOUT + 3000).then(() => false),
 		]);
+
 		if (success) {
 			const result = await resultPromise;
 			traceVerbose(`${command} info --json: ${result.stdout}`);
+
 			return JSON.parse(result.stdout);
 		}
 		throw new Error(`Launching '${command} info --json' timed out`);
@@ -583,7 +616,9 @@ export class Conda {
 	@cache(30_000, true, 10_000)
 	public async getEnvList(): Promise<CondaEnvInfo[]> {
 		const info = await this.getInfo();
+
 		const { envs } = info;
+
 		if (envs === undefined) {
 			return [];
 		}
@@ -600,10 +635,12 @@ export class Conda {
 		info?: CondaInfo,
 	): Promise<string | undefined> {
 		info = info ?? (await this.getInfo(true));
+
 		if (info.root_prefix && arePathsSame(prefix, info.root_prefix)) {
 			return "base";
 		}
 		const parentDir = path.dirname(prefix);
+
 		if (info.envs_dirs !== undefined) {
 			for (const envsDir of info.envs_dirs) {
 				if (arePathsSame(parentDir, envsDir)) {
@@ -626,6 +663,7 @@ export class Conda {
 		const condaEnv = envList.find((e) =>
 			arePathsSame(executableOrEnvPath, e.prefix),
 		);
+
 		if (condaEnv) {
 			return condaEnv;
 		}
@@ -641,17 +679,20 @@ export class Conda {
 		condaEnv: CondaEnvInfo | { prefix: string },
 	): Promise<string> {
 		const executablePath = getCondaInterpreterPath(condaEnv.prefix);
+
 		if (await pathExists(executablePath)) {
 			traceVerbose(
 				"Found executable within conda env",
 				JSON.stringify(condaEnv),
 			);
+
 			return executablePath;
 		}
 		traceVerbose(
 			"Executable does not exist within conda env, assume the executable to be `python`",
 			JSON.stringify(condaEnv),
 		);
+
 		return "python";
 	}
 
@@ -661,14 +702,17 @@ export class Conda {
 		isolatedFlag = false,
 	): Promise<string[] | undefined> {
 		const condaVersion = await this.getCondaVersion();
+
 		if (condaVersion && lt(condaVersion, CONDA_RUN_VERSION)) {
 			traceError(
 				"`conda run` is not supported for conda version",
 				condaVersion.raw,
 			);
+
 			return undefined;
 		}
 		const args = [];
+
 		if (env.name) {
 			args.push("-n", env.name);
 		} else {
@@ -681,6 +725,7 @@ export class Conda {
 			"--no-capture-output",
 			"python",
 		];
+
 		if (isolatedFlag) {
 			python.push("-I");
 		}
@@ -695,7 +740,9 @@ export class Conda {
 		const info = await this.getInfo(true).catch<CondaInfo | undefined>(
 			() => undefined,
 		);
+
 		let versionString: string | undefined;
+
 		if (info && info.conda_version) {
 			versionString = info.conda_version;
 		} else {
@@ -714,7 +761,9 @@ export class Conda {
 			return undefined;
 		}
 		const pattern = /(?<major>\d+)\.(?<minor>\d+)\.(?<micro>\d+)(?:.*)?/;
+
 		const match = versionString.match(pattern);
+
 		if (match && match.groups) {
 			const versionStringParsed = match.groups.major.concat(
 				".",
@@ -724,6 +773,7 @@ export class Conda {
 			);
 
 			const semVarVersion: SemVer = new SemVer(versionStringParsed);
+
 			if (semVarVersion) {
 				return semVarVersion;
 			}
@@ -731,11 +781,13 @@ export class Conda {
 		// Use a bogus version, at least to indicate the fact that a version was returned.
 		// This ensures we still use conda for activation, installation etc.
 		traceError(`Unable to parse version of Conda, ${versionString}`);
+
 		return new SemVer("0.0.1");
 	}
 
 	public async isCondaRunSupported(): Promise<boolean> {
 		const condaVersion = await this.getCondaVersion();
+
 		if (condaVersion && lt(condaVersion, CONDA_RUN_VERSION)) {
 			return false;
 		}

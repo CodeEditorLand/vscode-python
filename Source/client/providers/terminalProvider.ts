@@ -39,8 +39,10 @@ export class TerminalProvider implements Disposable {
 		const configuration = this.serviceContainer.get<IConfigurationService>(
 			IConfigurationService,
 		);
+
 		const experimentService =
 			this.serviceContainer.get<IExperimentService>(IExperimentService);
+
 		const pythonSettings = configuration.getSettings(
 			this.activeResourceService.getActiveResource(),
 		);
@@ -53,6 +55,7 @@ export class TerminalProvider implements Disposable {
 			const hideFromUser =
 				"hideFromUser" in currentTerminal.creationOptions &&
 				currentTerminal.creationOptions.hideFromUser;
+
 			if (!hideFromUser) {
 				const terminalActivator =
 					this.serviceContainer.get<ITerminalActivator>(
@@ -80,6 +83,7 @@ export class TerminalProvider implements Disposable {
 	private registerCommands() {
 		const commandManager =
 			this.serviceContainer.get<ICommandManager>(ICommandManager);
+
 		const disposable = commandManager.registerCommand(
 			Commands.Create_Terminal,
 			this.onCreateTerminal,
@@ -97,6 +101,7 @@ export class TerminalProvider implements Disposable {
 			this.serviceContainer.get<ITerminalServiceFactory>(
 				ITerminalServiceFactory,
 			);
+
 		const activeResource = this.activeResourceService.getActiveResource();
 		await terminalService
 			.createTerminalService(activeResource, "Python")

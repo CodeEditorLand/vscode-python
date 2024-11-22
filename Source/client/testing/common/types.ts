@@ -56,6 +56,7 @@ export const ITestsHelper = Symbol('ITestsHelper');
 export interface ITestsHelper {
     parseProviderName(product: UnitTestProduct): TestProvider;
     parseProduct(provider: TestProvider): UnitTestProduct;
+
     getSettingsPropertyNames(product: Product): TestSettingsPropertyNames;
 }
 
@@ -73,6 +74,7 @@ export interface ITestConfigSettingsService {
     updateTestArgs(testDirectory: string | Uri, product: UnitTestProduct, args: string[]): Promise<void>;
     enable(testDirectory: string | Uri, product: UnitTestProduct): Promise<void>;
     disable(testDirectory: string | Uri, product: UnitTestProduct): Promise<void>;
+
     getTestEnablingSetting(product: UnitTestProduct): string;
 }
 

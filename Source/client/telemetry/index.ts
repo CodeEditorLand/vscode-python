@@ -28,6 +28,7 @@ import type { TestTool } from './types';
 function isTelemetrySupported(): boolean {
     try {
         const vsc = require('vscode');
+
         const reporter = require('@vscode/extension-telemetry');
 
         return vsc !== undefined && reporter !== undefined;
@@ -45,6 +46,7 @@ let packageJSON: any;
 export function isTelemetryDisabled(): boolean {
     if (!packageJSON) {
         const vscode = require('vscode') as typeof vscodeTypes;
+
         const pythonExtension = vscode.extensions.getExtension(PVSC_EXTENSION_ID)!;
         packageJSON = pythonExtension.packageJSON;
     }
@@ -107,11 +109,14 @@ export function sendTelemetryEvent<P extends IEventNamePropertyMapping, E extend
         return;
     }
     const reporter = getTelemetryReporter();
+
     const measures =
         typeof measuresOrDurationMs === 'number'
             ? { duration: measuresOrDurationMs }
             : measuresOrDurationMs || undefined;
+
     const customProperties: Record<string, string> = {};
+
     const eventNameSent = eventName as string;
 
     if (properties) {
@@ -127,12 +132,17 @@ export function sendTelemetryEvent<P extends IEventNamePropertyMapping, E extend
                 switch (typeof data[prop]) {
                     case 'string':
                         customProperties[prop] = data[prop];
+
                         break;
+
                     case 'object':
                         customProperties[prop] = 'object';
+
                         break;
+
                     default:
                         customProperties[prop] = data[prop].toString();
+
                         break;
                 }
             } catch (exception) {
@@ -231,6 +241,7 @@ export function captureTelemetry<This, P extends IEventNamePropertyMapping, E ex
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const getMeasures = (result?: any) => {
                 const measures = stopWatch ? { duration: stopWatch.elapsedTime } : undefined;
+
                 if (lazyMeasures) {
                     return { ...measures, ...lazyMeasures(this, result) };
                 }
@@ -244,6 +255,7 @@ export function captureTelemetry<This, P extends IEventNamePropertyMapping, E ex
                 result
                     .then((data) => {
                         sendTelemetryEvent(eventName, getMeasures(data), getProps(data));
+
                         return data;
                     })
                     .catch((ex) => {
@@ -269,14 +281,17 @@ export function sendTelemetryWhenDone<P extends IEventNamePropertyMapping, E ext
     properties?: P[E],
 ): void {
     stopWatch = stopWatch || new StopWatch();
+
     if (typeof promise.then === 'function') {
         (promise as Promise<unknown>).then(
             (data) => {
                 sendTelemetryEvent(eventName, stopWatch!.elapsedTime, properties);
+
                 return data;
             },
             (ex) => {
                 sendTelemetryEvent(eventName, stopWatch!.elapsedTime, properties, ex);
+
                 return Promise.reject(ex);
             },
         );

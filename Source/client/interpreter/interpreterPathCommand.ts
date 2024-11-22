@@ -42,6 +42,7 @@ export class InterpreterPathCommand
 		// If `launch.json` is launching this command, `args.workspaceFolder` carries the workspaceFolder
 		// If `tasks.json` is launching this command, `args[1]` carries the workspaceFolder
 		let workspaceFolder;
+
 		if ("workspaceFolder" in args) {
 			workspaceFolder = args.workspaceFolder;
 		} else if (args[1]) {
@@ -52,6 +53,7 @@ export class InterpreterPathCommand
 		}
 
 		let workspaceFolderUri;
+
 		try {
 			workspaceFolderUri = workspaceFolder
 				? Uri.file(workspaceFolder)
@@ -66,6 +68,7 @@ export class InterpreterPathCommand
 					workspaceFolderUri,
 				)
 			)?.path ?? "python";
+
 		return interpreterPath.toCommandArgumentForPythonExt();
 	}
 }

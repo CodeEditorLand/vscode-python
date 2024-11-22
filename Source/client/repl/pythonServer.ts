@@ -13,6 +13,7 @@ const SERVER_PATH = path.join(
 	"python_files",
 	"python_server.py",
 );
+
 let serverInstance: PythonServer | undefined;
 export interface ExecutionResult {
 	status: boolean;
@@ -57,6 +58,7 @@ class PythonServerImpl implements PythonServer, Disposable {
 		this.connection.onRequest("input", async (request) => {
 			// Ask for user input via popup quick input, send it back to Python
 			let userPrompt = "Enter your input here: ";
+
 			if (request && request.prompt) {
 				userPrompt = request.prompt;
 			}
@@ -65,6 +67,7 @@ class PythonServerImpl implements PythonServer, Disposable {
 				prompt: userPrompt,
 				ignoreFocusOut: true,
 			});
+
 			return { userInput: input };
 		});
 	}
@@ -72,6 +75,7 @@ class PythonServerImpl implements PythonServer, Disposable {
 	@captureTelemetry(EventName.EXECUTION_CODE, { scope: "selection" }, false)
 	public async execute(code: string): Promise<ExecutionResult | undefined> {
 		const result = await this.executeCode(code);
+
 		if (result?.status) {
 			this._onCodeExecuted.fire();
 		}
@@ -87,6 +91,7 @@ class PythonServerImpl implements PythonServer, Disposable {
 	): Promise<ExecutionResult | undefined> {
 		try {
 			const result = await this.connection.sendRequest("execute", code);
+
 			return result as ExecutionResult;
 		} catch (err) {
 			const error = err as Error;
@@ -107,6 +112,7 @@ class PythonServerImpl implements PythonServer, Disposable {
 			"check_valid_command",
 			code,
 		);
+
 		if (completeCode.output === "True") {
 			return new Promise((resolve) => resolve(true));
 		}
@@ -145,10 +151,12 @@ export function createPythonServer(
 	pythonServer.on("error", (err) => {
 		traceError(err);
 	});
+
 	const connection = rpc.createMessageConnection(
 		new rpc.StreamMessageReader(pythonServer.stdout),
 		new rpc.StreamMessageWriter(pythonServer.stdin),
 	);
 	serverInstance = new PythonServerImpl(connection, pythonServer);
+
 	return serverInstance;
 }

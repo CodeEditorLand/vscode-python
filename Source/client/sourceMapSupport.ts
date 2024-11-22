@@ -18,6 +18,7 @@ const setting = "sourceMapsEnabled";
 
 export class SourceMapSupport {
 	private readonly config: WorkspaceConfiguration;
+
 	constructor(private readonly vscode: VSCode) {
 		this.config = this.vscode.workspace.getConfiguration(
 			"python.diagnostics",
@@ -30,8 +31,10 @@ export class SourceMapSupport {
 		}
 		await this.enableSourceMaps(true);
 		require("source-map-support").install();
+
 		const localize =
 			require("./common/utils/localize") as typeof import("./common/utils/localize");
+
 		const disable = localize.Diagnostics.disableSourceMaps;
 		this.vscode.window
 			.showWarningMessage(localize.Diagnostics.warnSourceMaps, disable)
@@ -61,6 +64,7 @@ export class SourceMapSupport {
 			"client",
 			"extension.js",
 		);
+
 		const debuggerSourceFile = path.join(
 			EXTENSION_ROOT_DIR,
 			"out",
@@ -76,7 +80,9 @@ export class SourceMapSupport {
 	}
 	protected async enableSourceMap(enable: boolean, sourceFile: string) {
 		const sourceMapFile = `${sourceFile}.map`;
+
 		const disabledSourceMapFile = `${sourceFile}.map.disabled`;
+
 		if (enable) {
 			await this.rename(disabledSourceMapFile, sourceMapFile);
 		} else {
@@ -85,6 +91,7 @@ export class SourceMapSupport {
 	}
 	protected async rename(sourceFile: string, targetFile: string) {
 		const fs = new FileSystem();
+
 		if (await fs.fileExists(targetFile)) {
 			return;
 		}
@@ -98,6 +105,7 @@ export function initialize(vscode: VSCode = require("vscode")) {
 			.get("sourceMapsEnabled", false)
 	) {
 		new SourceMapSupport(vscode).disable().ignoreErrors();
+
 		return;
 	}
 	new SourceMapSupport(vscode).initialize().catch((_ex) => {

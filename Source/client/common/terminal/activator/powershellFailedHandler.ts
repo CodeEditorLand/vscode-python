@@ -41,6 +41,7 @@ export class PowershellTerminalActivationFailedHandler
 			return;
 		}
 		const shell = this.helper.identifyTerminalShell(terminal);
+
 		if (
 			shell !== TerminalShellType.powershell &&
 			shell !== TerminalShellType.powershellCore
@@ -53,6 +54,7 @@ export class PowershellTerminalActivationFailedHandler
 				TerminalShellType.commandPrompt,
 				resource,
 			);
+
 		if (
 			!activationCommands ||
 			!Array.isArray(activationCommands) ||

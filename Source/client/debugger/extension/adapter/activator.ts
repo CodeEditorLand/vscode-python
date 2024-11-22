@@ -31,6 +31,7 @@ export class DebugAdapterActivator
 		untrustedWorkspace: false,
 		virtualWorkspace: false,
 	};
+
 	constructor(
 		@inject(IDebugService) private readonly debugService: IDebugService,
 		@inject(IConfigurationService)

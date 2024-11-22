@@ -34,11 +34,14 @@ function getVenvExecutableFinder(
 	fileExists: (n: string) => Promise<boolean>,
 ): ExecutableFinderFunc {
 	const basenames = typeof basename === "string" ? [basename] : basename;
+
 	return async (python: string) => {
 		// Generated scripts are found in the same directory as the interpreter.
 		const binDir = pathDirname(python);
+
 		for (const name of basenames) {
 			const filename = pathJoin(binDir, name);
+
 			if (await fileExists(filename)) {
 				return filename;
 			}
@@ -66,6 +69,7 @@ abstract class BaseActivationCommandProvider
 		const interpreter = await this.serviceContainer
 			.get<IInterpreterService>(IInterpreterService)
 			.getActiveInterpreter(resource);
+
 		if (!interpreter) {
 			return undefined;
 		}
@@ -95,7 +99,9 @@ export abstract class VenvBaseActivationCommandProvider extends BaseActivationCo
 		targetShell: TerminalShellType,
 	): Promise<string | undefined> {
 		const fs = this.serviceContainer.get<IFileSystem>(IFileSystem);
+
 		const candidates = this.scripts[targetShell];
+
 		if (!candidates) {
 			return undefined;
 		}
@@ -106,6 +112,7 @@ export abstract class VenvBaseActivationCommandProvider extends BaseActivationCo
 			// Bind "this"!
 			(n: string) => fs.fileExists(n),
 		);
+
 		return findScript(pythonPath);
 	}
 }

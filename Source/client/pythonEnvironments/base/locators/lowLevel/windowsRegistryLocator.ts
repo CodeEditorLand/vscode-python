@@ -62,6 +62,7 @@ async function loadAllEnvs(changed: IEmitter<PythonEnvsChangedEvent>) {
 async function* iterateEnvs(): IPythonEnvsIterator<BasicEnvInfo> {
 	const stopWatch = new StopWatch();
 	traceInfo("Searching for windows registry interpreters");
+
 	const interpreters = await getRegistryInterpreters(); // Value should already be loaded at this point, so this returns immediately.
 	for (const interpreter of interpreters) {
 		try {
@@ -76,6 +77,7 @@ async function* iterateEnvs(): IPythonEnvsIterator<BasicEnvInfo> {
 				executablePath: interpreter.interpreterPath,
 				source: [PythonEnvSource.WindowsRegistry],
 			};
+
 			yield env;
 		} catch (ex) {
 			traceError(`Failed to process environment: ${interpreter}`, ex);

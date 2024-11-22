@@ -106,11 +106,13 @@ export interface ITerminalHelper {
     createTerminal(title?: string): Terminal;
     identifyTerminalShell(terminal?: Terminal): TerminalShellType;
     buildCommandForTerminal(terminalShellType: TerminalShellType, command: string, args: string[]): string;
+
     getEnvironmentActivationCommands(
         terminalShellType: TerminalShellType,
         resource?: Uri,
         interpreter?: PythonEnvironment,
     ): Promise<string[] | undefined>;
+
     getEnvironmentActivationShellCommands(
         resource: Resource,
         shell: TerminalShellType,
@@ -134,7 +136,9 @@ export const ITerminalActivationCommandProvider = Symbol('ITerminalActivationCom
 
 export interface ITerminalActivationCommandProvider {
     isShellSupported(targetShell: TerminalShellType): boolean;
+
     getActivationCommands(resource: Uri | undefined, targetShell: TerminalShellType): Promise<string[] | undefined>;
+
     getActivationCommandsForInterpreter(
         pythonPath: string,
         targetShell: TerminalShellType,

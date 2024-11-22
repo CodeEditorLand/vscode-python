@@ -200,6 +200,7 @@ export interface ITestServer {
 		executionFactory?: IPythonExecutionFactory,
 	): Promise<void>;
 	serverReady(): Promise<void>;
+
 	getPort(): number;
 	createUUID(cwd: string): string;
 	deleteUUID(uuid: string): void;

@@ -39,6 +39,7 @@ export class AttachProcessProvider implements IAttachProcessProvider {
 						// localeCompare is significantly slower than < and > (2000 ms vs 80 ms for 10,000 elements)
 						// We can change to localeCompare if this becomes an issue
 						const aLower = aString.toLowerCase();
+
 						const bLower = bString.toLowerCase();
 
 						if (aLower === bLower) {
@@ -49,6 +50,7 @@ export class AttachProcessProvider implements IAttachProcessProvider {
 					};
 
 					const aPython = aprocessName.startsWith("python");
+
 					const bPython = bProcessName.startsWith("python");
 
 					if (aPython || bPython) {
@@ -74,6 +76,7 @@ export class AttachProcessProvider implements IAttachProcessProvider {
 
 	public async _getInternalProcessEntries(): Promise<IAttachItem[]> {
 		let processCmd: ProcessListCommand;
+
 		if (this.platformService.isMac) {
 			processCmd = PsProcessParser.psDarwinCommand;
 		} else if (this.platformService.isLinux) {
@@ -90,6 +93,7 @@ export class AttachProcessProvider implements IAttachProcessProvider {
 		}
 
 		const processService = await this.processServiceFactory.create();
+
 		const output = await processService.exec(
 			processCmd.command,
 			processCmd.args,

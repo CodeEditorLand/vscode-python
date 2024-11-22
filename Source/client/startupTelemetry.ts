@@ -33,6 +33,7 @@ export async function sendStartupTelemetry(
 		await activatedPromise;
 		durations.totalNonBlockingActivateTime =
 			stopWatch.elapsedTime - durations.startActivateTime;
+
 		const props = await getActivationTelemetryProps(
 			serviceContainer,
 			isFirstSession,
@@ -50,6 +51,7 @@ export async function sendErrorTelemetry(
 ) {
 	try {
 		let props: any = {};
+
 		if (serviceContainer) {
 			try {
 				props = await getActivationTelemetryProps(serviceContainer);
@@ -70,7 +72,9 @@ function isUsingGlobalInterpreterInWorkspace(
 	const service = serviceContainer.get<IInterpreterAutoSelectionService>(
 		IInterpreterAutoSelectionService,
 	);
+
 	const globalInterpreter = service.getAutoSelectedInterpreter(undefined);
+
 	if (!globalInterpreter) {
 		return false;
 	}
@@ -83,7 +87,9 @@ export function hasUserDefinedPythonPath(
 ) {
 	const interpreterPathService =
 		serviceContainer.get<IInterpreterPathService>(IInterpreterPathService);
+
 	let settings = interpreterPathService.inspect(resource);
+
 	return (settings.workspaceFolderValue &&
 		settings.workspaceFolderValue !== "python") ||
 		(settings.workspaceValue && settings.workspaceValue !== "python") ||
@@ -102,12 +108,17 @@ async function getActivationTelemetryProps(
 	// be able to partially populate as much as possible instead
 	// (through granular try-catch statements).
 	const appName = vscode.env.appName;
+
 	const workspaceService =
 		serviceContainer.get<IWorkspaceService>(IWorkspaceService);
+
 	const workspaceFolderCount = workspaceService.workspaceFolders?.length || 0;
+
 	const terminalHelper =
 		serviceContainer.get<ITerminalHelper>(ITerminalHelper);
+
 	const terminalShellType = terminalHelper.identifyTerminalShell();
+
 	if (!workspaceService.isTrusted) {
 		return {
 			workspaceFolderCount,
@@ -117,9 +128,11 @@ async function getActivationTelemetryProps(
 	}
 	const interpreterService =
 		serviceContainer.get<IInterpreterService>(IInterpreterService);
+
 	const mainWorkspaceUri = workspaceService.workspaceFolders?.length
 		? workspaceService.workspaceFolders[0].uri
 		: undefined;
+
 	const hasPythonThree = await interpreterService.hasInterpreters(
 		async (item) => item.version?.major === 3,
 	);
@@ -129,14 +142,18 @@ async function getActivationTelemetryProps(
 	// finish. API getActiveInterpreter() does not block on windows registry by default as
 	// it is slow.
 	await interpreterService.refreshPromise;
+
 	const interpreter = await interpreterService
 		.getActiveInterpreter()
 		.catch<PythonEnvironment | undefined>(() => undefined);
+
 	const pythonVersion =
 		interpreter && interpreter.version
 			? interpreter.version.raw
 			: undefined;
+
 	const interpreterType = interpreter ? interpreter.envType : undefined;
+
 	if (interpreterType === EnvironmentType.Unknown) {
 		traceError(
 			"Active interpreter type is detected as Unknown",
@@ -144,6 +161,7 @@ async function getActivationTelemetryProps(
 		);
 	}
 	let condaVersion = undefined;
+
 	if (interpreterType === EnvironmentType.Conda) {
 		const condaLocator = serviceContainer.get<ICondaService>(ICondaService);
 		condaVersion = await condaLocator
@@ -155,6 +173,7 @@ async function getActivationTelemetryProps(
 		mainWorkspaceUri,
 		serviceContainer,
 	);
+
 	const usingGlobalInterpreter = interpreter
 		? isUsingGlobalInterpreterInWorkspace(
 				interpreter.path,

@@ -34,6 +34,7 @@ export abstract class BaseInterpreterSelectorCommand
 		virtualWorkspace: true,
 	};
 	protected disposables: Disposable[] = [];
+
 	constructor(
 		@unmanaged()
 		protected readonly pythonPathUpdaterService: IPythonPathUpdaterServiceManager,
@@ -63,6 +64,7 @@ export abstract class BaseInterpreterSelectorCommand
 		| undefined
 	> {
 		const workspaceFolders = this.workspaceService.workspaceFolders;
+
 		if (workspaceFolders === undefined || workspaceFolders.length === 0) {
 			return [
 				{
@@ -96,6 +98,7 @@ export abstract class BaseInterpreterSelectorCommand
 					this.configurationService.getSettings(w.uri).pythonPath,
 					w.uri.fsPath,
 				);
+
 				return {
 					label: w.name,
 					description: this.pathUtils.getDisplayName(
@@ -130,6 +133,7 @@ export abstract class BaseInterpreterSelectorCommand
 				folderUri: w.uri,
 				configTarget: ConfigurationTarget.WorkspaceFolder,
 			}));
+
 			return [
 				...folderTargets,
 				{

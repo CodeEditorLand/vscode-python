@@ -47,11 +47,13 @@ function tryRun(callback: () => void) {
 class FileCancellationSenderStrategy implements CancellationSenderStrategy {
 	constructor(readonly folderName: string) {
 		const folder = getCancellationFolderPath(folderName)!;
+
 		tryRun(() => fs.mkdirSync(folder, { recursive: true }));
 	}
 
 	public async sendCancellation(_: MessageConnection, id: CancellationId) {
 		const file = getCancellationFilePath(this.folderName, id);
+
 		tryRun(() => fs.writeFileSync(file, "", { flag: "w" }));
 	}
 
@@ -63,10 +65,12 @@ class FileCancellationSenderStrategy implements CancellationSenderStrategy {
 
 	public dispose(): void {
 		const folder = getCancellationFolderPath(this.folderName);
+
 		tryRun(() => rimraf(folder));
 
 		function rimraf(location: string) {
 			const stat = fs.lstatSync(location);
+
 			if (stat) {
 				if (stat.isDirectory() && !stat.isSymbolicLink()) {
 					for (const dir of fs.readdirSync(location)) {

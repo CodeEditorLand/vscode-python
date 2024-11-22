@@ -35,57 +35,104 @@ export enum CommandSource {
 
 export namespace Commands {
     export const ClearStorage = 'python.clearCacheAndReload';
+
     export const CreateNewFile = 'python.createNewFile';
+
     export const ClearWorkspaceInterpreter = 'python.clearWorkspaceInterpreter';
+
     export const Create_Environment = 'python.createEnvironment';
+
     export const Create_Environment_Button = 'python.createEnvironment-button';
+
     export const Create_Environment_Check = 'python.createEnvironmentCheck';
+
     export const Create_Terminal = 'python.createTerminal';
+
     export const Debug_In_Terminal = 'python.debugInTerminal';
+
     export const Enable_SourceMap_Support = 'python.enableSourceMapSupport';
+
     export const Exec_In_Terminal = 'python.execInTerminal';
+
     export const Exec_In_Terminal_Icon = 'python.execInTerminal-icon';
+
     export const Exec_In_Separate_Terminal = 'python.execInDedicatedTerminal';
+
     export const Exec_In_REPL = 'python.execInREPL';
+
     export const Exec_Selection_In_Django_Shell = 'python.execSelectionInDjangoShell';
+
     export const Exec_In_REPL_Enter = 'python.execInREPLEnter';
+
     export const Exec_In_IW_Enter = 'python.execInInteractiveWindowEnter';
+
     export const Exec_Selection_In_Terminal = 'python.execSelectionInTerminal';
+
     export const GetSelectedInterpreterPath = 'python.interpreterPath';
+
     export const InstallJupyter = 'python.installJupyter';
+
     export const InstallPython = 'python.installPython';
+
     export const InstallPythonOnLinux = 'python.installPythonOnLinux';
+
     export const InstallPythonOnMac = 'python.installPythonOnMac';
+
     export const LaunchTensorBoard = 'python.launchTensorBoard';
+
     export const PickLocalProcess = 'python.pickLocalProcess';
+
     export const RefreshTensorBoard = 'python.refreshTensorBoard';
+
     export const ReportIssue = 'python.reportIssue';
+
     export const Set_Interpreter = 'python.setInterpreter';
+
     export const Set_ShebangInterpreter = 'python.setShebangInterpreter';
+
     export const Start_REPL = 'python.startREPL';
+
     export const Start_Native_REPL = 'python.startNativeREPL';
+
     export const Tests_Configure = 'python.configureTests';
+
     export const Tests_CopilotSetup = 'python.copilotSetupTests';
+
     export const TriggerEnvironmentSelection = 'python.triggerEnvSelection';
+
     export const ViewOutput = 'python.viewOutput';
 }
 
 // Look at https://microsoft.github.io/vscode-codicons/dist/codicon.html for other Octicon icon ids
 export namespace Octicons {
     export const Add = '$(add)';
+
     export const Test_Pass = '$(check)';
+
     export const Test_Fail = '$(alert)';
+
     export const Test_Error = '$(x)';
+
     export const Test_Skip = '$(circle-slash)';
+
     export const Downloading = '$(cloud-download)';
+
     export const Installing = '$(desktop-download)';
+
     export const Search = '$(search)';
+
     export const Search_Stop = '$(search-stop)';
+
     export const Star = '$(star-full)';
+
     export const Gear = '$(gear)';
+
     export const Warning = '$(warning)';
+
     export const Error = '$(error)';
+
     export const Lightbulb = '$(lightbulb)';
+
     export const Folder = '$(folder)';
 }
 
@@ -96,6 +143,7 @@ export namespace Octicons {
  */
 export namespace ThemeIcons {
     export const Refresh = 'refresh';
+
     export const SpinningLoader = 'loading~spin';
 }
 

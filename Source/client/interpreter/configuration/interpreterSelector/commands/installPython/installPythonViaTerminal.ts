@@ -75,16 +75,19 @@ export class InstallPythonViaTerminal
 		os: OSType.Linux | OSType.OSX,
 	): Promise<void> {
 		const commands = await this.getCommands(os);
+
 		const installMessage =
 			os === OSType.OSX
 				? Interpreters.installPythonTerminalMacMessage
 				: Interpreters.installPythonTerminalMessageLinux;
+
 		const terminal = this.terminalManager.createTerminal({
 			name: "Python",
 			message: commands.length ? undefined : installMessage,
 		});
 		terminal.show(true);
 		await waitForTerminalToStartup();
+
 		for (const command of commands) {
 			terminal.sendText(command);
 			await waitForCommandToProcess();
@@ -119,14 +122,17 @@ export class InstallPythonViaTerminal
 async function isPackageAvailable(packageManager: PackageManagers) {
 	try {
 		const which = require("which") as typeof whichTypes;
+
 		const resolvedPath = await which.default(packageManager);
 		traceVerbose(
 			`Resolved path to ${packageManager} module:`,
 			resolvedPath,
 		);
+
 		return resolvedPath.trim().length > 0;
 	} catch (ex) {
 		traceVerbose(`${packageManager} not found`, ex);
+
 		return false;
 	}
 }

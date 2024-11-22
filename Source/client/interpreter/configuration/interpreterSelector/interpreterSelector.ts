@@ -70,6 +70,7 @@ export class InterpreterSelector implements IInterpreterSelector {
 	): IInterpreterQuickPickItem {
 		if (!useDetailedName) {
 			const workspacePath = workspaceUri?.fsPath;
+
 			if (
 				workspacePath &&
 				isParentPath(interpreter.path, workspacePath)
@@ -84,11 +85,14 @@ export class InterpreterSelector implements IInterpreterSelector {
 				"envFolderPath"
 				? interpreter.envPath
 				: interpreter.path;
+
 		const detail = this.pathUtils.getDisplayName(
 			path,
 			workspaceUri ? workspaceUri.fsPath : undefined,
 		);
+
 		const cachedPrefix = interpreter.cachedEntry ? "(cached) " : "";
+
 		return {
 			label:
 				(useDetailedName
@@ -105,10 +109,12 @@ export class InterpreterSelector implements IInterpreterSelector {
 		resource: Resource,
 	): IInterpreterQuickPickItem | undefined {
 		const envs = this.interpreterManager.getInterpreters(resource);
+
 		const recommendedEnv = this.envTypeComparer.getRecommended(
 			envs,
 			resource,
 		);
+
 		if (!recommendedEnv) {
 			return undefined;
 		}

@@ -51,6 +51,7 @@ export class CondaActivationCommandProvider
 		targetShell: TerminalShellType,
 	): Promise<string[] | undefined> {
 		const { pythonPath } = this.configService.getSettings(resource);
+
 		return this.getActivationCommandsForInterpreter(
 			pythonPath,
 			targetShell,
@@ -66,6 +67,7 @@ export class CondaActivationCommandProvider
 		targetShell: TerminalShellType,
 	): Promise<string[] | undefined> {
 		const envInfo = await this.pyenvs.getCondaEnvironment(pythonPath);
+
 		if (!envInfo) {
 			return undefined;
 		}
@@ -75,6 +77,7 @@ export class CondaActivationCommandProvider
 		// New version.
 		const interpreterPath =
 			await this.condaService.getInterpreterPathForEnvironment(envInfo);
+
 		const activatePath =
 			await this.condaService.getActivationScriptFromInterpreter(
 				interpreterPath,
@@ -160,6 +163,7 @@ export class CondaActivationCommandProvider
 		condaEnv: string,
 	): Promise<string[] | undefined> {
 		const activate = await this.getWindowsActivateCommand();
+
 		return [`${activate} ${condaEnv.toCommandArgumentForPythonExt()}`];
 	}
 }
@@ -191,7 +195,9 @@ async function getUnixCommands(
 	condaFile: string,
 ): Promise<string[] | undefined> {
 	const condaDir = path.dirname(condaFile);
+
 	const activateFile = path.join(condaDir, "activate");
+
 	return [
 		`source ${activateFile.fileToCommandArgumentForPythonExt()} ${condaEnv.toCommandArgumentForPythonExt()}`,
 	];

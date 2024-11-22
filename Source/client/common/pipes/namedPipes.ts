@@ -17,6 +17,7 @@ const { XDG_RUNTIME_DIR } = process.env;
 export function generateRandomPipeName(prefix: string): string {
     // length of 10 picked because of the name length restriction for sockets
     const randomSuffix = crypto.randomBytes(10).toString('hex');
+
     if (prefix.length === 0) {
         prefix = 'python-ext-rpc';
     }
@@ -26,6 +27,7 @@ export function generateRandomPipeName(prefix: string): string {
     }
 
     let result;
+
     if (XDG_RUNTIME_DIR) {
         result = path.join(XDG_RUNTIME_DIR, `${prefix}-${randomSuffix}`);
     } else {
@@ -53,6 +55,7 @@ export async function createWriterPipe(pipeName: string, token?: CancellationTok
     // windows implementation of FIFO using named pipes
     if (isWindows()) {
         const deferred = createDeferred<rpc.MessageWriter>();
+
         const server = net.createServer((socket) => {
             traceVerbose(`Pipe connected: ${pipeName}`);
             server.close();
@@ -61,6 +64,7 @@ export async function createWriterPipe(pipeName: string, token?: CancellationTok
 
         server.on('error', deferred.reject);
         server.listen(pipeName);
+
         if (token) {
             token.onCancellationRequested(() => {
                 if (server.listening) {
@@ -73,6 +77,7 @@ export async function createWriterPipe(pipeName: string, token?: CancellationTok
     }
     // linux implementation of FIFO
     await mkfifo(pipeName);
+
     try {
         await fs.chmod(pipeName, 0o666);
     } catch {
@@ -81,6 +86,7 @@ export async function createWriterPipe(pipeName: string, token?: CancellationTok
     const writer = fs.createWriteStream(pipeName, {
         encoding: 'utf-8',
     });
+
     return new rpc.StreamMessageWriter(writer, 'utf-8');
 }
 
@@ -122,6 +128,7 @@ class CombinedReader implements rpc.MessageReader {
         this._disposables.push(reader);
         reader.onClose(() => {
             this.remove(reader);
+
             if (this._readers.length === 0) {
                 this._onClose.fire();
             }
@@ -134,6 +141,7 @@ class CombinedReader implements rpc.MessageReader {
 
     remove(reader: rpc.MessageReader): void {
         const found = this._readers.find((r) => r === reader);
+
         if (found) {
             this._readers = this._readers.filter((r) => r !== reader);
             reader.dispose();
@@ -152,15 +160,18 @@ export async function createReaderPipe(pipeName: string, token?: CancellationTok
     if (isWindows()) {
         // windows implementation of FIFO using named pipes
         const deferred = createDeferred<rpc.MessageReader>();
+
         const combined = new CombinedReader();
 
         let refs = 0;
+
         const server = net.createServer((socket) => {
             traceVerbose(`Pipe connected: ${pipeName}`);
             refs += 1;
 
             socket.on('close', () => {
                 refs -= 1;
+
                 if (refs <= 0) {
                     server.close();
                 }
@@ -169,6 +180,7 @@ export async function createReaderPipe(pipeName: string, token?: CancellationTok
         });
         server.on('error', deferred.reject);
         server.listen(pipeName);
+
         if (token) {
             token.onCancellationRequested(() => {
                 if (server.listening) {
@@ -178,15 +190,18 @@ export async function createReaderPipe(pipeName: string, token?: CancellationTok
             });
         }
         deferred.resolve(combined);
+
         return deferred.promise;
     }
     // mac/linux implementation of FIFO
     await mkfifo(pipeName);
+
     try {
         await fs.chmod(pipeName, 0o666);
     } catch {
         // Intentionally ignored
     }
     const reader = fs.createReadStream(pipeName, { encoding: 'utf-8' });
+
     return new rpc.StreamMessageReader(reader, 'utf-8');
 }

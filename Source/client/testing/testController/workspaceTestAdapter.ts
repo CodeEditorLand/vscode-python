@@ -50,6 +50,7 @@ export class WorkspaceTestAdapter {
     ): Promise<void> {
         if (this.executing) {
             traceError('Test execution already in progress, not starting a new one.');
+
             return this.executing.promise;
         }
 
@@ -57,7 +58,9 @@ export class WorkspaceTestAdapter {
         this.executing = deferred;
 
         const testCaseNodes: TestItem[] = [];
+
         const testCaseIdsSet = new Set<string>();
+
         try {
             // first fetch all the individual test Items that we necessarily want
             includes.forEach((t) => {
@@ -68,10 +71,12 @@ export class WorkspaceTestAdapter {
             testCaseNodes.forEach((node) => {
                 runInstance.started(node); // do the vscode ui test item start here before runtest
                 const runId = this.resultResolver.vsIdToRunId.get(node.id);
+
                 if (runId) {
                     testCaseIdsSet.add(runId);
                 }
             });
+
             const testCaseIds = Array.from(testCaseIdsSet);
             // ** execution factory only defined for new rewrite way
             if (executionFactory !== undefined) {
@@ -95,6 +100,7 @@ export class WorkspaceTestAdapter {
             let cancel = token?.isCancellationRequested
                 ? Testing.cancelUnittestExecution
                 : Testing.errorUnittestExecution;
+
             if (this.testProvider === 'pytest') {
                 cancel = token?.isCancellationRequested ? Testing.cancelPytestExecution : Testing.errorPytestExecution;
             }
@@ -102,7 +108,9 @@ export class WorkspaceTestAdapter {
 
             // Also report on the test view
             const message = util.format(`${cancel} ${Testing.seePythonOutput}\r\n`, ex);
+
             const options = buildErrorNodeOptions(this.workspaceUri, message, this.testProvider);
+
             const errorNode = createErrorTestItem(testController, options);
             testController.items.add(errorNode);
 
@@ -125,6 +133,7 @@ export class WorkspaceTestAdapter {
         // Discovery is expensive. If it is already running, use the existing promise.
         if (this.discovering) {
             traceError('Test discovery already in progress, not starting a new one.');
+
             return this.discovering.promise;
         }
 
@@ -145,6 +154,7 @@ export class WorkspaceTestAdapter {
             let cancel = token?.isCancellationRequested
                 ? Testing.cancelUnittestDiscovery
                 : Testing.errorUnittestDiscovery;
+
             if (this.testProvider === 'pytest') {
                 cancel = token?.isCancellationRequested ? Testing.cancelPytestDiscovery : Testing.errorPytestDiscovery;
             }
@@ -153,7 +163,9 @@ export class WorkspaceTestAdapter {
 
             // Report also on the test view.
             const message = util.format(`${cancel} ${Testing.seePythonOutput}\r\n`, ex);
+
             const options = buildErrorNodeOptions(this.workspaceUri, message, this.testProvider);
+
             const errorNode = createErrorTestItem(testController, options);
             testController.items.add(errorNode);
 
@@ -165,6 +177,7 @@ export class WorkspaceTestAdapter {
         }
 
         sendTelemetryEvent(EventName.UNITTEST_DISCOVERY_DONE, undefined, { tool: this.testProvider, failed: false });
+
         return Promise.resolve();
     }
 

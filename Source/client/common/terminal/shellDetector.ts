@@ -36,6 +36,7 @@ export class ShellDetector {
      */
     public identifyTerminalShell(terminal?: Terminal): TerminalShellType {
         let shell: TerminalShellType | undefined;
+
         const telemetryProperties: ShellIdentificationTelemetry = {
             failed: true,
             shellIdentificationSource: 'default',
@@ -49,8 +50,10 @@ export class ShellDetector {
 
         for (const detector of shellDetectors) {
             shell = detector.identify(telemetryProperties, terminal);
+
             if (shell && shell !== TerminalShellType.other) {
                 telemetryProperties.failed = false;
+
                 break;
             }
         }

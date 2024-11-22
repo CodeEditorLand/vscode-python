@@ -28,6 +28,7 @@ export class TerminalNameShellDetector extends BaseShellDetector {
         traceVerbose(`Terminal name '${terminal.name}' identified as shell '${shell}'`);
         telemetryProperties.shellIdentificationSource =
             shell === TerminalShellType.other ? telemetryProperties.shellIdentificationSource : 'terminalName';
+
         return shell;
     }
 }

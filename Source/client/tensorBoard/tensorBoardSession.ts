@@ -64,6 +64,7 @@ enum Messages {
 	JumpToSource = "jump_to_source",
 }
 const TensorBoardSemVerRequirement = ">= 2.4.1";
+
 const TorchProfilerSemVerRequirement = ">= 0.2.0";
 
 /**
@@ -138,16 +139,20 @@ export class TensorBoardSession {
 
 	public async initialize(): Promise<void> {
 		const e2eStartupDurationStopwatch = new StopWatch();
+
 		const tensorBoardWasInstalled =
 			await this.ensurePrerequisitesAreInstalled();
+
 		if (!tensorBoardWasInstalled) {
 			return;
 		}
 		const logDir = await this.getLogDirectory();
+
 		if (!logDir) {
 			return;
 		}
 		const startedSuccessfully = await this.startTensorboardSession(logDir);
+
 		if (startedSuccessfully) {
 			await this.showPanel();
 			// Not using captureTelemetry on this method as we only want to send
@@ -165,10 +170,14 @@ export class TensorBoardSession {
 		profilerPluginInstallStatus: ProductInstallStatus,
 	) {
 		sendTelemetryEvent(EventName.TENSORBOARD_INSTALL_PROMPT_SHOWN);
+
 		const yes = Common.bannerLabelYes;
+
 		const no = Common.bannerLabelNo;
+
 		const isUpgrade =
 			tensorBoardInstallStatus === ProductInstallStatus.NeedsUpgrade;
+
 		let message;
 
 		if (
@@ -193,7 +202,9 @@ export class TensorBoardSession {
 			message,
 			...[yes, no],
 		);
+
 		let telemetrySelection = TensorBoardPromptSelection.None;
+
 		if (selection === yes) {
 			telemetrySelection = TensorBoardPromptSelection.Yes;
 		} else if (selection === no) {
@@ -207,6 +218,7 @@ export class TensorBoardSession {
 				operationType: isUpgrade ? "upgrade" : "install",
 			},
 		);
+
 		return selection;
 	}
 
@@ -220,9 +232,11 @@ export class TensorBoardSession {
 		traceVerbose(
 			"Ensuring TensorBoard package is installed into active interpreter",
 		);
+
 		const interpreter =
 			(await this.interpreterService.getActiveInterpreter(resource)) ||
 			(await this.commandManager.executeCommand("python.setInterpreter"));
+
 		if (!interpreter) {
 			return false;
 		}
@@ -241,11 +255,15 @@ export class TensorBoardSession {
 					interpreter,
 				),
 			]);
+
 		const isTorchUser = ImportTracker.hasModuleImport("torch");
+
 		const needsTensorBoardInstall =
 			tensorboardInstallStatus !== ProductInstallStatus.Installed;
+
 		const needsProfilerPluginInstall =
 			profilerPluginInstallStatus !== ProductInstallStatus.Installed;
+
 		if (
 			// PyTorch user, in profiler install experiment, TensorBoard and profiler plugin already installed
 			(isTorchUser &&
@@ -266,6 +284,7 @@ export class TensorBoardSession {
 				? profilerPluginInstallStatus
 				: ProductInstallStatus.Installed,
 		);
+
 		if (selection !== Common.bannerLabelYes && !needsTensorBoardInstall) {
 			return true;
 		}
@@ -275,12 +294,15 @@ export class TensorBoardSession {
 
 		// User opted to install packages. Figure out which ones we need and install them
 		const tokenSource = new CancellationTokenSource();
+
 		const installerToken = tokenSource.token;
+
 		const cancellationPromise = createPromiseFromCancellation({
 			cancelAction: "resolve",
 			defaultValue: InstallerResponse.Ignore,
 			token: installerToken,
 		});
+
 		const installPromises = [];
 		// If need to install torch.profiler and it's not already installed, add it to our list of promises
 		if (needsTensorBoardInstall) {
@@ -375,6 +397,7 @@ export class TensorBoardSession {
 				label: TensorBoard.useCurrentWorkingDirectory,
 				detail: TensorBoard.useCurrentWorkingDirectoryDetail,
 			};
+
 			const selectAnotherFolder = {
 				label: TensorBoard.selectAnotherFolder,
 				detail: TensorBoard.selectAnotherFolderDetail,
@@ -402,35 +425,48 @@ export class TensorBoardSession {
 	private async getLogDirectory(): Promise<string | undefined> {
 		// See if the user told us to always use a specific log directory
 		const settings = this.configurationService.getSettings();
+
 		const settingValue = settings.tensorBoard?.logDirectory;
+
 		if (settingValue) {
 			traceVerbose(
 				`Using log directory resolved by python.tensorBoard.logDirectory setting: ${settingValue}`,
 			);
+
 			return settingValue;
 		}
 		// No log directory in settings. Ask the user which directory to use
 		const logDir = this.autopopulateLogDirectoryPath();
+
 		const { useCurrentWorkingDirectory } = TensorBoard;
+
 		const { selectAFolder } = TensorBoard;
+
 		const { selectAnotherFolder } = TensorBoard;
+
 		const { enterRemoteUrl } = TensorBoard;
+
 		const items: QuickPickItem[] = this.getQuickPickItems(logDir);
+
 		const item = await this.applicationShell.showQuickPick(items, {
 			canPickMany: false,
 			ignoreFocusOut: false,
 			placeHolder: logDir ? l10n.t("Current: {0}", logDir) : undefined,
 		});
+
 		switch (item?.label) {
 			case useCurrentWorkingDirectory:
 				return logDir;
+
 			case selectAFolder:
 			case selectAnotherFolder:
 				return this.showFilePicker();
+
 			case enterRemoteUrl:
 				return this.applicationShell.showInputBox({
 					prompt: TensorBoard.enterRemoteUrlDetail,
 				});
+
 			default:
 				return undefined;
 		}
@@ -442,6 +478,7 @@ export class TensorBoardSession {
 	private async startTensorboardSession(logDir: string): Promise<boolean> {
 		const interpreter =
 			await this.interpreterService.getActiveInterpreter();
+
 		if (!interpreter) {
 			return false;
 		}
@@ -463,8 +500,11 @@ export class TensorBoardSession {
 				allowEnvironmentFetchExceptions: true,
 				interpreter,
 			});
+
 		const args = tensorboardLauncher([logDir]);
+
 		const sessionStartStopwatch = new StopWatch();
+
 		const observable = processService.execObservable(args, {});
 
 		const result = await this.applicationShell.withProgress(
@@ -476,6 +516,7 @@ export class TensorBoardSession {
 
 				const spawnTensorBoard =
 					this.waitForTensorBoardStart(observable);
+
 				const userCancellation = createPromiseFromCancellation({
 					token,
 					cancelAction: "resolve",
@@ -501,7 +542,9 @@ export class TensorBoardSession {
 					},
 				);
 				observable.dispose();
+
 				return false;
+
 			case "success":
 				this.process = observable.proc;
 				sendTelemetryEvent(
@@ -511,7 +554,9 @@ export class TensorBoardSession {
 						result: TensorBoardSessionStartResult.success,
 					},
 				);
+
 				return true;
+
 			case timeout:
 				sendTelemetryEvent(
 					EventName.TENSORBOARD_SESSION_DAEMON_STARTUP_DURATION,
@@ -520,9 +565,11 @@ export class TensorBoardSession {
 						result: TensorBoardSessionStartResult.error,
 					},
 				);
+
 				throw new Error(
 					`Timed out after ${timeout / 1000} seconds waiting for TensorBoard to launch.`,
 				);
+
 			default:
 				// We should never get here
 				throw new Error(
@@ -542,6 +589,7 @@ export class TensorBoardSession {
 					const match = output.out.match(
 						/TensorBoard started at (.*)/,
 					);
+
 					if (match && match[1]) {
 						// eslint-disable-next-line prefer-destructuring
 						this.url = match[1];
@@ -562,6 +610,7 @@ export class TensorBoardSession {
 
 	private async showPanel() {
 		traceVerbose("Showing TensorBoard panel");
+
 		const panel = this.webviewPanel || (await this.createPanel());
 		panel.reveal();
 		this._active = true;
@@ -617,12 +666,15 @@ export class TensorBoardSession {
 							message.args.filename,
 							message.args.line,
 						);
+
 						break;
+
 					default:
 						break;
 				}
 			}),
 		);
+
 		return webviewPanel;
 	}
 
@@ -631,6 +683,7 @@ export class TensorBoardSession {
 			return this.workspaceService.rootPath;
 		}
 		const { activeTextEditor } = window;
+
 		if (activeTextEditor) {
 			return path.dirname(activeTextEditor.document.uri.fsPath);
 		}
@@ -639,7 +692,9 @@ export class TensorBoardSession {
 
 	private async jumpToSource(fsPath: string, line: number) {
 		sendTelemetryEvent(EventName.TENSORBOARD_JUMP_TO_SOURCE_REQUEST);
+
 		let uri: Uri | undefined;
+
 		if (fs.existsSync(fsPath)) {
 			uri = Uri.file(fsPath);
 		} else {
@@ -664,6 +719,7 @@ export class TensorBoardSession {
 					title: TensorBoard.missingSourceFile,
 					placeholder: fsPath,
 				});
+
 				switch (selection?.label) {
 					case TensorBoard.selectMissingSourceFile: {
 						const filePickerSelection =
@@ -672,6 +728,7 @@ export class TensorBoardSession {
 								canSelectFolders: false,
 								canSelectMany: false,
 							});
+
 						if (filePickerSelection !== undefined) {
 							[uri] = filePickerSelection;
 						}
@@ -686,6 +743,7 @@ export class TensorBoardSession {
 			return;
 		}
 		const document = await workspace.openTextDocument(uri);
+
 		const editor = await window.showTextDocument(
 			document,
 			ViewColumn.Beside,
@@ -693,6 +751,7 @@ export class TensorBoardSession {
 		// Select the line if it exists in the document
 		if (line < editor.document.lineCount) {
 			const position = new Position(line, 0);
+
 			const selection = new Selection(
 				position,
 				editor.document.lineAt(line).range.end,
@@ -712,6 +771,7 @@ export class TensorBoardSession {
 		// to a system or user action — for example, in remote cases, a user may
 		// close a port forwarding tunnel that was opened by asExternalUri."
 		const fullWebServerUri = await env.asExternalUri(Uri.parse(this.url!));
+
 		return `<!DOCTYPE html>
         <html lang="en">
             <head>
@@ -724,8 +784,10 @@ export class TensorBoardSession {
                 <script type="text/javascript">
                     (function() {
                         const vscode = acquireVsCodeApi();
+
                         function resizeFrame() {
                             var f = window.document.getElementById('vscode-tensorboard-iframe');
+
                             if (f) {
                                 f.style.height = window.innerHeight / 0.8 + "px";
                                 f.style.width = window.innerWidth / 0.8 + "px";

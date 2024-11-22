@@ -58,6 +58,7 @@ export type PixiEnvMetadata = {
 
 export async function isPixiEnvironment(interpreterPath: string): Promise<boolean> {
     const prefix = getPrefixFromInterpreterPath(interpreterPath);
+
     return (
         pathExists(path.join(prefix, 'conda-meta/pixi')) || pathExists(path.join(prefix, 'conda-meta/pixi_env_prefix'))
     );
@@ -68,6 +69,7 @@ export async function isPixiEnvironment(interpreterPath: string): Promise<boolea
  */
 export function getPrefixFromInterpreterPath(interpreterPath: string): string {
     const interpreterDir = path.dirname(interpreterPath);
+
     if (!interpreterDir.endsWith('bin') && !interpreterDir.endsWith('Scripts')) {
         return interpreterDir;
     }
@@ -122,9 +124,11 @@ export class Pixi {
             }
 
             const pixiInfo: PixiInfo = JSON.parse(infoOutput.stdout);
+
             return pixiInfo;
         } catch (error) {
             traceWarn(`Failed to get pixi info for ${cwd}`, error);
+
             return undefined;
         }
     }
@@ -138,11 +142,13 @@ export class Pixi {
      */
     public getRunPythonArgs(manifestPath: string, envName?: string, isolatedFlag = false): string[] {
         let python = [this.command, 'run', '--manifest-path', manifestPath];
+
         if (isNonDefaultPixiEnvironmentName(envName)) {
             python = python.concat(['--environment', envName]);
         }
 
         python.push('python');
+
         if (isolatedFlag) {
             python.push('-I');
         }
@@ -159,8 +165,10 @@ export class Pixi {
     // eslint-disable-next-line class-methods-use-this
     async getPixiEnvironmentMetadata(envDir: string): Promise<PixiEnvMetadata | undefined> {
         const pixiPath = path.join(envDir, 'conda-meta/pixi');
+
         try {
             const result: PixiEnvMetadata | undefined = await readJSON(pixiPath);
+
             return result;
         } catch (e) {
             traceVerbose(`Failed to get pixi environment metadata for ${envDir}`, e);
@@ -174,10 +182,13 @@ async function getPixiTool(): Promise<Pixi | undefined> {
 
     if (!pixi || pixi === 'pixi' || !(await pathExists(pixi))) {
         pixi = undefined;
+
         const paths = await findPixiOnPath();
+
         for (const p of paths) {
             if (await pathExists(p)) {
                 pixi = p;
+
                 break;
             }
         }
@@ -186,8 +197,10 @@ async function getPixiTool(): Promise<Pixi | undefined> {
     if (!pixi) {
         // Check the default installation location
         const home = getUserHomeDir();
+
         if (home) {
             const pixiToolPath = path.join(home, '.pixi', 'bin', isWindows() ? 'pixi.exe' : 'pixi');
+
             if (await pathExists(pixiToolPath)) {
                 pixi = pixiToolPath;
             }
@@ -227,7 +240,9 @@ export type PixiEnvironmentInfo = {
 
 function isPixiProjectDir(pixiProjectDir: string): boolean {
     const paths = getWorkspaceFolderPaths().map((f) => path.normalize(f));
+
     const normalized = path.normalize(pixiProjectDir);
+
     return paths.some((p) => p === normalized);
 }
 
@@ -246,14 +261,18 @@ export async function getPixiEnvironmentFromInterpreter(
     }
 
     const prefix = getPrefixFromInterpreterPath(interpreterPath);
+
     const pixi = await getPixi();
+
     if (!pixi) {
         traceVerbose(`could not find a pixi interpreter for the interpreter at ${interpreterPath}`);
+
         return undefined;
     }
 
     // Check if the environment has pixi metadata that we can source.
     const metadata = await pixi.getPixiEnvironmentMetadata(prefix);
+
     if (metadata !== undefined) {
         return {
             interpreterPath,
@@ -269,18 +288,25 @@ export async function getPixiEnvironmentFromInterpreter(
     // Usually the pixi environments are stored under `<projectDir>/.pixi/envs/<environment>/`. So,
     // we walk backwards to determine the project directory.
     let envName: string | undefined;
+
     let envsDir: string;
+
     let dotPixiDir: string;
+
     let pixiProjectDir: string;
+
     let pixiInfo: PixiInfo | undefined;
 
     try {
         envName = path.basename(prefix);
         envsDir = path.dirname(prefix);
+
         dotPixiDir = path.dirname(envsDir);
         pixiProjectDir = path.dirname(dotPixiDir);
+
         if (!isPixiProjectDir(pixiProjectDir)) {
             traceVerbose(`could not determine the pixi project directory for the interpreter at ${interpreterPath}`);
+
             return undefined;
         }
 
@@ -289,6 +315,7 @@ export async function getPixiEnvironmentFromInterpreter(
 
         if (!pixiInfo || !pixiInfo.project_info) {
             traceWarn(`failed to determine pixi project information for the interpreter at ${interpreterPath}`);
+
             return undefined;
         }
 
@@ -326,6 +353,7 @@ export function registerPixiFeatures(disposables: IDisposableRegistry): void {
  */
 export async function getRunPixiPythonCommand(pythonPath: string): Promise<string[] | undefined> {
     const pixiEnv = await getPixiEnvironmentFromInterpreter(pythonPath);
+
     if (!pixiEnv) {
         return undefined;
     }
@@ -336,12 +364,14 @@ export async function getRunPixiPythonCommand(pythonPath: string): Promise<strin
         '--manifest-path',
         pixiEnv.manifestPath.toCommandArgumentForPythonExt(),
     ];
+
     if (isNonDefaultPixiEnvironmentName(pixiEnv.envName)) {
         args.push('--environment');
         args.push(pixiEnv.envName.toCommandArgumentForPythonExt());
     }
 
     args.push('python');
+
     return args;
 }
 
@@ -350,6 +380,7 @@ export async function getPixiActivationCommands(
     _targetShell?: TerminalShellType,
 ): Promise<string[] | undefined> {
     const pixiEnv = await getPixiEnvironmentFromInterpreter(pythonPath);
+
     if (!pixiEnv) {
         return undefined;
     }
@@ -360,6 +391,7 @@ export async function getPixiActivationCommands(
         '--manifest-path',
         pixiEnv.manifestPath.toCommandArgumentForPythonExt(),
     ];
+
     if (isNonDefaultPixiEnvironmentName(pixiEnv.envName)) {
         args.push('--environment');
         args.push(pixiEnv.envName.toCommandArgumentForPythonExt());
@@ -382,5 +414,6 @@ export async function getPixiActivationCommands(
     //     removeEmptyEntries: true,
     //     trim: true,
     // });
+
     return [args.join(' ')];
 }

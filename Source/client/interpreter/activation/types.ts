@@ -15,12 +15,14 @@ export interface IEnvironmentActivationService {
 		resource: Resource,
 		shell?: string,
 	): Promise<EnvironmentVariables>;
+
 	getActivatedEnvironmentVariables(
 		resource: Resource,
 		interpreter?: PythonEnvironment,
 		allowExceptions?: boolean,
 		shell?: string,
 	): Promise<NodeJS.ProcessEnv | undefined>;
+
 	getEnvironmentActivationShellCommands(
 		resource: Resource,
 		interpreter?: PythonEnvironment,

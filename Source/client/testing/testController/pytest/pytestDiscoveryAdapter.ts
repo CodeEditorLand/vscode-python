@@ -49,6 +49,7 @@ export class PytestTestDiscoveryAdapter implements ITestDiscoveryAdapter {
 
         // this is only a placeholder to handle function overloading until rewrite is finished
         const discoveryPayload: DiscoveredTestPayload = { cwd: uri.fsPath, status: 'success' };
+
         return discoveryPayload;
     }
 
@@ -59,15 +60,22 @@ export class PytestTestDiscoveryAdapter implements ITestDiscoveryAdapter {
         interpreter?: PythonEnvironment,
     ): Promise<void> {
         const relativePathToPytest = 'python_files';
+
         const fullPluginPath = path.join(EXTENSION_ROOT_DIR, relativePathToPytest);
+
         const settings = this.configSettings.getSettings(uri);
+
         let { pytestArgs } = settings.testing;
+
         const cwd = settings.testing.cwd && settings.testing.cwd.length > 0 ? settings.testing.cwd : uri.fsPath;
 
         // check for symbolic path
         const stats = await fs.promises.lstat(cwd);
+
         const resolvedPath = await fs.promises.realpath(cwd);
+
         let isSymbolicLink = false;
+
         if (stats.isSymbolicLink()) {
             isSymbolicLink = true;
             traceWarn('The cwd is a symbolic link.');
@@ -91,10 +99,12 @@ export class PytestTestDiscoveryAdapter implements ITestDiscoveryAdapter {
         };
         // get python path from mutable env, it contains process.env as well
         const pythonPathParts: string[] = mutableEnv.PYTHONPATH?.split(path.delimiter) ?? [];
+
         const pythonPathCommand = [fullPluginPath, ...pythonPathParts].join(path.delimiter);
         mutableEnv.PYTHONPATH = pythonPathCommand;
         mutableEnv.TEST_RUN_PIPE = discoveryPipeName;
         traceInfo(`All environment variables set for pytest discovery: ${JSON.stringify(mutableEnv)}`);
+
         const spawnOptions: SpawnOptions = {
             cwd,
             throwOnStdErr: true,
@@ -108,12 +118,14 @@ export class PytestTestDiscoveryAdapter implements ITestDiscoveryAdapter {
             resource: uri,
             interpreter,
         };
+
         const execService = await executionFactory?.createActivatedEnvironment(creationOptions);
         // delete UUID following entire discovery finishing.
         const execArgs = ['-m', 'pytest', '-p', 'vscode_pytest', '--collect-only'].concat(pytestArgs);
         traceVerbose(`Running pytest discovery with command: ${execArgs.join(' ')} for workspace ${uri.fsPath}.`);
 
         const deferredTillExecClose: Deferred<void> = createTestingDeferred();
+
         const result = execService?.execObservable(execArgs, spawnOptions);
 
         // Take all output from the subprocess and add it to the test output channel. This will be the pytest output.
@@ -132,6 +144,7 @@ export class PytestTestDiscoveryAdapter implements ITestDiscoveryAdapter {
         });
         result?.proc?.on('exit', (code, signal) => {
             this.outputChannel?.append(MESSAGE_ON_TESTING_OUTPUT_MOVE);
+
             if (code !== 0) {
                 traceError(
                     `Subprocess exited unsuccessfully with exit code ${code} and signal ${signal} on workspace ${uri.fsPath}.`,

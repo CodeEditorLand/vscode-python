@@ -14,6 +14,7 @@ import { pathExists } from "../externalDependencies";
  */
 export function getMicrosoftStoreAppsRoot(): string {
 	const localAppData = getEnvironmentVariable("LOCALAPPDATA") || "";
+
 	return path.join(localAppData, "Microsoft", "WindowsApps");
 }
 /**
@@ -30,6 +31,7 @@ function isForbiddenStorePath(absPath: string): boolean {
 		)
 		.normalize()
 		.toUpperCase();
+
 	return path
 		.normalize(absPath)
 		.toUpperCase()
@@ -50,6 +52,7 @@ export function isMicrosoftStoreDir(dirPath: string): boolean {
 	const storeRootPath = path
 		.normalize(getMicrosoftStoreAppsRoot())
 		.toUpperCase();
+
 	return (
 		path.normalize(dirPath).toUpperCase().includes(storeRootPath) ||
 		isForbiddenStorePath(dirPath)
@@ -80,6 +83,7 @@ export async function isStorePythonInstalled(
 			pathExists(path.join(path.dirname(interpreterPath), "idle.exe")),
 			pathExists(path.join(path.dirname(interpreterPath), "pip.exe")),
 		]);
+
 		return results.includes(true);
 	}
 	return false;
@@ -124,9 +128,11 @@ export async function isMicrosoftStoreEnvironment(
 		const pythonPathToCompare = path
 			.normalize(interpreterPath)
 			.toUpperCase();
+
 		const localAppDataStorePath = path
 			.normalize(getMicrosoftStoreAppsRoot())
 			.toUpperCase();
+
 		if (pythonPathToCompare.includes(localAppDataStorePath)) {
 			return true;
 		}
@@ -137,6 +143,7 @@ export async function isMicrosoftStoreEnvironment(
 			traceWarn(
 				"isMicrosoftStoreEnvironment called with Program Files store path.",
 			);
+
 			return true;
 		}
 	}

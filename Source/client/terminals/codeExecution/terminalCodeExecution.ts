@@ -39,6 +39,7 @@ export class TerminalCodeExecutionProvider implements ICodeExecutionService {
 
     public async executeFile(file: Uri, options?: { newTerminalPerFile: boolean }) {
         await this.setCwdForFileExecution(file, options);
+
         const { command, args } = await this.getExecuteFileArgs(file, [
             file.fsPath.fileToCommandArgumentForPythonExt(),
         ]);
@@ -51,10 +52,12 @@ export class TerminalCodeExecutionProvider implements ICodeExecutionService {
             return;
         }
         await this.initializeRepl(resource);
+
         if (code == 'deprecated') {
             // If user is trying to smart send deprecated code show warning
             const selection = await showWarningMessage(Diagnostics.invalidSmartSendMessage, Repl.disableSmartSend);
             traceInfo(`Selected file contains invalid Python or Deprecated Python 2 code`);
+
             if (selection === Repl.disableSmartSend) {
                 this.configurationService.updateSetting('REPL.enableREPLSmartSend', false, resource);
             }
@@ -65,18 +68,22 @@ export class TerminalCodeExecutionProvider implements ICodeExecutionService {
 
     public async initializeRepl(resource: Resource) {
         const terminalService = this.getTerminalService(resource);
+
         if (this.replActive && (await this.replActive)) {
             await terminalService.show();
+
             return;
         }
         sendTelemetryEvent(EventName.REPL, undefined, { replType: 'Terminal' });
         this.replActive = new Promise<boolean>(async (resolve) => {
             const replCommandArgs = await this.getExecutableInfo(resource);
+
             let listener: IDisposable;
             Promise.race([
                 new Promise<boolean>((resolve) => setTimeout(() => resolve(true), 3000)),
                 new Promise<boolean>((resolve) => {
                     let count = 0;
+
                     const terminalDataTimeout = setTimeout(() => {
                         resolve(true); // Fall back for test case scenarios.
                     }, 3000);
@@ -85,6 +92,7 @@ export class TerminalCodeExecutionProvider implements ICodeExecutionService {
                         for (let i = 0; i < e.data.length; i++) {
                             if (e.data[i] === '>') {
                                 count++;
+
                                 if (count === 3) {
                                     clearTimeout(terminalDataTimeout);
                                     resolve(true);
@@ -113,10 +121,15 @@ export class TerminalCodeExecutionProvider implements ICodeExecutionService {
 
     public async getExecutableInfo(resource?: Uri, args: string[] = []): Promise<PythonExecInfo> {
         const pythonSettings = this.configurationService.getSettings(resource);
+
         const interpreter = await this.interpreterService.getActiveInterpreter(resource);
+
         const interpreterPath = interpreter?.path ?? pythonSettings.pythonPath;
+
         const command = this.platformService.isWindows ? interpreterPath.replace(/\\/g, '/') : interpreterPath;
+
         const launchArgs = pythonSettings.terminal.launchArgs;
+
         return buildPythonExecInfo(command, [...launchArgs, ...args]);
     }
 
@@ -133,17 +146,21 @@ export class TerminalCodeExecutionProvider implements ICodeExecutionService {
     }
     private async setCwdForFileExecution(file: Uri, options?: { newTerminalPerFile: boolean }) {
         const pythonSettings = this.configurationService.getSettings(file);
+
         if (!pythonSettings.terminal.executeInFileDir) {
             return;
         }
         const fileDirPath = path.dirname(file.fsPath);
+
         if (fileDirPath.length > 0) {
             if (this.platformService.isWindows && /[a-z]\:/i.test(fileDirPath)) {
                 const currentDrive =
                     typeof this.workspace.rootPath === 'string'
                         ? this.workspace.rootPath.replace(/\:.*/g, '')
                         : undefined;
+
                 const fileDrive = fileDirPath.replace(/\:.*/g, '');
+
                 if (fileDrive !== currentDrive || this.hasRanOutsideCurrentDrive) {
                     this.hasRanOutsideCurrentDrive = true;
                     await this.getTerminalService(file).sendText(`${fileDrive}:`);

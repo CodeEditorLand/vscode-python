@@ -119,7 +119,9 @@ export class ExtensionActivationManager implements IExtensionActivationManager {
 	): Promise<void> {
 		const folder = this.workspaceService.getWorkspaceFolder(resource);
 		resource = folder ? folder.uri : undefined;
+
 		const key = this.getWorkspaceKey(resource);
+
 		if (this.activatedWorkspaces.has(key)) {
 			return;
 		}
@@ -155,6 +157,7 @@ export class ExtensionActivationManager implements IExtensionActivationManager {
 			return;
 		}
 		const key = this.getWorkspaceKey(doc.uri);
+
 		const hasWorkspaceFolders =
 			(this.workspaceService.workspaceFolders?.length || 0) > 0;
 		// If we have opened a doc that does not belong to workspace, then do nothing.
@@ -198,10 +201,13 @@ export class ExtensionActivationManager implements IExtensionActivationManager {
 		const workspaceKeys = this.workspaceService.workspaceFolders!.map(
 			(workspaceFolder) => this.getWorkspaceKey(workspaceFolder.uri),
 		);
+
 		const activatedWkspcKeys = Array.from(this.activatedWorkspaces.keys());
+
 		const activatedWkspcFoldersRemoved = activatedWkspcKeys.filter(
 			(item) => workspaceKeys.indexOf(item) < 0,
 		);
+
 		if (activatedWkspcFoldersRemoved.length > 0) {
 			for (const folder of activatedWkspcFoldersRemoved) {
 				this.activatedWorkspaces.delete(folder);

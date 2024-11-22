@@ -57,7 +57,9 @@ const convertedKinds = new Map(
 function convertEnvInfo(info: PythonEnvInfo): PythonEnvironment {
 	const { name, location, executable, arch, kind, version, distro, id } =
 		info;
+
 	const { filename, sysPrefix } = executable;
+
 	const env: PythonEnvironment = {
 		id,
 		sysPrefix,
@@ -69,6 +71,7 @@ function convertEnvInfo(info: PythonEnvInfo): PythonEnvironment {
 	};
 
 	const envType = convertedKinds.get(kind);
+
 	if (envType !== undefined) {
 		env.envType = envType;
 	}
@@ -76,6 +79,7 @@ function convertEnvInfo(info: PythonEnvInfo): PythonEnvironment {
 
 	if (version !== undefined) {
 		const { release, sysVersion } = version;
+
 		if (release === undefined) {
 			env.sysVersion = "";
 		} else {
@@ -144,6 +148,7 @@ class ComponentAdapter implements IComponentAdapter {
 		const workspaceFolder = resource
 			? vscode.workspace.getWorkspaceFolder(resource)
 			: undefined;
+
 		return this.api.onChanged((e) => {
 			if (!workspaceFolder || !e.searchLocation) {
 				return;
@@ -151,6 +156,7 @@ class ComponentAdapter implements IComponentAdapter {
 			traceVerbose(
 				`Received event ${JSON.stringify(e)} file change event`,
 			);
+
 			if (
 				e.type === FileChangeType.Created &&
 				isParentPath(
@@ -168,6 +174,7 @@ class ComponentAdapter implements IComponentAdapter {
 		pythonPath: string,
 	): Promise<Partial<PythonEnvironment> | undefined> {
 		const env = await this.api.resolveEnv(pythonPath);
+
 		return env ? convertEnvInfo(env) : undefined;
 	}
 
@@ -187,6 +194,7 @@ class ComponentAdapter implements IComponentAdapter {
 		pythonPath: string,
 	): Promise<PythonEnvironment | undefined> {
 		const env = await this.api.resolveEnv(pythonPath);
+
 		if (!env) {
 			return undefined;
 		}
@@ -245,9 +253,11 @@ class ComponentAdapter implements IComponentAdapter {
 				}
 			}
 		});
+
 		const initialEnvs = await asyncFilter(this.api.getEnvs(), (e) =>
 			filter(convertEnvInfo(e)),
 		);
+
 		if (initialEnvs.length > 0) {
 			return true;
 		}
@@ -258,9 +268,11 @@ class ComponentAdapter implements IComponentAdapter {
 			onAddedToCollection.promise,
 			this.api.getRefreshPromise(),
 		]);
+
 		const envs = await asyncFilter(this.api.getEnvs(), (e) =>
 			filter(convertEnvInfo(e)),
 		);
+
 		return envs.length > 0;
 	}
 
@@ -269,10 +281,14 @@ class ComponentAdapter implements IComponentAdapter {
 		source?: PythonEnvSource[],
 	): PythonEnvironment[] {
 		const query: PythonLocatorQuery = {};
+
 		let roots: vscode.Uri[] = [];
+
 		let wsFolder: vscode.WorkspaceFolder | undefined;
+
 		if (resource !== undefined) {
 			wsFolder = vscode.workspace.getWorkspaceFolder(resource);
+
 			if (wsFolder) {
 				roots = [wsFolder.uri];
 			}
@@ -292,6 +308,7 @@ class ComponentAdapter implements IComponentAdapter {
 		};
 
 		let envs = this.api.getEnvs(query);
+
 		if (source) {
 			envs = envs.filter(
 				(env) => intersection(source, env.source).length > 0,
@@ -306,6 +323,7 @@ class ComponentAdapter implements IComponentAdapter {
 		options?: { ignoreCache?: boolean },
 	): Promise<PythonEnvironment[]> {
 		const workspaceFolder = vscode.workspace.getWorkspaceFolder(resource);
+
 		if (!workspaceFolder) {
 			return [];
 		}
@@ -315,11 +333,14 @@ class ComponentAdapter implements IComponentAdapter {
 				doNotIncludeNonRooted: true,
 			},
 		};
+
 		if (options?.ignoreCache) {
 			await this.api.triggerRefresh(query);
 		}
 		await this.api.getRefreshPromise();
+
 		const envs = this.api.getEnvs(query);
+
 		return envs.map(convertEnvInfo);
 	}
 }

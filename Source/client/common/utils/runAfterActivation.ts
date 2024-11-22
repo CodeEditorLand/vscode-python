@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 const itemsToRun: (() => void)[] = [];
+
 let activationCompleted = false;
 
 /**
@@ -22,8 +23,10 @@ export function addItemsToRunAfterActivation(run: () => void): void {
  */
 export function runAfterActivation(): void {
 	activationCompleted = true;
+
 	while (itemsToRun.length > 0) {
 		const run = itemsToRun.shift();
+
 		if (run) {
 			run();
 		}

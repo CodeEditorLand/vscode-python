@@ -12,9 +12,11 @@ export const IPythonPathUpdaterServiceFactory = Symbol(
 );
 export interface IPythonPathUpdaterServiceFactory {
 	getGlobalPythonPathConfigurationService(): IPythonPathUpdaterService;
+
 	getWorkspacePythonPathConfigurationService(
 		wkspace: Uri,
 	): IPythonPathUpdaterService;
+
 	getWorkspaceFolderPythonPathConfigurationService(
 		workspaceFolder: Uri,
 	): IPythonPathUpdaterService;
@@ -42,6 +44,7 @@ export interface IInterpreterSelector extends Disposable {
 	 * @deprecated Only exists for old Jupyter integration.
 	 */
 	getAllSuggestions(resource: Resource): Promise<IInterpreterQuickPickItem[]>;
+
 	getSuggestions(
 		resource: Resource,
 		useFullDisplayName?: boolean,
@@ -72,6 +75,7 @@ export const IInterpreterComparer = Symbol("IInterpreterComparer");
 export interface IInterpreterComparer {
 	initialize(resource: Resource): Promise<void>;
 	compare(a: PythonEnvironment, b: PythonEnvironment): number;
+
 	getRecommended(
 		interpreters: PythonEnvironment[],
 		resource: Resource,

@@ -20,6 +20,7 @@ export interface PylanceApi {
 		registerJupyterPythonPathFunction(
 			func: (uri: Uri) => Promise<string | undefined>,
 		): void;
+
 		getCompletionItems(
 			document: TextDocument,
 			position: Position,

@@ -57,6 +57,7 @@ export class TensorboardDependencyChecker {
 		resource?: Uri,
 	): Promise<boolean> {
 		const disposables: IDisposable[] = [];
+
 		const newSession = new TensorBoardSession(
 			this.installer,
 			this.interpreterService,
@@ -69,9 +70,11 @@ export class TensorboardDependencyChecker {
 			this.multiStepFactory,
 			this.configurationService,
 		);
+
 		const result =
 			await newSession.ensurePrerequisitesAreInstalled(resource);
 		disposeAll(disposables);
+
 		return result;
 	}
 }

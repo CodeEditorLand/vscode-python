@@ -56,6 +56,7 @@ export class LaunchConfigurationResolver extends BaseConfigurationResolver<Launc
 		_token?: CancellationToken,
 	): Promise<LaunchRequestArguments | undefined> {
 		this.isCustomPythonSet = debugConfiguration.python !== undefined;
+
 		if (
 			debugConfiguration.name === undefined &&
 			debugConfiguration.type === undefined &&
@@ -78,6 +79,7 @@ export class LaunchConfigurationResolver extends BaseConfigurationResolver<Launc
 		// this method, as in order to calculate substituted variables, this might be needed.
 		debugConfiguration.workspaceFolder = workspaceFolder?.fsPath;
 		await this.resolveAndUpdatePaths(workspaceFolder, debugConfiguration);
+
 		if (debugConfiguration.clientOS === undefined) {
 			debugConfiguration.clientOS =
 				getOSType() === OSType.Windows ? "windows" : "unix";
@@ -98,6 +100,7 @@ export class LaunchConfigurationResolver extends BaseConfigurationResolver<Launc
 			folder,
 			debugConfiguration,
 		);
+
 		if (!isValid) {
 			return undefined;
 		}
@@ -116,6 +119,7 @@ export class LaunchConfigurationResolver extends BaseConfigurationResolver<Launc
 			CreateEnvironmentCheckKind.Workspace,
 			workspaceFolder,
 		);
+
 		return debugConfiguration;
 	}
 
@@ -145,6 +149,7 @@ export class LaunchConfigurationResolver extends BaseConfigurationResolver<Launc
 			debugConfiguration.envFile = settings.envFile;
 		}
 		let baseEnvVars: EnvironmentVariables | undefined;
+
 		if (
 			this.isCustomPythonSet ||
 			debugConfiguration.console !== "integratedTerminal"
@@ -173,6 +178,7 @@ export class LaunchConfigurationResolver extends BaseConfigurationResolver<Launc
 		}
 		debugConfiguration.showReturnValue =
 			debugConfiguration.showReturnValue !== false;
+
 		if (!debugConfiguration.console) {
 			debugConfiguration.console = "integratedTerminal";
 		}
@@ -187,6 +193,7 @@ export class LaunchConfigurationResolver extends BaseConfigurationResolver<Launc
 			debugConfiguration.debugOptions = [];
 		}
 		const debugOptions = debugConfiguration.debugOptions!;
+
 		if (debugConfiguration.stopOnEntry) {
 			LaunchConfigurationResolver.debugOption(
 				debugOptions,
@@ -243,8 +250,10 @@ export class LaunchConfigurationResolver extends BaseConfigurationResolver<Launc
 		}
 		const isFastAPI =
 			LaunchConfigurationResolver.isDebuggingFastAPI(debugConfiguration);
+
 		const isFlask =
 			LaunchConfigurationResolver.isDebuggingFlask(debugConfiguration);
+
 		if (
 			(debugConfiguration.pyramid || isFlask || isFastAPI) &&
 			debugOptions.indexOf(DebugOptions.Jinja) === -1 &&
@@ -259,6 +268,7 @@ export class LaunchConfigurationResolver extends BaseConfigurationResolver<Launc
 		// (See: https://github.com/microsoft/vscode-python/issues/3568)
 		if (debugConfiguration.pathMappings) {
 			let { pathMappings } = debugConfiguration;
+
 			if (pathMappings.length > 0) {
 				pathMappings = LaunchConfigurationResolver.fixUpPathMappings(
 					pathMappings || [],
@@ -281,6 +291,7 @@ export class LaunchConfigurationResolver extends BaseConfigurationResolver<Launc
 		debugConfiguration: LaunchRequestArguments,
 	): Promise<boolean> {
 		const diagnosticService = this.invalidPythonPathInDebuggerService;
+
 		for (const executable of [
 			debugConfiguration.python,
 			debugConfiguration.debugAdapterPython,

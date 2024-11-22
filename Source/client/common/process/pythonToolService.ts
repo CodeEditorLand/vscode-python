@@ -32,6 +32,7 @@ export class PythonToolExecutionService implements IPythonToolExecutionService {
 			const pythonExecutionService = await this.serviceContainer
 				.get<IPythonExecutionFactory>(IPythonExecutionFactory)
 				.create({ resource });
+
 			return pythonExecutionService.execModuleObservable(
 				executionInfo.moduleName,
 				executionInfo.args,
@@ -41,6 +42,7 @@ export class PythonToolExecutionService implements IPythonToolExecutionService {
 			const processService = await this.serviceContainer
 				.get<IProcessServiceFactory>(IProcessServiceFactory)
 				.create(resource);
+
 			return processService.execObservable(
 				executionInfo.execPath!,
 				executionInfo.args,
@@ -60,6 +62,7 @@ export class PythonToolExecutionService implements IPythonToolExecutionService {
 			const pythonExecutionService = await this.serviceContainer
 				.get<IPythonExecutionFactory>(IPythonExecutionFactory)
 				.create({ resource });
+
 			return pythonExecutionService.execModule(
 				executionInfo.moduleName,
 				executionInfo.args,
@@ -69,6 +72,7 @@ export class PythonToolExecutionService implements IPythonToolExecutionService {
 			const processService = await this.serviceContainer
 				.get<IProcessServiceFactory>(IProcessServiceFactory)
 				.create(resource);
+
 			return processService.exec(
 				executionInfo.execPath!,
 				executionInfo.args,

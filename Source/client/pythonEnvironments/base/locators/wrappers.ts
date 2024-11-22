@@ -37,6 +37,7 @@ export class ExtensionLocators<I = PythonEnvInfo> extends Locators<I> {
 		const iterators: IPythonEnvsIterator<I>[] = [
 			this.workspace.iterEnvs(query),
 		];
+
 		if (!query?.searchLocations?.doNotIncludeNonRooted) {
 			const nonWorkspace = query?.providerId
 				? this.nonWorkspace.filter(
@@ -115,8 +116,10 @@ export class WorkspaceLocators extends LazyResourceBasedLocator {
 			}
 			// The query matches or was not location-specific.
 			const [locator] = this.locators[key];
+
 			return locator.iterEnvs(query);
 		});
+
 		return combineIterators(iterators);
 	}
 
@@ -140,15 +143,18 @@ export class WorkspaceLocators extends LazyResourceBasedLocator {
 	private addRoot(root: Uri): void {
 		// Create the root's locator, wrapping each factory-generated locator.
 		const locators: ILocator<BasicEnvInfo>[] = [];
+
 		const disposables = new Disposables();
 		this.factories.forEach((create) => {
 			create(root).forEach((loc) => {
 				locators.push(loc);
+
 				if (loc.dispose !== undefined) {
 					disposables.push(loc as IDisposable);
 				}
 			});
 		});
+
 		const locator = new Locators(locators);
 		// Cache it.
 		const key = root.toString();
@@ -167,7 +173,9 @@ export class WorkspaceLocators extends LazyResourceBasedLocator {
 
 	private removeRoot(root: Uri): void {
 		const key = root.toString();
+
 		const found = this.locators[key];
+
 		if (found === undefined) {
 			return;
 		}

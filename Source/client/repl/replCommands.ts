@@ -29,7 +29,9 @@ export async function registerStartNativeReplCommand(
     disposables.push(
         registerCommand(Commands.Start_Native_REPL, async (uri: Uri) => {
             sendTelemetryEvent(EventName.REPL, undefined, { replType: 'Native' });
+
             const interpreter = await getActiveInterpreter(uri, interpreterService);
+
             if (interpreter) {
                 if (interpreter) {
                     const nativeRepl = await getNativeRepl(interpreter, disposables);
@@ -55,18 +57,23 @@ export async function registerReplCommands(
 
             if (!nativeREPLSetting) {
                 await executeInTerminal();
+
                 return;
             }
             const interpreter = await getActiveInterpreter(uri, interpreterService);
 
             if (interpreter) {
                 const nativeRepl = await getNativeRepl(interpreter, disposables);
+
                 const activeEditor = window.activeTextEditor;
+
                 if (activeEditor) {
                     const code = await getSelectedTextToExecute(activeEditor);
+
                     if (code) {
                         // Smart Send
                         let wholeFileContent = '';
+
                         if (activeEditor && activeEditor.document) {
                             wholeFileContent = activeEditor.document.getText();
                         }
@@ -110,13 +117,17 @@ async function onInputEnter(
     disposables: Disposable[],
 ): Promise<void> {
     const interpreter = await interpreterService.getActiveInterpreter(uri);
+
     if (!interpreter) {
         commands.executeCommand(Commands.TriggerEnvironmentSelection, uri).then(noop, noop);
+
         return;
     }
 
     const nativeRepl = await getNativeRepl(interpreter, disposables);
+
     const completeCode = await nativeRepl?.checkUserInputCompleteCode(window.activeTextEditor);
+
     const editor = window.activeTextEditor;
 
     if (editor) {

@@ -17,8 +17,10 @@ export const ICodeExecutionHelper = Symbol('ICodeExecutionHelper');
 
 export interface ICodeExecutionHelper {
     normalizeLines(code: string, replType: ReplType, wholeFileContent?: string, resource?: Uri): Promise<string>;
+
     getFileToExecute(): Promise<Uri | undefined>;
     saveFileIfDirty(file: Uri): Promise<Resource>;
+
     getSelectedTextToExecute(textEditor: TextEditor): Promise<string | undefined>;
 }
 
@@ -51,6 +53,7 @@ export interface IShellIntegrationDetectionService {
 export const ITerminalDeactivateService = Symbol('ITerminalDeactivateService');
 export interface ITerminalDeactivateService {
     initializeScriptParams(shell: string): Promise<void>;
+
     getScriptLocation(shell: string, resource: Resource): Promise<string | undefined>;
 }
 

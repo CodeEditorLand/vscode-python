@@ -47,6 +47,7 @@ export class UnitTestConfigurationService implements ITestConfigurationService {
 
 	public hasConfiguredTests(wkspace: Uri): boolean {
 		const settings = this.configurationService.getSettings(wkspace);
+
 		return (
 			settings.testing.pytestEnabled ||
 			settings.testing.unittestEnabled ||
@@ -56,8 +57,10 @@ export class UnitTestConfigurationService implements ITestConfigurationService {
 
 	public async displayTestFrameworkError(wkspace: Uri): Promise<void> {
 		const settings = this.configurationService.getSettings(wkspace);
+
 		let enabledCount = settings.testing.pytestEnabled ? 1 : 0;
 		enabledCount += settings.testing.unittestEnabled ? 1 : 0;
+
 		if (enabledCount > 1) {
 			return this._promptToEnableAndConfigureTestFramework(
 				wkspace,
@@ -66,10 +69,12 @@ export class UnitTestConfigurationService implements ITestConfigurationService {
 			);
 		}
 		const option = "Enable and configure a Test Framework";
+
 		const item = await this.appShell.showInformationMessage(
 			"No test framework configured (unittest, or pytest)",
 			option,
 		);
+
 		if (item !== option) {
 			throw NONE_SELECTED;
 		}
@@ -94,12 +99,14 @@ export class UnitTestConfigurationService implements ITestConfigurationService {
 				detail: "http://docs.pytest.org/",
 			},
 		];
+
 		const options = {
 			ignoreFocusOut: true,
 			matchOnDescription: true,
 			matchOnDetail: true,
 			placeHolder: placeHolderMessage,
 		};
+
 		const selectedTestRunner = await this.appShell.showQuickPick(
 			items,
 			options,
@@ -118,7 +125,9 @@ export class UnitTestConfigurationService implements ITestConfigurationService {
 			this.serviceContainer.get<ITestConfigurationManagerFactory>(
 				ITestConfigurationManagerFactory,
 			);
+
 		const configMgr = factory.create(wkspace, product);
+
 		return this._enableTest(wkspace, configMgr);
 	}
 
@@ -138,6 +147,7 @@ export class UnitTestConfigurationService implements ITestConfigurationService {
 			"python",
 			wkspace,
 		);
+
 		if (pythonConfig.get<boolean>("testing.promptToConfigure")) {
 			return configMgr.enable();
 		}
@@ -157,25 +167,31 @@ export class UnitTestConfigurationService implements ITestConfigurationService {
 			trigger,
 			failed: false,
 		};
+
 		try {
 			const selectedTestRunner =
 				await this.selectTestRunner(messageToDisplay);
+
 			if (typeof selectedTestRunner !== "number") {
 				throw NONE_SELECTED;
 			}
 			const helper =
 				this.serviceContainer.get<ITestsHelper>(ITestsHelper);
 			telemetryProps.tool = helper.parseProviderName(selectedTestRunner);
+
 			const delayed = new BufferedTestConfigSettingsService();
+
 			const factory =
 				this.serviceContainer.get<ITestConfigurationManagerFactory>(
 					ITestConfigurationManagerFactory,
 				);
+
 			const configMgr = factory.create(
 				wkspace,
 				selectedTestRunner,
 				delayed,
 			);
+
 			if (enableOnly) {
 				await configMgr.enable();
 			} else {
@@ -194,6 +210,7 @@ export class UnitTestConfigurationService implements ITestConfigurationService {
 			const cfg = this.serviceContainer.get<ITestConfigSettingsService>(
 				ITestConfigSettingsService,
 			);
+
 			try {
 				await delayed.apply(cfg);
 			} catch (exc) {

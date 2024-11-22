@@ -72,6 +72,7 @@ Promise.prototype.ignoreErrors = function <T>(this: Promise<T>) {
 if (!String.prototype.format) {
     String.prototype.format = function (this: string) {
         const args = arguments;
+
         return this.replace(/{(\d+)}/g, (match, number) => (args[number] === undefined ? match : args[number]));
     };
 }

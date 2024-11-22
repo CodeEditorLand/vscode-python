@@ -29,6 +29,7 @@ export interface IRegistry {
 		hive: RegistryHive,
 		arch?: Architecture,
 	): Promise<string[]>;
+
 	getValue(
 		key: string,
 		hive: RegistryHive,
@@ -52,6 +53,7 @@ export interface IPlatformService {
 	readonly isMac: boolean;
 	readonly isLinux: boolean;
 	readonly is64bit: boolean;
+
 	getVersion(): Promise<SemVer>;
 }
 
@@ -206,6 +208,7 @@ export interface IFileSystem {
 	// path-related
 	directorySeparatorChar: string;
 	arePathsSame(path1: string, path2: string): boolean;
+
 	getDisplayName(path: string): string;
 
 	// "raw" operations
@@ -235,8 +238,11 @@ export interface IFileSystem {
 	fileExists(path: string): Promise<boolean>;
 	fileExistsSync(path: string): boolean;
 	directoryExists(path: string): Promise<boolean>;
+
 	getSubDirectories(rootDir: string): Promise<string[]>;
+
 	getFiles(rootDir: string): Promise<string[]>;
+
 	getFileHash(filePath: string): Promise<string>;
 	search(globPattern: string, cwd?: string, dot?: boolean): Promise<string[]>;
 	createTemporaryFile(

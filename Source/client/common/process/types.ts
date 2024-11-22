@@ -30,6 +30,7 @@ export type SpawnOptions = ChildProcessSpawnOptions & {
 	encoding?: string;
 	token?: CancellationToken;
 	mergeStdOutErr?: boolean;
+
 	throwOnStdErr?: boolean;
 	extraVariables?: NodeJS.ProcessEnv;
 	outputChannel?: OutputChannel;
@@ -127,9 +128,12 @@ export const IPythonExecutionService = Symbol("IPythonExecutionService");
 
 export interface IPythonExecutionService {
 	getInterpreterInformation(): Promise<InterpreterInformation | undefined>;
+
 	getExecutablePath(): Promise<string | undefined>;
 	isModuleInstalled(moduleName: string): Promise<boolean>;
+
 	getModuleVersion(moduleName: string): Promise<string | undefined>;
+
 	getExecutionInfo(pythonArgs?: string[]): PythonExecInfo;
 
 	execObservable(
@@ -160,13 +164,17 @@ export interface IPythonExecutionService {
 
 export interface IPythonEnvironment {
 	getInterpreterInformation(): Promise<InterpreterInformation | undefined>;
+
 	getExecutionObservableInfo(
 		pythonArgs?: string[],
 		pythonExecutable?: string,
 	): PythonExecInfo;
+
 	getExecutablePath(): Promise<string | undefined>;
 	isModuleInstalled(moduleName: string): Promise<boolean>;
+
 	getModuleVersion(moduleName: string): Promise<string | undefined>;
+
 	getExecutionInfo(
 		pythonArgs?: string[],
 		pythonExecutable?: string,

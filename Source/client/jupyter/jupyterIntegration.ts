@@ -48,6 +48,7 @@ type PythonApiForJupyterExtension = {
 		interpreter: Environment,
 		allowExceptions?: boolean,
 	): Promise<NodeJS.ProcessEnv | undefined>;
+
 	getKnownSuggestions(resource: Resource): IInterpreterQuickPickItem[];
 	/**
 	 * @deprecated Use `getKnownSuggestions` and `suggestionToQuickPickItem` instead.
@@ -67,6 +68,7 @@ type PythonApiForJupyterExtension = {
 	registerInterpreterStatusFilter(
 		filter: IInterpreterStatusbarVisibilityFilter,
 	): void;
+
 	getCondaVersion(): Promise<SemVer | undefined>;
 	/**
 	 * Returns the conda executable.
@@ -121,10 +123,12 @@ export class JupyterExtensionIntegration {
 			ExtensionContextKey.IsJupyterInstalled,
 			true,
 		);
+
 		if (!this.workspaceService.isTrusted) {
 			this.workspaceService.onDidGrantWorkspaceTrust(() =>
 				this.registerApi(jupyterExtensionApi),
 			);
+
 			return undefined;
 		}
 		// Forward python parts
@@ -138,6 +142,7 @@ export class JupyterExtensionIntegration {
 					await this.interpreterService.getInterpreterDetails(
 						env.path,
 					);
+
 				return this.envActivation.getActivatedEnvironmentVariables(
 					resource,
 					interpreter,
@@ -167,11 +172,13 @@ export class JupyterExtensionIntegration {
 				func: (uri: Uri) => Promise<string | undefined>,
 			) => this.registerJupyterPythonPathFunction(func),
 		});
+
 		return undefined;
 	}
 
 	public async integrateWithJupyterExtension(): Promise<void> {
 		const api = await this.getExtensionApi();
+
 		if (api) {
 			this.registerApi(api);
 		}
@@ -194,12 +201,15 @@ export class JupyterExtensionIntegration {
 				this.extensions.getExtension<JupyterExtensionApi>(
 					JUPYTER_EXTENSION_ID,
 				);
+
 			if (!jupyterExtension) {
 				return undefined;
 			}
 			await jupyterExtension.activate();
+
 			if (jupyterExtension.isActive) {
 				this.jupyterExtension = jupyterExtension;
+
 				return this.jupyterExtension.exports;
 			}
 		} else {
@@ -210,6 +220,7 @@ export class JupyterExtensionIntegration {
 
 	private getPylanceApi(): PylanceApi | undefined {
 		const api = this.pylanceExtension?.exports;
+
 		return api && api.notebook && api.client && api.client.isEnabled()
 			? api
 			: undefined;
@@ -219,6 +230,7 @@ export class JupyterExtensionIntegration {
 		func: (uri: Uri) => Promise<string | undefined>,
 	) {
 		const api = this.getPylanceApi();
+
 		if (api) {
 			api.notebook!.registerJupyterPythonPathFunction(func);
 		}

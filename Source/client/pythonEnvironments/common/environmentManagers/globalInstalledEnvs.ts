@@ -30,6 +30,7 @@ export async function isGloballyInstalledEnv(
 
 async function isFoundInPathEnvVar(executablePath: string): Promise<boolean> {
 	let searchPathEntries: string[] = [];
+
 	if (getOSType() === OSType.Windows) {
 		searchPathEntries = getSearchPathEntries();
 	} else {
@@ -41,6 +42,7 @@ async function isFoundInPathEnvVar(executablePath: string): Promise<boolean> {
 	searchPathEntries = searchPathEntries.filter(
 		(dirname) => !isPyenvShimDir(dirname),
 	);
+
 	for (const searchPath of searchPathEntries) {
 		if (isParentPath(executablePath, searchPath)) {
 			return true;

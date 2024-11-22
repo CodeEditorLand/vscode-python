@@ -32,6 +32,7 @@ export class TerminalWatcher
 			return;
 		}
 		this.experiment.disposeOnInstallingTensorboard(this);
+
 		const handle = setInterval(() => {
 			// When user runs a command in VSCode terminal, the terminal's name
 			// becomes the program that is currently running. Since tensorboard
@@ -42,6 +43,7 @@ export class TerminalWatcher
 			const matches = window.terminals.filter(
 				(terminal) => terminal.name === "tensorboard",
 			);
+
 			if (matches.length > 0) {
 				sendTelemetryEvent(
 					EventName.TENSORBOARD_DETECTED_IN_INTEGRATED_TERMINAL,

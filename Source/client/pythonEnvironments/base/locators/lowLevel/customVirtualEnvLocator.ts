@@ -45,13 +45,17 @@ export const VENVFOLDERS_SETTING_KEY = "venvFolders";
  */
 async function getCustomVirtualEnvDirs(): Promise<string[]> {
 	const venvDirs: string[] = [];
+
 	const venvPath = getPythonSetting<string>(VENVPATH_SETTING_KEY);
+
 	if (venvPath) {
 		venvDirs.push(untildify(venvPath));
 	}
 	const venvFolders =
 		getPythonSetting<string[]>(VENVFOLDERS_SETTING_KEY) ?? [];
+
 	const homeDir = getUserHomeDir();
+
 	if (homeDir && (await pathExists(homeDir))) {
 		venvFolders
 			.map((item) =>
@@ -123,7 +127,9 @@ export class CustomVirtualEnvironmentLocator extends FSWatchingLocator {
 		async function* iterator() {
 			const stopWatch = new StopWatch();
 			traceInfo("Searching for custom virtual environments");
+
 			const envRootDirs = await getCustomVirtualEnvDirs();
+
 			const envGenerators = envRootDirs.map((envRootDir) => {
 				async function* generator() {
 					traceVerbose(
@@ -147,6 +153,7 @@ export class CustomVirtualEnvironmentLocator extends FSWatchingLocator {
 								// check multiple times. Those checks are file system heavy and
 								// we can use the kind to determine this anyway.
 								const kind = await getVirtualEnvKind(filename);
+
 								yield { kind, executablePath: filename };
 								traceVerbose(
 									`Custom Virtual Environment: [added] ${filename}`,

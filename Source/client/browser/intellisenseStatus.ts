@@ -23,6 +23,7 @@ export function createStatusItem(): vscode.Disposable {
 			command: "vscode.open",
 			arguments: [vscode.Uri.parse("https://aka.ms/AAdzyh4")],
 		};
+
 		return statusItem;
 	}
 	// eslint-disable-next-line @typescript-eslint/no-empty-function

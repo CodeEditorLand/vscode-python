@@ -40,7 +40,9 @@ export class ProcessLogger implements IProcessLogger {
 					.map((e) => e.trimQuotes().toCommandArgumentForPythonExt())
 					.join(" ")
 			: fileOrCommand;
+
 		const info = [`> ${this.getDisplayCommands(command)}`];
+
 		if (options?.cwd) {
 			const cwd: string =
 				typeof options?.cwd === "string"
@@ -69,6 +71,7 @@ export class ProcessLogger implements IProcessLogger {
 			);
 		}
 		const home = getUserHomeDir();
+
 		if (home) {
 			command = replaceMatchesWithCharacter(command, home, "~");
 		}
@@ -88,11 +91,13 @@ function replaceMatchesWithCharacter(
 	// we need to escape using an extra backlash so it's not considered special.
 	function getRegex(match: string) {
 		let pattern = escapeRegExp(match);
+
 		if (getOSType() === OSType.Windows) {
 			// Match both forward and backward slash versions of 'match' for Windows.
 			pattern = replaceAll(pattern, "\\\\", "(\\\\|/)");
 		}
 		let regex = new RegExp(pattern, "ig");
+
 		return regex;
 	}
 
@@ -104,9 +109,12 @@ function replaceMatchesWithCharacter(
 
 	for (let i = 0; i < chunked.length; i++) {
 		let regex = getRegex(match);
+
 		const regexResult = regex.exec(chunked[i]);
+
 		if (regexResult) {
 			const regexIndex = regexResult.index;
+
 			if (
 				regexIndex > 0 &&
 				isPrevioustoMatchRegexALetter(chunked[i], regexIndex - 1)

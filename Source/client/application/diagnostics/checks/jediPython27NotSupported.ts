@@ -68,6 +68,7 @@ export class JediPython27NotSupportedDiagnosticService extends BaseDiagnosticsSe
 	public async diagnose(resource: Resource): Promise<IDiagnostic[]> {
 		const interpreter =
 			await this.interpreterService.getActiveInterpreter(resource);
+
 		const { languageServer } =
 			this.configurationService.getSettings(resource);
 
@@ -96,6 +97,7 @@ export class JediPython27NotSupportedDiagnosticService extends BaseDiagnosticsSe
 			return;
 		}
 		const diagnostic = diagnostics[0];
+
 		if (await this.filterService.shouldIgnoreDiagnostic(diagnostic.code)) {
 			return;
 		}
@@ -104,6 +106,7 @@ export class JediPython27NotSupportedDiagnosticService extends BaseDiagnosticsSe
 			this.serviceContainer.get<IDiagnosticsCommandFactory>(
 				IDiagnosticsCommandFactory,
 			);
+
 		const options = [
 			{
 				prompt: Common.gotIt,

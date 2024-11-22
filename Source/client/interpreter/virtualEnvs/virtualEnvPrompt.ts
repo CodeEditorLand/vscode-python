@@ -61,17 +61,21 @@ export class VirtualEnvironmentPrompt implements IExtensionActivationService {
 		}
 		const interpreters =
 			await this.pyenvs.getWorkspaceVirtualEnvInterpreters(resource);
+
 		const interpreter =
 			Array.isArray(interpreters) && interpreters.length > 0
 				? this.helper.getBestInterpreter(interpreters)
 				: undefined;
+
 		if (!interpreter) {
 			return;
 		}
 		const currentInterpreter =
 			await this.interpreterService.getActiveInterpreter(resource);
+
 		if (currentInterpreter?.id === interpreter.id) {
 			traceVerbose("New environment has already been selected");
+
 			return;
 		}
 		await this.notifyUser(interpreter, resource);
@@ -86,6 +90,7 @@ export class VirtualEnvironmentPrompt implements IExtensionActivationService {
 				doNotDisplayPromptStateKey,
 				true,
 			);
+
 		if (!notificationPromptEnabled.value) {
 			return;
 		}
@@ -94,11 +99,13 @@ export class VirtualEnvironmentPrompt implements IExtensionActivationService {
 			Common.bannerLabelNo,
 			Common.doNotShowAgain,
 		];
+
 		const telemetrySelections: ["Yes", "No", "Ignore"] = [
 			"Yes",
 			"No",
 			"Ignore",
 		];
+
 		const selection = await this.appShell.showInformationMessage(
 			Interpreters.environmentPromptMessage,
 			...prompts,
@@ -112,6 +119,7 @@ export class VirtualEnvironmentPrompt implements IExtensionActivationService {
 					: undefined,
 			},
 		);
+
 		if (!selection) {
 			return;
 		}

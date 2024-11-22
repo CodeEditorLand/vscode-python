@@ -12,9 +12,13 @@ export function getWindowsLineEndingCount(
 	offset: number,
 ): number {
 	// const eolPattern = new RegExp('\r\n', 'g');
+
 	const eolPattern = /\r\n/g;
+
 	const readBlock = 1024;
+
 	let count = 0;
+
 	let offsetDiff = offset.valueOf();
 
 	// In order to prevent the one-time loading of large files from taking up too much memory
@@ -22,6 +26,7 @@ export function getWindowsLineEndingCount(
 		const startAt = document.positionAt(pos);
 
 		let endAt: Position;
+
 		if (offsetDiff >= readBlock) {
 			endAt = document.positionAt(pos + readBlock);
 			offsetDiff = offsetDiff - readBlock;
@@ -30,6 +35,7 @@ export function getWindowsLineEndingCount(
 		}
 
 		const text = document.getText(new Range(startAt, endAt!));
+
 		const cr = text.match(eolPattern);
 
 		count += cr ? cr.length : 0;
@@ -63,12 +69,15 @@ export function parseRange(raw: string | number): Range {
 	}
 
 	const parts = raw.split("-");
+
 	if (parts.length > 2) {
 		throw new Error(`invalid range ${raw}`);
 	}
 
 	const start = parsePosition(parts[0]);
+
 	let end = start;
+
 	if (parts.length === 2) {
 		end = parsePosition(parts[1]);
 	}
@@ -95,11 +104,13 @@ export function parsePosition(raw: string | number): Position {
 	}
 
 	const parts = raw.split(":");
+
 	if (parts.length > 2) {
 		throw new Error(`invalid position ${raw}`);
 	}
 
 	let line = 0;
+
 	if (parts[0] !== "") {
 		if (!/^\d+$/.test(parts[0])) {
 			throw new Error(`invalid position ${raw}`);
@@ -107,6 +118,7 @@ export function parsePosition(raw: string | number): Position {
 		line = +parts[0];
 	}
 	let col = 0;
+
 	if (parts.length === 2 && parts[1] !== "") {
 		if (!/^\d+$/.test(parts[1])) {
 			throw new Error(`invalid position ${raw}`);
@@ -121,6 +133,7 @@ export function parsePosition(raw: string | number): Position {
  */
 export function getIndent(line: string): string {
 	const found = line.match(/^ */);
+
 	return found![0];
 }
 
@@ -134,7 +147,9 @@ export function getIndent(line: string): string {
  */
 export function getDedentedLines(text: string): string[] {
 	const linesep = text.includes("\r") ? "\r\n" : "\n";
+
 	const lines = text.split(linesep);
+
 	if (!lines) {
 		return [text];
 	}
@@ -143,6 +158,7 @@ export function getDedentedLines(text: string): string[] {
 		throw Error("expected actual first line to be blank");
 	}
 	lines.shift();
+
 	if (lines.length === 0) {
 		return [];
 	}
@@ -154,6 +170,7 @@ export function getDedentedLines(text: string): string[] {
 
 	for (let i = 0; i < lines.length; i += 1) {
 		const line = lines[i];
+
 		if (getIndent(line).length < leading) {
 			throw Error(`line ${i} has less indent than the "first" line`);
 		}
@@ -222,6 +239,7 @@ export function getDedentedLines(text: string): string[] {
  */
 export function parseTree(text: string): [string, number][] {
 	const parsed: [string, number][] = [];
+
 	const parents: [string, number][] = [];
 
 	const lines = getDedentedLines(text)
@@ -229,9 +247,11 @@ export function parseTree(text: string): [string, number][] {
 		.filter((l) => l.trim() !== "");
 	lines.forEach((line) => {
 		const indent = getIndent(line);
+
 		const entry = line.trim();
 
 		let parentIndex: number;
+
 		if (indent === "") {
 			parentIndex = -1;
 			parents.push([indent, parsed.length]);
@@ -240,6 +260,7 @@ export function parseTree(text: string): [string, number][] {
 		} else {
 			let parentIndent: string;
 			[parentIndent, parentIndex] = parents[parents.length - 1];
+
 			while (indent.length <= parentIndent.length) {
 				parents.pop();
 				[parentIndent, parentIndex] = parents[parents.length - 1];

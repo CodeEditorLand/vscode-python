@@ -39,6 +39,7 @@ abstract class FoundFilesLocator implements ILocator<BasicEnvInfo> {
 		_query?: PythonLocatorQuery,
 	): IPythonEnvsIterator<BasicEnvInfo> {
 		const executables = this.getExecutables();
+
 		async function* generator(
 			kind: PythonEnvKind,
 			source?: PythonEnvSource[],
@@ -48,6 +49,7 @@ abstract class FoundFilesLocator implements ILocator<BasicEnvInfo> {
 			}
 		}
 		const iterator = generator(this.kind, this.source);
+
 		return iterator;
 	}
 }

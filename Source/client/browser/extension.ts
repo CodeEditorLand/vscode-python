@@ -19,6 +19,7 @@ interface BrowserConfig {
 }
 
 let languageClient: LanguageClient | undefined;
+
 let pylanceApi: PylanceApi | undefined;
 
 export function activate(
@@ -27,17 +28,21 @@ export function activate(
 	const reporter = getTelemetryReporter();
 
 	const activationPromise = Promise.resolve(buildApi(reporter));
+
 	const pylanceExtension =
 		vscode.extensions.getExtension<PylanceApi>(PYLANCE_EXTENSION_ID);
+
 	if (pylanceExtension) {
 		// Make sure we run pylance once we activated core extension.
 		activationPromise.then(() => runPylance(context, pylanceExtension));
+
 		return activationPromise;
 	}
 
 	const changeDisposable = vscode.extensions.onDidChange(async () => {
 		const newPylanceExtension =
 			vscode.extensions.getExtension<PylanceApi>(PYLANCE_EXTENSION_ID);
+
 		if (newPylanceExtension) {
 			changeDisposable.dispose();
 			await runPylance(context, newPylanceExtension);
@@ -70,14 +75,18 @@ async function runPylance(
 	context.subscriptions.push(createStatusItem());
 
 	pylanceExtension = await getActivatedExtension(pylanceExtension);
+
 	const api = pylanceExtension.exports;
+
 	if (api.client && api.client.isEnabled()) {
 		pylanceApi = api;
 		await api.client.start();
+
 		return;
 	}
 
 	const { extensionUri, packageJSON } = pylanceExtension;
+
 	const distUrl = vscode.Uri.joinPath(extensionUri, "dist");
 
 	try {
@@ -140,6 +149,7 @@ async function runPylance(
 				const eventName =
 					telemetryEvent.EventName ||
 					EventName.LANGUAGE_SERVER_TELEMETRY;
+
 				const formattedProperties = {
 					...telemetryEvent.Properties,
 					// Replace all slashes in the method name so it doesn't get scrubbed by @vscode/extension-telemetry.
@@ -192,11 +202,14 @@ function sendTelemetryEventBrowser(
 	ex?: Error,
 ): void {
 	const reporter = getTelemetryReporter();
+
 	const measures =
 		typeof measuresOrDurationMs === "number"
 			? { duration: measuresOrDurationMs }
 			: measuresOrDurationMs || undefined;
+
 	const customProperties: Record<string, string> = {};
+
 	const eventNameSent = eventName as string;
 
 	if (properties) {
@@ -212,12 +225,17 @@ function sendTelemetryEventBrowser(
 				switch (typeof data[prop]) {
 					case "string":
 						customProperties[prop] = data[prop];
+
 						break;
+
 					case "object":
 						customProperties[prop] = "object";
+
 						break;
+
 					default:
 						customProperties[prop] = data[prop].toString();
+
 						break;
 				}
 			} catch (exception) {

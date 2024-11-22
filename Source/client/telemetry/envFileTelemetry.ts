@@ -11,6 +11,7 @@ import { SystemVariables } from "../common/variables/systemVariables";
 import { EventName } from "./constants";
 
 let _defaultEnvFileSetting: string | undefined;
+
 let envFileTelemetrySent = false;
 
 export function sendSettingTelemetry(
@@ -42,9 +43,11 @@ export async function sendActivationTelemetry(
 			undefined,
 			workspaceService,
 		);
+
 		const envFilePath = systemVariables.resolveAny(
 			defaultEnvFileSetting(workspaceService),
 		)!;
+
 		const envFileExists = await fileSystem.fileExists(envFilePath);
 
 		if (envFileExists) {
@@ -82,6 +85,7 @@ export const EnvFileTelemetryTests = {
 		defaultSetting,
 	}: {
 		telemetrySent?: boolean;
+
 		defaultSetting?: string;
 	}): void => {
 		if (telemetrySent !== undefined) {

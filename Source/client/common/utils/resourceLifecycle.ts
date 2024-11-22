@@ -50,6 +50,7 @@ export function dispose<T extends IDisposable>(
 	}
 	if (arg) {
 		arg.dispose();
+
 		return arg;
 	}
 }

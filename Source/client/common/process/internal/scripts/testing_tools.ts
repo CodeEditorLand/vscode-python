@@ -12,10 +12,12 @@ const SCRIPTS_DIR = path.join(_SCRIPTS_DIR, "testing_tools");
 
 export function runAdapter(adapterArgs: string[]): string[] {
 	const script = path.join(SCRIPTS_DIR, "run_adapter.py");
+
 	return [script, ...adapterArgs];
 }
 
 export function unittestDiscovery(args: string[]): string[] {
 	const script = path.join(SCRIPTS_DIR, "unittest_discovery.py");
+
 	return [script, ...args];
 }

@@ -32,6 +32,7 @@ import {
 } from "./types";
 
 const preferredGlobalInterpreter = "preferredGlobalPyInterpreter";
+
 const workspacePathNameForGlobalWorkspaces = "";
 
 @injectable()
@@ -83,6 +84,7 @@ export class InterpreterAutoSelectionService
 	 */
 	public async autoSelectInterpreter(resource: Resource): Promise<void> {
 		const key = this.getWorkspacePathKey(resource);
+
 		const useCachedInterpreter =
 			this.autoSelectedWorkspacePromises.has(key);
 
@@ -119,11 +121,13 @@ export class InterpreterAutoSelectionService
 		// This method gets invoked from settings class, and this class in turn uses classes that relies on settings.
 		// I.e. we can end up in a recursive loop.
 		const workspaceState = this.getWorkspaceState(resource);
+
 		if (workspaceState && workspaceState.value) {
 			return workspaceState.value;
 		}
 
 		const workspaceFolderPath = this.getWorkspacePathKey(resource);
+
 		if (this.autoSelectedInterpreterByWorkspace.has(workspaceFolderPath)) {
 			return this.autoSelectedInterpreterByWorkspace.get(
 				workspaceFolderPath,
@@ -150,6 +154,7 @@ export class InterpreterAutoSelectionService
 		resource: Resource,
 	): Promise<void> {
 		const stateStore = this.getWorkspaceState(resource);
+
 		if (
 			stateStore &&
 			stateStore.value &&
@@ -164,6 +169,7 @@ export class InterpreterAutoSelectionService
 		interpreter: PythonEnvironment | undefined,
 	): Promise<void> {
 		const workspaceFolderPath = this.getWorkspacePathKey(resource);
+
 		if (workspaceFolderPath === workspacePathNameForGlobalWorkspaces) {
 			// Update store only if this version is better.
 			if (
@@ -187,6 +193,7 @@ export class InterpreterAutoSelectionService
 			);
 		} else {
 			const workspaceState = this.getWorkspaceState(resource);
+
 			if (workspaceState && interpreter) {
 				await workspaceState.updateValue(interpreter);
 			}
@@ -202,6 +209,7 @@ export class InterpreterAutoSelectionService
 		// Since we're initializing for this resource,
 		// Ensure any cached information for this workspace have been removed.
 		this.autoSelectedInterpreterByWorkspace.delete(workspaceFolderPath);
+
 		if (this.globallyPreferredInterpreter) {
 			return;
 		}
@@ -213,6 +221,7 @@ export class InterpreterAutoSelectionService
 			this.stateFactory.createGlobalPersistentState<
 				PythonEnvironment | undefined
 			>(preferredGlobalInterpreter, undefined);
+
 		if (
 			this.globallyPreferredInterpreter.value &&
 			!(await this.fs.fileExists(
@@ -235,8 +244,10 @@ export class InterpreterAutoSelectionService
 	): undefined | IPersistentState<PythonEnvironment | undefined> {
 		const workspaceUri =
 			this.interpreterHelper.getActiveWorkspaceUri(resource);
+
 		if (workspaceUri) {
 			const key = `autoSelectedWorkspacePythonInterpreter-${workspaceUri.folderUri.fsPath}`;
+
 			return this.stateFactory.createWorkspacePersistentState(
 				key,
 				undefined,
@@ -250,7 +261,9 @@ export class InterpreterAutoSelectionService
 	): IPersistentState<boolean | undefined> {
 		const workspaceUri =
 			this.interpreterHelper.getActiveWorkspaceUri(resource);
+
 		const key = `autoSelectionInterpretersQueried-${workspaceUri?.folderUri.fsPath || "global"}`;
+
 		return this.stateFactory.createWorkspacePersistentState(key, undefined);
 	}
 
@@ -258,6 +271,7 @@ export class InterpreterAutoSelectionService
 		boolean | undefined
 	> {
 		const key = `autoSelectionInterpretersQueriedOnce`;
+
 		return this.stateFactory.createGlobalPersistentState(key, undefined);
 	}
 
@@ -277,7 +291,9 @@ export class InterpreterAutoSelectionService
 		// Do not perform a full interpreter search if we already have cached interpreters for this workspace.
 		const queriedState =
 			this.getAutoSelectionInterpretersQueryState(resource);
+
 		const globalQueriedState = this.getAutoSelectionQueriedOnceState();
+
 		if (
 			globalQueriedState.value &&
 			queriedState.value !== true &&
@@ -292,12 +308,16 @@ export class InterpreterAutoSelectionService
 		}
 
 		await this.envTypeComparer.initialize(resource);
+
 		const inExperiment = this.experimentService.inExperimentSync(
 			DiscoveryUsingWorkers.experiment,
 		);
+
 		const workspaceUri =
 			this.interpreterHelper.getActiveWorkspaceUri(resource);
+
 		let recommendedInterpreter: PythonEnvironment | undefined;
+
 		if (inExperiment) {
 			if (!globalQueriedState.value) {
 				// Global interpreters are loaded the first time an extension loads, after which we don't need to
@@ -314,11 +334,13 @@ export class InterpreterAutoSelectionService
 				interpreters,
 				workspaceUri?.folderUri,
 			);
+
 			const details = recommendedInterpreter
 				? await this.interpreterService.getInterpreterDetails(
 						recommendedInterpreter.path,
 					)
 				: undefined;
+
 			if (!details || !recommendedInterpreter) {
 				await this.interpreterService.refreshPromise; // Interpreter is invalid, wait for all of validation to finish.
 				interpreters =

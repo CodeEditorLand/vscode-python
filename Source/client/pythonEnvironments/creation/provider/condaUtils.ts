@@ -42,6 +42,7 @@ export async function getCondaBaseEnv(): Promise<string | undefined> {
 			CreateEnv.Conda.condaMissing,
 			Common.learnMore,
 		);
+
 		if (response === Common.learnMore) {
 			await executeCommand(
 				"vscode.open",
@@ -52,6 +53,7 @@ export async function getCondaBaseEnv(): Promise<string | undefined> {
 	}
 
 	const envs = (await conda.getEnvList()).filter((e) => e.name === "base");
+
 	if (envs.length === 1) {
 		return envs[0].prefix;
 	}
@@ -60,6 +62,7 @@ export async function getCondaBaseEnv(): Promise<string | undefined> {
 			"Multiple conda base envs detected: ",
 			envs.map((e) => e.prefix),
 		);
+
 		return undefined;
 	}
 
@@ -78,6 +81,7 @@ export async function pickPythonVersion(
 			description: v,
 		}),
 	);
+
 	const selection = await showQuickPickWithBack(
 		items,
 		{
@@ -100,6 +104,7 @@ export function getPathEnvVariableForConda(
 ): string {
 	const pathEnv =
 		getEnvironmentVariable("PATH") || getEnvironmentVariable("Path") || "";
+
 	if (getOSType() === OSType.Windows) {
 		// On windows `conda.bat` is used, which adds the following bin directories to PATH
 		// then launches `conda.exe` which is a stub to `python.exe -m conda`. Here, we are
@@ -107,14 +112,21 @@ export function getPathEnvVariableForConda(
 		// handles conda env creation and package installation.
 		// See conda issue: https://github.com/conda/conda/issues/11399
 		const root = path.dirname(condaBasePythonPath);
+
 		const libPath1 = path.join(root, "Library", "bin");
+
 		const libPath2 = path.join(root, "Library", "mingw-w64", "bin");
+
 		const libPath3 = path.join(root, "Library", "usr", "bin");
+
 		const libPath4 = path.join(root, "bin");
+
 		const libPath5 = path.join(root, "Scripts");
+
 		const libPath = [libPath1, libPath2, libPath3, libPath4, libPath5].join(
 			path.delimiter,
 		);
+
 		return `${libPath}${path.delimiter}${pathEnv}`;
 	}
 	return pathEnv;
@@ -125,6 +137,7 @@ export async function deleteEnvironment(
 	interpreter: string,
 ): Promise<boolean> {
 	const condaEnvPath = getPrefixCondaEnvPath(workspaceFolder);
+
 	return withProgress<boolean>(
 		{
 			location: ProgressLocation.Notification,

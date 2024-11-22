@@ -65,10 +65,12 @@ export class TensorboardExtensionIntegration {
 		tensorboardExtensionApi: TensorboardExtensionApi,
 	): TensorboardExtensionApi | undefined {
 		this.hideCommands();
+
 		if (!this.workspaceService.isTrusted) {
 			this.workspaceService.onDidGrantWorkspaceTrust(() =>
 				this.registerApi(tensorboardExtensionApi),
 			);
+
 			return undefined;
 		}
 		tensorboardExtensionApi.registerPythonApi({
@@ -84,6 +86,7 @@ export class TensorboardExtensionIntegration {
 				this.dependencyChcker.ensureDependenciesAreInstalled(resource),
 			isPromptEnabled: () => this.tensorBoardPrompt.isPromptEnabled(),
 		});
+
 		return undefined;
 	}
 
@@ -99,6 +102,7 @@ export class TensorboardExtensionIntegration {
 
 	public async integrateWithTensorboardExtension(): Promise<void> {
 		const api = await this.getExtensionApi();
+
 		if (api) {
 			this.registerApi(api);
 		}
@@ -112,12 +116,15 @@ export class TensorboardExtensionIntegration {
 				this.extensions.getExtension<TensorboardExtensionApi>(
 					TENSORBOARD_EXTENSION_ID,
 				);
+
 			if (!extension) {
 				return undefined;
 			}
 			await extension.activate();
+
 			if (extension.isActive) {
 				this.tensorboardExtension = extension;
+
 				return this.tensorboardExtension.exports;
 			}
 		} else {

@@ -56,6 +56,7 @@ export type RefreshPerformance = {
 	data: {
 		refreshPerformance: {
 			total: number;
+
 			breakdown: {
 				Locators: number;
 				Path: number;
@@ -99,6 +100,7 @@ export function sendNativeTelemetry(
 				undefined,
 				data.data.missingCondaEnvironments,
 			);
+
 			break;
 		}
 		case "MissingPoetryEnvironments": {
@@ -107,6 +109,7 @@ export function sendNativeTelemetry(
 				undefined,
 				data.data.missingPoetryEnvironments,
 			);
+
 			break;
 		}
 		case "RefreshPerformance": {
@@ -155,6 +158,7 @@ export function sendNativeTelemetry(
 				timeToConfigure: initialRefreshMetrics.timeToConfigure,
 				timeToRefresh: initialRefreshMetrics.timeToRefresh,
 			});
+
 			break;
 		}
 		default: {

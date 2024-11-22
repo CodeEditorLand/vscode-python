@@ -11,6 +11,7 @@ export function isNotInstalledError(error: Error): boolean {
 	const isError = typeof error === "object" && error !== null;
 
 	const errorObj = <any>error;
+
 	if (!isError) {
 		return false;
 	}
@@ -20,6 +21,7 @@ export function isNotInstalledError(error: Error): boolean {
 
 	const isModuleNoInstalledError =
 		error.message.indexOf("No module named") >= 0;
+
 	return (
 		errorObj.code === "ENOENT" ||
 		errorObj.code === 127 ||

@@ -45,6 +45,7 @@ export class ExtensionSurveyPrompt
 		untrustedWorkspace: false,
 		virtualWorkspace: true,
 	};
+
 	constructor(
 		@inject(IApplicationShell) private appShell: IApplicationShell,
 		@inject(IBrowserService) private browserService: IBrowserService,
@@ -68,6 +69,7 @@ export class ExtensionSurveyPrompt
 			return;
 		}
 		const show = this.shouldShowBanner();
+
 		if (!show) {
 			return;
 		}
@@ -89,6 +91,7 @@ export class ExtensionSurveyPrompt
 				extensionSurveyStateKeys.doNotShowAgain,
 				false,
 			);
+
 		if (doNotShowSurveyAgain.value) {
 			return false;
 		}
@@ -98,11 +101,13 @@ export class ExtensionSurveyPrompt
 				false,
 				timeToDisableSurveyFor,
 			);
+
 		if (isSurveyDisabledForTimeState.value) {
 			return false;
 		}
 		// we only want 10% of folks to see this survey.
 		const randomSample: number = this.random.getRandomInt(0, 100);
+
 		if (randomSample >= this.sampleSizePerOneHundredUsers) {
 			return false;
 		}
@@ -116,8 +121,10 @@ export class ExtensionSurveyPrompt
 			ExtensionSurveyBanner.maybeLater,
 			Common.doNotShowAgain,
 		];
+
 		const telemetrySelections: ["Yes", "Maybe later", "Don't show again"] =
 			["Yes", "Maybe later", "Don't show again"];
+
 		const selection = await this.appShell.showInformationMessage(
 			ExtensionSurveyBanner.bannerMessage,
 			...prompts,
@@ -127,6 +134,7 @@ export class ExtensionSurveyPrompt
 				? telemetrySelections[prompts.indexOf(selection)]
 				: undefined,
 		});
+
 		if (!selection) {
 			return;
 		}
@@ -158,6 +166,7 @@ export class ExtensionSurveyPrompt
 			e: encodeURIComponent(this.appEnvironment.packageJson.version), // extension version
 			m: encodeURIComponent(this.appEnvironment.sessionId),
 		});
+
 		const url = `https://aka.ms/AA5rjx5?${query}`;
 		this.browserService.launch(url);
 	}

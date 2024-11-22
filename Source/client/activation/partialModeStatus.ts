@@ -32,10 +32,12 @@ export class PartialModeStatusItem
 
 	public async activate(): Promise<void> {
 		const { isTrusted, isVirtualWorkspace } = this.workspace;
+
 		if (isTrusted && !isVirtualWorkspace) {
 			return;
 		}
 		const statusItem = this.createStatusItem();
+
 		if (statusItem) {
 			this.disposables.push(statusItem);
 		}
@@ -44,6 +46,7 @@ export class PartialModeStatusItem
 	private createStatusItem() {
 		// eslint-disable-next-line global-require
 		const vscode = require("vscode") as typeof vscodeTypes;
+
 		if ("createLanguageStatusItem" in vscode.languages) {
 			const statusItem = vscode.languages.createLanguageStatusItem(
 				"python.projectStatus",
@@ -62,6 +65,7 @@ export class PartialModeStatusItem
 				command: "vscode.open",
 				arguments: [vscode.Uri.parse("https://aka.ms/AAdzyh4")],
 			};
+
 			return statusItem;
 		}
 		return undefined;

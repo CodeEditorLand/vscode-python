@@ -59,6 +59,7 @@ export class TensorBoardFileWatcher
 
 	private async activateInternal() {
 		const folders = this.workspaceService.workspaceFolders;
+
 		if (!folders) {
 			return;
 		}
@@ -82,6 +83,7 @@ export class TensorBoardFileWatcher
 		}
 		for (const removed of event.removed) {
 			const fileSystemWatchers = this.fileSystemWatchers.get(removed);
+
 			if (fileSystemWatchers) {
 				fileSystemWatchers.forEach((fileWatcher) =>
 					fileWatcher.dispose(),
@@ -93,8 +95,10 @@ export class TensorBoardFileWatcher
 
 	private createFileSystemWatcher(folder: WorkspaceFolder) {
 		const fileWatchers = [];
+
 		for (const pattern of this.globPatterns) {
 			const relativePattern = new RelativePattern(folder, pattern);
+
 			const fileSystemWatcher =
 				this.workspaceService.createFileSystemWatcher(relativePattern);
 

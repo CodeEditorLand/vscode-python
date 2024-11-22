@@ -27,6 +27,7 @@ import { isPixiEnvironment } from '../../pythonEnvironments/common/environmentMa
 @injectable()
 export class TerminalHelper implements ITerminalHelper {
     private readonly shellDetector: ShellDetector;
+
     constructor(
         @inject(IPlatformService) private readonly platform: IPlatformService,
         @inject(ITerminalManager) private readonly terminalManager: ITerminalManager,
@@ -69,7 +70,9 @@ export class TerminalHelper implements ITerminalHelper {
         const isPowershell =
             terminalShellType === TerminalShellType.powershell ||
             terminalShellType === TerminalShellType.powershellCore;
+
         const commandPrefix = isPowershell ? '& ' : '';
+
         const formattedArgs = args.map((a) => a.toCommandArgumentForPythonExt());
 
         return `${commandPrefix}${command.fileToCommandArgumentForPythonExt()} ${formattedArgs.join(' ')}`.trim();
@@ -87,6 +90,7 @@ export class TerminalHelper implements ITerminalHelper {
             this.commandPromptAndPowerShell,
             this.nushell,
         ];
+
         const promise = this.getActivationCommands(resource || undefined, interpreter, terminalShellType, providers);
         this.sendTelemetry(
             terminalShellType,
@@ -94,6 +98,7 @@ export class TerminalHelper implements ITerminalHelper {
             interpreter,
             promise,
         ).ignoreErrors();
+
         return promise;
     }
     public async getEnvironmentActivationShellCommands(
@@ -105,6 +110,7 @@ export class TerminalHelper implements ITerminalHelper {
             return;
         }
         const providers = [this.pixi, this.bashCShellFish, this.commandPromptAndPowerShell, this.nushell];
+
         const promise = this.getActivationCommands(resource, interpreter, shell, providers);
         this.sendTelemetry(
             shell,
@@ -112,6 +118,7 @@ export class TerminalHelper implements ITerminalHelper {
             interpreter,
             promise,
         ).ignoreErrors();
+
         return promise;
     }
     @traceDecoratorError('Failed to capture telemetry')
@@ -122,7 +129,9 @@ export class TerminalHelper implements ITerminalHelper {
         promise: Promise<string[] | undefined>,
     ): Promise<void> {
         let hasCommands = false;
+
         let failed = false;
+
         try {
             const cmds = await promise;
             hasCommands = Array.isArray(cmds) && cmds.length > 0;
@@ -132,7 +141,9 @@ export class TerminalHelper implements ITerminalHelper {
         }
 
         const pythonVersion = interpreter && interpreter.version ? interpreter.version.raw : undefined;
+
         const interpreterType = interpreter ? interpreter.envType : EnvironmentType.Unknown;
+
         const data = { failed, hasCommands, interpreterType, terminal: terminalShellType, pythonVersion };
         sendTelemetryEvent(eventName, undefined, data);
     }
@@ -147,6 +158,7 @@ export class TerminalHelper implements ITerminalHelper {
         const isPixiEnv = interpreter
             ? interpreter.envType === EnvironmentType.Pixi
             : await isPixiEnvironment(settings.pythonPath);
+
         if (isPixiEnv) {
             const activationCommands = interpreter
                 ? await this.pixi.getActivationCommandsForInterpreter(interpreter.path, terminalShellType)
@@ -162,6 +174,7 @@ export class TerminalHelper implements ITerminalHelper {
         const isCondaEnvironment = interpreter
             ? interpreter.envType === EnvironmentType.Conda
             : await condaService.isCondaEnvironment(settings.pythonPath);
+
         if (isCondaEnvironment) {
             const activationCommands = interpreter
                 ? await this.conda.getActivationCommandsForInterpreter(interpreter.path, terminalShellType)

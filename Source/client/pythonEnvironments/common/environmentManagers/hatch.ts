@@ -45,16 +45,21 @@ export class Hatch {
 		// hence perform all operations before that synchronously.
 		const hatchPath = "hatch";
 		traceVerbose(`Probing Hatch binary ${hatchPath}`);
+
 		const hatch = new Hatch(hatchPath, cwd);
+
 		const virtualenvs = await hatch.getEnvList();
+
 		if (virtualenvs !== undefined) {
 			traceVerbose(`Found hatch binary ${hatchPath}`);
+
 			return hatch;
 		}
 		traceVerbose(`Failed to find Hatch binary ${hatchPath}`);
 
 		// Didn't find anything.
 		traceVerbose(`No Hatch binary found`);
+
 		return undefined;
 	}
 
@@ -84,6 +89,7 @@ export class Hatch {
 				throwOnStdErr: true,
 			},
 		).catch(traceVerbose);
+
 		if (!envInfoOutput) {
 			return undefined;
 		}
@@ -97,11 +103,15 @@ export class Hatch {
 						throwOnStdErr: true,
 					},
 				).catch(traceVerbose);
+
 				if (!envPathOutput) return undefined;
+
 				const dir = envPathOutput.stdout.trim();
+
 				return (await pathExists(dir)) ? dir : undefined;
 			}),
 		);
+
 		return envPaths.flatMap((r) => (r ? [r] : []));
 	}
 

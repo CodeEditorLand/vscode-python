@@ -22,6 +22,7 @@ export class DiagnosticsCommandFactory implements IDiagnosticsCommandFactory {
 		options: CommandOptions,
 	): IDiagnosticCommand {
 		const commandType = options.type;
+
 		switch (options.type) {
 			case "ignore": {
 				return new IgnoreDiagnosticCommand(

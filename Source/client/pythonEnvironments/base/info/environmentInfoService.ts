@@ -51,6 +51,7 @@ async function buildEnvironmentInfo(
 	useIsolated = true,
 ): Promise<InterpreterInformation | undefined> {
 	const python = [env.executable.filename];
+
 	if (useIsolated) {
 		python.push(...["-I", OUTPUT_MARKER_SCRIPT]);
 	} else {
@@ -59,6 +60,7 @@ async function buildEnvironmentInfo(
 	const interpreterInfo = await getInterpreterInfo(
 		buildPythonExecInfo(python, undefined, env.executable.filename),
 	);
+
 	return interpreterInfo;
 }
 
@@ -66,12 +68,16 @@ async function buildEnvironmentInfoUsingCondaRun(
 	env: PythonEnvInfo,
 ): Promise<InterpreterInformation | undefined> {
 	const conda = await Conda.getConda();
+
 	const path = env.location.length ? env.location : env.executable.filename;
+
 	const condaEnv = await conda?.getCondaEnvironment(path);
+
 	if (!condaEnv) {
 		return undefined;
 	}
 	const python = await conda?.getRunPythonArgs(condaEnv, true, true);
+
 	if (!python) {
 		return undefined;
 	}
@@ -79,6 +85,7 @@ async function buildEnvironmentInfoUsingCondaRun(
 		buildPythonExecInfo(python, undefined, env.executable.filename),
 		CONDA_ACTIVATION_TIMEOUT,
 	);
+
 	return interpreterInfo;
 }
 
@@ -116,7 +123,9 @@ class EnvironmentInfoService implements IEnvironmentInfoService {
 		priority?: EnvironmentInfoServiceQueuePriority,
 	): Promise<InterpreterInformation | undefined> {
 		const interpreterPath = env.executable.filename;
+
 		const result = this.cache.get(normCasePath(interpreterPath));
+
 		if (result !== undefined) {
 			// Another call for this environment has already been made, return its result.
 			return result.promise;
@@ -131,6 +140,7 @@ class EnvironmentInfoService implements IEnvironmentInfoService {
 			.catch((ex) => {
 				deferred.reject(ex);
 			});
+
 		return deferred.promise;
 	}
 
@@ -164,9 +174,11 @@ class EnvironmentInfoService implements IEnvironmentInfoService {
 		}
 
 		let reason: Error | undefined;
+
 		let r = await addToQueue(this.workerPool, env, priority).catch(
 			(err) => {
 				reason = err;
+
 				return undefined;
 			},
 		);
@@ -177,10 +189,12 @@ class EnvironmentInfoService implements IEnvironmentInfoService {
 			const isCondaEnv =
 				env.kind === PythonEnvKind.Conda ||
 				(await isCondaEnvironment(env.executable.filename));
+
 			if (isCondaEnv) {
 				traceVerbose(
 					`Validating ${env.executable.filename} normally failed with error, falling back to using conda run: (${reason})`,
 				);
+
 				if (this.condaRunWorkerPool === undefined) {
 					// Create a separate queue for validation using conda, so getting environment info for
 					// other types of environment aren't blocked on conda.
@@ -195,6 +209,7 @@ class EnvironmentInfoService implements IEnvironmentInfoService {
 					priority,
 				).catch((err) => {
 					traceError(err);
+
 					return undefined;
 				});
 			} else if (reason) {
@@ -205,6 +220,7 @@ class EnvironmentInfoService implements IEnvironmentInfoService {
 					)
 				) {
 					traceWarn(reason);
+
 					if (reason.message.includes("Unknown option: -I")) {
 						traceError(
 							"Support for Python 2.7 has been dropped by the Python extension so certain features may not work, upgrade to using Python 3.",
@@ -212,6 +228,7 @@ class EnvironmentInfoService implements IEnvironmentInfoService {
 					}
 					return buildEnvironmentInfo(env, false).catch((err) => {
 						traceError(err);
+
 						return undefined;
 					});
 				}
@@ -231,6 +248,7 @@ class EnvironmentInfoService implements IEnvironmentInfoService {
 
 	public resetInfo(searchLocation: Uri): void {
 		const searchLocationPath = searchLocation.fsPath;
+
 		const keys = Array.from(this.cache.keys());
 		keys.forEach((key) => {
 			if (key.startsWith(normCasePath(searchLocationPath))) {

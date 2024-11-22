@@ -37,6 +37,7 @@ function testItemCollectionToArray(collection: TestItemCollection): TestItem[] {
 	collection.forEach((c) => {
 		items.push(c);
 	});
+
 	return items;
 }
 
@@ -61,6 +62,7 @@ export function createErrorTestItem(
 	testItem.canResolveChildren = false;
 	testItem.error = options.error;
 	testItem.tags = [RunTestTag, DebugTestTag];
+
 	return testItem;
 }
 
@@ -88,6 +90,7 @@ export function createWorkspaceRootTestItem(
 		kind: TestDataKinds.Workspace,
 	});
 	testItem.tags = [RunTestTag, DebugTestTag];
+
 	return testItem;
 }
 
@@ -97,7 +100,9 @@ function getParentIdFromRawParentId(
 	raw: { parentid: string },
 ): string | undefined {
 	const parent = idToRawData.get(path.join(testRoot, raw.parentid));
+
 	let parentId;
+
 	if (parent) {
 		parentId = parent.id === "." ? testRoot : parent.id;
 	}
@@ -109,6 +114,7 @@ function getRangeFromRawSource(raw: { source: string }): Range | undefined {
 	// saves us from running symbol script or querying language server for this info.
 	try {
 		const sourceLine = raw.source.substr(raw.source.indexOf(":") + 1);
+
 		const line = Number.parseInt(sourceLine, 10);
 		// Lines in raw data start at 1, vscode lines start at 0
 		return new Range(new Position(line - 1, 0), new Position(line, 0));
@@ -128,6 +134,7 @@ export function getRunIdFromRawData(id: string): string {
 		.replace(/[\\\:\/]/g, ".")
 		.replace(/\:\:/g, ".")
 		.replace(/\.\./g, ".");
+
 	return runId.startsWith(".") ? runId.substr(1) : runId;
 }
 
@@ -138,11 +145,13 @@ function createFolderOrFileTestItem(
 	rawData: RawTestFolder | RawTestFile,
 ): TestItem {
 	const fullPath = path.join(testRoot, rawData.relpath);
+
 	const uri = Uri.file(fullPath);
 
 	const parentId = getParentIdFromRawParentId(idToRawData, testRoot, rawData);
 
 	const label = path.basename(fullPath);
+
 	const testItem = testController.createTestItem(fullPath, label, uri);
 
 	testItem.canResolveChildren = true;
@@ -156,6 +165,7 @@ function createFolderOrFileTestItem(
 		parentId,
 	});
 	testItem.tags = [RunTestTag, DebugTestTag];
+
 	return testItem;
 }
 
@@ -166,6 +176,7 @@ function updateFolderOrFileTestItem(
 	rawData: RawTestFolder | RawTestFile,
 ): void {
 	const fullPath = path.join(testRoot, rawData.relpath);
+
 	const uri = Uri.file(fullPath);
 
 	const parentId = getParentIdFromRawParentId(idToRawData, testRoot, rawData);
@@ -200,11 +211,13 @@ function createCollectionTestItem(
 		testRoot,
 		rawData.id.substr(0, rawData.id.indexOf(":")),
 	);
+
 	const uri = Uri.file(documentPath);
 
 	const label = rawData.name;
 
 	const parentId = getParentIdFromRawParentId(idToRawData, testRoot, rawData);
+
 	const runId = getRunIdFromRawData(rawData.id);
 
 	const testItem = testController.createTestItem(id, label, uri);
@@ -220,6 +233,7 @@ function createCollectionTestItem(
 		parentId,
 	});
 	testItem.tags = [RunTestTag, DebugTestTag];
+
 	return testItem;
 }
 
@@ -235,11 +249,13 @@ function updateCollectionTestItem(
 		testRoot,
 		rawData.id.substr(0, rawData.id.indexOf(":")),
 	);
+
 	const uri = Uri.file(documentPath);
 
 	item.label = rawData.name;
 
 	const parentId = getParentIdFromRawParentId(idToRawData, testRoot, rawData);
+
 	const runId = getRunIdFromRawData(rawData.id);
 
 	item.canResolveChildren = true;
@@ -272,11 +288,13 @@ function createTestCaseItem(
 		testRoot,
 		rawData.source.substr(0, rawData.source.indexOf(":")),
 	);
+
 	const uri = Uri.file(documentPath);
 
 	const label = rawData.name;
 
 	const parentId = getParentIdFromRawParentId(idToRawData, testRoot, rawData);
+
 	const runId = getRunIdFromRawData(rawData.id);
 
 	const testItem = testController.createTestItem(id, label, uri);
@@ -293,6 +311,7 @@ function createTestCaseItem(
 		parentId,
 	});
 	testItem.tags = [RunTestTag, DebugTestTag];
+
 	return testItem;
 }
 
@@ -308,11 +327,13 @@ function updateTestCaseItem(
 		testRoot,
 		rawData.source.substr(0, rawData.source.indexOf(":")),
 	);
+
 	const uri = Uri.file(documentPath);
 
 	item.label = rawData.name;
 
 	const parentId = getParentIdFromRawParentId(idToRawData, testRoot, rawData);
+
 	const runId = getRunIdFromRawData(rawData.id);
 
 	item.canResolveChildren = false;
@@ -342,8 +363,10 @@ async function updateTestItemFromRawDataInternal(
 	}
 
 	const rawId = idToRawData.get(item.id)?.rawId;
+
 	if (!rawId) {
 		traceError(`Unknown node id: ${item.id}`);
+
 		return;
 	}
 
@@ -360,6 +383,7 @@ async function updateTestItemFromRawDataInternal(
 		traceVerbose(
 			`Following test item was removed Reason: No-Raw-Data ${item.id}`,
 		);
+
 		return;
 	}
 
@@ -368,6 +392,7 @@ async function updateTestItemFromRawDataInternal(
 		traceError(
 			`Multiple (${nodeRawData.length}) raw data nodes had the same id: ${rawId}`,
 		);
+
 		return;
 	}
 
@@ -394,6 +419,7 @@ async function updateTestItemFromRawDataInternal(
 		const rawChildNodes = nodeRawData[0].parents.filter(
 			(p) => p.parentid === "." || p.parentid === rawId,
 		);
+
 		const existingNodes: string[] = [];
 		item.children.forEach((c) =>
 			existingNodes.push(idToRawData.get(c.id)?.rawId ?? ""),
@@ -433,6 +459,7 @@ async function updateTestItemFromRawDataInternal(
 
 	// First check if this is a parent node
 	const rawData = nodeRawData[0].parents.filter((r) => r.id === rawId);
+
 	if (rawData.length === 1) {
 		// This is either a File/Folder/Collection node
 
@@ -445,7 +472,9 @@ async function updateTestItemFromRawDataInternal(
 					testRoot,
 					rawData[0] as RawTestFile,
 				);
+
 				break;
+
 			case "folder":
 				updateFolderOrFileTestItem(
 					item,
@@ -453,7 +482,9 @@ async function updateTestItemFromRawDataInternal(
 					testRoot,
 					rawData[0] as RawTestFolder,
 				);
+
 				break;
+
 			case "suite":
 				updateCollectionTestItem(
 					item,
@@ -461,7 +492,9 @@ async function updateTestItemFromRawDataInternal(
 					testRoot,
 					rawData[0] as RawTestSuite,
 				);
+
 				break;
+
 			case "function":
 				updateCollectionTestItem(
 					item,
@@ -469,7 +502,9 @@ async function updateTestItemFromRawDataInternal(
 					testRoot,
 					rawData[0] as RawTestFunction,
 				);
+
 				break;
+
 			default:
 				break;
 		}
@@ -506,6 +541,7 @@ async function updateTestItemFromRawDataInternal(
 			rawChildNodes.filter((r) => !existingNodes.includes(r.id)),
 			async (r) => {
 				let childItem;
+
 				switch (r.kind) {
 					case "file":
 						childItem = createFolderOrFileTestItem(
@@ -514,7 +550,9 @@ async function updateTestItemFromRawDataInternal(
 							testRoot,
 							r as RawTestFile,
 						);
+
 						break;
+
 					case "folder":
 						childItem = createFolderOrFileTestItem(
 							testController,
@@ -522,7 +560,9 @@ async function updateTestItemFromRawDataInternal(
 							testRoot,
 							r as RawTestFolder,
 						);
+
 						break;
+
 					case "suite":
 						childItem = createCollectionTestItem(
 							testController,
@@ -530,7 +570,9 @@ async function updateTestItemFromRawDataInternal(
 							testRoot,
 							r as RawTestSuite,
 						);
+
 						break;
+
 					case "function":
 						childItem = createCollectionTestItem(
 							testController,
@@ -538,7 +580,9 @@ async function updateTestItemFromRawDataInternal(
 							testRoot,
 							r as RawTestFunction,
 						);
+
 						break;
+
 					default:
 						break;
 				}
@@ -581,6 +625,7 @@ async function updateTestItemFromRawDataInternal(
 		traceError(
 			`Multiple (${rawData.length}) raw data nodes had the same id: ${rawId}`,
 		);
+
 		return;
 	}
 
@@ -591,6 +636,7 @@ async function updateTestItemFromRawDataInternal(
 	if (rawCaseData.length === 1) {
 		// This is a test case node
 		updateTestCaseItem(item, idToRawData, testRoot, rawCaseData[0]);
+
 		return;
 	}
 
@@ -644,6 +690,7 @@ export function getTestCaseNodes(
 			collection.push(testNode);
 		}
 	});
+
 	return collection;
 }
 
@@ -652,6 +699,7 @@ export function getWorkspaceNode(
 	idToRawData: Map<string, TestData>,
 ): TestItem | undefined {
 	const raw = idToRawData.get(testNode.id);
+
 	if (raw) {
 		if (raw.kind === TestDataKinds.Workspace) {
 			return testNode;
@@ -681,6 +729,7 @@ export function getNodeByUri(root: TestItem, uri: Uri): TestItem | undefined {
 	// Search the children of the current level
 	for (const node of nodes) {
 		const found = getNodeByUri(node, uri);
+
 		if (found) {
 			return found;
 		}

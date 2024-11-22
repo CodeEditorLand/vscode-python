@@ -5,10 +5,13 @@ import { traceWarn } from "../../../logging";
 
 export function getOptionValues(args: string[], option: string): string[] {
 	const values: string[] = [];
+
 	let returnNextValue = false;
+
 	for (const arg of args) {
 		if (returnNextValue) {
 			values.push(arg);
+
 			returnNextValue = false;
 		} else if (arg.startsWith(`${option}=`)) {
 			values.push(arg.substring(`${option}=`.length));
@@ -52,6 +55,7 @@ export function getPositionalArguments(
 			nonPositionalIndexes.push(index);
 		}
 	});
+
 	return args.filter(
 		(_, index) => nonPositionalIndexes.indexOf(index) === -1,
 	);
@@ -63,6 +67,7 @@ export function filterArguments(
 	optionsWithoutArguments: string[] = [],
 ): string[] {
 	let ignoreIndex = -1;
+
 	return args.filter((arg, index) => {
 		if (ignoreIndex === index) {
 			return false;
@@ -80,6 +85,7 @@ export function filterArguments(
 		// Ignore args that match exactly.
 		if (optionsWithArguments.indexOf(arg) >= 0) {
 			ignoreIndex = index + 1;
+
 			return false;
 		}
 		// Ignore args that match exactly with wild cards & do not have inline values.
@@ -100,6 +106,7 @@ export function filterArguments(
 			).length > 0
 		) {
 			ignoreIndex = index + 1;
+
 			return false;
 		}
 		// Ignore args that match a wild card (ending with *) and have inline values.

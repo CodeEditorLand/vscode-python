@@ -19,6 +19,7 @@ import { ITerminalManager } from "./types";
 @injectable()
 export class TerminalManager implements ITerminalManager {
 	private readonly didOpenTerminal = new EventEmitter<Terminal>();
+
 	constructor() {
 		window.onDidOpenTerminal((terminal) => {
 			this.didOpenTerminal.fire(monkeyPatchTerminal(terminal));
@@ -53,6 +54,7 @@ function monkeyPatchTerminal(terminal: Terminal) {
 		const oldSendText = terminal.sendText.bind(terminal);
 		terminal.sendText = (text: string, addNewLine: boolean = true) => {
 			traceLog(`Send text to terminal: ${text}`);
+
 			return oldSendText(text, addNewLine);
 		};
 		(terminal as any).isPatched = true;

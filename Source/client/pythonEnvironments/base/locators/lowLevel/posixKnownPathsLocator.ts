@@ -26,6 +26,7 @@ export class PosixKnownPathsLocator extends Locator<BasicEnvInfo> {
 		// If on macOS Monterey or later.
 		// See https://github.com/microsoft/vscode-python/issues/17870.
 		let isMacPython2Deprecated = false;
+
 		if (getOSType() === OSType.OSX && gte(os.release(), "21.0.0")) {
 			isMacPython2Deprecated = true;
 		}
@@ -33,6 +34,7 @@ export class PosixKnownPathsLocator extends Locator<BasicEnvInfo> {
 		const iterator = async function* (kind: PythonEnvKind) {
 			const stopWatch = new StopWatch();
 			traceInfo("Searching for interpreters in posix paths locator");
+
 			try {
 				// Filter out pyenv shims. They are not actual python binaries, they are used to launch
 				// the binaries specified in .python-version file in the cwd. We should not be reporting
@@ -40,6 +42,7 @@ export class PosixKnownPathsLocator extends Locator<BasicEnvInfo> {
 				const knownDirs = (await commonPosixBinPaths()).filter(
 					(dirname) => !isPyenvShimDir(dirname),
 				);
+
 				let pythonBinaries =
 					await getPythonBinFromPosixPaths(knownDirs);
 				traceVerbose(
@@ -71,6 +74,7 @@ export class PosixKnownPathsLocator extends Locator<BasicEnvInfo> {
 				`Finished searching for interpreters in posix paths locator: ${stopWatch.elapsedTime} milliseconds`,
 			);
 		};
+
 		return iterator(this.kind);
 	}
 }

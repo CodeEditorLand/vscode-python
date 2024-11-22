@@ -43,8 +43,10 @@ export class PlatformService implements IPlatformService {
 				// Using os.relase() we get the darwin release #.
 				try {
 					const ver = coerce(os.release());
+
 					if (ver) {
 						this.version = ver;
+
 						return this.version;
 					}
 					throw new Error("Unable to parse version");

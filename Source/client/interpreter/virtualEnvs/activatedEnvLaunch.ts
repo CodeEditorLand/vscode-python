@@ -45,6 +45,7 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 	@cache(-1, true)
 	public async _promptIfApplicable(): Promise<void> {
 		const baseCondaPrefix = getPrefixOfActivatedCondaEnv();
+
 		if (!baseCondaPrefix) {
 			return;
 		}
@@ -52,24 +53,30 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 			await this.interpreterService.getInterpreterDetails(
 				baseCondaPrefix,
 			);
+
 		if (info?.envName !== "base") {
 			// Only show prompt for base conda environments, as we need to check config for such envs which can be slow.
 			return;
 		}
 		const conda = await Conda.getConda();
+
 		if (!conda) {
 			traceWarn(
 				"Conda not found even though activated environment vars are set",
 			);
+
 			return;
 		}
 		const service = await this.processServiceFactory.create();
+
 		const autoActivateBaseConfig = await service
 			.shellExec(`${conda.shellCommand} config --get auto_activate_base`)
 			.catch((ex) => {
 				traceError(ex);
+
 				return { stdout: "" };
 			});
+
 		if (
 			autoActivateBaseConfig.stdout.trim().toLowerCase().endsWith("false")
 		) {
@@ -79,8 +86,11 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 
 	private async promptAndUpdate(prefix: string) {
 		this.wasSelected = true;
+
 		const prompts = [Common.bannerLabelYes, Common.bannerLabelNo];
+
 		const telemetrySelections: ["Yes", "No"] = ["Yes", "No"];
+
 		const selection = await this.appShell.showInformationMessage(
 			Interpreters.activatedCondaEnvLaunch,
 			...prompts,
@@ -90,6 +100,7 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 				? telemetrySelections[prompts.indexOf(selection)]
 				: undefined,
 		});
+
 		if (!selection) {
 			return;
 		}
@@ -120,9 +131,12 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 			return undefined;
 		}
 		traceVerbose("VS Code was not launched from the command line");
+
 		const prefix = await this.getPrefixOfSelectedActivatedEnv();
+
 		if (!prefix) {
 			this._promptIfApplicable().ignoreErrors();
+
 			return undefined;
 		}
 		this.wasSelected = true;
@@ -132,6 +146,7 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 				prefix,
 			)}', selecting it as the interpreter for workspace.`,
 		);
+
 		if (doNotBlockOnSelection) {
 			this.setInterpeterInStorage(prefix).ignoreErrors();
 		} else {
@@ -144,6 +159,7 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 
 	private async setInterpeterInStorage(prefix: string) {
 		const { workspaceFolders } = this.workspaceService;
+
 		if (!workspaceFolders || workspaceFolders.length === 0) {
 			await this.pythonPathUpdaterService.updatePythonPath(
 				prefix,
@@ -164,15 +180,18 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 		string | undefined
 	> {
 		const virtualEnvVar = process.env.VIRTUAL_ENV;
+
 		if (virtualEnvVar !== undefined && virtualEnvVar.length > 0) {
 			return virtualEnvVar;
 		}
 		const condaPrefixVar = getPrefixOfActivatedCondaEnv();
+
 		if (!condaPrefixVar) {
 			return undefined;
 		}
 		const info =
 			await this.interpreterService.getInterpreterDetails(condaPrefixVar);
+
 		if (info?.envName !== "base") {
 			return condaPrefixVar;
 		}
@@ -190,8 +209,10 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 
 function getPrefixOfActivatedCondaEnv() {
 	const condaPrefixVar = process.env.CONDA_PREFIX;
+
 	if (condaPrefixVar && condaPrefixVar.length > 0) {
 		const condaShlvl = process.env.CONDA_SHLVL;
+
 		if (
 			condaShlvl !== undefined &&
 			condaShlvl.length > 0 &&

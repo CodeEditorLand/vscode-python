@@ -86,12 +86,14 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 	public async diagnose(resource: Resource): Promise<IDiagnostic[]> {
 		const hasWorkspaceFolders =
 			(this.workspaceService.workspaceFolders?.length || 0) > 0;
+
 		if (!hasWorkspaceFolders) {
 			return [];
 		}
 		const workspaceFolder = resource
 			? this.workspaceService.getWorkspaceFolder(resource)!
 			: this.workspaceService.workspaceFolders![0];
+
 		return this.diagnoseWorkspace(workspaceFolder, resource);
 	}
 
@@ -102,6 +104,7 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 	protected async fixLaunchJson(code: DiagnosticCodes): Promise<void> {
 		const hasWorkspaceFolders =
 			(this.workspaceService.workspaceFolders?.length || 0) > 0;
+
 		if (!hasWorkspaceFolders) {
 			return;
 		}
@@ -119,12 +122,15 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 		resource: Resource,
 	) {
 		const launchJson = getLaunchJsonFile(workspaceFolder);
+
 		if (!(await this.fs.fileExists(launchJson))) {
 			return [];
 		}
 
 		const fileContents = await this.fs.readFile(launchJson);
+
 		const diagnostics: IDiagnostic[] = [];
+
 		if (fileContents.indexOf('"pythonExperimental"') > 0) {
 			diagnostics.push(
 				new InvalidLaunchJsonDebuggerDiagnostic(
@@ -168,6 +174,7 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 	private async handleDiagnostic(diagnostic: IDiagnostic): Promise<void> {
 		if (!diagnostic.shouldShowPrompt) {
 			await this.fixLaunchJson(diagnostic.code);
+
 			return;
 		}
 		const commandPrompts = [
@@ -199,7 +206,9 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 			return;
 		}
 		const launchJson = getLaunchJsonFile(workspaceFolder);
+
 		let fileContents = await this.fs.readFile(launchJson);
+
 		switch (code) {
 			case DiagnosticCodes.InvalidDebuggerTypeDiagnostic: {
 				fileContents = findAndReplace(
@@ -212,6 +221,7 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 					'"Python Experimental:',
 					'"Python:',
 				);
+
 				break;
 			}
 			case DiagnosticCodes.JustMyCodeDiagnostic: {
@@ -225,6 +235,7 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 					'"debugStdLib": true',
 					'"justMyCode": false',
 				);
+
 				break;
 			}
 			case DiagnosticCodes.ConsoleTypeDiagnostic: {
@@ -233,6 +244,7 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 					'"console": "none"',
 					'"console": "internalConsole"',
 				);
+
 				break;
 			}
 			case DiagnosticCodes.ConfigPythonPathDiagnostic: {
@@ -251,6 +263,7 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 					"{config:python.interpreterPath}",
 					"{command:python.interpreterPath}",
 				);
+
 				break;
 			}
 			default: {
@@ -264,6 +277,7 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 
 function findAndReplace(fileContents: string, search: string, replace: string) {
 	const searchRegex = new RegExp(search, "g");
+
 	return fileContents.replace(searchRegex, replace);
 }
 

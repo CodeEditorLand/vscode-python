@@ -33,8 +33,10 @@ export function argsToLogString(args: Arguments): string {
 	try {
 		const argStrings = args.map((item, index) => {
 			const valueString = valueToLogString(item, "argument");
+
 			return `Arg ${index + 1}: ${valueString}`;
 		});
+
 		return argStrings.join(", ");
 	} catch {
 		return "";
@@ -45,10 +47,12 @@ export function argsToLogString(args: Arguments): string {
 // suitable to be used in a log message.
 export function returnValueToLogString(returnValue: unknown): string {
 	const valueString = valueToLogString(returnValue, "Return value");
+
 	return `Return Value: ${valueString}`;
 }
 
 export function getTimeForLogging(): string {
 	const date = new Date();
+
 	return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}.${date.getMilliseconds()}`;
 }

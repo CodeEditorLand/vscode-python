@@ -98,6 +98,7 @@ export class JediLanguageServerManager implements ILanguageServerManager {
 			const match = /jedi-language-server==([0-9\.]*)/.exec(
 				requirementsTxt,
 			);
+
 			if (match && match.length === 2) {
 				[, this.lsVersion] = match;
 			}

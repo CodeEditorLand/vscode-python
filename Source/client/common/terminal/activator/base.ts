@@ -17,6 +17,7 @@ import {
 export class BaseTerminalActivator implements ITerminalActivator {
 	private readonly activatedTerminals: Map<Terminal, Promise<boolean>> =
 		new Map<Terminal, Promise<boolean>>();
+
 	constructor(private readonly helper: ITerminalHelper) {}
 	public async activateEnvironmentInTerminal(
 		terminal: Terminal,
@@ -27,6 +28,7 @@ export class BaseTerminalActivator implements ITerminalActivator {
 		}
 		const deferred = createDeferred<boolean>();
 		this.activatedTerminals.set(terminal, deferred.promise);
+
 		const terminalShellType = this.helper.identifyTerminalShell(terminal);
 
 		const activationCommands =
@@ -35,7 +37,9 @@ export class BaseTerminalActivator implements ITerminalActivator {
 				options?.resource,
 				options?.interpreter,
 			);
+
 		let activated = false;
+
 		if (activationCommands) {
 			for (const command of activationCommands) {
 				terminal.show(options?.preserveFocus);
@@ -46,6 +50,7 @@ export class BaseTerminalActivator implements ITerminalActivator {
 			}
 		}
 		deferred.resolve(activated);
+
 		return activated;
 	}
 	protected async waitForCommandToProcess(_shell: TerminalShellType) {

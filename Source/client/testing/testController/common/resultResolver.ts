@@ -86,6 +86,7 @@ export class PythonResultResolver implements ITestResultResolver {
 		token?: CancellationToken,
 	): void {
 		const workspacePath = this.workspaceUri.fsPath;
+
 		const rawTestData = payload as DiscoveredTestPayload;
 		// Check if there were any errors in the discovery process.
 		if (rawTestData.status === "error") {
@@ -93,6 +94,7 @@ export class PythonResultResolver implements ITestResultResolver {
 				this.testProvider === "pytest"
 					? Testing.errorPytestDiscovery
 					: Testing.errorUnittestDiscovery;
+
 			const { error } = rawTestData;
 			traceError(
 				testingErrorConst,
@@ -105,6 +107,7 @@ export class PythonResultResolver implements ITestResultResolver {
 			let errorNode = this.testController.items.get(
 				`DiscoveryError:${workspacePath}`,
 			);
+
 			const message = util.format(
 				`${testingErrorConst} ${Testing.seePythonOutput}\r\n`,
 				error?.join("\r\n\r\n") ?? "",
@@ -174,7 +177,9 @@ export class PythonResultResolver implements ITestResultResolver {
 		}
 		for (const [key, value] of Object.entries(payload.result)) {
 			const fileNameStr = key;
+
 			const fileCoverageMetrics = value;
+
 			const linesCovered = fileCoverageMetrics.lines_covered
 				? fileCoverageMetrics.lines_covered
 				: []; // undefined if no lines covered
@@ -186,7 +191,9 @@ export class PythonResultResolver implements ITestResultResolver {
 				linesCovered.length,
 				linesCovered.length + linesMissed.length,
 			);
+
 			const uri = Uri.file(fileNameStr);
+
 			const fileCoverage = new FileCoverage(uri, lineCoverageCount);
 			runInstance.addCoverage(fileCoverage);
 
@@ -221,6 +228,7 @@ export class PythonResultResolver implements ITestResultResolver {
 		runInstance: TestRun,
 	): void {
 		const rawTestExecData = payload as ExecutionTestPayload;
+
 		if (
 			rawTestExecData !== undefined &&
 			rawTestExecData.result !== undefined
@@ -236,17 +244,21 @@ export class PythonResultResolver implements ITestResultResolver {
 					const tempArr: TestItem[] = getTestCaseNodes(i);
 					testCases.push(...tempArr);
 				});
+
 				const testItem = rawTestExecData.result[keyTemp];
 
 				if (testItem.outcome === "error") {
 					const rawTraceback = testItem.traceback ?? "";
+
 					const traceback = splitLines(rawTraceback, {
 						trim: false,
 						removeEmptyEntries: true,
 					}).join("\r\n");
+
 					const text = `${testItem.test} failed with error: ${
 						testItem.message ?? testItem.outcome
 					}\r\n${traceback}`;
+
 					const message = new TestMessage(text);
 
 					const grabVSid = this.runIdToVSid.get(keyTemp);
@@ -267,12 +279,14 @@ export class PythonResultResolver implements ITestResultResolver {
 					testItem.outcome === "passed-unexpected"
 				) {
 					const rawTraceback = testItem.traceback ?? "";
+
 					const traceback = splitLines(rawTraceback, {
 						trim: false,
 						removeEmptyEntries: true,
 					}).join("\r\n");
 
 					const text = `${testItem.test} failed: ${testItem.message ?? testItem.outcome}\r\n${traceback}`;
+
 					const message = new TestMessage(text);
 
 					// note that keyTemp is a runId for unittest library...
@@ -294,7 +308,9 @@ export class PythonResultResolver implements ITestResultResolver {
 					testItem.outcome === "expected-failure"
 				) {
 					const grabTestItem = this.runIdToTestItem.get(keyTemp);
+
 					const grabVSid = this.runIdToVSid.get(keyTemp);
+
 					if (grabTestItem !== undefined) {
 						testCases.forEach((indiItem) => {
 							if (indiItem.id === grabVSid) {
@@ -306,7 +322,9 @@ export class PythonResultResolver implements ITestResultResolver {
 					}
 				} else if (testItem.outcome === "skipped") {
 					const grabTestItem = this.runIdToTestItem.get(keyTemp);
+
 					const grabVSid = this.runIdToVSid.get(keyTemp);
+
 					if (grabTestItem !== undefined) {
 						testCases.forEach((indiItem) => {
 							if (indiItem.id === grabVSid) {
@@ -320,13 +338,16 @@ export class PythonResultResolver implements ITestResultResolver {
 					// split on [] or () based on how the subtest is setup.
 					const [parentTestCaseId, subtestId] =
 						splitTestNameWithRegex(keyTemp);
+
 					const parentTestItem =
 						this.runIdToTestItem.get(parentTestCaseId);
+
 					const data = testItem;
 					// find the subtest's parent test item
 					if (parentTestItem) {
 						const subtestStats =
 							this.subTestStats.get(parentTestCaseId);
+
 						if (subtestStats) {
 							subtestStats.failed += 1;
 						} else {
@@ -344,12 +365,15 @@ export class PythonResultResolver implements ITestResultResolver {
 						// create a new test item for the subtest
 						if (subTestItem) {
 							const traceback = data.traceback ?? "";
+
 							const text = `${data.subtest} failed: ${
 								testItem.message ?? testItem.outcome
 							}\r\n${traceback}`;
 							parentTestItem.children.add(subTestItem);
 							runInstance.started(subTestItem);
+
 							const message = new TestMessage(text);
+
 							if (parentTestItem.uri && parentTestItem.range) {
 								message.location = new Location(
 									parentTestItem.uri,
@@ -369,6 +393,7 @@ export class PythonResultResolver implements ITestResultResolver {
 					// split on [] or () based on how the subtest is setup.
 					const [parentTestCaseId, subtestId] =
 						splitTestNameWithRegex(keyTemp);
+
 					const parentTestItem =
 						this.runIdToTestItem.get(parentTestCaseId);
 
@@ -376,6 +401,7 @@ export class PythonResultResolver implements ITestResultResolver {
 					if (parentTestItem) {
 						const subtestStats =
 							this.subTestStats.get(parentTestCaseId);
+
 						if (subtestStats) {
 							subtestStats.passed += 1;
 						} else {

@@ -82,6 +82,7 @@ export class InvalidPythonInterpreterDiagnostic extends BaseDiagnostic {
 		scope = DiagnosticScope.WorkspaceFolder,
 	) {
 		let formatArg = "";
+
 		if (
 			workspaceService.workspaceFile &&
 			workspaceService.workspaceFolders &&
@@ -89,6 +90,7 @@ export class InvalidPythonInterpreterDiagnostic extends BaseDiagnostic {
 		) {
 			// Specify folder name in case of multiroot scenarios
 			const folder = workspaceService.getWorkspaceFolder(resource);
+
 			if (folder) {
 				formatArg = ` ${l10n.t("for workspace")} ${path.basename(folder.uri.fsPath)}`;
 			}
@@ -169,6 +171,7 @@ export class InvalidPythonInterpreterService
 					this.triggerEnvSelectionIfNecessary(resource),
 			),
 		);
+
 		const interpreterService =
 			this.serviceContainer.get<IInterpreterService>(IInterpreterService);
 		this.disposableRegistry.push(
@@ -187,17 +190,22 @@ export class InvalidPythonInterpreterService
 	public async _manualDiagnose(resource: Resource): Promise<IDiagnostic[]> {
 		const workspaceService =
 			this.serviceContainer.get<IWorkspaceService>(IWorkspaceService);
+
 		const interpreterService =
 			this.serviceContainer.get<IInterpreterService>(IInterpreterService);
+
 		const diagnostics = await this.diagnoseDefaultShell(resource);
+
 		if (diagnostics.length > 0) {
 			return diagnostics;
 		}
 		const hasInterpreters = await interpreterService.hasInterpreters();
+
 		const interpreterPathService =
 			this.serviceContainer.get<IInterpreterPathService>(
 				IInterpreterPathService,
 			);
+
 		const isInterpreterSetToDefault =
 			interpreterPathService.get(resource) === "python";
 
@@ -214,6 +222,7 @@ export class InvalidPythonInterpreterService
 
 		const currentInterpreter =
 			await interpreterService.getActiveInterpreter(resource);
+
 		if (!currentInterpreter) {
 			return [
 				new InvalidPythonInterpreterDiagnostic(
@@ -230,10 +239,12 @@ export class InvalidPythonInterpreterService
 		resource: Resource,
 	): Promise<boolean> {
 		const diagnostics = await this._manualDiagnose(resource);
+
 		if (!diagnostics.length) {
 			return true;
 		}
 		this.handle(diagnostics).ignoreErrors();
+
 		return false;
 	}
 
@@ -245,8 +256,10 @@ export class InvalidPythonInterpreterService
 		}
 		const interpreterService =
 			this.serviceContainer.get<IInterpreterService>(IInterpreterService);
+
 		const currentInterpreter =
 			await interpreterService.getActiveInterpreter(resource);
+
 		if (currentInterpreter) {
 			return [];
 		}
@@ -260,6 +273,7 @@ export class InvalidPythonInterpreterService
 					"ComSpec is likely set to an invalid value",
 					getEnvironmentVariable("ComSpec"),
 				);
+
 				if (await this.isComspecInvalid()) {
 					return [
 						new DefaultShellDiagnostic(
@@ -274,6 +288,7 @@ export class InvalidPythonInterpreterService
 						process.env.Path,
 						process.env.PATH,
 					);
+
 					return [
 						new DefaultShellDiagnostic(
 							DiagnosticCodes.IncompletePathVarDiagnostic,
@@ -294,18 +309,24 @@ export class InvalidPythonInterpreterService
 
 	private async isComspecInvalid() {
 		const comSpec = getEnvironmentVariable("ComSpec") ?? "";
+
 		const fs = this.serviceContainer.get<IFileSystem>(IFileSystem);
+
 		return fs.fileExists(comSpec).then((exists) => !exists);
 	}
 
 	// eslint-disable-next-line class-methods-use-this
 	private isPathVarIncomplete() {
 		const envVars = getSearchPathEnvVarNames();
+
 		const systemRoot =
 			getEnvironmentVariable("SystemRoot") ?? "C:\\WINDOWS";
+
 		const system32 = path.join(systemRoot, "system32");
+
 		for (const envVar of envVars) {
 			const value = getEnvironmentVariable(envVar);
+
 			if (value && normCasePath(value).includes(normCasePath(system32))) {
 				return false;
 			}
@@ -320,8 +341,11 @@ export class InvalidPythonInterpreterService
 			this.serviceContainer.get<IConfigurationService>(
 				IConfigurationService,
 			);
+
 		const { pythonPath } = configurationService.getSettings();
+
 		const [args] = getExecutable();
+
 		const argv = [pythonPath, ...args];
 		// Concat these together to make a set of quoted strings
 		const quoted = argv.reduce(
@@ -331,11 +355,14 @@ export class InvalidPythonInterpreterService
 					: `${c.toCommandArgumentForPythonExt()}`,
 			"",
 		);
+
 		const processServiceFactory =
 			this.serviceContainer.get<IProcessServiceFactory>(
 				IProcessServiceFactory,
 			);
+
 		const service = await processServiceFactory.create();
+
 		return service.shellExec(quoted, { timeout: 15000 });
 	}
 
@@ -353,6 +380,7 @@ export class InvalidPythonInterpreterService
 					return;
 				}
 				const commandPrompts = this.getCommandPrompts(diagnostic);
+
 				const onClose = getOnCloseHandler(diagnostic);
 				await messageService.handle(diagnostic, {
 					commandPrompts,
@@ -370,6 +398,7 @@ export class InvalidPythonInterpreterService
 			this.serviceContainer.get<IDiagnosticsCommandFactory>(
 				IDiagnosticsCommandFactory,
 			);
+
 		if (
 			diagnostic.code === DiagnosticCodes.InvalidComspecDiagnostic ||
 			diagnostic.code === DiagnosticCodes.IncompletePathVarDiagnostic ||
@@ -380,6 +409,7 @@ export class InvalidPythonInterpreterService
 				IncompletePathVarDiagnostic: "https://aka.ms/AAk744c",
 				DefaultShellErrorDiagnostic: "https://aka.ms/AAk7qix",
 			};
+
 			return [
 				{
 					prompt: Common.seeInstructions,
@@ -399,6 +429,7 @@ export class InvalidPythonInterpreterService
 				}),
 			},
 		];
+
 		if (
 			diagnostic.code ===
 			DiagnosticCodes.InvalidPythonInterpreterDiagnostic

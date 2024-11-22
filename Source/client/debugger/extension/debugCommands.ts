@@ -43,10 +43,12 @@ export class DebugCommands implements IExtensionSingleActivationService {
 				Commands.Debug_In_Terminal,
 				async (file?: Uri) => {
 					sendTelemetryEvent(EventName.DEBUG_IN_TERMINAL_BUTTON);
+
 					const interpreter =
 						await this.interpreterService.getActiveInterpreter(
 							file,
 						);
+
 					if (!interpreter) {
 						this.commandManager
 							.executeCommand(
@@ -54,6 +56,7 @@ export class DebugCommands implements IExtensionSingleActivationService {
 								file,
 							)
 							.then(noop, noop);
+
 						return;
 					}
 					sendTelemetryEvent(
@@ -65,12 +68,14 @@ export class DebugCommands implements IExtensionSingleActivationService {
 						CreateEnvironmentCheckKind.File,
 						file,
 					);
+
 					const config =
 						await DebugCommands.getDebugConfiguration(file);
 					this.debugService.startDebugging(undefined, config);
 				},
 			),
 		);
+
 		return Promise.resolve();
 	}
 
@@ -80,6 +85,7 @@ export class DebugCommands implements IExtensionSingleActivationService {
 		const configs = (await getConfigurationsByUri(uri)).filter(
 			(c) => c.request === "launch",
 		);
+
 		for (const config of configs) {
 			if (
 				(config as LaunchRequestArguments).purpose?.includes(
@@ -93,6 +99,7 @@ export class DebugCommands implements IExtensionSingleActivationService {
 				// Ensure that the purpose is cleared, this is so we can track if people accidentally
 				// trigger this via F5 or Start with debugger.
 				config.purpose = [];
+
 				return config;
 			}
 		}

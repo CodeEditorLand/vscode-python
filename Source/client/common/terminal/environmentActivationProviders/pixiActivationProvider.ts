@@ -24,6 +24,7 @@ export class PixiActivationCommandProvider implements ITerminalActivationCommand
         targetShell: TerminalShellType,
     ): Promise<string[] | undefined> {
         const interpreter = await this.interpreterService.getActiveInterpreter(resource);
+
         if (!interpreter) {
             return undefined;
         }
@@ -47,6 +48,7 @@ function shellTypeToPixiShell(targetShell: TerminalShellType): string | undefine
         case TerminalShellType.powershell:
         case TerminalShellType.powershellCore:
             return 'powershell';
+
         case TerminalShellType.commandPrompt:
             return 'cmd';
 

@@ -32,6 +32,7 @@ export class DiagnosticCommandPromptHandlerService
 	implements IDiagnosticHandlerService<MessageCommandPrompt>
 {
 	private readonly appShell: IApplicationShell;
+
 	constructor(
 		@inject(IServiceContainer) serviceContainer: IServiceContainer,
 	) {
@@ -43,11 +44,13 @@ export class DiagnosticCommandPromptHandlerService
 		options: MessageCommandPrompt = { commandPrompts: [] },
 	): Promise<void> {
 		const prompts = options.commandPrompts.map((option) => option.prompt);
+
 		const response = await this.displayMessage(
 			options.message ? options.message : diagnostic.message,
 			diagnostic.severity,
 			prompts,
 		);
+
 		if (options.onClose) {
 			options.onClose(response);
 		}
@@ -57,6 +60,7 @@ export class DiagnosticCommandPromptHandlerService
 		const selectedOption = options.commandPrompts.find(
 			(option) => option.prompt === response,
 		);
+
 		if (selectedOption && selectedOption.command) {
 			await selectedOption.command.invoke();
 		}

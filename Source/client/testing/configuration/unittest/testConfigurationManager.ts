@@ -21,9 +21,12 @@ export class ConfigurationManager extends TestConfigurationManager {
 
 	public async configure(wkspace: Uri): Promise<void> {
 		const args = ["-v"];
+
 		const subDirs = await this.getTestDirs(wkspace.fsPath);
+
 		const testDir = await this.selectTestDir(wkspace.fsPath, subDirs);
 		args.push("-s");
+
 		if (typeof testDir === "string" && testDir !== ".") {
 			args.push(`./${testDir}`);
 		} else {
@@ -32,6 +35,7 @@ export class ConfigurationManager extends TestConfigurationManager {
 
 		const testfilePattern = await this.selectTestFilePattern();
 		args.push("-p");
+
 		if (typeof testfilePattern === "string") {
 			args.push(testfilePattern);
 		} else {

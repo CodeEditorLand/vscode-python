@@ -66,20 +66,29 @@ async function getInterpreterDataFromKey(
 		{ arch, hive, key },
 		useWorkerThreads,
 	);
+
 	for (const value of values) {
 		switch (value.name) {
 			case "SysArchitecture":
 				result.bitnessStr = value.value;
+
 				break;
+
 			case "SysVersion":
 				result.sysVersionStr = value.value;
+
 				break;
+
 			case "Version":
 				result.versionStr = value.value;
+
 				break;
+
 			case "DisplayName":
 				result.companyDisplayName = value.value;
+
 				break;
+
 			default:
 				break;
 		}
@@ -89,17 +98,22 @@ async function getInterpreterDataFromKey(
 		{ arch, hive, key },
 		useWorkerThreads,
 	);
+
 	const subKey = subKeys
 		.map((s) => s.key)
 		.find((s) => s.endsWith("InstallPath"));
+
 	if (subKey) {
 		const subKeyValues: IRegistryValue[] = await readRegistryValues(
 			{ arch, hive, key: subKey },
 			useWorkerThreads,
 		);
+
 		const value = subKeyValues.find((v) => v.name === "ExecutablePath");
+
 		if (value) {
 			result.interpreterPath = value.value;
+
 			if (value.type !== REG_SZ) {
 				traceVerbose(
 					`Registry interpreter path type [${value.type}]: ${value.value}`,
@@ -124,12 +138,15 @@ export async function getInterpreterDataFromRegistry(
 		{ arch, hive, key },
 		useWorkerThreads,
 	);
+
 	const distroOrgName = key.substr(key.lastIndexOf("\\") + 1);
+
 	const allData = await Promise.all(
 		subKeys.map((subKey) =>
 			getInterpreterDataFromKey(subKey, distroOrgName, useWorkerThreads),
 		),
 	);
+
 	return (allData.filter((data) => data !== undefined) ||
 		[]) as IRegistryInterpreterData[];
 }
@@ -157,6 +174,7 @@ export async function getRegistryInterpreters(): Promise<
 		return registryInterpretersPromise;
 	}
 	registryInterpretersPromise = getRegistryInterpretersImpl();
+
 	return registryInterpretersPromise;
 }
 
@@ -168,7 +186,9 @@ async function getRegistryInterpretersImpl(
 	for (const arch of ["x64", "x86"]) {
 		for (const hive of [HKLM, HKCU]) {
 			const root = "\\SOFTWARE\\Python";
+
 			let keys: string[] = [];
+
 			try {
 				keys = (
 					await readRegistryKeys(
@@ -199,5 +219,6 @@ async function getRegistryInterpretersImpl(
 		registryData,
 		(r: IRegistryInterpreterData) => r.interpreterPath,
 	);
+
 	return registryInterpretersCache;
 }

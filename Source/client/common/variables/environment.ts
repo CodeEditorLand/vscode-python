@@ -17,6 +17,7 @@ export class EnvironmentVariablesService
 	implements IEnvironmentVariablesService
 {
 	private _pathVariable?: "Path" | "PATH";
+
 	constructor(
 		// We only use a small portion of either of these interfaces.
 		@inject(IPathUtils) private readonly pathUtils: IPathUtils,
@@ -35,8 +36,10 @@ export class EnvironmentVariablesService
 				"Custom .env is likely not pointing to a valid file",
 				ex,
 			);
+
 			return undefined;
 		});
+
 		if (!contents) {
 			return;
 		}
@@ -51,6 +54,7 @@ export class EnvironmentVariablesService
 			return;
 		}
 		let contents: string | undefined;
+
 		try {
 			contents = readFileSync(filePath, { encoding: "utf8" });
 		} catch (ex) {
@@ -76,6 +80,7 @@ export class EnvironmentVariablesService
 		const reference = target;
 		target = normCaseKeys(target);
 		source = normCaseKeys(source);
+
 		const settingsNotToMerge = ["PYTHONPATH", this.pathVariable];
 		Object.keys(source).forEach((setting) => {
 			if (
@@ -116,11 +121,15 @@ export class EnvironmentVariablesService
 		...pathsToAppend: string[]
 	) {
 		const reference = vars;
+
 		vars = normCaseKeys(vars);
+
 		variableName = normCase(variableName);
+
 		vars = this._appendPaths(vars, variableName, ...pathsToAppend);
 		restoreKeys(vars);
 		matchTarget(reference, vars);
+
 		return vars;
 	}
 
@@ -135,11 +144,13 @@ export class EnvironmentVariablesService
 			)
 			.map((item) => item.trim())
 			.join(path.delimiter);
+
 		if (valueToAppend.length === 0) {
 			return vars;
 		}
 
 		const variable = vars ? vars[variableName] : undefined;
+
 		if (variable && typeof variable === "string" && variable.length > 0) {
 			vars[variableName] = variable + path.delimiter + valueToAppend;
 		} else {
@@ -154,17 +165,20 @@ export function parseEnvFile(
 	baseVars?: EnvironmentVariables,
 ): EnvironmentVariables {
 	const globalVars = baseVars ? baseVars : {};
+
 	const vars: EnvironmentVariables = {};
 	lines
 		.toString()
 		.split("\n")
 		.forEach((line, _idx) => {
 			const [name, value] = parseEnvLine(line);
+
 			if (name === "") {
 				return;
 			}
 			vars[name] = substituteEnvVars(value, vars, globalVars);
 		});
+
 	return vars;
 }
 
@@ -174,12 +188,15 @@ function parseEnvLine(line: string): [string, string] {
 	// We don't use dotenv here because it loses ordering, which is
 	// significant for substitution.
 	const match = line.match(/^\s*(_*[a-zA-Z]\w*)\s*=\s*(.*?)?\s*$/);
+
 	if (!match) {
 		return ["", ""];
 	}
 
 	const name = match[1];
+
 	let value = match[2];
+
 	if (value && value !== "") {
 		if (value[0] === "'" && value[value.length - 1] === "'") {
 			value = value.substring(1, value.length - 1);
@@ -207,6 +224,7 @@ function substituteEnvVars(
 	//   https://github.com/motdotla/dotenv-expand/blob/master/lib/main.js
 
 	let invalid = false;
+
 	let replacement = value;
 	replacement = replacement.replace(
 		SUBST_REGEX,
@@ -216,11 +234,13 @@ function substituteEnvVars(
 			}
 			if ((bogus && bogus !== "") || !substName || substName === "") {
 				invalid = true;
+
 				return match;
 			}
 			return localVars[substName] || globalVars[substName] || missing;
 		},
 	);
+
 	if (!invalid && replacement !== value) {
 		value = replacement;
 		sendTelemetryEvent(EventName.ENVFILE_VARIABLE_SUBSTITUTION);
@@ -235,6 +255,7 @@ export function normCaseKeys(env: EnvironmentVariables): EnvironmentVariables {
 		const normalizedKey = normCase(key);
 		normalizedEnv[normalizedKey] = env[key];
 	});
+
 	return normalizedEnv;
 }
 
@@ -242,6 +263,7 @@ export function restoreKeys(env: EnvironmentVariables) {
 	const processEnvKeys = Object.keys(process.env);
 	processEnvKeys.forEach((processEnvKey) => {
 		const originalKey = normCase(processEnvKey);
+
 		if (originalKey !== processEnvKey && env[originalKey] !== undefined) {
 			env[processEnvKey] = env[originalKey];
 			delete env[originalKey];

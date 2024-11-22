@@ -10,6 +10,7 @@ import {
 
 async function setShowCreateEnvButtonContextKey(): Promise<void> {
 	const config = getConfiguration("python");
+
 	const showCreateEnvButton =
 		config.get<string>("createEnvironment.contentButton", "show") ===
 		"show";

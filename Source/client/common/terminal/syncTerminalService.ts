@@ -27,6 +27,7 @@ class ExecutionState implements Disposable {
     public state: State = State.notStarted;
     private _completed: Deferred<void> = createDeferred();
     private disposable?: Disposable;
+
     constructor(
         public readonly lockFile: string,
         private readonly fs: IFileSystem,
@@ -47,10 +48,12 @@ class ExecutionState implements Disposable {
     private registerStateUpdate() {
         const timeout = setInterval(async () => {
             const state = await this.getLockFileState(this.lockFile);
+
             if (state !== this.state) {
                 traceVerbose(`Command state changed to ${state}. ${this.command.join(' ')}`);
             }
             this.state = state;
+
             if (state & State.errored) {
                 const errorContents = await this.fs.readFile(`${this.lockFile}.error`).catch(() => '');
                 this._completed.reject(
@@ -71,7 +74,9 @@ class ExecutionState implements Disposable {
     }
     private async getLockFileState(file: string): Promise<State> {
         const source = await this.fs.readFile(file);
+
         let state: State = State.notStarted;
+
         if (source.includes('START')) {
             state |= State.started;
         }
@@ -106,8 +111,10 @@ export class SynchronousTerminalService implements ITerminalService, Disposable 
     ) {}
     public dispose() {
         this.terminalService.dispose();
+
         while (this.disposables.length) {
             const disposable = this.disposables.shift();
+
             if (disposable) {
                 try {
                     disposable.dispose();
@@ -129,11 +136,15 @@ export class SynchronousTerminalService implements ITerminalService, Disposable 
             return this.terminalService.sendCommand(command, args);
         }
         const lockFile = await this.createLockFile();
+
         const state = new ExecutionState(lockFile.filePath, this.fs, [command, ...args]);
+
         try {
             const pythonExec = this.pythonInterpreter || (await this.interpreter.getActiveInterpreter(undefined));
+
             const sendArgs = internalScripts.shell_exec(command, lockFile.filePath, args);
             await this.terminalService.sendCommand(pythonExec?.path || 'python', sendArgs);
+
             const promise = swallowExceptions ? state.completed : state.completed.catch(noop);
             await Cancellation.race(() => promise, cancel);
         } finally {
@@ -155,6 +166,7 @@ export class SynchronousTerminalService implements ITerminalService, Disposable 
     private createLockFile(): Promise<TemporaryFile> {
         return this.fs.createTemporaryFile('.log').then((l) => {
             this.disposables.push(l);
+
             return l;
         });
     }

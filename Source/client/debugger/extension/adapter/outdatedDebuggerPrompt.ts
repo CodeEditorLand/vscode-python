@@ -39,8 +39,10 @@ class OutdatedDebuggerPrompt implements DebugAdapterTracker {
 	private isPtvsd(message: DebugProtocol.ProtocolMessage) {
 		if (message.type === "event") {
 			const eventMessage = message as DebugProtocol.Event;
+
 			if (eventMessage.event === "output") {
 				const outputMessage = eventMessage as DebugProtocol.OutputEvent;
+
 				if (outputMessage.body.category === "telemetry") {
 					// debugpy sends telemetry as both ptvsd and debugpy. This was done to help with
 					// transition from ptvsd to debugpy while analyzing usage telemetry.
@@ -49,6 +51,7 @@ class OutdatedDebuggerPrompt implements DebugAdapterTracker {
 						!outputMessage.body.data.packageVersion.startsWith("1")
 					) {
 						this.promptCheck.setShowPrompt(false);
+
 						return true;
 					}
 					if (outputMessage.body.output === "debugpy") {
@@ -76,6 +79,7 @@ export class OutdatedDebuggerPromptFactory
 	implements DebugAdapterTrackerFactory
 {
 	private readonly promptCheck: OutdatedDebuggerPromptState;
+
 	constructor() {
 		this.promptCheck = new OutdatedDebuggerPromptState();
 	}

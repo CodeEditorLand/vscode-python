@@ -10,5 +10,6 @@ export function decodeBuffer(
 	encoding: string = DEFAULT_ENCODING,
 ): string {
 	encoding = iconv.encodingExists(encoding) ? encoding : DEFAULT_ENCODING;
+
 	return iconv.decode(Buffer.concat(buffers), encoding);
 }

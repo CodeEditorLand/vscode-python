@@ -25,6 +25,7 @@ async function getWorkspacesForQuickPick(
 	workspaces: readonly WorkspaceFolder[],
 ): Promise<QuickPickItem[]> {
 	const items: QuickPickItem[] = [];
+
 	for (const workspace of workspaces) {
 		items.push({
 			label: workspace.name,
@@ -59,6 +60,7 @@ export async function pickWorkspaceFolder(
 			CreateEnv.noWorkspace,
 			Common.openFolder,
 		);
+
 		if (result === Common.openFolder) {
 			await executeCommand("vscode.openFolder");
 		}
@@ -101,6 +103,7 @@ export async function pickWorkspaceFolder(
 			const details = selected
 				.map((s: QuickPickItem) => s.detail)
 				.filter((s) => s !== undefined);
+
 			return workspaces.filter((w) => details.includes(w.uri.fsPath));
 		}
 		return workspaces.filter(

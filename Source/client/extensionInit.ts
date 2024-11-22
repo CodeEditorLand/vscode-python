@@ -44,8 +44,11 @@ export function initializeGlobals(
 	context: IExtensionContext,
 ): ExtensionState {
 	const disposables: IDisposableRegistry = context.subscriptions;
+
 	const cont = new Container({ skipBaseClassChecks: true });
+
 	const serviceManager = new ServiceManager(cont);
+
 	const serviceContainer = new ServiceContainer(cont);
 
 	serviceManager.addSingletonInstance<IServiceContainer>(
@@ -89,6 +92,7 @@ export function initializeGlobals(
 		OutputChannelNames.pythonTest,
 	);
 	disposables.push(unitTestOutChannel);
+
 	if (isVirtualWorkspace() || !isTrusted()) {
 		unitTestOutChannel.appendLine(
 			l10n.t("Unit tests are not supported in this environment."),
@@ -118,6 +122,7 @@ export function initializeStandard(ext: ExtensionState): void {
 	const { serviceManager } = ext.legacyIOC;
 	// Core registrations (non-feature specific).
 	commonRegisterTypes(serviceManager);
+
 	variableRegisterTypes(serviceManager);
 	platformRegisterTypes(serviceManager);
 	processRegisterTypes(serviceManager);

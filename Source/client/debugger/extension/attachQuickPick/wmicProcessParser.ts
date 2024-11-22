@@ -7,8 +7,11 @@ import { IAttachItem, ProcessListCommand } from "./types";
 
 export namespace WmicProcessParser {
 	const wmicNameTitle = "Name";
+
 	const wmicCommandLineTitle = "CommandLine";
+
 	const wmicPidTitle = "ProcessId";
+
 	const defaultEmptyEntry: IAttachItem = {
 		label: "",
 		description: "",
@@ -32,7 +35,9 @@ export namespace WmicProcessParser {
 
 	export function parseProcesses(processes: string): IAttachItem[] {
 		const lines: string[] = processes.split("\r\n");
+
 		const processEntries: IAttachItem[] = [];
+
 		let entry = { ...defaultEmptyEntry };
 
 		for (const line of lines) {
@@ -54,10 +59,12 @@ export namespace WmicProcessParser {
 
 	function parseLineFromWmic(line: string, item: IAttachItem): IAttachItem {
 		const splitter = line.indexOf("=");
+
 		const currentItem = item;
 
 		if (splitter > 0) {
 			const key = line.slice(0, splitter).trim();
+
 			let value = line.slice(splitter + 1).trim();
 
 			if (key === wmicNameTitle) {

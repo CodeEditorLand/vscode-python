@@ -128,7 +128,9 @@ export class NativeRepl implements Disposable {
      */
     public async checkUserInputCompleteCode(activeEditor: TextEditor | undefined): Promise<boolean> {
         let completeCode = false;
+
         let userTextInput;
+
         if (activeEditor) {
             const { document } = activeEditor;
             userTextInput = document.getText();
@@ -152,6 +154,7 @@ export class NativeRepl implements Disposable {
         if (this.notebookDocument) {
             this.replController.updateNotebookAffinity(this.notebookDocument, NotebookControllerAffinity.Default);
             await selectNotebookKernel(notebookEditor, this.replController.id, PVSC_EXTENSION_ID);
+
             if (code) {
                 await executeNotebookCell(notebookEditor, code);
             }

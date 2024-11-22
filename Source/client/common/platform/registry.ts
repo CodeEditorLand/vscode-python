@@ -22,6 +22,7 @@ export class RegistryImplementation implements IRegistry {
 				"Fetching keys from windows registry resulted in an error",
 				ex,
 			);
+
 			return [];
 		});
 	}
@@ -43,6 +44,7 @@ export class RegistryImplementation implements IRegistry {
 				"Fetching key value from windows registry resulted in an error",
 				ex,
 			);
+
 			return undefined;
 		});
 	}
@@ -52,8 +54,10 @@ export function getArchitectureDisplayName(arch?: Architecture) {
 	switch (arch) {
 		case Architecture.x64:
 			return "64-bit";
+
 		case Architecture.x86:
 			return "32-bit";
+
 		default:
 			return "";
 	}
@@ -61,6 +65,7 @@ export function getArchitectureDisplayName(arch?: Architecture) {
 
 async function getRegistryValue(options: Options, name: string = "") {
 	const Registry = require("winreg") as typeof import("winreg");
+
 	return new Promise<string | undefined | null>((resolve) => {
 		new Registry(options).get(name, (error, result) => {
 			if (error || !result || typeof result.value !== "string") {
@@ -93,19 +98,24 @@ function translateArchitecture(
 	switch (arch) {
 		case Architecture.x86:
 			return RegistryArchitectures.x86;
+
 		case Architecture.x64:
 			return RegistryArchitectures.x64;
+
 		default:
 			return;
 	}
 }
 function translateHive(hive: RegistryHive): string | undefined {
 	const Registry = require("winreg") as typeof import("winreg");
+
 	switch (hive) {
 		case RegistryHive.HKCU:
 			return Registry.HKCU;
+
 		case RegistryHive.HKLM:
 			return Registry.HKLM;
+
 		default:
 			return;
 	}

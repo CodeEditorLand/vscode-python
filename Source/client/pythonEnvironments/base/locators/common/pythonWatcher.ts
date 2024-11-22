@@ -86,6 +86,7 @@ class PythonWatcherImpl implements PythonWatcher {
 		}
 
 		const disposables: Disposable[] = [];
+
 		const watcher = createFileSystemWatcher(
 			new RelativePattern(wf, WORKSPACE_PATTERN),
 		);
@@ -122,6 +123,7 @@ class PythonWatcherImpl implements PythonWatcher {
 		uri: Uri,
 	) {
 		const uriWorkspace = getWorkspaceFolder(uri);
+
 		if (
 			uriWorkspace &&
 			arePathsSame(uriWorkspace.uri.fsPath, wf.uri.fsPath)
@@ -143,7 +145,9 @@ class PythonWatcherImpl implements PythonWatcher {
 		const glob: GlobPattern = pattern
 			? new RelativePattern(uri, pattern)
 			: uri.fsPath;
+
 		const disposables: Disposable[] = [];
+
 		const watcher = createFileSystemWatcher(glob);
 		disposables.push(
 			watcher,

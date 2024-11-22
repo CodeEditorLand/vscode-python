@@ -68,5 +68,6 @@ export async function createPythonEnvironments(
 ): Promise<IDiscoveryAPI> {
 	const api = new PythonEnvironments(getLocator);
 	await api.activate();
+
 	return api;
 }

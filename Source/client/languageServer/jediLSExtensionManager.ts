@@ -90,6 +90,7 @@ export class JediLSExtensionManager
 			traceError(
 				"Unable to start Jedi language server as a valid interpreter is not selected",
 			);
+
 			return false;
 		}
 		// Otherwise return true for now since it's shipped with the extension.

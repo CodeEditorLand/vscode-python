@@ -70,7 +70,9 @@ export function makeDebounceDecorator(wait?: number) {
 		//
 		// See https://lodash.com/docs/#debounce.
 		const options = {};
+
 		const originalMethod = descriptor.value!;
+
 		const debounced = _debounce(
 			function (this: any) {
 				return originalMethod.apply(this, arguments as any);
@@ -93,7 +95,9 @@ export function makeDebounceAsyncDecorator(wait?: number) {
 			deferred: Deferred<any> | undefined;
 			timer: NodeJS.Timer | number | undefined;
 		};
+
 		const originalMethod = descriptor.value!;
+
 		const state: StateInformation = {
 			started: false,
 			deferred: undefined,
@@ -103,6 +107,7 @@ export function makeDebounceAsyncDecorator(wait?: number) {
 		// Lets defer execution using a setTimeout for the given time.
 		(descriptor as any).value = function (this: any) {
 			const existingDeferred: Deferred<any> | undefined = state.deferred;
+
 			if (existingDeferred && state.started) {
 				return existingDeferred.promise;
 			}
@@ -110,10 +115,12 @@ export function makeDebounceAsyncDecorator(wait?: number) {
 			// Clear previous timer.
 			const existingDeferredCompleted =
 				existingDeferred && existingDeferred.completed;
+
 			const deferred = (state.deferred =
 				!existingDeferred || existingDeferredCompleted
 					? createDeferred<any>()
 					: existingDeferred);
+
 			if (state.timer) {
 				clearTimeout(state.timer as any);
 			}
@@ -131,12 +138,14 @@ export function makeDebounceAsyncDecorator(wait?: number) {
 						deferred.reject(ex);
 					});
 			}, wait || 0);
+
 			return deferred.promise;
 		};
 	};
 }
 
 type PromiseFunctionWithAnyArgs = (...any: any) => Promise<any>;
+
 const cacheStoreForMethods = getGlobalCacheStore();
 
 /**
@@ -167,16 +176,19 @@ export function cache(
 		descriptor: TypedPropertyDescriptor<PromiseFunctionWithAnyArgs>,
 	) {
 		const originalMethod = descriptor.value!;
+
 		const className =
 			"constructor" in target && target.constructor.name
 				? target.constructor.name
 				: "";
+
 		const keyPrefix = `Cache_Method_Output_${className}.${propertyName}`;
 		descriptor.value = async function (...args: any) {
 			if (isTestExecution()) {
 				return originalMethod.apply(this, args) as Promise<any>;
 			}
 			let key: string;
+
 			try {
 				key = getCacheKeyFromFunctionArgs(keyPrefix, args);
 			} catch (ex) {
@@ -185,9 +197,11 @@ export function cache(
 					keyPrefix,
 					ex,
 				);
+
 				return originalMethod.apply(this, args) as Promise<any>;
 			}
 			const cachedItem = cacheStoreForMethods.get(key);
+
 			if (
 				cachedItem &&
 				(cachedItem.expiry > Date.now() || expiryDurationMs === -1)
@@ -199,7 +213,9 @@ export function cache(
 				moduleLoadWatch.elapsedTime > extensionStartUpTime
 					? expiryDurationAfterStartUpMs
 					: expiryDurationMs;
+
 			const promise = originalMethod.apply(this, args) as Promise<any>;
+
 			if (cachePromise) {
 				cacheStoreForMethods.set(key, {
 					data: promise,
@@ -234,6 +250,7 @@ export function swallowExceptions(scopeName?: string) {
 		descriptor: TypedPropertyDescriptor<any>,
 	) {
 		const originalMethod = descriptor.value!;
+
 		const errorMessage = `Python Extension (Error in ${scopeName || propertyName}, method:${propertyName}):`;
 
 		descriptor.value = function (...args: any[]) {

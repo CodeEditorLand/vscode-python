@@ -6,6 +6,7 @@ import { EventName } from "../../telemetry/constants";
 
 function checkREPLCommand(command: string): boolean {
 	const lower = command.toLowerCase().trimStart();
+
 	return lower.startsWith("python") || lower.startsWith("py ");
 }
 

@@ -35,11 +35,13 @@ type DirUnwatchableReason =
  */
 function checkDirWatchable(dirname: string): DirUnwatchableReason {
 	let names: string[];
+
 	try {
 		names = fs.readdirSync(dirname);
 	} catch (err) {
 		const exception = err as NodeJS.ErrnoException;
 		traceVerbose("Reading directory failed", exception);
+
 		if (exception.code === "ENOENT") {
 			// Treat a missing directory as unwatchable since it can lead to CPU load issues:
 			// https://github.com/microsoft/vscode-python/issues/18459
@@ -120,6 +122,7 @@ export abstract class FSWatchingLocator extends LazyResourceBasedLocator {
 
 		// Start the FS watchers.
 		let roots = await this.getRoots();
+
 		if (typeof roots === "string") {
 			roots = [roots];
 		}
@@ -130,12 +133,15 @@ export abstract class FSWatchingLocator extends LazyResourceBasedLocator {
 			// Note that we only check the root dir.  Any directories
 			// that might be watched due to a glob are not checked.
 			const unwatchable = await checkDirWatchable(root);
+
 			if (unwatchable) {
 				traceWarn(`Dir "${root}" is not watchable (${unwatchable})`);
+
 				return undefined;
 			}
 			return root;
 		});
+
 		const watchableRoots = (await Promise.all(promises)).filter(
 			(root) => !!root,
 		) as string[];
@@ -148,6 +154,7 @@ export abstract class FSWatchingLocator extends LazyResourceBasedLocator {
 
 	private startWatchers(root: string): void {
 		const opts = this.creationOptions;
+
 		if (isWatchingAFile(opts)) {
 			traceVerbose("Start watching file for changes", root);
 			this.disposables.push(
@@ -164,6 +171,7 @@ export abstract class FSWatchingLocator extends LazyResourceBasedLocator {
 					},
 				),
 			);
+
 			return;
 		}
 		const callback = async (type: FileChangeType, executable: string) => {
@@ -214,6 +222,7 @@ export abstract class FSWatchingLocator extends LazyResourceBasedLocator {
 			"for globs",
 			JSON.stringify(globs),
 		);
+
 		const watchers = globs.map((g) =>
 			watchLocationForPythonBinaries(root, callback, g),
 		);

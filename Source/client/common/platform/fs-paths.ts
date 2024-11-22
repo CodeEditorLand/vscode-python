@@ -64,6 +64,7 @@ export class FileSystemPaths implements IFileSystemPaths {
 
 	public normCase(filename: string): string {
 		filename = this.raw.normalize(filename);
+
 		return this.isCaseInsensitive ? filename.toUpperCase() : filename;
 	}
 }
@@ -131,6 +132,7 @@ export class FileSystemPathUtils implements IFileSystemPathUtils {
 	public arePathsSame(path1: string, path2: string): boolean {
 		path1 = this.paths.normCase(path1);
 		path2 = this.paths.normCase(path2);
+
 		return path1 === path2;
 	}
 
@@ -174,6 +176,7 @@ export function arePathsSame(path1: string, path2: string): boolean {
 
 export async function copyFile(src: string, dest: string): Promise<void> {
 	const destDir = nodepath.dirname(dest);
+
 	if (!(await fs.pathExists(destDir))) {
 		await fs.mkdirp(destDir);
 	}

@@ -21,6 +21,7 @@ export class ReloadVSCodeCommandHandler
 		untrustedWorkspace: false,
 		virtualWorkspace: true,
 	};
+
 	constructor(
 		@inject(ICommandManager)
 		private readonly commandManager: ICommandManager,
@@ -38,6 +39,7 @@ export class ReloadVSCodeCommandHandler
 			message,
 			Common.reload,
 		);
+
 		if (item === Common.reload) {
 			this.commandManager
 				.executeCommand("workbench.action.reloadWindow")

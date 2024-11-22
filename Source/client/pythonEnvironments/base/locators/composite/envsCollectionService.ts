@@ -95,6 +95,7 @@ export class EnvsCollectionService
 		options?: GetRefreshEnvironmentsOptions,
 	): Promise<void> | undefined {
 		const stage = options?.stage ?? ProgressReportStage.discoveryFinished;
+
 		return this.progressPromises.get(stage)?.promise;
 	}
 
@@ -136,14 +137,17 @@ export class EnvsCollectionService
 		// This API is supposed to return complete info by definition, so
 		// only use cache if it has complete info on an environment.
 		const cachedEnv = await this.cache.getLatestInfo(path);
+
 		if (cachedEnv) {
 			return cachedEnv;
 		}
 		const resolved = await this.locator.resolveEnv(path).catch((ex) => {
 			traceError(`Failed to resolve ${path}`, ex);
+
 			return undefined;
 		});
 		traceVerbose(`Resolved ${path} using downstream locator`);
+
 		if (resolved) {
 			this.cache.addEnv(resolved, true);
 		}
@@ -152,6 +156,7 @@ export class EnvsCollectionService
 
 	public getEnvs(query?: PythonLocatorQuery): PythonEnvInfo[] {
 		const cachedEnvs = this.cache.getAllEnvs();
+
 		return query ? cachedEnvs.filter(getQueryFilter(query)) : cachedEnvs;
 	}
 
@@ -160,6 +165,7 @@ export class EnvsCollectionService
 		options?: TriggerRefreshOptions,
 	): Promise<void> {
 		let refreshPromise = this.getRefreshPromiseForQuery(query);
+
 		if (!refreshPromise) {
 			if (
 				options?.ifNotTriggerredAlready &&
@@ -182,7 +188,9 @@ export class EnvsCollectionService
 
 	private startRefresh(query: PythonLocatorQuery | undefined): Promise<void> {
 		this.createProgressStates(query);
+
 		const promise = this.addEnvsToCacheForQuery(query);
+
 		return promise
 			.then(async () => {
 				this.resolveProgressStates(query);
@@ -196,13 +204,18 @@ export class EnvsCollectionService
 		query: PythonLocatorQuery | undefined,
 	) {
 		const iterator = this.locator.iterEnvs(query);
+
 		const seen: PythonEnvInfo[] = [];
+
 		const state = {
 			done: false,
 			pending: 0,
 		};
+
 		const updatesDone = createDeferred<void>();
+
 		const stopWatch = new StopWatch();
+
 		if (iterator.onUpdated !== undefined) {
 			const listener = iterator.onUpdated(async (event) => {
 				if (isProgressEvent(event)) {
@@ -213,7 +226,9 @@ export class EnvsCollectionService
 							traceInfo(
 								`Environments refresh finished (event): ${stopWatch.elapsedTime} milliseconds`,
 							);
+
 							break;
+
 						case ProgressReportStage.allPathsDiscovered:
 							if (!query) {
 								traceInfo(
@@ -223,12 +238,14 @@ export class EnvsCollectionService
 								this.progress.fire(event);
 							}
 							break;
+
 						default:
 							this.progress.fire(event);
 					}
 				} else if (event.index !== undefined) {
 					state.pending += 1;
 					this.cache.updateEnv(seen[event.index], event.update);
+
 					if (event.update) {
 						seen[event.index] = event.update;
 					}
@@ -283,7 +300,9 @@ export class EnvsCollectionService
 		query?: PythonLocatorQuery,
 	): Promise<void> {
 		const refreshPromise = this.getRefreshPromiseForQuery(query);
+
 		let nextRefreshPromise: Promise<void>;
+
 		if (!refreshPromise) {
 			nextRefreshPromise = this.startRefresh(query);
 		} else {
@@ -302,6 +321,7 @@ export class EnvsCollectionService
 		Object.values(ProgressReportStage).forEach((stage) => {
 			this.progressPromises.set(stage, createDeferred<void>());
 		});
+
 		if (ProgressReportStage.allPathsDiscovered && query) {
 			// Only mark as all paths discovered when querying for all envs.
 			this.progressPromises.delete(
@@ -329,6 +349,7 @@ export class EnvsCollectionService
 		const isRefreshComplete = Array.from(
 			this.refreshesPerQuery.values(),
 		).every((d) => d.completed);
+
 		if (isRefreshComplete) {
 			this.progress.fire({
 				stage: ProgressReportStage.discoveryFinished,
@@ -353,8 +374,11 @@ export class EnvsCollectionService
 			return;
 		}
 		this.telemetrySentOnce = true;
+
 		const { elapsedTime } = stopWatch;
+
 		const workspaceFolders = workspace.workspaceFolders || [];
+
 		const query: PythonLocatorQuery = {
 			searchLocations: {
 				roots: workspaceFolders.map((w) => w.uri),
@@ -364,11 +388,15 @@ export class EnvsCollectionService
 		const envs = this.getEnvs(workspaceFolders.length ? query : undefined);
 
 		const nativeEnvs: NativeEnvInfo[] = [];
+
 		const executablesFoundByNativeLocator = new Set<string>();
+
 		const nativeStopWatch = new StopWatch();
+
 		for await (const data of this.nativeFinder.refresh()) {
 			if (isNativeEnvInfo(data)) {
 				nativeEnvs.push(data);
+
 				if (data.executable) {
 					// Lowercase for purposes of comparison (safe).
 					executablesFoundByNativeLocator.add(
@@ -388,6 +416,7 @@ export class EnvsCollectionService
 		}
 		const nativeDuration = nativeStopWatch.elapsedTime;
 		void this.sendNativeLocatorTelemetry(nativeEnvs);
+
 		const missingEnvironments = {
 			envsWithDuplicatePrefixes: 0,
 			envsNotFound: 0,
@@ -410,11 +439,13 @@ export class EnvsCollectionService
 		const nativeCondaEnvs = nativeEnvs.filter(
 			(e) => categoryToKind(e.kind) === PythonEnvKind.Conda,
 		);
+
 		const condaTelemetry = await getCondaTelemetry(
 			this.nativeFinder,
 			nativeCondaEnvs,
 			nativeEnvs,
 		);
+
 		const prefixesSeenAlready = new Set<string>();
 		await Promise.all(
 			envs.map(async (env) => {
@@ -425,6 +456,7 @@ export class EnvsCollectionService
 					// However native locator will not return exes. Even though the env is detected.
 					// For those cases we'll look at the sysprefix.
 					let exe = env.executable.filename || "";
+
 					if (!exe || !(await pathExists(exe))) {
 						exe = (await pathExists(env.executable.sysPrefix))
 							? env.executable.sysPrefix
@@ -439,6 +471,7 @@ export class EnvsCollectionService
 					prefixesSeenAlready.add(env.executable.sysPrefix);
 					// Lowercase for purposes of comparison (safe).
 					exe = exe.trim().toLowerCase();
+
 					if (!exe) {
 						if (
 							env.executable.filename ||
@@ -469,51 +502,79 @@ export class EnvsCollectionService
 						traceError(
 							`Environment ${exe} is missing from native locator`,
 						);
+
 						switch (env.kind) {
 							case PythonEnvKind.Conda:
 								missingEnvironments.missingNativeCondaEnvs += 1;
+
 								break;
+
 							case PythonEnvKind.Custom:
 								missingEnvironments.missingNativeCustomEnvs += 1;
+
 								break;
+
 							case PythonEnvKind.MicrosoftStore:
 								missingEnvironments.missingNativeMicrosoftStoreEnvs += 1;
+
 								break;
+
 							case PythonEnvKind.OtherGlobal:
 								missingEnvironments.missingNativeGlobalEnvs += 1;
+
 								break;
+
 							case PythonEnvKind.OtherVirtual:
 								missingEnvironments.missingNativeOtherVirtualEnvs += 1;
+
 								break;
+
 							case PythonEnvKind.Pipenv:
 								missingEnvironments.missingNativePipEnvEnvs += 1;
+
 								break;
+
 							case PythonEnvKind.Poetry:
 								missingEnvironments.missingNativePoetryEnvs += 1;
+
 								break;
+
 							case PythonEnvKind.Pyenv:
 								missingEnvironments.missingNativePyenvEnvs += 1;
+
 								break;
+
 							case PythonEnvKind.System:
 								missingEnvironments.missingNativeSystemEnvs += 1;
+
 								break;
+
 							case PythonEnvKind.Unknown:
 								missingEnvironments.missingNativeUnknownEnvs += 1;
+
 								break;
+
 							case PythonEnvKind.Venv:
 								missingEnvironments.missingNativeVenvEnvs += 1;
+
 								break;
+
 							case PythonEnvKind.VirtualEnv:
 								missingEnvironments.missingNativeVirtualEnvEnvs += 1;
+
 								break;
+
 							case PythonEnvKind.VirtualEnvWrapper:
 								missingEnvironments.missingNativeVirtualEnvWrapperEnvs += 1;
+
 								break;
+
 							case PythonEnvKind.ActiveState:
 							case PythonEnvKind.Hatch:
 							case PythonEnvKind.Pixi:
 								// Do nothing.
 								break;
+
 							default:
 								break;
 						}
@@ -536,49 +597,65 @@ export class EnvsCollectionService
 				getEnvPath(e.executable.filename, e.location).pathType ===
 				"envFolderPath",
 		).length;
+
 		const activeStateEnvs = envs.filter(
 			(e) => e.kind === PythonEnvKind.ActiveState,
 		).length;
+
 		const condaEnvs = envs.filter((e) => e.kind === PythonEnvKind.Conda);
+
 		const customEnvs = envs.filter(
 			(e) => e.kind === PythonEnvKind.Custom,
 		).length;
+
 		const hatchEnvs = envs.filter(
 			(e) => e.kind === PythonEnvKind.Hatch,
 		).length;
+
 		const microsoftStoreEnvs = envs.filter(
 			(e) => e.kind === PythonEnvKind.MicrosoftStore,
 		).length;
+
 		const otherGlobalEnvs = envs.filter(
 			(e) => e.kind === PythonEnvKind.OtherGlobal,
 		).length;
+
 		const otherVirtualEnvs = envs.filter(
 			(e) => e.kind === PythonEnvKind.OtherVirtual,
 		).length;
+
 		const pipEnvEnvs = envs.filter(
 			(e) => e.kind === PythonEnvKind.Pipenv,
 		).length;
+
 		const poetryEnvs = envs.filter(
 			(e) => e.kind === PythonEnvKind.Poetry,
 		).length;
+
 		const pyenvEnvs = envs.filter(
 			(e) => e.kind === PythonEnvKind.Pyenv,
 		).length;
+
 		const systemEnvs = envs.filter(
 			(e) => e.kind === PythonEnvKind.System,
 		).length;
+
 		const unknownEnvs = envs.filter(
 			(e) => e.kind === PythonEnvKind.Unknown,
 		).length;
+
 		const venvEnvs = envs.filter(
 			(e) => e.kind === PythonEnvKind.Venv,
 		).length;
+
 		const virtualEnvEnvs = envs.filter(
 			(e) => e.kind === PythonEnvKind.VirtualEnv,
 		).length;
+
 		const virtualEnvWrapperEnvs = envs.filter(
 			(e) => e.kind === PythonEnvKind.VirtualEnvWrapper,
 		).length;
+
 		const global = envs.filter(
 			(e) =>
 				e.kind === PythonEnvKind.OtherGlobal ||
@@ -611,42 +688,55 @@ export class EnvsCollectionService
 		const nativeEnvironmentsWithoutPython = nativeEnvs.filter(
 			(e) => e.executable === undefined,
 		).length;
+
 		const nativeCustomEnvs = nativeEnvs.filter(
 			(e) => categoryToKind(e.kind) === PythonEnvKind.Custom,
 		).length;
+
 		const nativeMicrosoftStoreEnvs = nativeEnvs.filter(
 			(e) => categoryToKind(e.kind) === PythonEnvKind.MicrosoftStore,
 		).length;
+
 		const nativeOtherGlobalEnvs = nativeEnvs.filter(
 			(e) => categoryToKind(e.kind) === PythonEnvKind.OtherGlobal,
 		).length;
+
 		const nativeOtherVirtualEnvs = nativeEnvs.filter(
 			(e) => categoryToKind(e.kind) === PythonEnvKind.OtherVirtual,
 		).length;
+
 		const nativePipEnvEnvs = nativeEnvs.filter(
 			(e) => categoryToKind(e.kind) === PythonEnvKind.Pipenv,
 		).length;
+
 		const nativePoetryEnvs = nativeEnvs.filter(
 			(e) => categoryToKind(e.kind) === PythonEnvKind.Poetry,
 		).length;
+
 		const nativePyenvEnvs = nativeEnvs.filter(
 			(e) => categoryToKind(e.kind) === PythonEnvKind.Pyenv,
 		).length;
+
 		const nativeSystemEnvs = nativeEnvs.filter(
 			(e) => categoryToKind(e.kind) === PythonEnvKind.System,
 		).length;
+
 		const nativeUnknownEnvs = nativeEnvs.filter(
 			(e) => categoryToKind(e.kind) === PythonEnvKind.Unknown,
 		).length;
+
 		const nativeVenvEnvs = nativeEnvs.filter(
 			(e) => categoryToKind(e.kind) === PythonEnvKind.Venv,
 		).length;
+
 		const nativeVirtualEnvEnvs = nativeEnvs.filter(
 			(e) => categoryToKind(e.kind) === PythonEnvKind.VirtualEnv,
 		).length;
+
 		const nativeVirtualEnvWrapperEnvs = nativeEnvs.filter(
 			(e) => categoryToKind(e.kind) === PythonEnvKind.VirtualEnvWrapper,
 		).length;
+
 		const nativeGlobal = nativeEnvs.filter(
 			(e) =>
 				categoryToKind(e.kind) === PythonEnvKind.OtherGlobal ||
@@ -709,6 +799,7 @@ export class EnvsCollectionService
 			return;
 		}
 		this.telemetrySentOnceForNativeLocator = true;
+
 		const invalidVersions = {
 			invalidVersionsCondaEnvs: 0,
 			invalidVersionsCustomEnvs: 0,
@@ -725,6 +816,7 @@ export class EnvsCollectionService
 			invalidVersionsVirtualEnvWrapperEnvs: 0,
 			invalidVersionsOtherGlobalEnvs: 0,
 		};
+
 		const invalidSysPrefix = {
 			invalidSysPrefixCondaEnvs: 0,
 			invalidSysPrefixCustomEnvs: 0,
@@ -753,13 +845,16 @@ export class EnvsCollectionService
 				const resolvedEnv = await this.resolveEnv(e.executable).catch(
 					noop,
 				);
+
 				if (!resolvedEnv) {
 					return;
 				}
 				const kind = categoryToKind(e.kind);
+
 				const nativeVersion = e.version
 					? parseVersion(e.version)
 					: undefined;
+
 				if (
 					nativeVersion &&
 					resolvedEnv.version.major > 0 &&
@@ -777,51 +872,79 @@ export class EnvsCollectionService
 						traceError(
 							`Environment ${e.executable} got the wrong version from native locator (Native = ${e.version}, Actual ${resolvedEnv.version.sysVersion})`,
 						);
+
 						switch (kind) {
 							case PythonEnvKind.Conda:
 								invalidVersions.invalidVersionsCondaEnvs += 1;
+
 								break;
+
 							case PythonEnvKind.Custom:
 								invalidVersions.invalidVersionsCustomEnvs += 1;
+
 								break;
+
 							case PythonEnvKind.MicrosoftStore:
 								invalidVersions.invalidVersionsMicrosoftStoreEnvs += 1;
+
 								break;
+
 							case PythonEnvKind.OtherGlobal:
 								invalidVersions.invalidVersionsGlobalEnvs += 1;
+
 								break;
+
 							case PythonEnvKind.OtherVirtual:
 								invalidVersions.invalidVersionsOtherVirtualEnvs += 1;
+
 								break;
+
 							case PythonEnvKind.Pipenv:
 								invalidVersions.invalidVersionsPipEnvEnvs += 1;
+
 								break;
+
 							case PythonEnvKind.Poetry:
 								invalidVersions.invalidVersionsPoetryEnvs += 1;
+
 								break;
+
 							case PythonEnvKind.Pyenv:
 								invalidVersions.invalidVersionsPyenvEnvs += 1;
+
 								break;
+
 							case PythonEnvKind.System:
 								invalidVersions.invalidVersionsSystemEnvs += 1;
+
 								break;
+
 							case PythonEnvKind.Unknown:
 								invalidVersions.invalidVersionsUnknownEnvs += 1;
+
 								break;
+
 							case PythonEnvKind.Venv:
 								invalidVersions.invalidVersionsVenvEnvs += 1;
+
 								break;
+
 							case PythonEnvKind.VirtualEnv:
 								invalidVersions.invalidVersionsVirtualEnvEnvs += 1;
+
 								break;
+
 							case PythonEnvKind.VirtualEnvWrapper:
 								invalidVersions.invalidVersionsVirtualEnvWrapperEnvs += 1;
+
 								break;
+
 							case PythonEnvKind.ActiveState:
 							case PythonEnvKind.Hatch:
 							case PythonEnvKind.Pixi:
 								// Do nothing.
 								break;
+
 							default:
 								break;
 						}
@@ -835,51 +958,79 @@ export class EnvsCollectionService
 					traceError(
 						`Environment ${e.executable} got the wrong Sys.Prefix from native locator (Native = ${e.prefix}, Actual ${resolvedEnv.executable.sysPrefix})`,
 					);
+
 					switch (kind) {
 						case PythonEnvKind.Conda:
 							invalidSysPrefix.invalidSysPrefixCondaEnvs += 1;
+
 							break;
+
 						case PythonEnvKind.Custom:
 							invalidSysPrefix.invalidSysPrefixCustomEnvs += 1;
+
 							break;
+
 						case PythonEnvKind.MicrosoftStore:
 							invalidSysPrefix.invalidSysPrefixMicrosoftStoreEnvs += 1;
+
 							break;
+
 						case PythonEnvKind.OtherGlobal:
 							invalidSysPrefix.invalidSysPrefixGlobalEnvs += 1;
+
 							break;
+
 						case PythonEnvKind.OtherVirtual:
 							invalidSysPrefix.invalidSysPrefixOtherVirtualEnvs += 1;
+
 							break;
+
 						case PythonEnvKind.Pipenv:
 							invalidSysPrefix.invalidSysPrefixPipEnvEnvs += 1;
+
 							break;
+
 						case PythonEnvKind.Poetry:
 							invalidSysPrefix.invalidSysPrefixPoetryEnvs += 1;
+
 							break;
+
 						case PythonEnvKind.Pyenv:
 							invalidSysPrefix.invalidSysPrefixPyenvEnvs += 1;
+
 							break;
+
 						case PythonEnvKind.System:
 							invalidSysPrefix.invalidSysPrefixSystemEnvs += 1;
+
 							break;
+
 						case PythonEnvKind.Unknown:
 							invalidSysPrefix.invalidSysPrefixUnknownEnvs += 1;
+
 							break;
+
 						case PythonEnvKind.Venv:
 							invalidSysPrefix.invalidSysPrefixVenvEnvs += 1;
+
 							break;
+
 						case PythonEnvKind.VirtualEnv:
 							invalidSysPrefix.invalidSysPrefixVirtualEnvEnvs += 1;
+
 							break;
+
 						case PythonEnvKind.VirtualEnvWrapper:
 							invalidSysPrefix.invalidSysPrefixVirtualEnvWrapperEnvs += 1;
+
 							break;
+
 						case PythonEnvKind.ActiveState:
 						case PythonEnvKind.Hatch:
 						case PythonEnvKind.Pixi:
 							// Do nothing.
 							break;
+
 						default:
 							break;
 					}
@@ -944,6 +1095,7 @@ type CondaTelemetry = {
 
 async function getCondaEnvironmentsTxt(): Promise<string | undefined> {
 	const homeDir = getUserHomeDir();
+
 	if (!homeDir) {
 		return undefined;
 	}
@@ -956,6 +1108,7 @@ async function getCondaTelemetry(
 	nativeEnvs: NativeEnvInfo[],
 ): Promise<CondaTelemetry> {
 	let envsDirs: string[] = [];
+
 	const userProvidedCondaExe = fsPath.normalize(
 		(
 			getConfiguration("python").get<string>(CONDAPATH_SETTING_KEY) || ""
@@ -1001,6 +1154,7 @@ async function getCondaTelemetry(
 						return [];
 					}
 					const envs: string[] = [];
+
 					const lines = await readFile(txtFile)
 						.catch(() => "")
 						.then((c) =>
@@ -1020,6 +1174,7 @@ async function getCondaTelemetry(
 							}
 						}),
 					);
+
 					return envs;
 				})
 				.catch((ex) =>
@@ -1069,6 +1224,7 @@ async function getCondaTelemetry(
 			}
 		}),
 	).catch(noop);
+
 	const condaRcs = Array.from(condaRcFiles);
 	condaTelemetry.condaRcs = condaRcs.length;
 
@@ -1082,26 +1238,32 @@ async function getCondaTelemetry(
 
 	// Conda info envs
 	const validCondaInfoEnvs = new Set<string>();
+
 	const duplicate = new Set<string>();
 	// Duplicate, invalid conda environments.
 	await Promise.all(
 		(info?.envs || []).map(async (e) => {
 			if (duplicate.has(e)) {
 				condaTelemetry.condaInfoEnvsDuplicate += 1;
+
 				return;
 			}
 			duplicate.add(e);
+
 			if (!(await pathExists(e))) {
 				condaTelemetry.condaInfoEnvsInvalidPrefix += 1;
+
 				return;
 			}
 			if (!(await isCondaEnvironment(e))) {
 				condaTelemetry.condaInfoEnvsInvalid += 1;
+
 				return;
 			}
 			validCondaInfoEnvs.add(fsPath.normalize(e));
 		}),
 	);
+
 	const condaInfoEnvs = Array.from(validCondaInfoEnvs);
 	condaTelemetry.condaInfoEnvs = validCondaInfoEnvs.size;
 
@@ -1122,6 +1284,7 @@ async function getCondaTelemetry(
 	const nativeCondaEnvDirs = (nativeCondaInfo?.envDirs || []).map((envDir) =>
 		fsPath.normalize(envDir),
 	);
+
 	const nativeCondaEnvPrefix = nativeCondaEnvs
 		.filter((e) => e.prefix)
 		.map((e) => fsPath.normalize(e.prefix || ""));
@@ -1167,6 +1330,7 @@ async function getCondaTelemetry(
 	// Check if we have found the conda env that matches the `root_prefix` in the conda info.
 	// eslint-disable-next-line camelcase
 	let rootPrefix = info?.root_prefix || "";
+
 	if (
 		rootPrefix &&
 		(await pathExists(rootPrefix)) &&
@@ -1226,6 +1390,7 @@ async function getCondaTelemetry(
 
 	// eslint-disable-next-line camelcase
 	let defaultPrefix = info?.default_prefix || "";
+
 	if (
 		defaultPrefix &&
 		(await pathExists(defaultPrefix)) &&

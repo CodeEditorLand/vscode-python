@@ -63,6 +63,7 @@ export async function getMicrosoftStorePythonExes(): Promise<string[]> {
 
 		// Collect python*.exe directly under %LOCALAPPDATA%/Microsoft/WindowsApps
 		const files = await fsapi.readdir(windowsAppsRoot);
+
 		return files
 			.map((filename: string) => path.join(windowsAppsRoot, filename))
 			.filter(isMicrosoftStorePythonExePattern);
@@ -93,7 +94,9 @@ export class MicrosoftStoreLocator extends FSWatchingLocator {
 		const iterator = async function* (kind: PythonEnvKind) {
 			const stopWatch = new StopWatch();
 			traceInfo("Searching for windows store envs");
+
 			const exes = await getMicrosoftStorePythonExes();
+
 			yield* exes.map(async (executablePath: string) => ({
 				kind,
 				executablePath,
@@ -102,6 +105,7 @@ export class MicrosoftStoreLocator extends FSWatchingLocator {
 				`Finished searching for windows store envs: ${stopWatch.elapsedTime} milliseconds`,
 			);
 		};
+
 		return iterator(this.kind);
 	}
 }

@@ -27,6 +27,7 @@ export class CondaInheritEnvPrompt implements IExtensionActivationService {
 		untrustedWorkspace: false,
 		virtualWorkspace: true,
 	};
+
 	constructor(
 		@inject(IInterpreterService)
 		private readonly interpreterService: IInterpreterService,
@@ -49,6 +50,7 @@ export class CondaInheritEnvPrompt implements IExtensionActivationService {
 	@traceDecoratorError("Failed to intialize conda inherit env prompt")
 	public async initializeInBackground(resource: Uri): Promise<void> {
 		const show = await this.shouldShowPrompt(resource);
+
 		if (!show) {
 			return;
 		}
@@ -62,11 +64,14 @@ export class CondaInheritEnvPrompt implements IExtensionActivationService {
 				condaInheritEnvPromptKey,
 				true,
 			);
+
 		if (!notificationPromptEnabled.value) {
 			return;
 		}
 		const prompts = [Common.allow, Common.close];
+
 		const telemetrySelections: ["Allow", "Close"] = ["Allow", "Close"];
+
 		const selection = await this.appShell.showInformationMessage(
 			Interpreters.condaInheritEnvMessage,
 			...prompts,
@@ -76,6 +81,7 @@ export class CondaInheritEnvPrompt implements IExtensionActivationService {
 				? telemetrySelections[prompts.indexOf(selection)]
 				: undefined,
 		});
+
 		if (!selection) {
 			return;
 		}
@@ -109,16 +115,19 @@ export class CondaInheritEnvPrompt implements IExtensionActivationService {
 		}
 		const interpreter =
 			await this.interpreterService.getActiveInterpreter(resource);
+
 		if (!interpreter || interpreter.envType !== EnvironmentType.Conda) {
 			return false;
 		}
 		const setting = this.workspaceService
 			.getConfiguration("terminal", resource)
 			.inspect<boolean>("integrated.inheritEnv");
+
 		if (!setting) {
 			traceError(
 				"WorkspaceConfiguration.inspect returns `undefined` for setting `terminal.integrated.inheritEnv`",
 			);
+
 			return false;
 		}
 		if (
@@ -129,6 +138,7 @@ export class CondaInheritEnvPrompt implements IExtensionActivationService {
 			return false;
 		}
 		this.hasPromptBeenShownInCurrentSession = true;
+
 		return true;
 	}
 }

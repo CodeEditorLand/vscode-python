@@ -102,6 +102,7 @@ export function createDeferredFrom<T>(...promises: Promise<T>[]): Deferred<T> {
 export function createDeferredFromPromise<T>(promise: Promise<T>): Deferred<T> {
     const deferred = createDeferred<T>();
     promise.then(deferred.resolve.bind(deferred)).catch(deferred.reject.bind(deferred));
+
     return deferred;
 }
 
@@ -126,8 +127,10 @@ type NextResult<T> = { index: number } & (
 );
 async function getNext<T>(it: AsyncIterator<T, T | void>, indexMaybe?: number): Promise<NextResult<T>> {
     const index = indexMaybe === undefined ? -1 : indexMaybe;
+
     try {
         const result = await it.next();
+
         return { index, result, err: null };
     } catch (err) {
         return { index, err: err as Error, result: null };
@@ -154,6 +157,7 @@ export async function* chain<T>(
     // Ultimately we may also want to support cancellation.
 ): IAsyncIterableIterator<T> {
     const promises = iterators.map(getNext);
+
     let numRunning = iterators.length;
 
     while (numRunning > 0) {
@@ -164,6 +168,7 @@ export async function* chain<T>(
         if (err !== null) {
             promises[index] = NEVER as Promise<NextResult<T>>;
             numRunning -= 1;
+
             if (onError !== undefined) {
                 await onError(err, index);
             }
@@ -204,6 +209,7 @@ export async function* mapToIterator<T, R = T>(
             }
             return generator();
         });
+
         yield* iterable(chain(iterators));
     } else {
         yield* items.map(func);
@@ -215,6 +221,7 @@ export async function* mapToIterator<T, R = T>(
  */
 export function iterable<T>(iterator: IAsyncIterator<T>): IAsyncIterableIterator<T> {
     const it = iterator as IAsyncIterableIterator<T>;
+
     if (it[Symbol.asyncIterator] === undefined) {
         it[Symbol.asyncIterator] = () => it;
     }
@@ -226,6 +233,7 @@ export function iterable<T>(iterator: IAsyncIterator<T>): IAsyncIterableIterator
  */
 export async function flattenIterator<T>(iterator: IAsyncIterator<T>): Promise<T[]> {
     const results: T[] = [];
+
     for await (const item of iterable(iterator)) {
         results.push(item);
     }
@@ -237,6 +245,7 @@ export async function flattenIterator<T>(iterator: IAsyncIterator<T>): Promise<T
  */
 export async function flattenIterable<T>(iterableItem: AsyncIterable<T>): Promise<T[]> {
     const results: T[] = [];
+
     for await (const item of iterableItem) {
         results.push(item);
     }
@@ -258,6 +267,7 @@ export async function waitForCondition(
             clearTimeout(timer);
             reject(new Error(errorMessage));
         }, timeoutMs);
+
         const timer = setInterval(async () => {
             if (!(await condition().catch(() => false))) {
                 return;

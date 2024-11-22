@@ -131,6 +131,7 @@ export class InvalidPythonPathInDebuggerService
 			return true;
 		}
 		traceError(`Invalid Python Path '${pythonPath}'`);
+
 		if (pythonPathSource === PythonPathSource.launchJson) {
 			this.handle([
 				new InvalidPythonPathInDebuggerDiagnostic(
@@ -169,6 +170,7 @@ export class InvalidPythonPathInDebuggerService
 			return;
 		}
 		const diagnostic = diagnostics[0];
+
 		const commandPrompts = this.getCommandPrompts(diagnostic);
 
 		await this.messageService.handle(diagnostic, { commandPrompts });
@@ -183,6 +185,7 @@ export class InvalidPythonPathInDebuggerService
 			undefined,
 			this.workspace,
 		);
+
 		return systemVariables.resolveAny(pythonPath);
 	}
 
@@ -211,6 +214,7 @@ export class InvalidPythonPathInDebuggerService
 								const launchJson = getLaunchJsonFile(
 									workspc.workspaceFolders![0],
 								);
+
 								const doc =
 									await this.documentManager.openTextDocument(
 										launchJson,

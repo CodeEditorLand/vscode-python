@@ -41,8 +41,11 @@ async function run(
 			.get<IConfigurationService>(IConfigurationService)
 			.getSettings(options.workspaceFolder),
 	);
+
 	const moduleName = getTestModuleName(testProvider);
+
 	const spawnOptions = options as SpawnOptions;
+
 	let pythonExecutionServicePromise:
 		| Promise<IPythonExecutionService>
 		| undefined;
@@ -56,6 +59,7 @@ async function run(
 	// Since conda 4.4.0 we have found that running python code needs the environment activated.
 	// So if running an executable, there's no way we can activate, if its a module, then activate and run the module.
 	const testHelper = serviceContainer.get<ITestsHelper>(ITestsHelper);
+
 	const executionInfo: ExecutionInfo = {
 		execPath: testExecutablePath,
 		args: options.args,
@@ -104,6 +108,7 @@ async function run(
 	return promise.then((result) => {
 		return new Promise<string>((resolve, reject) => {
 			let stdOut = "";
+
 			let stdErr = "";
 			result.out.subscribe(
 				(output) => {
@@ -130,10 +135,12 @@ async function run(
 					) {
 						const pythonExecutionService =
 							await pythonExecutionServicePromise;
+
 						const isInstalled =
 							await pythonExecutionService.isModuleInstalled(
 								moduleName,
 							);
+
 						if (!isInstalled) {
 							return reject(
 								new ModuleNotInstalledError(moduleName),
@@ -152,9 +159,11 @@ function getExecutablePath(
 	settings: IPythonSettings,
 ): string | undefined {
 	let testRunnerExecutablePath: string | undefined;
+
 	switch (testProvider) {
 		case PYTEST_PROVIDER: {
 			testRunnerExecutablePath = settings.testing.pytestPath;
+
 			break;
 		}
 		default: {

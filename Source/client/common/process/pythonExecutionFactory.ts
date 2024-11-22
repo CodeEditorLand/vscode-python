@@ -52,6 +52,7 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 
     public async create(options: ExecutionFactoryCreationOptions): Promise<IPythonExecutionService> {
         let { pythonPath } = options;
+
         if (!pythonPath || pythonPath === 'python') {
             const activatedEnvLaunch = this.serviceContainer.get<IActivatedEnvironmentLaunch>(
                 IActivatedEnvironmentLaunch,
@@ -60,6 +61,7 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
             // If python path wasn't passed in, we need to auto select it and then read it
             // from the configuration.
             const interpreterPath = this.interpreterPathExpHelper.get(options.resource);
+
             if (!interpreterPath || interpreterPath === 'python') {
                 // Block on autoselection if no interpreter selected.
                 // Note autoselection blocks on discovery, so we do not want discovery component
@@ -70,6 +72,7 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
                     this.autoSelection.autoSelectInterpreter(options.resource).then(() => true),
                     sleep(50000).then(() => false),
                 ]);
+
                 if (!success) {
                     traceError(
                         'Autoselection timeout out, this is likely a issue with how consumer called execution factory API. Using default python to execute.',
@@ -82,12 +85,14 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 
         if (await getPixi()) {
             const pixiExecutionService = await this.createPixiExecutionService(pythonPath, processService);
+
             if (pixiExecutionService) {
                 return pixiExecutionService;
             }
         }
 
         const condaExecutionService = await this.createCondaExecutionService(pythonPath, processService);
+
         if (condaExecutionService) {
             return condaExecutionService;
         }
@@ -109,8 +114,10 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
             options.interpreter,
             options.allowEnvironmentFetchExceptions,
         );
+
         const hasEnvVars = envVars && Object.keys(envVars).length > 0;
         sendTelemetryEvent(EventName.PYTHON_INTERPRETER_ACTIVATION_ENVIRONMENT_VARIABLES, undefined, { hasEnvVars });
+
         if (!hasEnvVars) {
             return this.create({
                 resource: options.resource,
@@ -120,23 +127,27 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
         const pythonPath = options.interpreter
             ? options.interpreter.path
             : this.configService.getSettings(options.resource).pythonPath;
+
         const processService: IProcessService = new ProcessService({ ...envVars });
         processService.on('exec', this.logger.logProcess.bind(this.logger));
         this.disposables.push(processService);
 
         if (await getPixi()) {
             const pixiExecutionService = await this.createPixiExecutionService(pythonPath, processService);
+
             if (pixiExecutionService) {
                 return pixiExecutionService;
             }
         }
 
         const condaExecutionService = await this.createCondaExecutionService(pythonPath, processService);
+
         if (condaExecutionService) {
             return condaExecutionService;
         }
 
         const env = createPythonEnv(pythonPath, processService, this.fileSystem);
+
         return createPythonService(processService, env);
     }
 
@@ -145,11 +156,14 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
         processService: IProcessService,
     ): Promise<IPythonExecutionService | undefined> {
         const condaLocatorService = this.serviceContainer.get<IComponentAdapter>(IComponentAdapter);
+
         const [condaEnvironment] = await Promise.all([condaLocatorService.getCondaEnvironment(pythonPath)]);
+
         if (!condaEnvironment) {
             return undefined;
         }
         const env = await createCondaEnv(condaEnvironment, processService, this.fileSystem);
+
         if (!env) {
             return undefined;
         }
@@ -161,11 +175,13 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
         processService: IProcessService,
     ): Promise<IPythonExecutionService | undefined> {
         const pixiEnvironment = await getPixiEnvironmentFromInterpreter(pythonPath);
+
         if (!pixiEnvironment) {
             return undefined;
         }
 
         const env = await createPixiEnv(pixiEnvironment, processService, this.fileSystem);
+
         if (env) {
             return createPythonService(processService, env);
         }
@@ -176,6 +192,7 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 
 function createPythonService(procService: IProcessService, env: IPythonEnvironment): IPythonExecutionService {
     const procs = createPythonProcessService(procService, env);
+
     return {
         getInterpreterInformation: () => env.getInterpreterInformation(),
         getExecutablePath: () => env.getExecutablePath(),

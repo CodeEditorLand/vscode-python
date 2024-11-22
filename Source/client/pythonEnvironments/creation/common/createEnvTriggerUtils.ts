@@ -24,7 +24,9 @@ export async function fileContainsInlineDependencies(_uri: Uri): Promise<boolean
 
 export async function hasRequirementFiles(workspace: WorkspaceFolder): Promise<boolean> {
     const files = await getPipRequirementsFiles(workspace);
+
     const found = (files?.length ?? 0) > 0;
+
     if (found) {
         traceVerbose(`Found requirement files: ${workspace.uri.fsPath}`);
     }
@@ -41,8 +43,11 @@ export async function hasKnownFiles(workspace: WorkspaceFolder): Promise<boolean
         'Pipfile',
         'Pipfile.lock',
     ].map((fileName) => path.join(workspace.uri.fsPath, fileName));
+
     const result = await Promise.all(filePaths.map((f) => fsapi.pathExists(f)));
+
     const found = result.some((r) => r);
+
     if (found) {
         traceVerbose(`Found known files: ${workspace.uri.fsPath}`);
     }
@@ -51,13 +56,18 @@ export async function hasKnownFiles(workspace: WorkspaceFolder): Promise<boolean
 
 export async function isGlobalPythonSelected(workspace: WorkspaceFolder): Promise<boolean> {
     const extension = getExtension<PythonExtension>(PVSC_EXTENSION_ID);
+
     if (!extension) {
         return false;
     }
     const extensionApi: PythonExtension = extension.exports as PythonExtension;
+
     const interpreter = extensionApi.environments.getActiveEnvironmentPath(workspace.uri);
+
     const details = await extensionApi.environments.resolveEnvironment(interpreter);
+
     const isGlobal = details?.environment === undefined;
+
     if (isGlobal) {
         traceVerbose(`Selected python for [${workspace.uri.fsPath}] is [global] type: ${interpreter.path}`);
     }
@@ -71,8 +81,10 @@ export async function isGlobalPythonSelected(workspace: WorkspaceFolder): Promis
  */
 export function shouldPromptToCreateEnv(): boolean {
     const config = getConfiguration('python');
+
     if (config) {
         const value = config.get<string>(CREATE_ENV_TRIGGER_SETTING_PART, 'off');
+
         return value !== 'off';
     }
 
@@ -84,6 +96,7 @@ export function shouldPromptToCreateEnv(): boolean {
  */
 export function disableCreateEnvironmentTrigger(): void {
     const config = getConfiguration('python');
+
     if (config) {
         config.update('createEnvironment.trigger', 'off', ConfigurationTarget.Global);
     }
@@ -99,5 +112,6 @@ export function isCreateEnvWorkspaceCheckNotRun(): boolean {
         return false;
     }
     _alreadyCreateEnvCriteriaCheck = true;
+
     return true;
 }

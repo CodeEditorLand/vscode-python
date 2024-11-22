@@ -25,12 +25,16 @@ export class ChildProcessAttachService implements IChildProcessAttachService {
     @captureTelemetry(EventName.DEBUGGER_ATTACH_TO_CHILD_PROCESS)
     public async attach(data: AttachRequestArguments & DebugConfiguration, parentSession: DebugSession): Promise<void> {
         const debugConfig: AttachRequestArguments & DebugConfiguration = data;
+
         const folder = this.getRelatedWorkspaceFolder(debugConfig);
+
         const debugSessionOption: DebugSessionOptions = {
             parentSession: parentSession,
             lifecycleManagedByParent: true,
         };
+
         const launched = await this.debugService.startDebugging(folder, debugConfig, debugSessionOption);
+
         if (!launched) {
             showErrorMessage(l10n.t('Failed to launch debugger for child process {0}', debugConfig.subProcessId!)).then(
                 noop,
@@ -45,6 +49,7 @@ export class ChildProcessAttachService implements IChildProcessAttachService {
         const workspaceFolder = config.workspaceFolder;
 
         const hasWorkspaceFolders = (getWorkspaceFolders()?.length || 0) > 0;
+
         if (!hasWorkspaceFolders || !workspaceFolder) {
             return;
         }

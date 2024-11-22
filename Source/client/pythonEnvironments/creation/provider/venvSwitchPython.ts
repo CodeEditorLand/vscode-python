@@ -15,8 +15,10 @@ export async function switchSelectedPython(
 	purpose: string,
 ): Promise<void> {
 	let dispose: Disposable | undefined;
+
 	try {
 		const deferred = createDeferred<void>();
+
 		const api: PythonExtension = getExtension(PVSC_EXTENSION_ID)
 			?.exports as PythonExtension;
 		dispose = api.environments.onDidChangeActiveEnvironmentPath(

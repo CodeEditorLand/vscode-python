@@ -135,10 +135,13 @@ export class InterpreterService implements Disposable, IInterpreterService {
 		const interpreterDisplay =
 			this.serviceContainer.get<IInterpreterDisplay>(IInterpreterDisplay);
 		await interpreterDisplay.refresh(resource);
+
 		const workspaceFolder = this.serviceContainer
 			.get<IWorkspaceService>(IWorkspaceService)
 			.getWorkspaceFolder(resource);
+
 		const path = this.configService.getSettings(resource).pythonPath;
+
 		const workspaceKey = this.serviceContainer
 			.get<IWorkspaceService>(IWorkspaceService)
 			.getWorkspaceFolderIdentifier(resource);
@@ -155,10 +158,13 @@ export class InterpreterService implements Disposable, IInterpreterService {
 	public initialize(): void {
 		const disposables =
 			this.serviceContainer.get<Disposable[]>(IDisposableRegistry);
+
 		const documentManager =
 			this.serviceContainer.get<IDocumentManager>(IDocumentManager);
+
 		const interpreterDisplay =
 			this.serviceContainer.get<IInterpreterDisplay>(IInterpreterDisplay);
+
 		const filter = new (class
 			implements IInterpreterStatusbarVisibilityFilter
 		{
@@ -190,6 +196,7 @@ export class InterpreterService implements Disposable, IInterpreterService {
 			get hidden() {
 				const visibility =
 					this.configService.getSettings().interpreter.infoVisibility;
+
 				if (visibility === "never") {
 					return true;
 				}
@@ -200,6 +207,7 @@ export class InterpreterService implements Disposable, IInterpreterService {
 				// Output channel for MS Python related extensions. These contain "ms-python" in their ID.
 				const pythonOutputChannelPattern =
 					PVSC_EXTENSION_ID.split(".")[0];
+
 				if (
 					document?.fileName.endsWith("settings.json") ||
 					document?.fileName.includes(pythonOutputChannelPattern)
@@ -213,8 +221,10 @@ export class InterpreterService implements Disposable, IInterpreterService {
 		disposables.push(
 			this.onDidChangeInterpreters((e): void => {
 				const interpreter = e.old ?? e.new;
+
 				if (interpreter) {
 					this.didChangeInterpreterInformation.fire(interpreter);
+
 					for (const {
 						path,
 						workspaceFolder,
@@ -240,6 +250,7 @@ export class InterpreterService implements Disposable, IInterpreterService {
 			}),
 			documentManager.onDidChangeActiveTextEditor((e): void => {
 				filter.interpreterVisibilityEmitter.fire();
+
 				if (e && e.document) {
 					this.refresh(e.document.uri);
 				}
@@ -266,6 +277,7 @@ export class InterpreterService implements Disposable, IInterpreterService {
 			ifNotTriggerredAlready: true,
 		}).ignoreErrors();
 		await this.refreshPromise;
+
 		return this.getInterpreters(resource);
 	}
 
@@ -281,12 +293,14 @@ export class InterpreterService implements Disposable, IInterpreterService {
 			this.serviceContainer.get<IActivatedEnvironmentLaunch>(
 				IActivatedEnvironmentLaunch,
 			);
+
 		let path =
 			await activatedEnvLaunch.selectIfLaunchedViaActivatedEnv(true);
 		// This is being set as interpreter in background, after which it'll show up in `.pythonPath` config.
 		// However we need not wait on the update to take place, as we can use the value directly.
 		if (!path) {
 			path = this.configService.getSettings(resource).pythonPath;
+
 			if (pathUtils.basename(path) === path) {
 				// Value can be `python`, `python3`, `python3.9` etc.
 				// Note the following triggers autoselection if no interpreter is explictly
@@ -296,9 +310,11 @@ export class InterpreterService implements Disposable, IInterpreterService {
 					this.serviceContainer.tryGet<IPythonExecutionFactory>(
 						IPythonExecutionFactory,
 					);
+
 				const pythonExecutionService = pythonExecutionFactory
 					? await pythonExecutionFactory.create({ resource })
 					: undefined;
+
 				const fullyQualifiedPath = pythonExecutionService
 					? await pythonExecutionService
 							.getExecutablePath()
@@ -328,14 +344,17 @@ export class InterpreterService implements Disposable, IInterpreterService {
 		// so yielding control here to make sure it goes first and updates
 		// itself before we can query it.
 		await sleep(1);
+
 		const pySettings = this.configService.getSettings(resource);
 		this.didChangeInterpreterConfigurationEmitter.fire(resource);
+
 		if (
 			this._pythonPathSetting === "" ||
 			this._pythonPathSetting !== pySettings.pythonPath
 		) {
 			this._pythonPathSetting = pySettings.pythonPath;
 			this.didChangeInterpreterEmitter.fire(resource);
+
 			const workspaceFolder = this.serviceContainer
 				.get<IWorkspaceService>(IWorkspaceService)
 				.getWorkspaceFolder(resource);
@@ -343,6 +362,7 @@ export class InterpreterService implements Disposable, IInterpreterService {
 				path: pySettings.pythonPath,
 				resource: workspaceFolder,
 			});
+
 			const workspaceKey = this.serviceContainer
 				.get<IWorkspaceService>(IWorkspaceService)
 				.getWorkspaceFolderIdentifier(resource);
@@ -350,6 +370,7 @@ export class InterpreterService implements Disposable, IInterpreterService {
 				path: pySettings.pythonPath,
 				workspaceFolder,
 			});
+
 			const interpreterDisplay =
 				this.serviceContainer.get<IInterpreterDisplay>(
 					IInterpreterDisplay,
@@ -372,11 +393,14 @@ export class InterpreterService implements Disposable, IInterpreterService {
 		workspaceFolder: WorkspaceFolder | undefined,
 	) {
 		const installer = this.serviceContainer.get<IInstaller>(IInstaller);
+
 		if (!(await installer.isInstalled(Product.python))) {
 			// If Python is not installed into the environment, install it.
 			sendTelemetryEvent(EventName.ENVIRONMENT_WITHOUT_PYTHON_SELECTED);
+
 			const shell =
 				this.serviceContainer.get<IApplicationShell>(IApplicationShell);
+
 			const progressOptions: ProgressOptions = {
 				location: ProgressLocation.Window,
 				title: `[${Interpreters.installingPython}](command:${Commands.ViewOutput})`,
@@ -384,6 +408,7 @@ export class InterpreterService implements Disposable, IInterpreterService {
 			traceLog(
 				"Conda envs without Python are known to not work well; fixing conda environment...",
 			);
+
 			const promise = installer.install(
 				Product.python,
 				await this.getInterpreterDetails(pythonPath),

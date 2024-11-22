@@ -102,6 +102,7 @@ export class PylanceLSExtensionManager
 
 	canStartLanguageServer(): boolean {
 		const extension = this.extensions.getExtension(PYLANCE_EXTENSION_ID);
+
 		return !!extension;
 	}
 

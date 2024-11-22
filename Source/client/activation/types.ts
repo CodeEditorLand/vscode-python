@@ -64,6 +64,7 @@ export const ILanguageServerAnalysisOptions = Symbol('ILanguageServerAnalysisOpt
 export interface ILanguageServerAnalysisOptions extends IDisposable {
     readonly onDidChange: Event<void>;
     initialize(resource: Resource, interpreter: PythonEnvironment | undefined): Promise<void>;
+
     getAnalysisOptions(): Promise<LanguageClientOptions>;
 }
 export const ILanguageServerManager = Symbol('ILanguageServerManager');

@@ -90,6 +90,7 @@ export class InterpreterDisplay
 	public async activate(): Promise<void> {
 		const application =
 			this.serviceContainer.get<IApplicationShell>(IApplicationShell);
+
 		if (this.useLanguageStatus) {
 			this.languageStatus = application.createLanguageStatusItem(
 				"python.selectedInterpreter",
@@ -136,6 +137,7 @@ export class InterpreterDisplay
 		const disposableRegistry =
 			this.serviceContainer.get<Disposable[]>(IDisposableRegistry);
 		this.visibilityFilters.push(filter);
+
 		if (filter.changed) {
 			filter.changed(this.updateVisibility, this, disposableRegistry);
 		}
@@ -150,6 +152,7 @@ export class InterpreterDisplay
 	private async updateDisplay(workspaceFolder?: Uri) {
 		const interpreter =
 			await this.interpreterService.getActiveInterpreter(workspaceFolder);
+
 		if (
 			this.currentlySelectedInterpreterDisplay &&
 			this.currentlySelectedInterpreterDisplay ===
@@ -159,6 +162,7 @@ export class InterpreterDisplay
 			return;
 		}
 		this.currentlySelectedWorkspaceFolder = workspaceFolder;
+
 		if (this.statusBar) {
 			if (interpreter) {
 				this.statusBar.color = "";
@@ -166,6 +170,7 @@ export class InterpreterDisplay
 					interpreter.path,
 					workspaceFolder?.fsPath,
 				);
+
 				if (
 					this.currentlySelectedInterpreterPath !== interpreter.path
 				) {
@@ -203,6 +208,7 @@ export class InterpreterDisplay
 					interpreter.path,
 					workspaceFolder?.fsPath,
 				);
+
 				if (
 					this.currentlySelectedInterpreterPath !== interpreter.path
 				) {

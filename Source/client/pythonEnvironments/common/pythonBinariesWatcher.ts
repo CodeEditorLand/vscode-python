@@ -32,7 +32,9 @@ export function watchLocationForPythonBinaries(
 	executableGlob: string = executable,
 ): IDisposable {
 	const resolvedGlob = path.posix.normalize(executableGlob);
+
 	const [baseGlob] = resolvedGlob.split("/").slice(-1);
+
 	function callbackClosure(type: FileChangeType, e: string) {
 		traceVerbose(
 			"Received event",
@@ -41,9 +43,11 @@ export function watchLocationForPythonBinaries(
 			"for baseglob",
 			baseGlob,
 		);
+
 		const isMatch = minimatch.default(path.basename(e), baseGlob, {
 			nocase: getOSType() === OSType.Windows,
 		});
+
 		if (!isMatch) {
 			// When deleting the file for some reason path to all directories leading up to python are reported
 			// Skip those events
@@ -72,6 +76,7 @@ export function resolvePythonExeGlobs(
 		throw Error(`invalid basename glob "${basenameGlob}"`);
 	}
 	const globs: string[] = [];
+
 	if (structure === PythonEnvStructure.Standard) {
 		globs.push(
 			// Check the directory.

@@ -19,10 +19,12 @@ import {
 function log(diagnostics: IDiagnostic[]): void {
 	diagnostics.forEach((item) => {
 		const message = `Diagnostic Code: ${item.code}, Message: ${item.message}`;
+
 		switch (item.severity) {
 			case DiagnosticSeverity.Error:
 			case DiagnosticSeverity.Warning: {
 				traceLog(message);
+
 				break;
 			}
 			default: {
@@ -39,6 +41,7 @@ async function runDiagnostics(
 	await Promise.all(
 		diagnosticServices.map(async (diagnosticService) => {
 			const diagnostics = await diagnosticService.diagnose(resource);
+
 			if (diagnostics.length > 0) {
 				log(diagnostics);
 				await diagnosticService.handle(diagnostics);
@@ -71,8 +74,10 @@ export class ApplicationDiagnostics implements IApplicationDiagnostics {
 			this.serviceContainer.getAll<IDiagnosticsService>(
 				IDiagnosticsService,
 			);
+
 		const workspaceService =
 			this.serviceContainer.get<IWorkspaceService>(IWorkspaceService);
+
 		if (!workspaceService.isTrusted) {
 			services = services.filter((item) => item.runInUntrustedWorkspace);
 		}

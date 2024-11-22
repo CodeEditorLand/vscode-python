@@ -39,6 +39,7 @@ export class PipEnvActivationCommandProvider
 	): Promise<string[] | undefined> {
 		const interpreter =
 			await this.interpreterService.getActiveInterpreter(resource);
+
 		if (!interpreter || interpreter.envType !== EnvironmentType.Pipenv) {
 			return undefined;
 		}
@@ -46,6 +47,7 @@ export class PipEnvActivationCommandProvider
 		const workspaceFolder = resource
 			? this.workspaceService.getWorkspaceFolder(resource)
 			: undefined;
+
 		if (workspaceFolder) {
 			if (
 				!(await isPipenvEnvironmentRelatedToFolder(
@@ -57,6 +59,7 @@ export class PipEnvActivationCommandProvider
 			}
 		}
 		const execName = this.pipEnvExecution.executable;
+
 		return [`${execName.fileToCommandArgumentForPythonExt()} shell`];
 	}
 
@@ -65,11 +68,13 @@ export class PipEnvActivationCommandProvider
 	): Promise<string[] | undefined> {
 		const interpreter =
 			await this.interpreterService.getInterpreterDetails(pythonPath);
+
 		if (!interpreter || interpreter.envType !== EnvironmentType.Pipenv) {
 			return undefined;
 		}
 
 		const execName = this.pipEnvExecution.executable;
+
 		return [`${execName.fileToCommandArgumentForPythonExt()} shell`];
 	}
 }

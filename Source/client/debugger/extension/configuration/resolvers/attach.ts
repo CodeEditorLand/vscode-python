@@ -30,6 +30,7 @@ export class AttachConfigurationResolver extends BaseConfigurationResolver<Attac
 		);
 
 		const dbgConfig = debugConfiguration;
+
 		if (Array.isArray(dbgConfig.debugOptions)) {
 			dbgConfig.debugOptions = dbgConfig.debugOptions!.filter(
 				(item, pos) => dbgConfig.debugOptions!.indexOf(item) === pos,
@@ -62,7 +63,9 @@ export class AttachConfigurationResolver extends BaseConfigurationResolver<Attac
 		debugConfiguration.workspaceFolder = workspaceFolder
 			? workspaceFolder.fsPath
 			: undefined;
+
 		const debugOptions = debugConfiguration.debugOptions!;
+
 		if (debugConfiguration.django) {
 			AttachConfigurationResolver.debugOption(
 				debugOptions,
@@ -106,6 +109,7 @@ export class AttachConfigurationResolver extends BaseConfigurationResolver<Attac
 		const isLocalHost = AttachConfigurationResolver.isLocalHost(
 			debugConfiguration.host,
 		);
+
 		if (getOSType() === OSType.Windows && isLocalHost) {
 			AttachConfigurationResolver.debugOption(
 				debugOptions,

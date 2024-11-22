@@ -10,6 +10,7 @@ export async function asyncFilter<T>(
 	asyncPredicate: (value: T) => Promise<unknown>,
 ): Promise<T[]> {
 	const results = await Promise.all(arr.map(asyncPredicate));
+
 	return arr.filter((_v, index) => results[index]);
 }
 

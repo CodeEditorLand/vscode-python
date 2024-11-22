@@ -79,7 +79,9 @@ export async function activateComponents(
     // https://github.com/microsoft/vscode-python/issues/15380
     // These will go away eventually once everything is refactored into components.
     const legacyActivationResult = await activateLegacy(ext, startupStopWatch);
+
     const workspaceService = new WorkspaceService();
+
     if (!workspaceService.isTrusted) {
         return [legacyActivationResult];
     }
@@ -87,6 +89,7 @@ export async function activateComponents(
         // More component activations will go here
         pythonEnvironments.activate(components.pythonEnvs, ext),
     ];
+
     return Promise.all([legacyActivationResult, ...promises]);
 }
 
@@ -94,12 +97,15 @@ export function activateFeatures(ext: ExtensionState, _components: Components): 
     const interpreterQuickPick: IInterpreterQuickPick = ext.legacyIOC.serviceContainer.get<IInterpreterQuickPick>(
         IInterpreterQuickPick,
     );
+
     const interpreterPathService: IInterpreterPathService = ext.legacyIOC.serviceContainer.get<IInterpreterPathService>(
         IInterpreterPathService,
     );
+
     const interpreterService: IInterpreterService = ext.legacyIOC.serviceContainer.get<IInterpreterService>(
         IInterpreterService,
     );
+
     const pathUtils = ext.legacyIOC.serviceContainer.get<IPathUtils>(IPathUtils);
     registerPixiFeatures(ext.disposables);
     registerAllCreateEnvironmentFeatures(
@@ -109,7 +115,9 @@ export function activateFeatures(ext: ExtensionState, _components: Components): 
         interpreterService,
         pathUtils,
     );
+
     const executionHelper = ext.legacyIOC.serviceContainer.get<ICodeExecutionHelper>(ICodeExecutionHelper);
+
     const commandManager = ext.legacyIOC.serviceContainer.get<ICommandManager>(ICommandManager);
     registerTriggerForTerminalREPL(ext.disposables);
     registerStartNativeReplCommand(ext.disposables, interpreterService);
@@ -128,6 +136,7 @@ export function activateFeatures(ext: ExtensionState, _components: Components): 
 
 async function activateLegacy(ext: ExtensionState, startupStopWatch: StopWatch): Promise<ActivationResult> {
     const { legacyIOC } = ext;
+
     const { serviceManager, serviceContainer } = legacyIOC;
 
     // register "services"
@@ -137,6 +146,7 @@ async function activateLegacy(ext: ExtensionState, startupStopWatch: StopWatch):
     await setExtensionInstallTelemetryProperties(fs);
 
     const applicationEnv = serviceManager.get<IApplicationEnvironment>(IApplicationEnvironment);
+
     const { enableProposedApi } = applicationEnv.packageJson;
     serviceManager.addSingletonInstance<boolean>(UseProposedApi, enableProposedApi);
     // Feature specific registrations.
@@ -160,17 +170,23 @@ async function activateLegacy(ext: ExtensionState, startupStopWatch: StopWatch):
     // "initialize" "services"
 
     const disposables = serviceManager.get<IDisposableRegistry>(IDisposableRegistry);
+
     const workspaceService = serviceContainer.get<IWorkspaceService>(IWorkspaceService);
+
     const cmdManager = serviceContainer.get<ICommandManager>(ICommandManager);
 
     languages.setLanguageConfiguration(PYTHON_LANGUAGE, getLanguageConfiguration());
+
     if (workspaceService.isTrusted) {
         const interpreterManager = serviceContainer.get<IInterpreterService>(IInterpreterService);
         interpreterManager.initialize();
+
         if (!workspaceService.isVirtualWorkspace) {
             const handlers = serviceManager.getAll<IDebugSessionEventHandlers>(IDebugSessionEventHandlers);
+
             const dispatcher = new DebugSessionEventDispatcher(handlers, DebugService.instance, disposables);
             dispatcher.registerEventHandlers();
+
             const outputChannel = serviceManager.get<ILogOutputChannel>(ILogOutputChannel);
             disposables.push(cmdManager.registerCommand(Commands.ViewOutput, () => outputChannel.show()));
             cmdManager.executeCommand('setContext', 'python.vscode.channel', applicationEnv.channel).then(noop, noop);

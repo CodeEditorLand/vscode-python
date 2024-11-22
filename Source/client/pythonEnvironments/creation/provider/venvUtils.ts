@@ -38,6 +38,7 @@ export const OPEN_REQUIREMENTS_BUTTON = {
 	iconPath: new ThemeIcon("go-to-file"),
 	tooltip: CreateEnv.Venv.openRequirementsFile,
 };
+
 const exclude =
 	"**/{.venv*,.git,.nox,.tox,.conda,site-packages,__pypackages__}/**";
 export async function getPipRequirementsFiles(
@@ -60,6 +61,7 @@ export async function getPipRequirementsFiles(
 			),
 		]),
 	).map((u) => u.fsPath);
+
 	return files;
 }
 
@@ -82,11 +84,13 @@ function tomlHasProject(toml: tomljs.JsonMap): boolean {
 
 function getTomlOptionalDeps(toml: tomljs.JsonMap): string[] {
 	const extras: string[] = [];
+
 	if (
 		toml.project &&
 		(toml.project as tomljs.JsonMap)["optional-dependencies"]
 	) {
 		const deps = (toml.project as tomljs.JsonMap)["optional-dependencies"];
+
 		for (const key of Object.keys(deps)) {
 			extras.push(key);
 		}
@@ -126,7 +130,9 @@ async function pickRequirementsFiles(
 		.map((p) => path.relative(root, p))
 		.sort((a, b) => {
 			const al: number = a.split(/[\\\/]/).length;
+
 			const bl: number = b.split(/[\\\/]/).length;
+
 			if (al === bl) {
 				if (a.length === b.length) {
 					return a.localeCompare(b);
@@ -164,6 +170,7 @@ async function pickRequirementsFiles(
 
 export function isPipInstallableToml(tomlContent: string): boolean {
 	const toml = tomlParse(tomlContent);
+
 	return tomlHasBuildSystem(toml) && tomlHasProject(toml);
 }
 
@@ -178,6 +185,7 @@ export async function pickPackagesToInstall(
 	token?: CancellationToken,
 ): Promise<IPackageInstallSelection[] | undefined> {
 	const tomlPath = path.join(workspaceFolder.uri.fsPath, "pyproject.toml");
+
 	const packages: IPackageInstallSelection[] = [];
 
 	const tomlStep = new MultiStepNode(
@@ -188,7 +196,9 @@ export async function pickPackagesToInstall(
 			);
 
 			let extras: string[] = [];
+
 			let hasBuildSystem = false;
+
 			let hasProject = false;
 
 			if (await fs.pathExists(tomlPath)) {
@@ -225,6 +235,7 @@ export async function pickPackagesToInstall(
 
 					try {
 						const installList = await pickTomlExtras(extras, token);
+
 						if (installList) {
 							if (installList.length > 0) {
 								installList.forEach((i) => {
@@ -272,21 +283,26 @@ export async function pickPackagesToInstall(
 		tomlStep,
 		async (context?: MultiStepAction) => {
 			traceVerbose("Looking for pip requirements.");
+
 			const requirementFiles = await getPipRequirementsFiles(
 				workspaceFolder,
 				token,
 			);
+
 			if (requirementFiles && requirementFiles.length > 0) {
 				traceVerbose("Found pip requirements.");
+
 				try {
 					const result = await pickRequirementsFiles(
 						requirementFiles,
 						workspaceFolder.uri.fsPath,
 						token,
 					);
+
 					const installList = result?.map((p) =>
 						path.join(workspaceFolder.uri.fsPath, p),
 					);
+
 					if (installList) {
 						installList.forEach((i) => {
 							packages.push({
@@ -318,6 +334,7 @@ export async function pickPackagesToInstall(
 	tomlStep.next = requirementsStep;
 
 	const action = await MultiStepNode.run(tomlStep);
+
 	if (action === MultiStepAction.Back || action === MultiStepAction.Cancel) {
 		throw action;
 	}
@@ -330,6 +347,7 @@ export async function deleteEnvironment(
 	interpreter: string | undefined,
 ): Promise<boolean> {
 	const venvPath = getVenvPath(workspaceFolder);
+
 	return withProgress<boolean>(
 		{
 			location: ProgressLocation.Notification,

@@ -75,6 +75,7 @@ export class CondaService implements ICondaService {
 			const command = forShellExecution
 				? conda?.shellCommand
 				: conda?.command;
+
 			return command ?? "conda";
 		});
 	}
@@ -84,6 +85,7 @@ export class CondaService implements ICondaService {
 		condaEnv: CondaEnvironmentInfo,
 	): Promise<string | undefined> {
 		const conda = await Conda.getConda();
+
 		return conda?.getInterpreterPathForEnvironment({
 			name: condaEnv.name,
 			prefix: condaEnv.path,
@@ -126,7 +128,9 @@ export class CondaService implements ICondaService {
 		envName?: string,
 	): Promise<string | undefined> {
 		const condaExe = this.platform.isWindows ? "conda.exe" : "conda";
+
 		const scriptsDir = this.platform.isWindows ? "Scripts" : "bin";
+
 		const interpreterDir = interpreterPath
 			? path.dirname(interpreterPath)
 			: "";
@@ -136,9 +140,11 @@ export class CondaService implements ICondaService {
 		const envsPos = envName
 			? interpreterDir.indexOf(path.join("envs", envName))
 			: -1;
+
 		if (envsPos > 0) {
 			// This should be where the original python was run from when the environment was created.
 			const originalPath = interpreterDir.slice(0, envsPos);
+
 			let condaPath1 = path.join(originalPath, condaExe);
 
 			if (await this.fileSystem.fileExists(condaPath1)) {
@@ -147,18 +153,21 @@ export class CondaService implements ICondaService {
 
 			// Also look in the scripts directory here too.
 			condaPath1 = path.join(originalPath, scriptsDir, condaExe);
+
 			if (await this.fileSystem.fileExists(condaPath1)) {
 				return condaPath1;
 			}
 		}
 
 		let condaPath2 = path.join(interpreterDir, condaExe);
+
 		if (await this.fileSystem.fileExists(condaPath2)) {
 			return condaPath2;
 		}
 		// Conda path has changed locations, check the new location in the scripts directory after checking
 		// the old location
 		condaPath2 = path.join(interpreterDir, scriptsDir, condaExe);
+
 		if (await this.fileSystem.fileExists(condaPath2)) {
 			return condaPath2;
 		}
@@ -174,6 +183,7 @@ export class CondaService implements ICondaService {
 	// eslint-disable-next-line class-methods-use-this
 	public async getCondaInfo(): Promise<CondaInfo | undefined> {
 		const conda = await Conda.getConda();
+
 		return conda?.getInfo();
 	}
 }

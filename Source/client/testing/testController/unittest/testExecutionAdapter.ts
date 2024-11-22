@@ -58,8 +58,10 @@ export class UnittestTestExecutionAdapter implements ITestExecutionAdapter {
                 traceError(`No run instance found, cannot resolve execution, for workspace ${uri.fsPath}.`);
             }
         };
+
         const cSource = new CancellationTokenSource();
         runInstance?.token.onCancellationRequested(() => cSource.cancel());
+
         const name = await utils.startRunResultNamedPipe(
             dataReceivedCallback, // callback to handle data received
             deferredTillServerClose, // deferred to resolve when server closes
@@ -70,6 +72,7 @@ export class UnittestTestExecutionAdapter implements ITestExecutionAdapter {
             // if canceled, stop listening for results
             deferredTillServerClose.resolve();
         });
+
         try {
             await this.runTestsNew(
                 uri,
@@ -91,6 +94,7 @@ export class UnittestTestExecutionAdapter implements ITestExecutionAdapter {
             status: 'success',
             error: '',
         };
+
         return executionPayload;
     }
 
@@ -105,18 +109,24 @@ export class UnittestTestExecutionAdapter implements ITestExecutionAdapter {
         debugLauncher?: ITestDebugLauncher,
     ): Promise<ExecutionTestPayload> {
         const settings = this.configSettings.getSettings(uri);
+
         const { unittestArgs } = settings.testing;
+
         const cwd = settings.testing.cwd && settings.testing.cwd.length > 0 ? settings.testing.cwd : uri.fsPath;
 
         const command = buildExecutionCommand(unittestArgs);
+
         let mutableEnv: EnvironmentVariables | undefined = await this.envVarsService?.getEnvironmentVariables(uri);
+
         if (mutableEnv === undefined) {
             mutableEnv = {} as EnvironmentVariables;
         }
         const pythonPathParts: string[] = mutableEnv.PYTHONPATH?.split(path.delimiter) ?? [];
+
         const pythonPathCommand = [cwd, ...pythonPathParts].join(path.delimiter);
         mutableEnv.PYTHONPATH = pythonPathCommand;
         mutableEnv.TEST_RUN_PIPE = resultNamedPipeName;
+
         if (profileKind && profileKind === TestRunProfileKind.Coverage) {
             mutableEnv.COVERAGE_ENABLED = cwd;
         }
@@ -149,7 +159,9 @@ export class UnittestTestExecutionAdapter implements ITestExecutionAdapter {
             allowEnvironmentFetchExceptions: false,
             resource: options.workspaceFolder,
         };
+
         const execService = await executionFactory?.createActivatedEnvironment(creationOptions);
+
         const args = [options.command.script].concat(options.command.args);
 
         if (options.outChannel) {
@@ -166,6 +178,7 @@ export class UnittestTestExecutionAdapter implements ITestExecutionAdapter {
                     runTestIdsPort: testIdsFileName,
                     pytestPort: resultNamedPipeName, // change this from pytest
                 };
+
                 const sessionOptions: DebugSessionOptions = {
                     testRun: runInstance,
                 };
@@ -173,6 +186,7 @@ export class UnittestTestExecutionAdapter implements ITestExecutionAdapter {
 
                 if (debugLauncher === undefined) {
                     traceError('Debug launcher is not defined');
+
                     throw new Error('Debug launcher is not defined');
                 }
                 await debugLauncher.launchDebugger(
@@ -222,12 +236,14 @@ export class UnittestTestExecutionAdapter implements ITestExecutionAdapter {
                 result?.proc?.on('exit', (code, signal) => {
                     // if the child has testIds then this is a run request
                     spawnOptions?.outputChannel?.append(MESSAGE_ON_TESTING_OUTPUT_MOVE);
+
                     if (code !== 0 && testIds) {
                         // This occurs when we are running the test and there is an error which occurs.
 
                         traceError(
                             `Subprocess exited unsuccessfully with exit code ${code} and signal ${signal} for workspace ${options.cwd}. Creating and sending error execution payload \n`,
                         );
+
                         if (runInstance) {
                             this.resultResolver?.resolveExecution(
                                 utils.createExecutionErrorPayload(code, signal, testIds, cwd),
@@ -242,6 +258,7 @@ export class UnittestTestExecutionAdapter implements ITestExecutionAdapter {
             }
         } catch (ex) {
             traceError(`Error while running tests for workspace ${uri}: ${testIds}\r\n${ex}\r\n\r\n`);
+
             return Promise.reject(ex);
         }
         // placeholder until after the rewrite is adopted
@@ -251,6 +268,7 @@ export class UnittestTestExecutionAdapter implements ITestExecutionAdapter {
             status: 'success',
             error: '',
         };
+
         return executionPayload;
     }
 }

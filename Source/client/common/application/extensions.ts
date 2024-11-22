@@ -55,15 +55,18 @@ export class Extensions implements IExtensions {
 		displayName: string;
 	}> {
 		const { stack } = new Error();
+
 		if (stack) {
 			const pythonExtRoot = path.join(
 				EXTENSION_ROOT_DIR.toLowerCase(),
 				path.sep,
 			);
+
 			const frames = stack
 				.split("\n")
 				.map((f) => {
 					const result = /\((.*)\)/.exec(f);
+
 					if (result) {
 						return result[1];
 					}
@@ -83,6 +86,7 @@ export class Extensions implements IExtensions {
 				) as string[];
 			stacktrace.parse(new Error("Ex")).forEach((item) => {
 				const fileName = item.getFileName();
+
 				if (
 					fileName &&
 					!fileName.toLowerCase().startsWith(pythonExtRoot)
@@ -90,20 +94,26 @@ export class Extensions implements IExtensions {
 					frames.push(fileName);
 				}
 			});
+
 			for (const frame of frames) {
 				// This file is from a different extension. Try to find its `package.json`.
 				let dirName = path.dirname(frame);
+
 				let last = frame;
+
 				while (dirName && dirName.length < last.length) {
 					const possiblePackageJson = path.join(
 						dirName,
 						"package.json",
 					);
+
 					if (await this.fs.pathExists(possiblePackageJson)) {
 						const text =
 							await this.fs.readFile(possiblePackageJson);
+
 						try {
 							const json = JSON.parse(text);
+
 							return {
 								extensionId: `${json.publisher}.${json.name}`,
 								displayName: json.displayName,

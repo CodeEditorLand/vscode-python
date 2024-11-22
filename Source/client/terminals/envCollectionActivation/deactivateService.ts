@@ -53,26 +53,34 @@ export class TerminalDeactivateService implements ITerminalDeactivateService {
 	@cache(-1, true)
 	public async initializeScriptParams(shell: string): Promise<void> {
 		const location = this.getLocation(shell);
+
 		if (!location) {
 			return;
 		}
 		const shellType = identifyShellFromShellPath(shell);
+
 		const terminal = this.terminalManager.createTerminal({
 			name: `Python ${shellType} Deactivate`,
 			shellPath: shell,
 			hideFromUser: true,
 			cwd: location,
 		});
+
 		const globalInterpreters = this.interpreterService
 			.getInterpreters()
 			.filter((i) => !i.type);
+
 		const outputFile = path.join(location, `envVars.txt`);
+
 		const interpreterPath =
 			globalInterpreters.length > 0 && globalInterpreters[0]
 				? globalInterpreters[0].path
 				: "python";
+
 		const checkIfFileHasBeenCreated = () => pathExists(outputFile);
+
 		const stopWatch = new StopWatch();
+
 		const command = this.terminalHelper.buildCommandForTerminal(
 			shellType,
 			interpreterPath,
@@ -95,6 +103,7 @@ export class TerminalDeactivateService implements ITerminalDeactivateService {
 	): Promise<string | undefined> {
 		const interpreter =
 			await this.interpreterService.getActiveInterpreter(resource);
+
 		if (interpreter?.type !== PythonEnvType.Virtual) {
 			return undefined;
 		}
@@ -103,6 +112,7 @@ export class TerminalDeactivateService implements ITerminalDeactivateService {
 
 	private getLocation(shell: string) {
 		const shellType = identifyShellFromShellPath(shell);
+
 		if (!ShellIntegrationShells.includes(shellType)) {
 			return undefined;
 		}
@@ -118,12 +128,16 @@ export class TerminalDeactivateService implements ITerminalDeactivateService {
 			case TerminalShellType.powershell:
 			case TerminalShellType.powershellCore:
 				return "powershell";
+
 			case TerminalShellType.fish:
 				return "fish";
+
 			case TerminalShellType.zsh:
 				return "zsh";
+
 			case TerminalShellType.bash:
 				return "bash";
+
 			default:
 				throw new Error(`Unsupported shell type ${shellType}`);
 		}

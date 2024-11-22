@@ -67,16 +67,19 @@ export class DjangoContextInitializer implements Disposable {
 			return this.workpaceService.workspaceFolders[0].uri.fsPath;
 		}
 		const activeEditor = this.documentManager.activeTextEditor;
+
 		if (!activeEditor) {
 			return;
 		}
 		const workspaceFolder = this.workpaceService.getWorkspaceFolder(
 			activeEditor.document.uri,
 		);
+
 		return workspaceFolder ? workspaceFolder.uri.fsPath : undefined;
 	}
 	private async ensureContextStateIsSet(): Promise<void> {
 		const activeWorkspace = this.getActiveWorkspace();
+
 		if (!activeWorkspace) {
 			return this.isDjangoProject.set(false);
 		}

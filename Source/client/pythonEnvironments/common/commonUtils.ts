@@ -33,6 +33,7 @@ type FileFilterFunc = (filename: string) => boolean;
  */
 export async function isPythonExecutable(filePath: string): Promise<boolean> {
 	const isMatch = matchStandardPythonBinFilename(filePath);
+
 	if (isMatch && getOSType() === OSType.Windows) {
 		// On Windows it's fair to assume a path ending with `.exe` denotes a file.
 		return true;
@@ -61,6 +62,7 @@ export async function* findInterpretersInDir(
 		getOSType() === OSType.Windows
 			? windows.matchPythonBinFilename
 			: posix.matchPythonBinFilename;
+
 	const cfg = {
 		ignoreErrors,
 		filterSubDir,
@@ -71,6 +73,7 @@ export async function* findInterpretersInDir(
 	// We use an initial depth of 1.
 	for await (const entry of walkSubTree(root, 1, cfg)) {
 		const { filename, filetype } = entry;
+
 		if (filetype === FileType.File || filetype === FileType.SymbolicLink) {
 			if (matchFile(filename, checkBin, ignoreErrors)) {
 				yield entry;
@@ -93,9 +96,12 @@ export async function* iterPythonExecutablesInDir(
 		...opts,
 		filterFile: matchStandardPythonBinFilename,
 	};
+
 	const entries = await readDirEntries(dirname, readDirOpts);
+
 	for (const entry of entries) {
 		const { filetype } = entry;
+
 		if (filetype === FileType.File || filetype === FileType.SymbolicLink) {
 			yield entry;
 		}
@@ -115,10 +121,12 @@ async function* walkSubTree(
 	},
 ): AsyncIterableIterator<DirEntry> {
 	const entries = await readDirEntries(subRoot, cfg);
+
 	for (const entry of entries) {
 		yield entry;
 
 		const { filename, filetype } = entry;
+
 		if (filetype === FileType.Directory) {
 			if (cfg.maxDepth < 0 || currentDepth <= cfg.maxDepth) {
 				if (matchFile(filename, cfg.filterSubDir, cfg.ignoreErrors)) {
@@ -137,10 +145,12 @@ async function readDirEntries(
 	} = { ignoreErrors: true },
 ): Promise<DirEntry[]> {
 	const ignoreErrors = opts.ignoreErrors || false;
+
 	if (opts.filterFilename && getOSType() === OSType.Windows) {
 		// Since `readdir()` using "withFileTypes" is not efficient
 		// on Windows, we take advantage of the filter.
 		let basenames: string[];
+
 		try {
 			basenames = await fs.promises.readdir(dirname);
 		} catch (err) {
@@ -151,6 +161,7 @@ async function readDirEntries(
 			}
 			if (ignoreErrors) {
 				traceError(`readdir() failed for "${dirname}" (${err})`);
+
 				return [];
 			}
 			throw err; // re-throw
@@ -158,16 +169,19 @@ async function readDirEntries(
 		const filenames = basenames
 			.map((b) => path.join(dirname, b))
 			.filter((f) => matchFile(f, opts.filterFilename, ignoreErrors));
+
 		return Promise.all(
 			filenames.map(async (filename) => {
 				const filetype =
 					(await getFileType(filename, opts)) || FileType.Unknown;
+
 				return { filename, filetype };
 			}),
 		);
 	}
 
 	let raw: fs.Dirent[];
+
 	try {
 		raw = await fs.promises.readdir(dirname, { withFileTypes: true });
 	} catch (err) {
@@ -178,6 +192,7 @@ async function readDirEntries(
 		}
 		if (ignoreErrors) {
 			traceError(`readdir() failed for "${dirname}" (${err})`);
+
 			return [];
 		}
 		throw err; // re-throw
@@ -194,9 +209,12 @@ async function readDirEntries(
 	// of `lstat()` anyway.
 	const entries = raw.map((entry) => {
 		const filename = path.join(dirname, entry.name);
+
 		const filetype = convertFileType(entry);
+
 		return { filename, filetype };
 	});
+
 	if (opts.filterFilename) {
 		return entries.filter((e) =>
 			matchFile(e.filename, opts.filterFilename, ignoreErrors),
@@ -220,6 +238,7 @@ function matchFile(
 	} catch (err) {
 		if (ignoreErrors) {
 			traceError(`filter failed for "${filename}" (${err})`);
+
 			return false;
 		}
 		throw err; // re-throw
@@ -234,11 +253,15 @@ async function getPythonVersionFromNearByFiles(
 	interpreterPath: string,
 ): Promise<PythonVersion> {
 	const root = path.dirname(interpreterPath);
+
 	let version = UNKNOWN_PYTHON_VERSION;
+
 	for await (const entry of findInterpretersInDir(root)) {
 		const { filename } = entry;
+
 		try {
 			const curVersion = parseVersion(path.basename(filename));
+
 			if (comparePythonVersionSpecificity(curVersion, version) > 0) {
 				version = curVersion;
 			}
@@ -260,6 +283,7 @@ export async function getPythonVersionFromPath(
 	hint?: string,
 ): Promise<PythonVersion> {
 	let versionA;
+
 	try {
 		versionA = hint ? parseVersion(hint) : UNKNOWN_PYTHON_VERSION;
 	} catch (ex) {
@@ -273,6 +297,7 @@ export async function getPythonVersionFromPath(
 		interpreterPath,
 		JSON.stringify(versionB),
 	);
+
 	const versionC = interpreterPath
 		? await getPythonVersionFromPyvenvCfg(interpreterPath)
 		: UNKNOWN_PYTHON_VERSION;
@@ -281,6 +306,7 @@ export async function getPythonVersionFromPath(
 		interpreterPath,
 		JSON.stringify(versionC),
 	);
+
 	const versionD = interpreterPath
 		? await getPythonVersionFromConda(interpreterPath)
 		: UNKNOWN_PYTHON_VERSION;
@@ -291,6 +317,7 @@ export async function getPythonVersionFromPath(
 	);
 
 	let version = UNKNOWN_PYTHON_VERSION;
+
 	for (const v of [versionA, versionB, versionC, versionD]) {
 		version = comparePythonVersionSpecificity(version, v) > 0 ? version : v;
 	}
@@ -308,6 +335,7 @@ async function checkPythonExecutable(
 	},
 ): Promise<boolean> {
 	const matchFilename = opts.matchFilename || matchStandardPythonBinFilename;
+
 	const filename =
 		typeof executable === "string" ? executable : executable.filename;
 
@@ -362,7 +390,9 @@ export async function looksLikeBasicGlobalPython(
 	// that rationale to an extent.
 	// (See: https://github.com/microsoft/vscode-python/issues/15447)
 	const matchFilename = matchBasic;
+
 	const filterFile = filterGlobalExecutable;
+
 	return checkPythonExecutable(executable, { matchFilename, filterFile });
 }
 
@@ -386,7 +416,9 @@ export async function looksLikeBasicVirtualPython(
 	// With virtual environments, we match only the simplest name
 	// (e.g. `python`) and we do not ignore symlinks.
 	const matchFilename = matchBasic;
+
 	const filterFile = undefined;
+
 	return checkPythonExecutable(executable, { matchFilename, filterFile });
 }
 
@@ -407,6 +439,7 @@ export async function getInterpreterPathFromDir(
 	// Ignore any folders or files that not directly python binary related.
 	function filterDir(dirname: string): boolean {
 		const lower = path.basename(dirname).toLowerCase();
+
 		return ["bin", "scripts"].includes(lower);
 	}
 
@@ -414,12 +447,14 @@ export async function getInterpreterPathFromDir(
 	const matchExecutable = opts.global
 		? looksLikeBasicGlobalPython
 		: looksLikeBasicVirtualPython;
+
 	const executables = findInterpretersInDir(
 		envDir,
 		recurseLevel,
 		filterDir,
 		opts.ignoreErrors,
 	);
+
 	for await (const entry of executables) {
 		if (await matchExecutable(entry)) {
 			return entry.filename;
@@ -439,6 +474,7 @@ export function getEnvironmentDirFromPath(interpreterPath: string): string {
 	// env <--- Return this directory if it is not 'bin' or 'scripts'
 	// |__ python  <--- interpreterPath
 	const dir = path.basename(path.dirname(interpreterPath));
+
 	if (!skipDirs.map((e) => normCasePath(e)).includes(normCasePath(dir))) {
 		return path.dirname(interpreterPath);
 	}

@@ -25,6 +25,7 @@ export class TestDiscoveryHelper implements ITestDiscoveryHelper {
 			allowEnvironmentFetchExceptions: false,
 			resource: options.workspaceFolder,
 		};
+
 		const execService =
 			await this.pythonExecFactory.createActivatedEnvironment(
 				creationOptions,
@@ -41,11 +42,13 @@ export class TestDiscoveryHelper implements ITestDiscoveryHelper {
 		}
 
 		const proc = await execService.exec(options.args, spawnOptions);
+
 		try {
 			return JSON.parse(proc.stdout);
 		} catch (ex) {
 			const error = ex as SyntaxError;
 			error.message = proc.stdout;
+
 			throw ex; // re-throw
 		}
 	}

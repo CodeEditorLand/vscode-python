@@ -193,9 +193,11 @@ export class LanguageServerWatcher
 		startupStopWatch?: StopWatch,
 	): Promise<ILanguageServerExtensionManager> {
 		const lsResource = this.getWorkspaceUri(resource);
+
 		const currentInterpreter = this.workspaceInterpreters.get(
 			lsResource.fsPath,
 		);
+
 		const interpreter =
 			await this.interpreterService?.getActiveInterpreter(resource);
 
@@ -207,6 +209,7 @@ export class LanguageServerWatcher
 		// If the interpreter is Python 2 and the LS setting is explicitly set to Jedi, turn it off.
 		// If set to Default, use Pylance.
 		let serverType = languageServerType;
+
 		if (interpreter && (interpreter.version?.major ?? 0) < 3) {
 			if (serverType === LanguageServerType.Jedi) {
 				serverType = LanguageServerType.None;
@@ -228,13 +231,16 @@ export class LanguageServerWatcher
 		// We only need to instantiate the language server once, even in multiroot workspace scenarios,
 		// so we only need one language server extension manager.
 		const key = this.getWorkspaceKey(resource, serverType);
+
 		const languageServer = this.workspaceLanguageServers.get(key);
+
 		if (
 			(serverType === LanguageServerType.Node ||
 				serverType === LanguageServerType.None) &&
 			languageServer
 		) {
 			logStartup(serverType, lsResource);
+
 			return languageServer;
 		}
 
@@ -277,6 +283,7 @@ export class LanguageServerWatcher
 			sendTelemetryEvent(EventName.LANGUAGE_SERVER_RESTART, undefined, {
 				reason: "notebooksExperiment",
 			});
+
 			const resource = Uri.parse(resourceString);
 			await this.stopLanguageServer(resource);
 			await this.startLanguageServer(this.languageServerType, resource);
@@ -287,6 +294,7 @@ export class LanguageServerWatcher
 		resource?: Resource,
 	): Promise<ILanguageServerExtensionManager> {
 		const key = this.getWorkspaceKey(resource, this.languageServerType);
+
 		let languageServerExtensionManager =
 			this.workspaceLanguageServers.get(key);
 
@@ -305,6 +313,7 @@ export class LanguageServerWatcher
 
 	private async stopLanguageServer(resource?: Resource): Promise<void> {
 		const key = this.getWorkspaceKey(resource, this.languageServerType);
+
 		const languageServerExtensionManager =
 			this.workspaceLanguageServers.get(key);
 
@@ -319,6 +328,7 @@ export class LanguageServerWatcher
 		languageServerType: LanguageServerType,
 	): ILanguageServerExtensionManager {
 		let lsManager: ILanguageServerExtensionManager;
+
 		switch (languageServerType) {
 			case LanguageServerType.Jedi:
 				lsManager = new JediLSExtensionManager(
@@ -332,7 +342,9 @@ export class LanguageServerWatcher
 					this.environmentService,
 					this.commandManager,
 				);
+
 				break;
+
 			case LanguageServerType.Node:
 				lsManager = new PylanceLSExtensionManager(
 					this.serviceContainer,
@@ -348,10 +360,13 @@ export class LanguageServerWatcher
 					this.extensions,
 					this.applicationShell,
 				);
+
 				break;
+
 			case LanguageServerType.None:
 			default:
 				lsManager = new NoneLSExtensionManager();
+
 				break;
 		}
 
@@ -361,6 +376,7 @@ export class LanguageServerWatcher
 				lsManager.dispose();
 			},
 		});
+
 		return lsManager;
 	}
 
@@ -369,6 +385,7 @@ export class LanguageServerWatcher
 		forced?: boolean,
 	): Promise<void> {
 		const lsResource = this.getWorkspaceUri(resource);
+
 		const languageServerType =
 			this.configurationService.getSettings(lsResource).languageServer;
 
@@ -429,6 +446,7 @@ export class LanguageServerWatcher
 		const iterator = this.workspaceInterpreters.entries();
 
 		let result = iterator.next();
+
 		let done = result.done || false;
 
 		while (!done) {
@@ -436,6 +454,7 @@ export class LanguageServerWatcher
 				string,
 				PythonEnvironment | undefined,
 			];
+
 			const resource = Uri.parse(resourcePath);
 
 			// Restart the language server if the interpreter path changed (#18995).
@@ -444,9 +463,11 @@ export class LanguageServerWatcher
 				info.path !== interpreter?.path
 			) {
 				await this.activate(resource);
+
 				done = true;
 			} else {
 				result = iterator.next();
+
 				done = result.done || false;
 			}
 		}
@@ -503,8 +524,10 @@ export class LanguageServerWatcher
 		switch (languageServerType) {
 			case LanguageServerType.Node:
 				return "Pylance";
+
 			case LanguageServerType.None:
 				return "None";
+
 			default:
 				return this.getWorkspaceUri(resource).fsPath;
 		}
@@ -516,6 +539,7 @@ function logStartup(
 	resource: Uri,
 ): void {
 	let outputLine;
+
 	const basename = path.basename(resource.fsPath);
 
 	switch (languageServerType) {
@@ -524,13 +548,19 @@ function logStartup(
 				"Starting Jedi language server for {0}.",
 				basename,
 			);
+
 			break;
+
 		case LanguageServerType.Node:
 			outputLine = LanguageService.startingPylance;
+
 			break;
+
 		case LanguageServerType.None:
 			outputLine = LanguageService.startingNone;
+
 			break;
+
 		default:
 			throw new Error(
 				`Unknown language server type: ${languageServerType}`,

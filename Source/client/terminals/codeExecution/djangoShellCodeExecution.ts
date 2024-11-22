@@ -73,14 +73,17 @@ export class DjangoShellCodeExecutionProvider extends TerminalCodeExecutionProvi
 		const workspaceUri = resource
 			? this.workspace.getWorkspaceFolder(resource)
 			: undefined;
+
 		const defaultWorkspace =
 			Array.isArray(this.workspace.workspaceFolders) &&
 			this.workspace.workspaceFolders.length > 0
 				? this.workspace.workspaceFolders[0].uri.fsPath
 				: "";
+
 		const workspaceRoot = workspaceUri
 			? workspaceUri.uri.fsPath
 			: defaultWorkspace;
+
 		const managePyPath =
 			workspaceRoot.length === 0
 				? "manage.py"
@@ -98,6 +101,7 @@ export class DjangoShellCodeExecutionProvider extends TerminalCodeExecutionProvi
 	): Promise<PythonExecInfo> {
 		// We need the executable info but not the 'manage.py shell' args
 		const info = await super.getExecutableInfo(resource);
+
 		return copyPythonExecInfo(info, executeArgs);
 	}
 }

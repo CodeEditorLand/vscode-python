@@ -50,12 +50,14 @@ export class ResetInterpreterCommand extends BaseInterpreterSelectorCommand {
 		const targetConfigs = await this.getConfigTargets({
 			resetTarget: true,
 		});
+
 		if (!targetConfigs) {
 			return;
 		}
 		await Promise.all(
 			targetConfigs.map(async (targetConfig) => {
 				const configTarget = targetConfig.configTarget;
+
 				const wkspace = targetConfig.folderUri;
 				await this.pythonPathUpdaterService.updatePythonPath(
 					undefined,

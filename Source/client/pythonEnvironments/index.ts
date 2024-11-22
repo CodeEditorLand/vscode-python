@@ -48,6 +48,7 @@ const PYTHON_ENV_INFO_CACHE_KEY = 'PYTHON_ENV_INFO_CACHEv2';
 
 export function shouldUseNativeLocator(): boolean {
     const config = getConfiguration('python');
+
     return config.get<string>('locator', 'js') === 'native';
 }
 
@@ -60,6 +61,7 @@ export async function initialize(ext: ExtensionState): Promise<IDiscoveryAPI> {
 
     if (shouldUseNativeLocator()) {
         const finder = getNativePythonFinder(ext.context);
+
         const api = createNativeEnvironmentsApi(finder);
         ext.disposables.push(api);
         registerNewDiscoveryForIOC(
@@ -67,6 +69,7 @@ export async function initialize(ext: ExtensionState): Promise<IDiscoveryAPI> {
             ext.legacyIOC.serviceManager,
             api,
         );
+
         return api;
     }
     const api = await createPythonEnvironments(() => createLocator(ext));
@@ -75,6 +78,7 @@ export async function initialize(ext: ExtensionState): Promise<IDiscoveryAPI> {
         ext.legacyIOC.serviceManager,
         api,
     );
+
     return api;
 }
 
@@ -92,6 +96,7 @@ export async function activate(api: IDiscoveryAPI, ext: ExtensionState): Promise
     const folders = vscode.workspace.workspaceFolders;
     // Trigger discovery if environment cache is empty.
     const wasTriggered = getGlobalStorage<PythonEnvInfo[]>(ext.context, PYTHON_ENV_INFO_CACHE_KEY, []).get().length > 0;
+
     if (!wasTriggered) {
         api.triggerRefresh().ignoreErrors();
         folders?.forEach(async (folder) => {
@@ -110,6 +115,7 @@ export async function activate(api: IDiscoveryAPI, ext: ExtensionState): Promise
                 `PYTHON_WAS_DISCOVERY_TRIGGERED_${normCasePath(folder.uri.fsPath)}`,
                 false,
             );
+
             if (!wasTriggeredForFolder.get()) {
                 api.triggerRefresh({
                     searchLocations: { roots: [folder.uri], doNotIncludeNonRooted: true },
@@ -143,17 +149,20 @@ async function createLocator(
 
     // Build the stack of composite locators.
     const reducer = new PythonEnvsReducer(locators);
+
     const resolvingLocator = new PythonEnvsResolver(
         reducer,
         // These are shared.
         envInfoService,
     );
+
     const caching = new EnvsCollectionService(
         await createCollectionCache(ext),
         // This is shared.
         resolvingLocator,
         ext.context,
     );
+
     return caching;
 }
 
@@ -184,6 +193,7 @@ function createNonWorkspaceLocators(ext: ExtensionState): ILocator<BasicEnvInfo>
 
     const disposables = locators.filter((d) => d.dispose !== undefined) as IDisposable[];
     ext.disposables.push(...disposables);
+
     return locators;
 }
 
@@ -191,6 +201,7 @@ function watchRoots(args: WatchRootsArgs): IDisposable {
     const { initRoot, addRoot, removeRoot } = args;
 
     const folders = vscode.workspace.workspaceFolders;
+
     if (folders) {
         folders.map((f) => f.uri).forEach(initRoot);
     }
@@ -217,6 +228,7 @@ function createWorkspaceLocator(ext: ExtensionState): WorkspaceLocators {
         // Add an ILocator factory func here for each kind of workspace-rooted locator.
     ]);
     ext.disposables.push(locators);
+
     return locators;
 }
 
@@ -247,14 +259,17 @@ function putIntoStorage(storage: IPersistentStorage<PythonEnvInfo[]>, envs: Pyth
             return e;
         }),
     );
+
     return Promise.resolve();
 }
 
 async function createCollectionCache(ext: ExtensionState): Promise<IEnvsCollectionCache> {
     const storage = getGlobalStorage<PythonEnvInfo[]>(ext.context, PYTHON_ENV_INFO_CACHE_KEY, []);
+
     const cache = await createCache({
         get: () => getFromStorage(storage),
         store: async (e) => putIntoStorage(storage, e),
     });
+
     return cache;
 }

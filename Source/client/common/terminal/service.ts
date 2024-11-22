@@ -60,7 +60,9 @@ export class TerminalService implements ITerminalService, Disposable {
     }
     public async sendCommand(command: string, args: string[], _?: CancellationToken): Promise<void> {
         await this.ensureTerminal();
+
         const text = this.terminalHelper.buildCommandForTerminal(this.terminalShellType, command, args);
+
         if (!this.options?.hideFromUser) {
             this.terminal!.show(true);
         }
@@ -70,6 +72,7 @@ export class TerminalService implements ITerminalService, Disposable {
     /** @deprecated */
     public async sendText(text: string): Promise<void> {
         await this.ensureTerminal();
+
         if (!this.options?.hideFromUser) {
             this.terminal!.show(true);
         }
@@ -80,6 +83,7 @@ export class TerminalService implements ITerminalService, Disposable {
         isPythonShell: boolean,
     ): Promise<TerminalShellExecution | undefined> {
         const terminal = this.terminal!;
+
         if (!this.options?.hideFromUser) {
             terminal.show(true);
         }
@@ -87,13 +91,16 @@ export class TerminalService implements ITerminalService, Disposable {
         // If terminal was just launched, wait some time for shell integration to onDidChangeShellIntegration.
         if (!terminal.shellIntegration && this._terminalFirstLaunched) {
             this._terminalFirstLaunched = false;
+
             const promise = new Promise<boolean>((resolve) => {
                 const disposable = this.terminalManager.onDidChangeTerminalShellIntegration(() => {
                     clearTimeout(timer);
                     disposable.dispose();
                     resolve(true);
                 });
+
                 const TIMEOUT_DURATION = 500;
+
                 const timer = setTimeout(() => {
                     disposable.dispose();
                     resolve(true);
@@ -103,14 +110,18 @@ export class TerminalService implements ITerminalService, Disposable {
         }
 
         const config = getConfiguration('python');
+
         const pythonrcSetting = config.get<boolean>('terminal.shellIntegration.enabled');
+
         if (isPythonShell && !pythonrcSetting) {
             // If user has explicitly disabled SI for Python, use sendText for inside Terminal REPL.
             terminal.sendText(commandLine);
+
             return undefined;
         } else if (terminal.shellIntegration) {
             const execution = terminal.shellIntegration.executeCommand(commandLine);
             traceVerbose(`Shell Integration is enabled, executeCommand: ${commandLine}`);
+
             return execution;
         } else {
             terminal.sendText(commandLine);
@@ -122,6 +133,7 @@ export class TerminalService implements ITerminalService, Disposable {
 
     public async show(preserveFocus: boolean = true): Promise<void> {
         await this.ensureTerminal(preserveFocus);
+
         if (!this.options?.hideFromUser) {
             this.terminal!.show(preserveFocus);
         }
@@ -153,6 +165,7 @@ export class TerminalService implements ITerminalService, Disposable {
         }
 
         this.sendTelemetry().ignoreErrors();
+
         return;
     }
     private terminalCloseHandler(terminal: Terminal) {
@@ -166,12 +179,15 @@ export class TerminalService implements ITerminalService, Disposable {
         const pythonPath = this.serviceContainer
             .get<IConfigurationService>(IConfigurationService)
             .getSettings(this.options?.resource).pythonPath;
+
         const interpreterInfo =
             this.options?.interpreter ||
             (await this.serviceContainer
                 .get<IInterpreterService>(IInterpreterService)
                 .getInterpreterDetails(pythonPath));
+
         const pythonVersion = interpreterInfo && interpreterInfo.version ? interpreterInfo.version.raw : undefined;
+
         const interpreterType = interpreterInfo ? interpreterInfo.envType : undefined;
         captureTelemetry(EventName.TERMINAL_CREATE, {
             terminal: this.terminalShellType,

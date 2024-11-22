@@ -30,16 +30,21 @@ export class PythonPathUpdaterService
 		wkspace?: Uri,
 	): Promise<void> {
 		const stopWatch = new StopWatch();
+
 		const pythonPathUpdater = this.getPythonUpdaterService(
 			configTarget,
 			wkspace,
 		);
+
 		let failed = false;
+
 		try {
 			await pythonPathUpdater.updatePythonPath(pythonPath);
 		} catch (err) {
 			failed = true;
+
 			const reason = err as Error;
+
 			const message =
 				reason && typeof reason.message === "string"
 					? (reason.message as string)
@@ -70,14 +75,17 @@ export class PythonPathUpdaterService
 			failed,
 			trigger,
 		};
+
 		if (!failed && pythonPath) {
 			const systemVariables = new SystemVariables(
 				undefined,
 				wkspace?.fsPath,
 			);
+
 			const interpreterInfo = await this.pyenvs.getInterpreterInformation(
 				systemVariables.resolveAny(pythonPath),
 			);
+
 			if (interpreterInfo) {
 				telemetryProperties.pythonVersion =
 					interpreterInfo.version?.raw;

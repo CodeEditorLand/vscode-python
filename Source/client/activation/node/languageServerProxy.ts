@@ -106,9 +106,11 @@ export class NodeLanguageServerProxy implements ILanguageServerProxy {
 		this.lsVersion = extension?.packageJSON.version || "0";
 
 		const api = extension?.exports;
+
 		if (api && api.client && api.client.isEnabled()) {
 			this.pylanceApi = api;
 			await api.client.start();
+
 			return;
 		}
 
@@ -212,6 +214,7 @@ export class NodeLanguageServerProxy implements ILanguageServerProxy {
 		client.onTelemetry((telemetryEvent) => {
 			const eventName =
 				telemetryEvent.EventName || EventName.LANGUAGE_SERVER_TELEMETRY;
+
 			const formattedProperties = {
 				...telemetryEvent.Properties,
 				// Replace all slashes in the method name so it doesn't get scrubbed by @vscode/extension-telemetry.
@@ -233,6 +236,7 @@ export class NodeLanguageServerProxy implements ILanguageServerProxy {
 				const inExperiment = await this.experimentService.inExperiment(
 					params.experimentName,
 				);
+
 				return { inExperiment };
 			},
 		);
@@ -246,6 +250,7 @@ export class NodeLanguageServerProxy implements ILanguageServerProxy {
 					await this.experimentService.getExperimentValue<T>(
 						params.experimentName,
 					);
+
 				return { value };
 			},
 		);
@@ -262,6 +267,7 @@ export class NodeLanguageServerProxy implements ILanguageServerProxy {
 	> {
 		const extension =
 			this.extensions.getExtension<PylanceApi>(PYLANCE_EXTENSION_ID);
+
 		if (!extension) {
 			return undefined;
 		}

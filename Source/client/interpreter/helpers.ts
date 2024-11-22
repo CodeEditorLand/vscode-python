@@ -26,8 +26,11 @@ export function isInterpreterLocatedInWorkspace(
 	activeWorkspaceUri: Uri,
 ): boolean {
 	const fileSystemPaths = FileSystemPaths.withDefaults();
+
 	const interpreterPath = fileSystemPaths.normCase(interpreter.path);
+
 	const resourcePath = fileSystemPaths.normCase(activeWorkspaceUri.fsPath);
+
 	return interpreterPath.startsWith(resourcePath);
 }
 
@@ -49,6 +52,7 @@ function sortInterpreters(
 			? compareSemVerLikeVersions(a.version, b.version)
 			: 0,
 	);
+
 	return sorted;
 }
 
@@ -64,8 +68,10 @@ export class InterpreterHelper implements IInterpreterHelper {
 	): WorkspacePythonPath | undefined {
 		const workspaceService =
 			this.serviceContainer.get<IWorkspaceService>(IWorkspaceService);
+
 		const hasWorkspaceFolders =
 			(workspaceService.workspaceFolders?.length || 0) > 0;
+
 		if (!hasWorkspaceFolders) {
 			return;
 		}
@@ -82,6 +88,7 @@ export class InterpreterHelper implements IInterpreterHelper {
 		if (resource) {
 			const workspaceFolder =
 				workspaceService.getWorkspaceFolder(resource);
+
 			if (workspaceFolder) {
 				return {
 					configTarget: ConfigurationTarget.WorkspaceFolder,
@@ -96,6 +103,7 @@ export class InterpreterHelper implements IInterpreterHelper {
 			const workspaceFolder = workspaceService.getWorkspaceFolder(
 				documentManager.activeTextEditor.document.uri,
 			);
+
 			if (workspaceFolder) {
 				return {
 					configTarget: ConfigurationTarget.WorkspaceFolder,
@@ -121,12 +129,14 @@ export class InterpreterHelper implements IInterpreterHelper {
 			resource,
 			source,
 		);
+
 		return sortInterpreters(interpreters);
 	}
 
 	public async getInterpreterPath(pythonPath: string): Promise<string> {
 		const interpreterInfo: any =
 			await this.getInterpreterInformation(pythonPath);
+
 		if (interpreterInfo) {
 			return interpreterInfo.path;
 		} else {
@@ -151,6 +161,7 @@ export class InterpreterHelper implements IInterpreterHelper {
 			return;
 		}
 		const sorted = sortInterpreters(interpreters);
+
 		return sorted[sorted.length - 1];
 	}
 }

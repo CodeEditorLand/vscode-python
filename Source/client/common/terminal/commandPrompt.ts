@@ -17,10 +17,12 @@ export function getCommandPromptLocation(currentProcess: ICurrentProcess) {
 	const is32ProcessOn64Windows = currentProcess.env.hasOwnProperty(
 		"PROCESSOR_ARCHITEW6432",
 	);
+
 	const system32Path = path.join(
 		currentProcess.env.windir!,
 		is32ProcessOn64Windows ? "Sysnative" : "System32",
 	);
+
 	return path.join(system32Path, "cmd.exe");
 }
 export async function useCommandPromptAsDefaultShell(

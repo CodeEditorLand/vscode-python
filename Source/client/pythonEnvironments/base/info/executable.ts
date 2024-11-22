@@ -23,6 +23,7 @@ export function parseVersionFromExecutable(filename: string): PythonVersion {
 
 function parseBasename(basename: string): PythonVersion {
 	basename = normCasePath(basename);
+
 	if (getOSType() === OSType.Windows) {
 		if (basename === "python.exe") {
 			// On Windows we can't assume it is 2.7.

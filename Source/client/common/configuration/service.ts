@@ -44,13 +44,16 @@ export class ConfigurationService implements IConfigurationService {
 			this.serviceContainer.get<IInterpreterAutoSelectionService>(
 				IInterpreterAutoSelectionService,
 			);
+
 		const interpreterPathService =
 			this.serviceContainer.get<IInterpreterPathService>(
 				IInterpreterPathService,
 			);
+
 		const defaultLS = this.serviceContainer.tryGet<IDefaultLanguageServer>(
 			IDefaultLanguageServer,
 		);
+
 		return PythonSettings.getInstance(
 			resource,
 			InterpreterAutoSelectionService,
@@ -71,7 +74,9 @@ export class ConfigurationService implements IConfigurationService {
 			uri: resource,
 			target: configTarget || ConfigurationTarget.WorkspaceFolder,
 		};
+
 		let settingsInfo = defaultSetting;
+
 		if (
 			section === "python" &&
 			configTarget !== ConfigurationTarget.Global
@@ -87,6 +92,7 @@ export class ConfigurationService implements IConfigurationService {
 			section,
 			settingsInfo.uri,
 		);
+
 		const currentValue = configSection.inspect(setting);
 
 		if (
@@ -132,14 +138,17 @@ export class ConfigurationService implements IConfigurationService {
 	): Promise<void> {
 		if (this.isTestExecution() && !isUnitTestExecution()) {
 			let retries = 0;
+
 			do {
 				const setting = configSection.inspect(settingName);
+
 				if (!setting && value === undefined) {
 					break; // Both are unset
 				}
 				if (setting && value !== undefined) {
 					// Both specified
 					let actual;
+
 					if (target === ConfigurationTarget.Global) {
 						actual = setting.globalValue;
 					} else if (target === ConfigurationTarget.Workspace) {

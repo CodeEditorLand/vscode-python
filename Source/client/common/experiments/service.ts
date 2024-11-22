@@ -15,6 +15,7 @@ import { IExperimentService, IPersistentStateFactory } from '../types';
 import { ExperimentationTelemetry } from './telemetry';
 
 const EXP_MEMENTO_KEY = 'VSCode.ABExp.FeatureData';
+
 const EXP_CONFIG_ID = 'vscode';
 
 @injectable()
@@ -46,6 +47,7 @@ export class ExperimentService implements IExperimentService {
         const settings = this.workspaceService.getConfiguration('python');
         // Users can only opt in or out of experiment groups, not control groups.
         const optInto = settings.get<string[]>('experiments.optInto') || [];
+
         const optOutFrom = settings.get<string[]>('experiments.optOutFrom') || [];
         this._optInto = optInto.filter((exp) => !exp.endsWith('control'));
         this._optOutFrom = optOutFrom.filter((exp) => !exp.endsWith('control'));
@@ -125,6 +127,7 @@ export class ExperimentService implements IExperimentService {
             // this to ensure the experiment service is ready and internal states are fully
             // synced with the experiment server.
             this.experimentationService.getTreatmentVariable(EXP_CONFIG_ID, experiment);
+
             return true;
         }
 
@@ -145,7 +148,9 @@ export class ExperimentService implements IExperimentService {
 
     private logExperiments() {
         const telemetrySettings = this.workspaceService.getConfiguration('telemetry');
+
         let experimentsDisabled = false;
+
         if (telemetrySettings && telemetrySettings.get<boolean>('enableTelemetry') === false) {
             traceLog('Telemetry is disabled');
             experimentsDisabled = true;
@@ -242,9 +247,11 @@ function readEnumValues(setting: string, packageJson: Record<string, unknown>): 
  */
 function sendOptInOptOutTelemetry(optedIn: string[], optedOut: string[], packageJson: Record<string, unknown>): void {
     const optedInEnumValues = readEnumValues('python.experiments.optInto', packageJson);
+
     const optedOutEnumValues = readEnumValues('python.experiments.optOutFrom', packageJson);
 
     const sanitizedOptedIn = optedIn.filter((exp) => optedInEnumValues.includes(exp));
+
     const sanitizedOptedOut = optedOut.filter((exp) => optedOutEnumValues.includes(exp));
 
     JSON.stringify(sanitizedOptedIn.sort());

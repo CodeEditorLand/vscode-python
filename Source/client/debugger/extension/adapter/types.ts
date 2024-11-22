@@ -6,5 +6,6 @@
 export const IPromptShowState = Symbol("IPromptShowState");
 export interface IPromptShowState {
 	shouldShowPrompt(): boolean;
+
 	setShowPrompt(show: boolean): void;
 }

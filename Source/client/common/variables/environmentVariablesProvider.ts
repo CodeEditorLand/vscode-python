@@ -55,6 +55,7 @@ export class EnvironmentVariablesProvider
 	) {
 		disposableRegistry.push(this);
 		this.changeEventEmitter = new EventEmitter();
+
 		const disposable = this.workspaceService.onDidChangeConfiguration(
 			this.configurationChanged,
 			this,
@@ -79,6 +80,7 @@ export class EnvironmentVariablesProvider
 		resource?: Uri,
 	): Promise<EnvironmentVariables> {
 		const cached = this.getCachedEnvironmentVariables(resource);
+
 		if (cached) {
 			return cached;
 		}
@@ -88,16 +90,19 @@ export class EnvironmentVariablesProvider
 			"Dump environment variables",
 			JSON.stringify(vars, null, 4),
 		);
+
 		return vars;
 	}
 
 	public getEnvironmentVariablesSync(resource?: Uri): EnvironmentVariables {
 		const cached = this.getCachedEnvironmentVariables(resource);
+
 		if (cached) {
 			return cached;
 		}
 		const vars = this._getEnvironmentVariablesSync(resource);
 		this.setCachedEnvironmentVariables(resource, vars);
+
 		return vars;
 	}
 
@@ -105,9 +110,12 @@ export class EnvironmentVariablesProvider
 		resource?: Uri,
 	): EnvironmentVariables | undefined {
 		const cacheKey = this.getWorkspaceFolderUri(resource)?.fsPath ?? "";
+
 		const cache = this.envVarCaches.get(cacheKey);
+
 		if (cache) {
 			const cachedData = cache.data;
+
 			if (cachedData) {
 				return { ...cachedData };
 			}
@@ -120,6 +128,7 @@ export class EnvironmentVariablesProvider
 		vars: EnvironmentVariables,
 	): void {
 		const cacheKey = this.getWorkspaceFolderUri(resource)?.fsPath ?? "";
+
 		const cache = new InMemoryCache<EnvironmentVariables>(
 			this.cacheDuration,
 		);
@@ -131,11 +140,13 @@ export class EnvironmentVariablesProvider
 		resource?: Uri,
 	): Promise<EnvironmentVariables> {
 		const customVars = await this.getCustomEnvironmentVariables(resource);
+
 		return this.getMergedEnvironmentVariables(customVars);
 	}
 
 	public _getEnvironmentVariablesSync(resource?: Uri): EnvironmentVariables {
 		const customVars = this.getCustomEnvironmentVariablesSync(resource);
+
 		return this.getMergedEnvironmentVariables(customVars);
 	}
 
@@ -146,8 +157,11 @@ export class EnvironmentVariablesProvider
 			mergedVars = {};
 		}
 		this.envVarsService.mergeVariables(this.process.env, mergedVars!);
+
 		const pathVariable = this.platformService.pathVariableName;
+
 		const pathValue = this.process.env[pathVariable];
+
 		if (pathValue) {
 			this.envVarsService.appendPath(mergedVars!, pathValue);
 		}
@@ -187,16 +201,21 @@ export class EnvironmentVariablesProvider
 			).uri?.fsPath,
 			this.workspaceService,
 		);
+
 		const workspaceFolderUri = this.getWorkspaceFolderUri(resource);
+
 		const envFileSetting = this.workspaceService
 			.getConfiguration("python", resource)
 			.get<string>("envFile");
+
 		const envFile = systemVariables.resolveAny(envFileSetting);
+
 		if (envFile === undefined) {
 			traceError(
 				"Unable to read `python.envFile` setting for resource",
 				JSON.stringify(resource),
 			);
+
 			return workspaceFolderUri?.fsPath
 				? path.join(workspaceFolderUri?.fsPath, ".env")
 				: "";
@@ -205,12 +224,14 @@ export class EnvironmentVariablesProvider
 			workspaceFolderUri ? workspaceFolderUri.fsPath : "",
 		);
 		this.createFileWatcher(envFile, workspaceFolderUri);
+
 		return envFile;
 	}
 
 	public configurationChanged(e: ConfigurationChangeEvent): void {
 		this.trackedWorkspaceFolders.forEach((item) => {
 			const uri = item && item.length > 0 ? Uri.file(item) : undefined;
+
 			if (e.affectsConfiguration("python.envFile", uri)) {
 				this.onEnvironmentFileChanged(uri);
 			}
@@ -224,6 +245,7 @@ export class EnvironmentVariablesProvider
 		const envFileWatcher =
 			this.workspaceService.createFileSystemWatcher(envFile);
 		this.fileWatchers.set(envFile, envFileWatcher);
+
 		if (envFileWatcher) {
 			this.disposables.push(
 				envFileWatcher.onDidChange(() =>
@@ -250,6 +272,7 @@ export class EnvironmentVariablesProvider
 		const workspaceFolder = this.workspaceService.getWorkspaceFolder(
 			resource!,
 		);
+
 		return workspaceFolder ? workspaceFolder.uri : undefined;
 	}
 

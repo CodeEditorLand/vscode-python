@@ -73,6 +73,7 @@ export class DebugAdapterDescriptorFactory
 						configuration.connect.port
 					}`,
 				);
+
 				return new DebugAdapterServer(
 					configuration.connect.port,
 					configuration.connect.host ?? "127.0.0.1",
@@ -81,6 +82,7 @@ export class DebugAdapterDescriptorFactory
 				traceLog(
 					`Connecting to DAP Server at:  ${configuration.host ?? "127.0.0.1"}:${configuration.port}`,
 				);
+
 				return new DebugAdapterServer(
 					configuration.port,
 					configuration.host ?? "127.0.0.1",
@@ -99,6 +101,7 @@ export class DebugAdapterDescriptorFactory
 			configuration,
 			session.workspaceFolder,
 		);
+
 		if (command.length !== 0) {
 			if (
 				configuration.request === "attach" &&
@@ -123,11 +126,14 @@ export class DebugAdapterDescriptorFactory
 				traceLog(
 					`DAP Server launched with command: ${executable} ${args.join(" ")}`,
 				);
+
 				return new DebugAdapterExecutable(executable, args);
 			}
 			const debugpyPath = await getDebugpyPath();
+
 			if (!debugpyPath) {
 				traceError("Could not find debugpy path.");
+
 				throw new Error("Could not find debugpy path.");
 			}
 			const debuggerAdapterPathToUse = path.join(debugpyPath, "adapter");
@@ -141,6 +147,7 @@ export class DebugAdapterDescriptorFactory
 				undefined,
 				{ usingWheels: true },
 			);
+
 			return new DebugAdapterExecutable(executable, args);
 		}
 
@@ -178,26 +185,32 @@ export class DebugAdapterDescriptorFactory
 		}
 
 		const resourceUri = workspaceFolder ? workspaceFolder.uri : undefined;
+
 		const interpreter =
 			await this.interpreterService.getActiveInterpreter(resourceUri);
+
 		if (interpreter) {
 			traceVerbose(
 				`Selecting active interpreter as Python Executable for DA '${interpreter.path}'`,
 			);
+
 			return this.getExecutableCommand(interpreter);
 		}
 
 		await this.interpreterService.hasInterpreters(); // Wait until we know whether we have an interpreter
 		const interpreters =
 			this.interpreterService.getInterpreters(resourceUri);
+
 		if (interpreters.length === 0) {
 			this.notifySelectInterpreter().ignoreErrors();
+
 			return [];
 		}
 
 		traceVerbose(
 			`Picking first available interpreter to launch the DA '${interpreters[0].path}'`,
 		);
+
 		return this.getExecutableCommand(interpreters[0]);
 	}
 
@@ -207,6 +220,7 @@ export class DebugAdapterDescriptorFactory
 				debugStateKeys.doNotShowAgain,
 				false,
 			);
+
 		if (notificationPromptEnabled.value) {
 			return;
 		}
@@ -214,6 +228,7 @@ export class DebugAdapterDescriptorFactory
 			Interpreters.changePythonInterpreter,
 			Common.doNotShowAgain,
 		];
+
 		const selection = await showErrorMessage(
 			l10n.t(
 				"The debugger in the python extension no longer supports python versions minor than 3.7.",
@@ -221,6 +236,7 @@ export class DebugAdapterDescriptorFactory
 			{ modal: true },
 			...prompts,
 		);
+
 		if (!selection) {
 			return;
 		}

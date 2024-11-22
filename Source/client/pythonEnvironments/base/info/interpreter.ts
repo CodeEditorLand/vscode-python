@@ -42,8 +42,10 @@ function extractInterpreterInfo(
 		["final", "alpha", "beta", "candidate"].includes(raw.versionInfo[3])
 	) {
 		rawVersion = `${rawVersion}-${raw.versionInfo[3]}`;
+
 		if (raw.versionInfo[4] !== undefined) {
 			let serial = -1;
+
 			try {
 				serial = parseInt(`${raw.versionInfo[4]}`, 10);
 			} catch (ex) {
@@ -78,7 +80,9 @@ export async function getInterpreterInfo(
 	timeout?: number,
 ): Promise<InterpreterInformation | undefined> {
 	const [args, parse] = getInterpreterInfoCommand();
+
 	const info = copyPythonExecInfo(python, args);
+
 	const argv = [info.command, ...info.args];
 
 	// Concat these together to make a set of quoted strings
@@ -92,6 +96,7 @@ export async function getInterpreterInfo(
 
 	// Sometimes on CI, the python process takes a long time to start up. This is a workaround for that.
 	let standardTimeout = isCI ? 30000 : 15000;
+
 	if (process.env.VSC_PYTHON_INTERPRETER_INFO_TIMEOUT !== undefined) {
 		// Custom override for setups where the initial Python setup process may take longer than the standard timeout.
 		standardTimeout = parseInt(
@@ -110,22 +115,26 @@ export async function getInterpreterInfo(
 	const result = await shellExecute(quoted, {
 		timeout: timeout ?? standardTimeout,
 	});
+
 	if (result.stderr) {
 		traceError(
 			`Stderr when executing script with >> ${quoted} << stderr: ${result.stderr}, still attempting to parse output`,
 		);
 	}
 	let json: InterpreterInfoJson;
+
 	try {
 		json = parse(result.stdout);
 	} catch (ex) {
 		traceError(
 			`Failed to parse interpreter information for >> ${quoted} << with ${ex}`,
 		);
+
 		return undefined;
 	}
 	traceVerbose(
 		`Found interpreter for >> ${quoted} <<: ${JSON.stringify(json)}`,
 	);
+
 	return extractInterpreterInfo(python.pythonExecutable, json);
 }

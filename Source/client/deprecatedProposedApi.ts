@@ -53,8 +53,10 @@ function getVersionString(env: PythonEnvInfo): string[] {
 		`${env.version.minor}`,
 		`${env.version.micro}`,
 	];
+
 	if (env.version.release) {
 		ver.push(`${env.version.release}`);
+
 		if (env.version.sysVersion) {
 			ver.push(`${env.version.release}`);
 		}
@@ -80,10 +82,14 @@ export function buildDeprecatedProposedApi(
 ): DeprecatedProposedAPI {
 	const interpreterPathService =
 		serviceContainer.get<IInterpreterPathService>(IInterpreterPathService);
+
 	const interpreterService =
 		serviceContainer.get<IInterpreterService>(IInterpreterService);
+
 	const extensions = serviceContainer.get<IExtensions>(IExtensions);
+
 	const warningLogged = new Set<string>();
+
 	function sendApiTelemetry(apiName: string, warnLog = true) {
 		extensions
 			.determineExtensionFromCallStack()
@@ -99,6 +105,7 @@ export function buildDeprecatedProposedApi(
 				traceVerbose(
 					`Extension ${info.extensionId} accessed ${apiName}`,
 				);
+
 				if (warnLog && !warningLogged.has(info.extensionId)) {
 					console.warn(
 						`${info.extensionId} extension is using deprecated python APIs which will be removed soon.`,
@@ -113,16 +120,20 @@ export function buildDeprecatedProposedApi(
 		environment: {
 			async getExecutionDetails(resource?: Resource) {
 				sendApiTelemetry("deprecated.getExecutionDetails");
+
 				const env =
 					await interpreterService.getActiveInterpreter(resource);
+
 				return env
 					? { execCommand: [env.path] }
 					: { execCommand: undefined };
 			},
 			async getActiveEnvironmentPath(resource?: Resource) {
 				sendApiTelemetry("deprecated.getActiveEnvironmentPath");
+
 				const env =
 					await interpreterService.getActiveInterpreter(resource);
+
 				if (!env) {
 					return undefined;
 				}
@@ -133,7 +144,9 @@ export function buildDeprecatedProposedApi(
 				options?: EnvironmentDetailsOptions,
 			): Promise<EnvironmentDetails | undefined> {
 				sendApiTelemetry("deprecated.getEnvironmentDetails");
+
 				let env: PythonEnvInfo | undefined;
+
 				if (options?.useCache) {
 					env = discoveryApi
 						.getEnvs()
@@ -141,6 +154,7 @@ export function buildDeprecatedProposedApi(
 				}
 				if (!env) {
 					env = await discoveryApi.resolveEnv(path);
+
 					if (!env) {
 						return undefined;
 					}
@@ -161,9 +175,11 @@ export function buildDeprecatedProposedApi(
 			},
 			getEnvironmentPaths() {
 				sendApiTelemetry("deprecated.getEnvironmentPaths");
+
 				const paths = discoveryApi
 					.getEnvs()
 					.map((e) => getEnvPath(e.executable.filename, e.location));
+
 				return Promise.resolve(paths);
 			},
 			setActiveEnvironment(
@@ -171,6 +187,7 @@ export function buildDeprecatedProposedApi(
 				resource?: Resource,
 			): Promise<void> {
 				sendApiTelemetry("deprecated.setActiveEnvironment");
+
 				return interpreterPathService.update(
 					resource,
 					ConfigurationTarget.WorkspaceFolder,
@@ -180,15 +197,18 @@ export function buildDeprecatedProposedApi(
 			async refreshEnvironment() {
 				sendApiTelemetry("deprecated.refreshEnvironment");
 				await discoveryApi.triggerRefresh();
+
 				const paths = discoveryApi
 					.getEnvs()
 					.map((e) => getEnvPath(e.executable.filename, e.location));
+
 				return Promise.resolve(paths);
 			},
 			getRefreshPromise(
 				options?: GetRefreshEnvironmentsOptions,
 			): Promise<void> | undefined {
 				sendApiTelemetry("deprecated.getRefreshPromise");
+
 				return discoveryApi.getRefreshPromise(options);
 			},
 			get onDidChangeExecutionDetails() {
@@ -196,10 +216,12 @@ export function buildDeprecatedProposedApi(
 					"deprecated.onDidChangeExecutionDetails",
 					false,
 				);
+
 				return interpreterService.onDidChangeInterpreterConfiguration;
 			},
 			get onDidEnvironmentsChanged() {
 				sendApiTelemetry("deprecated.onDidEnvironmentsChanged", false);
+
 				return onDidInterpretersChangedEvent.event;
 			},
 			get onDidActiveEnvironmentChanged() {
@@ -207,13 +229,16 @@ export function buildDeprecatedProposedApi(
 					"deprecated.onDidActiveEnvironmentChanged",
 					false,
 				);
+
 				return onDidActiveInterpreterChangedEvent.event;
 			},
 			get onRefreshProgress() {
 				sendApiTelemetry("deprecated.onRefreshProgress", false);
+
 				return discoveryApi.onProgress;
 			},
 		},
 	};
+
 	return proposed;
 }

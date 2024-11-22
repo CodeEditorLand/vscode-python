@@ -72,9 +72,11 @@ export class TerminalIndicatorPrompt
 				const hideFromUser =
 					"hideFromUser" in terminal.creationOptions &&
 					terminal.creationOptions.hideFromUser;
+
 				const strictEnv =
 					"strictEnv" in terminal.creationOptions &&
 					terminal.creationOptions.strictEnv;
+
 				if (
 					hideFromUser ||
 					strictEnv ||
@@ -88,9 +90,12 @@ export class TerminalIndicatorPrompt
 					terminal.creationOptions.cwd
 						? terminal.creationOptions.cwd
 						: this.activeResourceService.getActiveResource();
+
 				const resource = typeof cwd === "string" ? Uri.file(cwd) : cwd;
+
 				const settings =
 					this.configurationService.getSettings(resource);
+
 				if (!settings.terminal.activateEnvironment) {
 					return;
 				}
@@ -113,20 +118,25 @@ export class TerminalIndicatorPrompt
 				terminalEnvCollectionPromptKey,
 				true,
 			);
+
 		if (!notificationPromptEnabled.value) {
 			return;
 		}
 		const prompts = [Common.doNotShowAgain];
+
 		const interpreter =
 			await this.interpreterService.getActiveInterpreter(resource);
+
 		if (!interpreter || !interpreter.type) {
 			return;
 		}
 		const terminalPromptName = getPromptName(interpreter);
+
 		const environmentType =
 			interpreter.type === PythonEnvType.Conda
 				? "Selected conda"
 				: "Python virtual";
+
 		const selection = await this.appShell.showInformationMessage(
 			Interpreters.terminalEnvVarCollectionPrompt.format(
 				environmentType,
@@ -134,6 +144,7 @@ export class TerminalIndicatorPrompt
 			),
 			...prompts,
 		);
+
 		if (!selection) {
 			return;
 		}

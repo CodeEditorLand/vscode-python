@@ -28,6 +28,7 @@ export class ChildProcessAttachEventHandler implements IDebugSessionEventHandler
         }
 
         let data: AttachRequestArguments & DebugConfiguration;
+
         if (
             event.event === DebuggerEvents.PtvsdAttachToSubprocess ||
             event.event === DebuggerEvents.DebugpyAttachToSubprocess

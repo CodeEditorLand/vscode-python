@@ -47,5 +47,6 @@ export function createReplController(
 		}
 	};
 	disposables.push(controller);
+
 	return controller;
 }

@@ -41,6 +41,7 @@ export const remoteWorkspaceFolderKeysForWhichTheCopyIsDone_Key =
 export const isRemoteGlobalSettingCopiedKey = "isRemoteGlobalSettingCopiedKey";
 export const defaultInterpreterPathSetting: keyof IPythonSettings =
 	"defaultInterpreterPath";
+
 const CI_PYTHON_PATH = getCIPythonPath();
 
 export function getCIPythonPath(): string {
@@ -60,6 +61,7 @@ export class InterpreterPathService implements IInterpreterPathService {
 	public _didChangeInterpreterEmitter =
 		new EventEmitter<InterpreterConfigurationScope>();
 	private fileSystemPaths: FileSystemPaths;
+
 	constructor(
 		@inject(IPersistentStateFactory)
 		private readonly persistentStateFactory: IPersistentStateFactory,
@@ -102,10 +104,13 @@ export class InterpreterPathService implements IInterpreterPathService {
 			resource,
 			this.workspaceService,
 		).uri;
+
 		let workspaceFolderSetting:
 			| IPersistentState<string | undefined>
 			| undefined;
+
 		let workspaceSetting: IPersistentState<string | undefined> | undefined;
+
 		if (resource) {
 			workspaceFolderSetting =
 				this.persistentStateFactory.createGlobalPersistentState<
@@ -134,6 +139,7 @@ export class InterpreterPathService implements IInterpreterPathService {
 			this.workspaceService
 				.getConfiguration("python", resource)
 				?.inspect<string>("defaultInterpreterPath") ?? {};
+
 		return {
 			globalValue: defaultInterpreterPath.globalValue,
 			workspaceFolderValue:
@@ -150,16 +156,19 @@ export class InterpreterPathService implements IInterpreterPathService {
 
 	public get(resource: Resource): string {
 		const settings = this.inspect(resource);
+
 		const value =
 			settings.workspaceFolderValue ||
 			settings.workspaceValue ||
 			settings.globalValue ||
 			(isTestExecution() ? CI_PYTHON_PATH : "python");
+
 		const systemVariables = new SystemVariables(
 			undefined,
 			this.workspaceService.getWorkspaceFolder(resource)?.uri.fsPath,
 			this.workspaceService,
 		);
+
 		return systemVariables.resolveAny(value)!;
 	}
 
@@ -172,12 +181,15 @@ export class InterpreterPathService implements IInterpreterPathService {
 			resource,
 			this.workspaceService,
 		).uri;
+
 		if (configTarget === ConfigurationTarget.Global) {
 			const pythonConfig =
 				this.workspaceService.getConfiguration("python");
+
 			const globalValue = pythonConfig.inspect<string>(
 				"defaultInterpreterPath",
 			)!.globalValue;
+
 			if (globalValue !== pythonPath) {
 				await pythonConfig.update(
 					"defaultInterpreterPath",
@@ -191,13 +203,16 @@ export class InterpreterPathService implements IInterpreterPathService {
 			traceError(
 				"Cannot update workspace settings as no workspace is opened",
 			);
+
 			return;
 		}
 		const settingKey = this.getSettingKey(resource, configTarget);
+
 		const persistentSetting =
 			this.persistentStateFactory.createGlobalPersistentState<
 				string | undefined
 			>(settingKey, undefined);
+
 		if (persistentSetting.value !== pythonPath) {
 			await persistentSetting.updateValue(pythonPath);
 			this._didChangeInterpreterEmitter.fire({
@@ -216,8 +231,10 @@ export class InterpreterPathService implements IInterpreterPathService {
 		useOldKey = false,
 	): string {
 		let settingKey: string;
+
 		const folderKey =
 			this.workspaceService.getWorkspaceFolderIdentifier(resource);
+
 		if (configTarget === ConfigurationTarget.WorkspaceFolder) {
 			settingKey = `WORKSPACE_FOLDER_INTERPRETER_PATH_${folderKey}`;
 		} else {
@@ -241,6 +258,7 @@ export class InterpreterPathService implements IInterpreterPathService {
 			resource,
 			this.workspaceService,
 		).uri;
+
 		const oldSettings = this.inspect(resource, true);
 		await Promise.all([
 			this._copyWorkspaceFolderValueToNewStorage(
@@ -262,6 +280,7 @@ export class InterpreterPathService implements IInterpreterPathService {
 		// Copy workspace folder setting into the new storage if it hasn't been copied already
 		const workspaceFolderKey =
 			this.workspaceService.getWorkspaceFolderIdentifier(resource, "");
+
 		if (workspaceFolderKey === "") {
 			// No workspace folder is opened, simply return.
 			return;
@@ -271,10 +290,13 @@ export class InterpreterPathService implements IInterpreterPathService {
 				remoteWorkspaceFolderKeysForWhichTheCopyIsDone_Key,
 				[],
 			);
+
 		const flaggedWorkspaceFolderKeys =
 			flaggedWorkspaceFolderKeysStorage.value;
+
 		const shouldUpdateWorkspaceFolderSetting =
 			!flaggedWorkspaceFolderKeys.includes(workspaceFolderKey);
+
 		if (shouldUpdateWorkspaceFolderSetting) {
 			await this.update(
 				resource,
@@ -298,6 +320,7 @@ export class InterpreterPathService implements IInterpreterPathService {
 					this.workspaceService.workspaceFile.fsPath,
 				)
 			: undefined;
+
 		if (!workspaceKey) {
 			return;
 		}
@@ -306,9 +329,12 @@ export class InterpreterPathService implements IInterpreterPathService {
 				remoteWorkspaceKeysForWhichTheCopyIsDone_Key,
 				[],
 			);
+
 		const flaggedWorkspaceKeys = flaggedWorkspaceKeysStorage.value;
+
 		const shouldUpdateWorkspaceSetting =
 			!flaggedWorkspaceKeys.includes(workspaceKey);
+
 		if (shouldUpdateWorkspaceSetting) {
 			await this.update(resource, ConfigurationTarget.Workspace, value);
 			await flaggedWorkspaceKeysStorage.updateValue([
@@ -327,7 +353,9 @@ export class InterpreterPathService implements IInterpreterPathService {
 				isRemoteGlobalSettingCopiedKey,
 				false,
 			);
+
 		const shouldUpdateGlobalSetting = !isGlobalSettingCopiedStorage.value;
+
 		if (shouldUpdateGlobalSetting) {
 			await this.update(undefined, ConfigurationTarget.Global, value);
 			await isGlobalSettingCopiedStorage.updateValue(true);

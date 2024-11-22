@@ -17,7 +17,9 @@ import { getPixi } from '../../../common/environmentManagers/pixi';
  */
 async function getVirtualEnvDirs(root: string): Promise<string[]> {
     const pixi = await getPixi();
+
     const envDirs = (await pixi?.getEnvList(root)) ?? [];
+
     return asyncFilter(envDirs, pathExists);
 }
 
@@ -47,10 +49,13 @@ export class PixiLocator extends FSWatchingLocator {
     protected doIterEnvs(): IPythonEnvsIterator<BasicEnvInfo> {
         async function* iterator(root: string) {
             const envDirs = await getVirtualEnvDirs(root);
+
             const envGenerators = envDirs.map((envDir) => {
                 async function* generator() {
                     traceVerbose(`Searching for Pixi virtual envs in: ${envDir}`);
+
                     const filename = await getCondaInterpreterPath(envDir);
+
                     if (filename !== undefined) {
                         try {
                             yield {

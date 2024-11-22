@@ -15,18 +15,21 @@ export async function registerPythonStartup(
 	context: ExtensionContext,
 ): Promise<void> {
 	const config = getConfiguration("python");
+
 	const pythonrcSetting = config.get<boolean>(
 		"terminal.shellIntegration.enabled",
 	);
 
 	if (pythonrcSetting) {
 		const storageUri = context.storageUri || context.globalStorageUri;
+
 		try {
 			await createDirectory(storageUri);
 		} catch {
 			// already exists, most likely
 		}
 		const destPath = Uri.joinPath(storageUri, "pythonrc.py");
+
 		const sourcePath = path.join(
 			EXTENSION_ROOT_DIR,
 			"python_files",

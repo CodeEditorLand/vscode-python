@@ -336,6 +336,7 @@ export namespace PythonExtension {
      */
     export async function api(): Promise<PythonExtension> {
         const extension = extensions.getExtension(PVSC_EXTENSION_ID);
+
         if (extension === undefined) {
             throw new Error(`Python extension is not installed or is disabled`);
         }
@@ -343,6 +344,7 @@ export namespace PythonExtension {
             await extension.activate();
         }
         const pythonApi: PythonExtension = extension.exports;
+
         return pythonApi;
     }
 }

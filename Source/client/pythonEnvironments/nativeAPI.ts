@@ -47,8 +47,10 @@ function toArch(a: string | undefined): Architecture {
     switch (a) {
         case 'x86':
             return Architecture.x86;
+
         case 'x64':
             return Architecture.x64;
+
         default:
             return Architecture.Unknown;
     }
@@ -75,25 +77,34 @@ function kindToShortString(kind: PythonEnvKind): string | undefined {
     switch (kind) {
         case PythonEnvKind.Poetry:
             return 'poetry';
+
         case PythonEnvKind.Pyenv:
             return 'pyenv';
+
         case PythonEnvKind.VirtualEnv:
         case PythonEnvKind.Venv:
         case PythonEnvKind.VirtualEnvWrapper:
         case PythonEnvKind.OtherVirtual:
             return 'venv';
+
         case PythonEnvKind.Pipenv:
             return 'pipenv';
+
         case PythonEnvKind.Conda:
             return 'conda';
+
         case PythonEnvKind.ActiveState:
             return 'active-state';
+
         case PythonEnvKind.MicrosoftStore:
             return 'Microsoft Store';
+
         case PythonEnvKind.Hatch:
             return 'hatch';
+
         case PythonEnvKind.Pixi:
             return 'pixi';
+
         case PythonEnvKind.System:
         case PythonEnvKind.Unknown:
         case PythonEnvKind.OtherGlobal:
@@ -109,7 +120,9 @@ function toShortVersionString(version: PythonVersion): string {
 
 function getDisplayName(version: PythonVersion, kind: PythonEnvKind, arch: Architecture, name?: string): string {
     const versionStr = toShortVersionString(version);
+
     const kindStr = kindToShortString(kind);
+
     if (arch === Architecture.x86) {
         if (kindStr) {
             return name ? `Python ${versionStr} 32-bit ('${name}')` : `Python ${versionStr} 32-bit (${kindStr})`;
@@ -125,6 +138,7 @@ function getDisplayName(version: PythonVersion, kind: PythonEnvKind, arch: Archi
 function validEnv(nativeEnv: NativeEnvInfo): boolean {
     if (nativeEnv.prefix === undefined && nativeEnv.executable === undefined) {
         traceError(`Invalid environment [native]: ${JSON.stringify(nativeEnv)}`);
+
         return false;
     }
     return true;
@@ -163,6 +177,7 @@ function getName(nativeEnv: NativeEnvInfo, kind: PythonEnvKind): string {
     }
 
     const envType = getEnvType(kind);
+
     if (nativeEnv.prefix && (envType === PythonEnvType.Conda || envType === PythonEnvType.Virtual)) {
         return path.basename(nativeEnv.prefix);
     }
@@ -174,14 +189,19 @@ function toPythonEnvInfo(nativeEnv: NativeEnvInfo): PythonEnvInfo | undefined {
         return undefined;
     }
     const kind = categoryToKind(nativeEnv.kind);
+
     const arch = toArch(nativeEnv.arch);
+
     const version: PythonVersion = parseVersion(nativeEnv.version ?? '');
+
     const name = getName(nativeEnv, kind);
+
     const displayName = nativeEnv.version
         ? getDisplayName(version, kind, arch, name)
         : nativeEnv.displayName ?? 'Python';
 
     const executable = nativeEnv.executable ?? makeExecutablePath(nativeEnv.prefix);
+
     return {
         name,
         location: getLocation(nativeEnv, executable),
@@ -277,6 +297,7 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
     triggerRefresh(_query?: PythonLocatorQuery, _options?: TriggerRefreshOptions): Promise<void> {
         const stopwatch = new StopWatch();
         traceLog('Native locator: Refresh started');
+
         if (this.refreshState === ProgressReportStage.discoveryStarted && this._refreshPromise?.promise) {
             return this._refreshPromise?.promise;
         }
@@ -288,9 +309,12 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
         setImmediate(async () => {
             try {
                 const before = this._envs.map((env) => env.executable.filename);
+
                 const after: string[] = [];
+
                 for await (const native of this.finder.refresh()) {
                     const exe = this.processNative(native);
+
                     if (exe) {
                         after.push(exe);
                     }
@@ -343,6 +367,7 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
                         }
                     })
                     .ignoreErrors();
+
                 return native.executable;
             }
             if (native.executable && version && version.major >= 0 && version.minor >= 0 && version.micro >= 0) {
@@ -358,20 +383,30 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
     // eslint-disable-next-line class-methods-use-this
     private processEnvManager(native: NativeEnvManagerInfo) {
         const tool = native.tool.toLowerCase();
+
         switch (tool) {
             case 'conda':
                 traceLog(`Conda environment manager found at: ${native.executable}`);
+
                 setCondaBinary(native.executable);
+
                 break;
+
             case 'pyenv':
                 traceLog(`Pyenv environment manager found at: ${native.executable}`);
+
                 setPyEnvBinary(native.executable);
+
                 break;
+
             case 'poetry':
                 traceLog(`Poetry environment manager found at: ${native.executable}`);
+
                 break;
+
             default:
                 traceWarn(`Unknown environment manager: ${native.tool}`);
+
                 break;
         }
     }
@@ -382,11 +417,14 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
 
     private addEnv(native: NativeEnvInfo, searchLocation?: Uri): PythonEnvInfo | undefined {
         const info = toPythonEnvInfo(native);
+
         if (info) {
             const old = this._envs.find((item) => item.executable.filename === info.executable.filename);
+
             if (old) {
                 this._envs = this._envs.filter((item) => item.executable.filename !== info.executable.filename);
                 this._envs.push(info);
+
                 if (hasChanged(old, info)) {
                     this._onChanged.fire({ type: FileChangeType.Changed, old, new: info, searchLocation });
                 }
@@ -404,6 +442,7 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
             const old = this._envs.find((item) => item.executable.filename === env);
             this._envs = this._envs.filter((item) => item.executable.filename !== env);
             this._onChanged.fire({ type: FileChangeType.Deleted, old });
+
             return;
         }
         this._envs = this._envs.filter((item) => item.executable.filename !== env.executable.filename);
@@ -416,6 +455,7 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
             return undefined;
         }
         const native = await this.finder.resolve(envPath);
+
         if (native) {
             return this.addEnv(native);
         }
@@ -437,7 +477,9 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
         );
 
         getWorkspaceFolders()?.forEach((wf) => watcher.watchWorkspace(wf));
+
         const home = getUserHomeDir();
+
         if (home) {
             watcher.watchPath(Uri.file(path.join(home, '.conda', 'environments.txt')));
         }
@@ -449,12 +491,14 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
                 const before = this._envs
                     .filter((env) => env.kind === PythonEnvKind.Conda)
                     .map((env) => env.executable.filename);
+
                 for await (const native of this.finder.refresh(NativePythonEnvironmentKind.Conda)) {
                     this.processNative(native);
                 }
                 const after = this._envs
                     .filter((env) => env.kind === PythonEnvKind.Conda)
                     .map((env) => env.executable.filename);
+
                 const envsToRemove = before.filter((item) => !after.includes(item));
                 envsToRemove.forEach((item) => this.removeEnv(item));
             }
@@ -464,6 +508,7 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
     private async workspaceEventHandler(e: PythonWorkspaceEnvEvent): Promise<void> {
         if (e.type === FileChangeType.Created || e.type === FileChangeType.Changed) {
             const native = await this.finder.resolve(e.executable);
+
             if (native) {
                 this.addEnv(native, e.workspaceFolder.uri);
             }
@@ -476,5 +521,6 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
 export function createNativeEnvironmentsApi(finder: NativePythonFinder): IDiscoveryAPI & Disposable {
     const native = new NativePythonEnvironments(finder);
     native.triggerRefresh().ignoreErrors();
+
     return native;
 }

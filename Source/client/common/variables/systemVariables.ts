@@ -51,8 +51,10 @@ abstract class AbstractSystemVariables implements ISystemVariables {
 
 	private __resolveString(value: string): string {
 		const regexp = /\$\{(.*?)\}/g;
+
 		return value.replace(regexp, (match: string, name: string) => {
 			const newValue = (<any>this)[name];
+
 			if (Types.isString(newValue)) {
 				return newValue;
 			} else {
@@ -77,6 +79,7 @@ abstract class AbstractSystemVariables implements ISystemVariables {
 
 			result[key] = <any>this.resolve(<any>value);
 		});
+
 		return result;
 	}
 
@@ -91,6 +94,7 @@ abstract class AbstractSystemVariables implements ISystemVariables {
 
 			result[key] = <any>this.resolveAny(<any>value);
 		});
+
 		return result;
 	}
 
@@ -120,6 +124,7 @@ export class SystemVariables extends AbstractSystemVariables {
 		documentManager?: IDocumentManager,
 	) {
 		super();
+
 		const workspaceFolder =
 			workspace && file ? workspace.getWorkspaceFolder(file) : undefined;
 		this._workspaceFolder = workspaceFolder
@@ -127,6 +132,7 @@ export class SystemVariables extends AbstractSystemVariables {
 			: rootFolder || __dirname;
 		this._workspaceFolderName = Path.basename(this._workspaceFolder);
 		this._filePath = file ? file.fsPath : undefined;
+
 		if (documentManager && documentManager.activeTextEditor) {
 			this._lineNumber =
 				documentManager.activeTextEditor.selection.anchor.line + 1;
@@ -146,6 +152,7 @@ export class SystemVariables extends AbstractSystemVariables {
 				] = process.env[key];
 		});
 		workspace = workspace ?? new WorkspaceService();
+
 		try {
 			workspace.workspaceFolders?.forEach((folder) => {
 				const basename = Path.basename(folder.uri.fsPath);

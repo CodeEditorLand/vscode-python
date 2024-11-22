@@ -32,10 +32,15 @@ interface INodeJSError extends IError {
 
 namespace vscErrors {
 	const FILE_NOT_FOUND = vscode.FileSystemError.FileNotFound().name;
+
 	const FILE_EXISTS = vscode.FileSystemError.FileExists().name;
+
 	const IS_DIR = vscode.FileSystemError.FileIsADirectory().name;
+
 	const NOT_DIR = vscode.FileSystemError.FileNotADirectory().name;
+
 	const NO_PERM = vscode.FileSystemError.NoPermissions().name;
+
 	const known = [
 		// (order does not matter)
 		FILE_NOT_FOUND,
@@ -44,6 +49,7 @@ namespace vscErrors {
 		NOT_DIR,
 		NO_PERM,
 	];
+
 	function errorMatches(
 		err: Error,
 		expectedName: string,
@@ -88,11 +94,13 @@ export function createDirNotEmptyError(dirname: string): ISystemError {
 	err.code = "ENOTEMPTY";
 	err.path = dirname;
 	err.syscall = "rmdir";
+
 	return err;
 }
 
 function isSystemError(err: Error, expectedCode: string): boolean | undefined {
 	const code = (err as ISystemError).code;
+
 	if (!code) {
 		return undefined;
 	}
@@ -102,7 +110,9 @@ function isSystemError(err: Error, expectedCode: string): boolean | undefined {
 // Return true if the given error is ENOENT.
 export function isFileNotFoundError(err: unknown | Error): boolean | undefined {
 	const error = err as Error;
+
 	const matched = vscErrors.isFileNotFound(error);
+
 	if (matched !== undefined) {
 		return matched;
 	}
@@ -112,7 +122,9 @@ export function isFileNotFoundError(err: unknown | Error): boolean | undefined {
 // Return true if the given error is EEXIST.
 export function isFileExistsError(err: unknown | Error): boolean | undefined {
 	const error = err as Error;
+
 	const matched = vscErrors.isFileExists(error);
+
 	if (matched !== undefined) {
 		return matched;
 	}
@@ -122,6 +134,7 @@ export function isFileExistsError(err: unknown | Error): boolean | undefined {
 // Return true if the given error is EISDIR.
 export function isFileIsDirError(err: Error): boolean | undefined {
 	const matched = vscErrors.isFileIsDir(err);
+
 	if (matched !== undefined) {
 		return matched;
 	}
@@ -131,6 +144,7 @@ export function isFileIsDirError(err: Error): boolean | undefined {
 // Return true if the given error is ENOTDIR.
 export function isNotDirError(err: Error): boolean | undefined {
 	const matched = vscErrors.isNotDir(err);
+
 	if (matched !== undefined) {
 		return matched;
 	}
@@ -142,7 +156,9 @@ export function isNoPermissionsError(
 	err: unknown | Error,
 ): boolean | undefined {
 	const error = err as Error;
+
 	const matched = vscErrors.isNoPermissions(error);
+
 	if (matched !== undefined) {
 		return matched;
 	}

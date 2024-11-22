@@ -35,10 +35,12 @@ export class SourceMapSupportService implements ISourceMapSupportService {
     }
     protected async onEnable(): Promise<void> {
         const enableSourceMapsAndReloadVSC = Diagnostics.enableSourceMapsAndReloadVSC;
+
         const selection = await this.shell.showWarningMessage(
             Diagnostics.warnBeforeEnablingSourceMaps,
             enableSourceMapsAndReloadVSC,
         );
+
         if (selection === enableSourceMapsAndReloadVSC) {
             await this.enable();
         }

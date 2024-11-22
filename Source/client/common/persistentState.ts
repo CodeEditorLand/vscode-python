@@ -23,6 +23,7 @@ import { cache } from "./utils/decorators";
 import { noop } from "./utils/misc";
 
 let _workspaceState: Memento | undefined;
+
 const _workspaceKeys: string[] = [];
 export function initializePersistentStateForTriggers(
 	context: IExtensionContext,
@@ -53,7 +54,9 @@ export async function updateWorkspaceStateValue<T>(
 	try {
 		_workspaceKeys.push(key);
 		await _workspaceState.update(key, value);
+
 		const after = getWorkspaceStateValue(key);
+
 		if (JSON.stringify(after) !== JSON.stringify(value)) {
 			await _workspaceState.update(key, undefined);
 			await _workspaceState.update(key, value);
@@ -91,6 +94,7 @@ export class PersistentState<T> implements IPersistentState<T> {
 				this.key,
 				{ data: this.defaultValue! },
 			);
+
 			if (
 				!cachedData ||
 				!cachedData.expiry ||
@@ -137,6 +141,7 @@ export const WORKSPACE_PERSISTENT_KEYS_DEPRECATED =
 	"PYTHON_EXTENSION_WORKSPACE_STORAGE_KEYS";
 
 export const GLOBAL_PERSISTENT_KEYS = "PYTHON_GLOBAL_STORAGE_KEYS";
+
 const WORKSPACE_PERSISTENT_KEYS = "PYTHON_WORKSPACE_STORAGE_KEYS";
 type KeysStorageType = "global" | "workspace";
 export type KeysStorage = { key: string; defaultValue: unknown };
@@ -159,6 +164,7 @@ export class PersistentStateFactory
 		WORKSPACE_PERSISTENT_KEYS,
 		[],
 	);
+
 	constructor(
 		@inject(IMemento) @named(GLOBAL_MEMENTO) private globalState: Memento,
 		@inject(IMemento)
@@ -175,10 +181,12 @@ export class PersistentStateFactory
 			await clearWorkspaceState();
 			await this.cleanAllPersistentStates();
 		});
+
 		const globalKeysStorageDeprecated = this.createGlobalPersistentState(
 			GLOBAL_PERSISTENT_KEYS_DEPRECATED,
 			[],
 		);
+
 		const workspaceKeysStorageDeprecated =
 			this.createWorkspacePersistentState(
 				WORKSPACE_PERSISTENT_KEYS_DEPRECATED,
@@ -200,6 +208,7 @@ export class PersistentStateFactory
 		expiryDurationMs?: number,
 	): IPersistentState<T> {
 		this.addKeyToStorage("global", key, defaultValue).ignoreErrors();
+
 		return new PersistentState<T>(
 			this.globalState,
 			key,
@@ -214,6 +223,7 @@ export class PersistentStateFactory
 		expiryDurationMs?: number,
 	): IPersistentState<T> {
 		this.addKeyToStorage("workspace", key, defaultValue).ignoreErrors();
+
 		return new PersistentState<T>(
 			this.workspaceState,
 			key,
@@ -236,7 +246,9 @@ export class PersistentStateFactory
 			keyStorageType === "global"
 				? this._globalKeysStorage
 				: this._workspaceKeysStorage;
+
 		const found = storage.value.find((value) => value.key === key);
+
 		if (!found) {
 			await storage.updateValue([
 				{ key, defaultValue },
@@ -280,6 +292,7 @@ export class PersistentStateFactory
 
 export interface IPersistentStorage<T> {
 	get(): T;
+
 	set(value: T): Promise<void>;
 }
 
@@ -296,12 +309,15 @@ export function getGlobalStorage<T>(
 		GLOBAL_PERSISTENT_KEYS,
 		[],
 	);
+
 	const found = globalKeysStorage.value.find((value) => value.key === key);
+
 	if (!found) {
 		const newValue = [{ key, defaultValue }, ...globalKeysStorage.value];
 		globalKeysStorage.updateValue(newValue).ignoreErrors();
 	}
 	const raw = new PersistentState<T>(context.globalState, key, defaultValue);
+
 	return {
 		// We adapt between PersistentState and IPersistentStorage.
 		get() {

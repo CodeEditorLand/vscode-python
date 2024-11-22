@@ -15,11 +15,13 @@ function getRandom(): number {
 	num = (buf.readUInt8(0) << 8) + buf.readUInt8(1);
 
 	const maxValue: number = Math.pow(16, 4) - 1;
+
 	return num / maxValue;
 }
 
 function getRandomBetween(min: number = 0, max: number = 10): number {
 	const randomVal: number = getRandom();
+
 	return min + randomVal * (max - min);
 }
 

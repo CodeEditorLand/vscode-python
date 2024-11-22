@@ -47,15 +47,18 @@ export async function getFileType(
 	} = { ignoreErrors: true },
 ): Promise<FileType | undefined> {
 	let stat: fs.Stats;
+
 	try {
 		stat = await fs.promises.lstat(filename);
 	} catch (err) {
 		const error = err as NodeJS.ErrnoException;
+
 		if (error.code === "ENOENT") {
 			return undefined;
 		}
 		if (opts.ignoreErrors) {
 			traceError(`lstat() failed for "${filename}" (${err})`);
+
 			return FileType.Unknown;
 		}
 		throw err; // re-throw
@@ -86,6 +89,7 @@ async function resolveFile(
 	} = {},
 ): Promise<DirEntry | undefined> {
 	let filename: string;
+
 	if (typeof file !== "string") {
 		if (!opts.ensure) {
 			if (opts.onMissing === undefined) {
@@ -102,6 +106,7 @@ async function resolveFile(
 	}
 
 	const filetype = (await getFileType(filename)) || opts.onMissing;
+
 	if (filetype === undefined) {
 		return undefined;
 	}
@@ -128,6 +133,7 @@ export function getFileFilter(
 
 	async function filterFile(file: string | DirEntry): Promise<boolean> {
 		let entry = await resolveFile(file, { ensure: opts.ensureEntry });
+
 		if (!entry) {
 			if (opts.ignoreMissing) {
 				return false;

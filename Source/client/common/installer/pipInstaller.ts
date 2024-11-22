@@ -28,9 +28,11 @@ async function doesEnvironmentContainPython(
 ) {
 	const interpreterService =
 		serviceContainer.get<IInterpreterService>(IInterpreterService);
+
 	const environment = isResource(resource)
 		? await interpreterService.getActiveInterpreter(resource)
 		: resource;
+
 	if (!environment) {
 		return undefined;
 	}
@@ -88,6 +90,7 @@ export class PipInstaller extends ModuleInstaller {
 			const version = isResource(resource)
 				? ""
 				: `${resource.version?.major || ""}.${resource.version?.minor || ""}.${resource.version?.patch || ""}`;
+
 			const envType = isResource(resource) ? undefined : resource.envType;
 
 			sendTelemetryEvent(EventName.PYTHON_INSTALL_PACKAGE, undefined, {
@@ -100,6 +103,7 @@ export class PipInstaller extends ModuleInstaller {
 
 			// If `ensurepip` is available, if not, then install pip using the script file.
 			const installer = this.serviceContainer.get<IInstaller>(IInstaller);
+
 			if (await installer.isInstalled(Product.ensurepip, resource)) {
 				return {
 					args: [],
@@ -120,9 +124,11 @@ export class PipInstaller extends ModuleInstaller {
 				this.serviceContainer.get<IInterpreterService>(
 					IInterpreterService,
 				);
+
 			const interpreter = isResource(resource)
 				? await interpreterService.getActiveInterpreter(resource)
 				: resource;
+
 			return {
 				execPath: interpreter ? interpreter.path : "python",
 				args: [path.join(_SCRIPTS_DIR, "get-pip.py")],
@@ -130,16 +136,20 @@ export class PipInstaller extends ModuleInstaller {
 		}
 
 		const args: string[] = [];
+
 		const workspaceService =
 			this.serviceContainer.get<IWorkspaceService>(IWorkspaceService);
+
 		const proxy = workspaceService
 			.getConfiguration("http")
 			.get("proxy", "");
+
 		if (proxy.length > 0) {
 			args.push("--proxy");
 			args.push(proxy);
 		}
 		args.push(...["install", "-U"]);
+
 		if (flags & ModuleInstallFlags.reInstall) {
 			args.push("--force-reinstall");
 		}
@@ -153,8 +163,11 @@ export class PipInstaller extends ModuleInstaller {
 			this.serviceContainer.get<IPythonExecutionFactory>(
 				IPythonExecutionFactory,
 			);
+
 		const resource = isResource(info) ? info : undefined;
+
 		const pythonPath = isResource(info) ? undefined : info.path;
+
 		return pythonExecutionFactory
 			.create({ resource, pythonPath })
 			.then((proc) => proc.isModuleInstalled("pip"))

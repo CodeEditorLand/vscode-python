@@ -60,6 +60,7 @@ export interface IPythonInstallation {
 export const IInstallationChannelManager = Symbol('IInstallationChannelManager');
 export interface IInstallationChannelManager {
     getInstallationChannel(product: Product, resource?: InterpreterUri): Promise<IModuleInstaller | undefined>;
+
     getInstallationChannels(resource?: InterpreterUri): Promise<IModuleInstaller[]>;
     showNoInstallersMessage(): void;
 }

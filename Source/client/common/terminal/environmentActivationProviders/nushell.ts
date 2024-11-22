@@ -18,6 +18,7 @@ const SCRIPTS: ActivationScripts = {
 
 export function getAllScripts(): string[] {
 	const scripts: string[] = [];
+
 	for (const names of Object.values(SCRIPTS)) {
 		for (const name of names) {
 			if (!scripts.includes(name)) {
@@ -37,6 +38,7 @@ export class Nushell extends VenvBaseActivationCommandProvider {
 		targetShell: TerminalShellType,
 	): Promise<string[] | undefined> {
 		const scriptFile = await this.findScriptFile(pythonPath, targetShell);
+
 		if (!scriptFile) {
 			return undefined;
 		}

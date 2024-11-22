@@ -48,6 +48,7 @@ export abstract class LanguageServerAnalysisOptionsBase
 	@traceDecoratorError("Failed to get analysis options")
 	public async getAnalysisOptions(): Promise<LanguageClientOptions> {
 		const workspaceFolder = this.getWorkspaceFolder();
+
 		const documentSelector = this.getDocumentFilters(workspaceFolder);
 
 		return {
@@ -114,6 +115,7 @@ export abstract class LanguageServerAnalysisOptionsWithEnv extends LanguageServe
 	protected async getEnvPythonPath(): Promise<string> {
 		const vars = await this.envVarsProvider.getEnvironmentVariables();
 		this.envPythonPath = vars.PYTHONPATH || "";
+
 		return this.envPythonPath;
 	}
 
@@ -124,6 +126,7 @@ export abstract class LanguageServerAnalysisOptionsWithEnv extends LanguageServe
 
 	protected async notifyifEnvPythonPathChanged(): Promise<void> {
 		const vars = await this.envVarsProvider.getEnvironmentVariables();
+
 		const envPythonPath = vars.PYTHONPATH || "";
 
 		if (this.envPythonPath !== envPythonPath) {

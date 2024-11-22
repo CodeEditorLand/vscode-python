@@ -23,6 +23,7 @@ export class TestConfigSettingsService implements ITestConfigSettingsService {
 		args: string[],
 	): Promise<void> {
 		const setting = this.getTestArgSetting(product);
+
 		return this.updateSetting(testDirectory, setting, args);
 	}
 
@@ -31,6 +32,7 @@ export class TestConfigSettingsService implements ITestConfigSettingsService {
 		product: UnitTestProduct,
 	): Promise<void> {
 		const setting = this.getTestEnablingSetting(product);
+
 		return this.updateSetting(testDirectory, setting, true);
 	}
 
@@ -39,6 +41,7 @@ export class TestConfigSettingsService implements ITestConfigSettingsService {
 		product: UnitTestProduct,
 	): Promise<void> {
 		const setting = this.getTestEnablingSetting(product);
+
 		return this.updateSetting(testDirectory, setting, false);
 	}
 
@@ -47,8 +50,10 @@ export class TestConfigSettingsService implements ITestConfigSettingsService {
 		switch (product) {
 			case Product.unittest:
 				return "testing.unittestEnabled";
+
 			case Product.pytest:
 				return "testing.pytestEnabled";
+
 			default:
 				throw new Error("Invalid Test Product");
 		}
@@ -59,8 +64,10 @@ export class TestConfigSettingsService implements ITestConfigSettingsService {
 		switch (product) {
 			case Product.unittest:
 				return "testing.unittestArgs";
+
 			case Product.pytest:
 				return "testing.pytestArgs";
+
 			default:
 				throw new Error("Invalid Test Product");
 		}
@@ -72,12 +79,15 @@ export class TestConfigSettingsService implements ITestConfigSettingsService {
 		value: unknown,
 	) {
 		let pythonConfig: WorkspaceConfiguration;
+
 		const resource =
 			typeof testDirectory === "string"
 				? Uri.file(testDirectory)
 				: testDirectory;
+
 		const hasWorkspaceFolders =
 			(this.workspaceService.workspaceFolders?.length || 0) > 0;
+
 		if (!hasWorkspaceFolders) {
 			pythonConfig = this.workspaceService.getConfiguration("python");
 		} else if (this.workspaceService.workspaceFolders!.length === 1) {
@@ -88,6 +98,7 @@ export class TestConfigSettingsService implements ITestConfigSettingsService {
 		} else {
 			const workspaceFolder =
 				this.workspaceService.getWorkspaceFolder(resource);
+
 			if (!workspaceFolder) {
 				throw new Error(
 					`Test directory does not belong to any workspace (${testDirectory})`,

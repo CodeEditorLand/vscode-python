@@ -122,6 +122,7 @@ export class TerminalEnvVarCollectionService
 			if (!inTerminalEnvVarExperiment(this.experimentService)) {
 				this.context.environmentVariableCollection.clear();
 				await this.handleMicroVenv(resource);
+
 				if (!this.registeredOnce) {
 					this.interpreterService.onDidChangeInterpreter(
 						async (r) => {
@@ -172,10 +173,14 @@ export class TerminalEnvVarCollectionService
 					this,
 					this.disposables,
 				);
+
 				const { shell } = this.applicationEnvironment;
+
 				const isActive =
 					await this.shellIntegrationDetectionService.isWorking();
+
 				const shellType = identifyShellFromShellPath(shell);
+
 				if (
 					!isActive &&
 					shellType !== TerminalShellType.commandPrompt
@@ -202,6 +207,7 @@ export class TerminalEnvVarCollectionService
 		});
 		await this._applyCollectionImpl(resource, shell).catch((ex) => {
 			traceError(`Failed to apply terminal env vars`, shell, ex);
+
 			return Promise.reject(ex); // Ensures progress indicator does not disappear in case of errors, so we can catch issues faster.
 		});
 		this.progressService.hideProgress();
@@ -212,16 +218,20 @@ export class TerminalEnvVarCollectionService
 		shell = this.applicationEnvironment.shell,
 	): Promise<void> {
 		const workspaceFolder = this.getWorkspaceFolder(resource);
+
 		const settings = this.configurationService.getSettings(resource);
+
 		const envVarCollection = this.getEnvironmentVariableCollection({
 			workspaceFolder,
 		});
+
 		if (!settings.terminal.activateEnvironment) {
 			envVarCollection.clear();
 			traceVerbose(
 				"Activating environments in terminal is disabled for",
 				resource?.fsPath,
 			);
+
 			return;
 		}
 		const activatedEnv =
@@ -231,23 +241,29 @@ export class TerminalEnvVarCollectionService
 				undefined,
 				shell,
 			);
+
 		const env = activatedEnv ? normCaseKeys(activatedEnv) : undefined;
 		traceVerbose(
 			`Activated environment variables for ${resource?.fsPath}`,
 			env,
 		);
+
 		if (!env) {
 			const shellType = identifyShellFromShellPath(shell);
+
 			const defaultShell = defaultShells[this.platform.osType];
+
 			if (defaultShell?.shellType !== shellType) {
 				// Commands to fetch env vars may fail in custom shells due to unknown reasons, in that case
 				// fallback to default shells as they are known to work better.
 				await this._applyCollectionImpl(resource, defaultShell?.shell);
+
 				return;
 			}
 			await this.trackTerminalPrompt(shell, resource, env);
 			envVarCollection.clear();
 			this.processEnvVars = undefined;
+
 			return;
 		}
 		if (!this.processEnvVars) {
@@ -261,10 +277,12 @@ export class TerminalEnvVarCollectionService
 
 		// PS1 in some cases is a shell variable (not an env variable) so "env" might not contain it, calculate it in that case.
 		env.PS1 = await this.getPS1(shell, resource, env);
+
 		const defaultPrependOptions = await this.getPrependOptions();
 
 		// Clear any previously set env vars from collection
 		envVarCollection.clear();
+
 		const deactivate =
 			await this.terminalDeactivateService.getScriptLocation(
 				shell,
@@ -275,7 +293,9 @@ export class TerminalEnvVarCollectionService
 				return;
 			}
 			let value = env[key];
+
 			const prevValue = processEnv[key];
+
 			if (prevValue !== value) {
 				if (value !== undefined) {
 					if (key === "PS1") {
@@ -290,6 +310,7 @@ export class TerminalEnvVarCollectionService
 							value,
 							defaultPrependOptions,
 						);
+
 						return;
 					}
 					if (key === "PATH") {
@@ -297,6 +318,7 @@ export class TerminalEnvVarCollectionService
 							applyAtShellIntegration: true,
 							applyAtProcessCreation: true,
 						};
+
 						if (
 							processEnv.PATH &&
 							env.PATH?.endsWith(processEnv.PATH)
@@ -304,6 +326,7 @@ export class TerminalEnvVarCollectionService
 							// Prefer prepending to PATH instead of replacing it, as we do not want to replace any
 							// changes to PATH users might have made it in their init scripts (~/.bashrc etc.)
 							value = env.PATH.slice(0, -processEnv.PATH.length);
+
 							if (deactivate) {
 								value = `${deactivate}${this.separator}${value}`;
 							}
@@ -345,6 +368,7 @@ export class TerminalEnvVarCollectionService
 			settings.pythonPath,
 			workspaceFolder?.uri.fsPath,
 		);
+
 		const description = new MarkdownString(
 			`${Interpreters.activateTerminalDescription} \`${displayPath}\``,
 		);
@@ -363,6 +387,7 @@ export class TerminalEnvVarCollectionService
 	// eslint-disable-next-line class-methods-use-this
 	public isTerminalPromptSetCorrectly(resource?: Resource): boolean {
 		const workspaceFolder = this.getWorkspaceFolder(resource);
+
 		return !!this.isPromptSet.get(workspaceFolder?.index);
 	}
 
@@ -388,11 +413,14 @@ export class TerminalEnvVarCollectionService
 		env: EnvironmentVariables | undefined,
 	) {
 		this.terminalPromptIsUnknown(resource);
+
 		if (!env) {
 			this.terminalPromptIsCorrect(resource);
+
 			return;
 		}
 		const customShellType = identifyShellFromShellPath(shell);
+
 		if (this.noPromptVariableShells.includes(customShellType)) {
 			return;
 		}
@@ -400,17 +428,21 @@ export class TerminalEnvVarCollectionService
 			// These shells are expected to set PS1 variable for terminal prompt for virtual/conda environments.
 			const interpreter =
 				await this.interpreterService.getActiveInterpreter(resource);
+
 			const shouldSetPS1 = shouldPS1BeSet(interpreter?.type, env);
+
 			if (shouldSetPS1 && !env.PS1) {
 				// PS1 should be set but no PS1 was set.
 				return;
 			}
 			const config =
 				await this.shellIntegrationDetectionService.isWorking();
+
 			if (!config) {
 				traceVerbose(
 					"PS1 is not set when shell integration is disabled.",
 				);
+
 				return;
 			}
 		}
@@ -425,6 +457,7 @@ export class TerminalEnvVarCollectionService
 		// PS1 returned by shell is not predictable: #22078
 		// Hence calculate it ourselves where possible. Should no longer be needed once #22128 is available.
 		const customShellType = identifyShellFromShellPath(shell);
+
 		if (this.noPromptVariableShells.includes(customShellType)) {
 			return env.PS1;
 		}
@@ -432,9 +465,12 @@ export class TerminalEnvVarCollectionService
 			// These shells are expected to set PS1 variable for terminal prompt for virtual/conda environments.
 			const interpreter =
 				await this.interpreterService.getActiveInterpreter(resource);
+
 			const shouldSetPS1 = shouldPS1BeSet(interpreter?.type, env);
+
 			if (shouldSetPS1) {
 				const prompt = getPromptForEnv(interpreter, env);
+
 				if (prompt) {
 					return prompt;
 				}
@@ -450,7 +486,9 @@ export class TerminalEnvVarCollectionService
 	private async handleMicroVenv(resource: Resource) {
 		try {
 			const settings = this.configurationService.getSettings(resource);
+
 			const workspaceFolder = this.getWorkspaceFolder(resource);
+
 			if (!settings.terminal.activateEnvironment) {
 				this.getEnvironmentVariableCollection({
 					workspaceFolder,
@@ -459,20 +497,24 @@ export class TerminalEnvVarCollectionService
 					"Do not activate microvenv as activating environments in terminal is disabled for",
 					resource?.fsPath,
 				);
+
 				return;
 			}
 			const interpreter =
 				await this.interpreterService.getActiveInterpreter(resource);
+
 			if (interpreter?.envType === EnvironmentType.Venv) {
 				const activatePath = path.join(
 					path.dirname(interpreter.path),
 					"activate",
 				);
+
 				if (!(await pathExists(activatePath))) {
 					const envVarCollection =
 						this.getEnvironmentVariableCollection({
 							workspaceFolder,
 						});
+
 					const pathVarName = getSearchPathEnvVarNames()[0];
 					envVarCollection.replace(
 						"PATH",
@@ -482,6 +524,7 @@ export class TerminalEnvVarCollectionService
 							applyAtProcessCreation: true,
 						},
 					);
+
 					return;
 				}
 				this.getEnvironmentVariableCollection({
@@ -517,6 +560,7 @@ export class TerminalEnvVarCollectionService
 	) {
 		const envVarCollection = this.context
 			.environmentVariableCollection as GlobalEnvironmentVariableCollection;
+
 		return envVarCollection.getScoped(scope);
 	}
 
@@ -525,6 +569,7 @@ export class TerminalEnvVarCollectionService
 	): WorkspaceFolder | undefined {
 		let workspaceFolder =
 			this.workspaceService.getWorkspaceFolder(resource);
+
 		if (
 			!workspaceFolder &&
 			Array.isArray(this.workspaceService.workspaceFolders) &&
@@ -546,15 +591,19 @@ function shouldPS1BeSet(
 	}
 	if (type === PythonEnvType.Virtual) {
 		const promptDisabledVar = env.VIRTUAL_ENV_DISABLE_PROMPT;
+
 		const isPromptDisabled =
 			promptDisabledVar && promptDisabledVar !== undefined;
+
 		return !isPromptDisabled;
 	}
 	if (type === PythonEnvType.Conda) {
 		// Instead of checking config value using `conda config --get changeps1`, simply check
 		// `CONDA_PROMPT_MODIFER` to avoid the cost of launching the conda binary.
 		const promptEnabledVar = env.CONDA_PROMPT_MODIFIER;
+
 		const isPromptEnabled = promptEnabledVar && promptEnabledVar !== "";
+
 		return !!isPromptEnabled;
 	}
 	return false;
@@ -602,5 +651,6 @@ function normCaseKeys(env: EnvironmentVariables): EnvironmentVariables {
 	Object.keys(env).forEach((key) => {
 		result[normCase(key)] = env[key];
 	});
+
 	return result;
 }

@@ -55,6 +55,7 @@ export function categoryToKind(
 		return PythonEnvKind.Unknown;
 	}
 	const kind = mapping.get(category);
+
 	if (kind) {
 		return kind;
 	}

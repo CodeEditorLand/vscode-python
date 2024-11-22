@@ -155,10 +155,12 @@ function pytestFilterArguments(
 	argumentToRemoveOrFilter: string[] | TestFilter,
 ): string[] {
 	const optionsWithoutArgsToRemove: string[] = [];
+
 	const optionsWithArgsToRemove: string[] = [];
 	// Positional arguments in pytest are test directories and files.
 	// So if we want to run a specific test, then remove positional args.
 	let removePositionalArgs = false;
+
 	if (Array.isArray(argumentToRemoveOrFilter)) {
 		argumentToRemoveOrFilter.forEach((item) => {
 			if (OptionsWithArguments.indexOf(item) >= 0) {
@@ -185,6 +187,7 @@ function pytestFilterArguments(
 					...["-k", "-m", "--lfnf", "--last-failed-no-failures"],
 				);
 				removePositionalArgs = true;
+
 				break;
 			}
 			case TestFilter.discovery: {
@@ -239,6 +242,7 @@ function pytestFilterArguments(
 					],
 				);
 				removePositionalArgs = true;
+
 				break;
 			}
 			case TestFilter.debugAll:
@@ -246,6 +250,7 @@ function pytestFilterArguments(
 				optionsWithoutArgsToRemove.push(
 					...["--collect-only", "--trace"],
 				);
+
 				break;
 			}
 			case TestFilter.debugSpecific:
@@ -266,6 +271,7 @@ function pytestFilterArguments(
 					...["-k", "-m", "--lfnf", "--last-failed-no-failures"],
 				);
 				removePositionalArgs = true;
+
 				break;
 			}
 			default: {
@@ -277,6 +283,7 @@ function pytestFilterArguments(
 	}
 
 	let filteredArgs = args.slice();
+
 	if (removePositionalArgs) {
 		const positionalArgs = getPositionalArguments(
 			filteredArgs,
@@ -299,6 +306,7 @@ export function preparePytestArgumentsForDiscovery(
 ): string[] {
 	// Remove unwanted arguments (which happen to be test directories & test specific args).
 	const args = pytestFilterArguments(options.args, TestFilter.discovery);
+
 	if (options.ignoreCache && args.indexOf("--cache-clear") === -1) {
 		args.splice(0, 0, "--cache-clear");
 	}

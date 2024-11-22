@@ -51,6 +51,7 @@ export class PixiInstaller extends ModuleInstaller {
 			const interpreter = await this.serviceContainer
 				.get<IInterpreterService>(IInterpreterService)
 				.getActiveInterpreter(resource);
+
 			if (!interpreter || interpreter.envType !== EnvironmentType.Pixi) {
 				return false;
 			}
@@ -58,6 +59,7 @@ export class PixiInstaller extends ModuleInstaller {
 			const pixiEnv = await getPixiEnvironmentFromInterpreter(
 				interpreter.path,
 			);
+
 			return pixiEnv !== undefined;
 		}
 		return resource.envType === EnvironmentType.Pixi;
@@ -75,10 +77,13 @@ export class PixiInstaller extends ModuleInstaller {
 			: (getEnvPath(resource.path, resource.envPath).path ?? "");
 
 		const pixiEnv = await getPixiEnvironmentFromInterpreter(pythonPath);
+
 		const execPath = pixiEnv?.pixi.command;
 
 		let args = ["add", moduleName];
+
 		const manifestPath = pixiEnv?.manifestPath;
+
 		if (manifestPath !== undefined) {
 			args = args.concat(["--manifest-path", manifestPath]);
 		}

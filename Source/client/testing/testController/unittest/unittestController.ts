@@ -68,19 +68,23 @@ export class UnittestController implements ITestFrameworkController {
 		token?: CancellationToken,
 	): Promise<void> {
 		const workspace = this.workspaceService.getWorkspaceFolder(item.uri);
+
 		if (workspace) {
 			// if we are still discovering then wait
 			const discovery = this.discovering.get(workspace.uri.fsPath);
+
 			if (discovery) {
 				await discovery.promise;
 			}
 
 			// see if we have raw test data
 			const rawTestData = this.testData.get(workspace.uri.fsPath);
+
 			if (rawTestData) {
 				if (rawTestData.root === item.id) {
 					if (rawTestData.tests.length === 0) {
 						testController.items.delete(item.id);
+
 						return Promise.resolve();
 					}
 
@@ -102,6 +106,7 @@ export class UnittestController implements ITestFrameworkController {
 						item,
 						this.idToRawData,
 					);
+
 					if (workspaceNode) {
 						await updateTestItemFromRawData(
 							item,
@@ -115,6 +120,7 @@ export class UnittestController implements ITestFrameworkController {
 				}
 			} else {
 				const workspaceNode = getWorkspaceNode(item, this.idToRawData);
+
 				if (workspaceNode) {
 					testController.items.delete(workspaceNode.id);
 				}
@@ -131,16 +137,20 @@ export class UnittestController implements ITestFrameworkController {
 		sendTelemetryEvent(EventName.UNITTEST_DISCOVERING, undefined, {
 			tool: "unittest",
 		});
+
 		const workspace = this.workspaceService.getWorkspaceFolder(uri);
+
 		if (workspace) {
 			// Discovery is expensive. So if it is already running then use the promise
 			// from the last run
 			const previous = this.discovering.get(workspace.uri.fsPath);
+
 			if (previous) {
 				return previous.promise;
 			}
 
 			const settings = this.configService.getSettings(workspace.uri);
+
 			const options: TestDiscoveryOptions = {
 				workspaceFolder: workspace.uri,
 				cwd:
@@ -153,9 +163,13 @@ export class UnittestController implements ITestFrameworkController {
 			};
 
 			const startDir = unittestGetTestFolders(options.args)[0];
+
 			const pattern = unittestGetTestPattern(options.args);
+
 			const topLevelDir = unittestGetTopLevelDirectory(options.args);
+
 			let testDir = startDir;
+
 			if (path.isAbsolute(startDir)) {
 				const relative = path.relative(options.cwd, startDir);
 				testDir = relative.length > 0 ? relative : ".";
@@ -180,6 +194,7 @@ export class UnittestController implements ITestFrameworkController {
 			this.discovering.set(workspace.uri.fsPath, deferred);
 
 			let rawTestData: RawDiscoveredTests | undefined;
+
 			try {
 				const content = await this.discoveryRunner.run(
 					UNITTEST_PROVIDER,
@@ -194,6 +209,7 @@ export class UnittestController implements ITestFrameworkController {
 				this.testData.set(workspace.uri.fsPath, rawTestData);
 
 				const exceptions = getTestDiscoveryExceptions(content);
+
 				if (exceptions.length === 0) {
 					// Remove error node
 					testController.items.delete(
@@ -208,10 +224,12 @@ export class UnittestController implements ITestFrameworkController {
 					let errorNode = testController.items.get(
 						`DiscoveryError:${workspace.uri.fsPath}`,
 					);
+
 					const message = util.format(
 						"Error discovering unittest tests (see Output > Python):\r\n",
 						exceptions.join("\r\n\r\n"),
 					);
+
 					if (errorNode === undefined) {
 						errorNode = createErrorTestItem(testController, {
 							id: `DiscoveryError:${workspace.uri.fsPath}`,
@@ -231,6 +249,7 @@ export class UnittestController implements ITestFrameworkController {
 					undefined,
 					{ tool: "unittest", failed: true },
 				);
+
 				const cancel = options.token?.isCancellationRequested
 					? "Cancelled"
 					: "Error";
@@ -260,6 +279,7 @@ export class UnittestController implements ITestFrameworkController {
 			}
 
 			const workspaceNode = testController.items.get(rawTestData.root);
+
 			if (workspaceNode) {
 				if (uri.fsPath === workspace.uri.fsPath) {
 					// this is a workspace level refresh
@@ -272,6 +292,7 @@ export class UnittestController implements ITestFrameworkController {
 				} else {
 					// This is a child node refresh
 					const testNode = getNodeByUri(workspaceNode, uri);
+
 					if (testNode) {
 						// We found the node to update
 						await this.resolveChildren(
@@ -313,6 +334,7 @@ export class UnittestController implements ITestFrameworkController {
 			tool: "unittest",
 			failed: false,
 		});
+
 		return Promise.resolve();
 	}
 
@@ -323,6 +345,7 @@ export class UnittestController implements ITestFrameworkController {
 		testController?: TestController,
 	): Promise<void> {
 		const settings = this.configService.getSettings(workspace.uri);
+
 		try {
 			return this.runner.runTests(
 				testRun,
@@ -340,6 +363,7 @@ export class UnittestController implements ITestFrameworkController {
 			);
 		} catch (ex) {
 			sendTelemetryEvent(EventName.UNITTEST_RUN_ALL_FAILED, undefined);
+
 			throw new Error(`Failed to run tests: ${ex}`);
 		}
 	}
@@ -347,9 +371,13 @@ export class UnittestController implements ITestFrameworkController {
 
 function getTestDiscoveryExceptions(content: string): string[] {
 	const lines = content.split(/\r?\n/g);
+
 	let start = false;
+
 	let data = "";
+
 	const exceptions: string[] = [];
+
 	for (const line of lines) {
 		if (start) {
 			if (line.startsWith("=== exception end ===")) {
@@ -368,9 +396,11 @@ function getTestDiscoveryExceptions(content: string): string[] {
 
 function getTestIds(content: string): string[] {
 	let startedCollecting = false;
+
 	const lines = content.split(/\r?\n/g);
 
 	const ids: string[] = [];
+
 	for (const line of lines) {
 		if (!startedCollecting) {
 			if (line === "start") {
@@ -392,6 +422,7 @@ function testDiscoveryParser(
 	token: CancellationToken | undefined,
 ): Promise<RawDiscoveredTests> {
 	const parents: RawTestParent[] = [];
+
 	const tests: RawTest[] = [];
 
 	for (const testId of testIds) {
@@ -407,15 +438,22 @@ function testDiscoveryParser(
 		// test_math.TestMathMethods.test_numbers2:9
 		if (parts.length > 3) {
 			const lineNo = parts.pop();
+
 			const functionName = parts.pop();
+
 			const className = parts.pop();
+
 			const fileName = parts.pop();
+
 			const folders = parts;
+
 			const pyFileName = `${fileName}.py`;
+
 			const relPath = `./${[...folders, pyFileName].join("/")}`;
 
 			if (functionName && className && fileName && lineNo) {
 				const collectionId = `${relPath}::${className}`;
+
 				const fileId = relPath;
 				tests.push({
 					id: `${relPath}::${className}::${functionName}`,
@@ -427,6 +465,7 @@ function testDiscoveryParser(
 				const rawCollection = parents.find(
 					(c) => c.id === collectionId,
 				);
+
 				if (!rawCollection) {
 					parents.push({
 						id: collectionId,
@@ -437,6 +476,7 @@ function testDiscoveryParser(
 				}
 
 				const rawFile = parents.find((f) => f.id === fileId);
+
 				if (!rawFile) {
 					parents.push({
 						id: fileId,
@@ -451,14 +491,18 @@ function testDiscoveryParser(
 				}
 
 				const folderParts = [];
+
 				for (const folder of folders) {
 					const parentId =
 						folderParts.length === 0
 							? "."
 							: `./${folderParts.join("/")}`;
 					folderParts.push(folder);
+
 					const pathId = `./${folderParts.join("/")}`;
+
 					const rawFolder = parents.find((f) => f.id === pathId);
+
 					if (!rawFolder) {
 						parents.push({
 							id: pathId,

@@ -22,8 +22,10 @@ export class LaunchBrowserCommand extends BaseDiagnosticCommand {
 		sendTelemetryEvent(EventName.DIAGNOSTICS_ACTION, undefined, {
 			url: this.url,
 		});
+
 		const browser =
 			this.serviceContainer.get<IBrowserService>(IBrowserService);
+
 		return browser.launch(this.url);
 	}
 }

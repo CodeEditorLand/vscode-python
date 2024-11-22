@@ -30,6 +30,7 @@ export class ReplProvider implements Disposable {
 	private registerCommand() {
 		const commandManager =
 			this.serviceContainer.get<ICommandManager>(ICommandManager);
+
 		const disposable = commandManager.registerCommand(
 			Commands.Start_REPL,
 			this.commandHandler,
@@ -40,15 +41,19 @@ export class ReplProvider implements Disposable {
 
 	private async commandHandler() {
 		const resource = this.activeResourceService.getActiveResource();
+
 		const interpreterService =
 			this.serviceContainer.get<IInterpreterService>(IInterpreterService);
+
 		const interpreter =
 			await interpreterService.getActiveInterpreter(resource);
+
 		if (!interpreter) {
 			this.serviceContainer
 				.get<ICommandManager>(ICommandManager)
 				.executeCommand(Commands.TriggerEnvironmentSelection, resource)
 				.then(noop, noop);
+
 			return;
 		}
 		const replProvider = this.serviceContainer.get<ICodeExecutionService>(

@@ -24,6 +24,7 @@ export async function executeWorkerFile(
 	}
 	return new Promise((resolve, reject) => {
 		const worker = new Worker(workerFileName, { workerData });
+
 		const id = worker.threadId;
 		traceVerbose(
 			`Worker id ${id} for file ${path.basename(workerFileName)} with data ${JSON.stringify(workerData)}`,
@@ -40,6 +41,7 @@ export async function executeWorkerFile(
 		});
 		worker.on("exit", (code) => {
 			traceVerbose(`Worker id ${id} exited with code ${code}`);
+
 			if (code !== 0) {
 				reject(
 					new Error(

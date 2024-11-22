@@ -35,7 +35,9 @@ export class InterpreterLocatorProgressStatusBarHandler implements IExtensionSin
             (event) => {
                 if (event.stage === ProgressReportStage.discoveryStarted) {
                     this.showProgress();
+
                     const refreshPromise = this.pyenvs.getRefreshPromise();
+
                     if (refreshPromise) {
                         refreshPromise.then(() => this.hideProgress());
                     }
@@ -73,6 +75,7 @@ export class InterpreterLocatorProgressStatusBarHandler implements IExtensionSin
         this.isFirstTimeLoadingInterpreters = false;
         this.shell.withProgress(progressOptions, () => {
             this.deferred = createDeferred();
+
             return this.deferred.promise;
         });
     }

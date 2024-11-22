@@ -20,6 +20,7 @@ export function isExtensionEnabled(extensionId: string): boolean {
 export function isExtensionDisabled(extensionId: string): boolean {
 	// We need an enabled extension to find the extensions dir.
 	const pythonExt = getExtension(PVSC_EXTENSION_ID);
+
 	if (pythonExt) {
 		let found = false;
 		fs.readdirSync(path.dirname(pythonExt.extensionPath), {
@@ -29,6 +30,7 @@ export function isExtensionDisabled(extensionId: string): boolean {
 				found = true;
 			}
 		});
+
 		return found;
 	}
 	return false;

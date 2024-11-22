@@ -41,11 +41,13 @@ const architectures: Record<string, Architecture> = {
  */
 export function getArchitecture(): Architecture {
 	const fromProc = architectures[process.arch];
+
 	if (fromProc !== undefined) {
 		return fromProc;
 	}
 
 	const arch = require("arch");
+
 	return architectures[arch()] || Architecture.Unknown;
 }
 

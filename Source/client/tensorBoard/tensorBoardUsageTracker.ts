@@ -45,6 +45,7 @@ export class TensorBoardUsageTracker
 			return;
 		}
 		this.experiment.disposeOnInstallingTensorboard(this);
+
 		if (testExecution) {
 			await this.activateInternal();
 		} else {
@@ -68,12 +69,15 @@ export class TensorBoardUsageTracker
 			return;
 		}
 		const { document } = editor;
+
 		const extName = path.extname(document.fileName).toLowerCase();
+
 		if (
 			extName === ".py" ||
 			(extName === ".ipynb" && document.languageId === "python")
 		) {
 			const lines = getDocumentLines(document);
+
 			if (containsTensorBoardImport(lines)) {
 				this.prompt
 					.showNativeTensorBoardPrompt(

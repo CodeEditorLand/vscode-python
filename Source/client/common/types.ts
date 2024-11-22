@@ -149,8 +149,10 @@ export interface IPathUtils {
 	 * @memberof IPathUtils
 	 */
 	readonly separator: string;
+
 	getPathVariableName(): "Path" | "PATH";
 	basename(pathValue: string, ext?: string): string;
+
 	getDisplayName(pathValue: string, cwd?: string): string;
 }
 
@@ -239,6 +241,7 @@ export interface IAutoCompleteSettings {
 export const IConfigurationService = Symbol("IConfigurationService");
 export interface IConfigurationService {
 	readonly onDidChange: Event<ConfigurationChangeEvent | undefined>;
+
 	getSettings(resource?: Uri): IPythonSettings;
 	isTestExecution(): boolean;
 	updateSetting(
@@ -355,6 +358,7 @@ export interface IExperimentService {
 	activate(): Promise<void>;
 	inExperiment(experimentName: string): Promise<boolean>;
 	inExperimentSync(experimentName: string): boolean;
+
 	getExperimentValue<T extends boolean | number | string>(
 		experimentName: string,
 	): Promise<T | undefined>;
@@ -376,6 +380,7 @@ export type InspectInterpreterSettingType = {
 export const IInterpreterPathService = Symbol("IInterpreterPathService");
 export interface IInterpreterPathService {
 	onDidChange: Event<InterpreterConfigurationScope>;
+
 	get(resource: Resource): string;
 	inspect(resource: Resource): InspectInterpreterSettingType;
 	update(

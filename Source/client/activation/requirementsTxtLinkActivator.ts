@@ -10,6 +10,7 @@ export function generatePyPiLink(name: string): string | null {
 	const projectName = name.match(
 		/^([A-Z0-9]|[A-Z0-9][A-Z0-9._-]*)($|=| |;|\[)/i,
 	);
+
 	return projectName ? `${PYPI_PROJECT_URL}/${projectName[1]}/` : null;
 }
 
@@ -34,6 +35,7 @@ export class RequirementsTxtLinkActivator
 					const link = generatePyPiLink(
 						document.lineAt(position.line).text,
 					);
+
 					return link ? new Hover(link) : null;
 				},
 			},

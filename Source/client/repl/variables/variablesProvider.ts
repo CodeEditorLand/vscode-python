@@ -39,8 +39,10 @@ export class VariablesProvider implements NotebookVariableProvider {
 
 	onDidExecuteCode(): void {
 		const notebook = this.getNotebookDocument();
+
 		if (notebook) {
 			this.executionCount += 1;
+
 			if (isEnabled(notebook.uri)) {
 				this._onDidChangeVariables.fire(notebook);
 			}
@@ -55,6 +57,7 @@ export class VariablesProvider implements NotebookVariableProvider {
 		token: CancellationToken,
 	): AsyncIterable<VariablesResult> {
 		const notebookDocument = this.getNotebookDocument();
+
 		if (
 			!isEnabled(notebook.uri) ||
 			token.isCancellationRequested ||
@@ -65,11 +68,13 @@ export class VariablesProvider implements NotebookVariableProvider {
 		}
 
 		const { executionCount } = this;
+
 		const cacheKey = getVariableResultCacheKey(
 			notebook.uri.toString(),
 			parent,
 			start,
 		);
+
 		let results = this.variableResultCache.getResults(
 			executionCount,
 			cacheKey,
@@ -77,11 +82,13 @@ export class VariablesProvider implements NotebookVariableProvider {
 
 		if (parent) {
 			const parentDescription = parent as IVariableDescription;
+
 			if (!results && parentDescription.getChildren) {
 				const variables = await parentDescription.getChildren(
 					start,
 					token,
 				);
+
 				if (token.isCancellationRequested) {
 					return;
 				}
@@ -127,6 +134,7 @@ export class VariablesProvider implements NotebookVariableProvider {
 						start,
 						token,
 					);
+
 				if (token.isCancellationRequested) {
 					return;
 				}
@@ -150,13 +158,16 @@ export class VariablesProvider implements NotebookVariableProvider {
 		result: IVariableDescription,
 	): VariablesResult {
 		const indexedChildrenCount = result.count ?? 0;
+
 		const hasNamedChildren = !!result.hasNamedChildren;
+
 		const variable = {
 			getChildren: (start: number, token: CancellationToken) =>
 				this.getChildren(variable, start, token),
 			expression: createExpression(result.root, result.propertyChain),
 			...result,
 		} as Variable;
+
 		return { variable, hasNamedChildren, indexedChildrenCount };
 	}
 
@@ -166,6 +177,7 @@ export class VariablesProvider implements NotebookVariableProvider {
 		token: CancellationToken,
 	): Promise<IVariableDescription[]> {
 		const parent = variable as IVariableDescription;
+
 		return this.variableRequester.getAllVariableDescriptions(
 			parent,
 			start,
@@ -179,6 +191,7 @@ function createExpression(
 	propertyChain: (string | number)[],
 ): string {
 	let expression = root;
+
 	for (const property of propertyChain) {
 		if (typeof property === "string") {
 			expression += `.${property}`;
@@ -195,7 +208,9 @@ function getVariableResultCacheKey(
 	start: number,
 ) {
 	let parentKey = "";
+
 	const parentDescription = parent as IVariableDescription;
+
 	if (parentDescription) {
 		parentKey = `${parentDescription.name}.${parentDescription.propertyChain.join(".")}[[${start}`;
 	}

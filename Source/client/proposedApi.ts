@@ -16,6 +16,7 @@ export function buildProposedApi(
 	 * @deprecated Will be removed soon.
 	 */
 	let deprecatedProposedApi;
+
 	try {
 		deprecatedProposedApi = {
 			...buildDeprecatedProposedApi(discoveryApi, serviceContainer),
@@ -29,5 +30,6 @@ export function buildProposedApi(
 	const proposed: ProposedExtensionAPI & DeprecatedProposedAPI = {
 		...deprecatedProposedApi,
 	};
+
 	return proposed;
 }

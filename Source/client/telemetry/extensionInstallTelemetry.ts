@@ -30,6 +30,7 @@ export async function setExtensionInstallTelemetryProperties(
 		path.dirname(EXTENSION_ROOT_DIR),
 		"PythonCodingPack",
 	);
+
 	if (await fs.fileExists(fileToCheck)) {
 		setSharedProperty("installSource", "pythonCodingPack");
 	} else {

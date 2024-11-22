@@ -173,6 +173,7 @@ type PythonBuildInfo = {
  */
 type PythonDistroMetaInfo = {
 	org: string;
+
 	defaultDisplayName?: string;
 };
 

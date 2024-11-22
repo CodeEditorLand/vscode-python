@@ -30,6 +30,7 @@ export const INSTALL_CHECKER_SOURCE = "Python-InstalledPackagesChecker";
 
 function parseDiagnostics(data: string): Diagnostic[] {
 	let diagnostics: Diagnostic[] = [];
+
 	try {
 		const raw = JSON.parse(data) as PackageDiagnostic[];
 		diagnostics = raw.map((item) => {
@@ -51,6 +52,7 @@ function parseDiagnostics(data: string): Diagnostic[] {
 				target: Uri.parse(`https://pypi.org/p/${item.package}`),
 			};
 			d.source = INSTALL_CHECKER_SOURCE;
+
 			return d;
 		});
 	} catch {
@@ -61,10 +63,12 @@ function parseDiagnostics(data: string): Diagnostic[] {
 
 function getMissingPackageSeverity(doc: TextDocument): number {
 	const config = getConfiguration("python", doc.uri);
+
 	const severity: string = config.get<string>(
 		"missingPackage.severity",
 		"Hint",
 	);
+
 	if (severity === "Error") {
 		return DiagnosticSeverity.Error;
 	}
@@ -82,10 +86,12 @@ export async function getInstalledPackagesDiagnostics(
 	doc: TextDocument,
 ): Promise<Diagnostic[]> {
 	const interpreter = await interpreterService.getActiveInterpreter(doc.uri);
+
 	if (!interpreter) {
 		return [];
 	}
 	const scriptPath = installedCheckScript();
+
 	try {
 		traceInfo(
 			"Running installed packages checker: ",
@@ -93,10 +99,12 @@ export async function getInstalledPackagesDiagnostics(
 			scriptPath,
 			doc.uri.fsPath,
 		);
+
 		const envCopy = {
 			...process.env,
 			VSCODE_MISSING_PGK_SEVERITY: `${getMissingPackageSeverity(doc)}`,
 		};
+
 		const result = await plainExec(
 			interpreter.path,
 			[scriptPath, doc.uri.fsPath],
@@ -105,6 +113,7 @@ export async function getInstalledPackagesDiagnostics(
 			},
 		);
 		traceVerbose("Installed packages check result:\n", result.stdout);
+
 		if (result.stderr) {
 			traceError("Installed packages check error:\n", result.stderr);
 		}

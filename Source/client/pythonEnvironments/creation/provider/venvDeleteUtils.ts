@@ -17,9 +17,11 @@ async function tryDeleteFile(file: string): Promise<boolean> {
 			return true;
 		}
 		await fs.unlink(file);
+
 		return true;
 	} catch (err) {
 		traceError(`Failed to delete file [${file}]:`, err);
+
 		return false;
 	}
 }
@@ -34,9 +36,11 @@ async function tryDeleteDir(dir: string): Promise<boolean> {
 			maxRetries: 10,
 			retryDelay: 200,
 		});
+
 		return true;
 	} catch (err) {
 		traceError(`Failed to delete directory [${dir}]:`, err);
+
 		return false;
 	}
 }
@@ -45,11 +49,14 @@ export async function deleteEnvironmentNonWindows(
 	workspaceFolder: WorkspaceFolder,
 ): Promise<boolean> {
 	const venvPath = getVenvPath(workspaceFolder);
+
 	if (await tryDeleteDir(venvPath)) {
 		traceInfo(`Deleted venv dir: ${venvPath}`);
+
 		return true;
 	}
 	showErrorMessageWithLogs(CreateEnv.Venv.errorDeletingEnvironment);
+
 	return false;
 }
 
@@ -58,12 +65,15 @@ export async function deleteEnvironmentWindows(
 	interpreter: string | undefined,
 ): Promise<boolean> {
 	const venvPath = getVenvPath(workspaceFolder);
+
 	const venvPythonPath = path.join(venvPath, "Scripts", "python.exe");
 
 	if (await tryDeleteFile(venvPythonPath)) {
 		traceInfo(`Deleted python executable: ${venvPythonPath}`);
+
 		if (await tryDeleteDir(venvPath)) {
 			traceInfo(`Deleted ".venv" dir: ${venvPath}`);
+
 			return true;
 		}
 
@@ -73,6 +83,7 @@ export async function deleteEnvironmentWindows(
 		);
 		traceError(`Please delete the ".venv" manually: [${venvPath}]`);
 		showErrorMessageWithLogs(CreateEnv.Venv.errorDeletingEnvironment);
+
 		return false;
 	}
 	traceError(`Failed to delete python executable: ${venvPythonPath}`);
@@ -90,14 +101,18 @@ export async function deleteEnvironmentWindows(
 		);
 
 		traceInfo(`Attempting to delete ".venv" again: ${venvPath}`);
+
 		const ms = 500;
+
 		for (let i = 0; i < 5; i = i + 1) {
 			traceInfo(
 				`Waiting for ${ms}ms to let processes exit, before a delete attempt.`,
 			);
 			await sleep(ms);
+
 			if (await tryDeleteDir(venvPath)) {
 				traceInfo(`Deleted ".venv" dir: ${venvPath}`);
+
 				return true;
 			}
 			traceError(
@@ -108,5 +123,6 @@ export async function deleteEnvironmentWindows(
 		traceError(`Please delete the ".venv" dir manually: [${venvPath}]`);
 	}
 	showErrorMessageWithLogs(CreateEnv.Venv.errorDeletingEnvironment);
+
 	return false;
 }

@@ -68,13 +68,17 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
             code = code.replace(new RegExp('\\r', 'g'), '');
 
             const activeEditor = this.documentManager.activeTextEditor;
+
             const interpreter = await this.interpreterService.getActiveInterpreter(resource);
+
             const processService = await this.processServiceFactory.create(resource);
 
             const [args, parse] = internalScripts.normalizeSelection();
+
             const observable = processService.execObservable(interpreter?.path || 'python', args, {
                 throwOnStdErr: true,
             });
+
             const normalizeOutput = createDeferred<string>();
 
             // Read result from the normalization script from stdout, and resolve the promise when done.
@@ -96,10 +100,15 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
             // The normalization script expects a serialized JSON object, with the selection under the "code" key.
             // We're using a JSON object so that we don't have to worry about encoding, or escaping non-ASCII characters.
             const startLineVal = activeEditor?.selection?.start.line ?? 0;
+
             const endLineVal = activeEditor?.selection?.end.line ?? 0;
+
             const emptyHighlightVal = activeEditor?.selection?.isEmpty ?? true;
+
             let smartSendSettingsEnabledVal = true;
+
             const configuration = this.serviceContainer.get<IConfigurationService>(IConfigurationService);
+
             if (configuration) {
                 const pythonSettings = configuration.getSettings(this.activeResourceService.getActiveResource());
                 smartSendSettingsEnabledVal = pythonSettings.REPL.enableREPLSmartSend;
@@ -118,6 +127,7 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
 
             // We expect a serialized JSON object back, with the normalized code under the "normalized" key.
             const result = await normalizeOutput.promise;
+
             const object = JSON.parse(result);
 
             if (activeEditor?.selection && smartSendSettingsEnabledVal && object.normalized !== 'deprecated') {
@@ -127,6 +137,7 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
             // For new _pyrepl for Python3.13 and above, we need to send code via bracketed paste mode.
             if (object.attach_bracket_paste && replType === ReplType.terminal) {
                 let trimmedNormalized = object.normalized.replace(/\n$/, '');
+
                 if (trimmedNormalized.endsWith(':\n')) {
                     // In case where statement is unfinished via :, truncate so auto-indentation lands nicely.
                     trimmedNormalized = trimmedNormalized.replace(/\n$/, '');
@@ -137,6 +148,7 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
             return parse(object.normalized);
         } catch (ex) {
             traceError(ex, 'Python: Failed to normalize code for execution in terminal');
+
             return code;
         }
     }
@@ -166,16 +178,20 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
 
     public async getFileToExecute(): Promise<Uri | undefined> {
         const activeEditor = this.documentManager.activeTextEditor;
+
         if (!activeEditor) {
             this.applicationShell.showErrorMessage(l10n.t('No open file to run in terminal'));
+
             return undefined;
         }
         if (activeEditor.document.isUntitled) {
             this.applicationShell.showErrorMessage(l10n.t('The active file needs to be saved before it can be run'));
+
             return undefined;
         }
         if (activeEditor.document.languageId !== PYTHON_LANGUAGE) {
             this.applicationShell.showErrorMessage(l10n.t('The active file is not a Python source file'));
+
             return undefined;
         }
         if (activeEditor.document.isDirty) {
@@ -192,6 +208,7 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
         }
 
         const { selection } = textEditor;
+
         let code: string;
 
         if (selection.isEmpty) {
@@ -207,8 +224,10 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
 
     public async saveFileIfDirty(file: Uri): Promise<Resource> {
         const docs = this.documentManager.textDocuments.filter((d) => d.uri.path === file.path);
+
         if (docs.length === 1 && (docs[0].isDirty || docs[0].isUntitled)) {
             const workspaceService = this.serviceContainer.get<IWorkspaceService>(IWorkspaceService);
+
             return workspaceService.save(docs[0].uri);
         }
         return undefined;
@@ -217,8 +236,11 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
 
 export function getSingleLineSelectionText(textEditor: TextEditor): string {
     const { selection } = textEditor;
+
     const selectionRange = new Range(selection.start, selection.end);
+
     const selectionText = textEditor.document.getText(selectionRange);
+
     const fullLineText = textEditor.document.lineAt(selection.start.line).text;
 
     if (selectionText.trim() === fullLineText.trim()) {
@@ -244,13 +266,16 @@ export function getSingleLineSelectionText(textEditor: TextEditor): string {
 
 export function getMultiLineSelectionText(textEditor: TextEditor): string {
     const { selection } = textEditor;
+
     const selectionRange = new Range(selection.start, selection.end);
+
     const selectionText = textEditor.document.getText(selectionRange);
 
     const fullTextRange = new Range(
         new Position(selection.start.line, 0),
         new Position(selection.end.line, textEditor.document.lineAt(selection.end.line).text.length),
     );
+
     const fullText = textEditor.document.getText(fullTextRange);
 
     // This handles case where:
@@ -275,10 +300,12 @@ export function getMultiLineSelectionText(textEditor: TextEditor): string {
     }
 
     const fullStartLineText = textEditor.document.lineAt(selection.start.line).text;
+
     const selectionFirstLineRange = new Range(
         selection.start,
         new Position(selection.start.line, fullStartLineText.length),
     );
+
     const selectionFirstLineText = textEditor.document.getText(selectionFirstLineRange);
 
     // This handles case where:

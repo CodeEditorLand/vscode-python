@@ -20,6 +20,7 @@ export interface ILanguageServerWatcher {
 		resource?: Resource,
 	): Promise<void>;
 	restartLanguageServers(): Promise<void>;
+
 	get(
 		resource: Resource,
 		interpreter?: PythonEnvironment,

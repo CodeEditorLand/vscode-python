@@ -33,6 +33,7 @@ export class ProcessService extends EventEmitter implements IProcessService {
 	public static isAlive(pid: number): boolean {
 		try {
 			process.kill(pid, 0);
+
 			return true;
 		} catch {
 			return false;
@@ -60,6 +61,7 @@ export class ProcessService extends EventEmitter implements IProcessService {
 		options: SpawnOptions = {},
 	): ObservableExecutionResult<string> {
 		const execOptions = { ...options, doNotLog: true };
+
 		const result = execObservable(
 			file,
 			args,
@@ -68,6 +70,7 @@ export class ProcessService extends EventEmitter implements IProcessService {
 			this.processesToKill,
 		);
 		this.emit("exec", file, args, options);
+
 		return result;
 	}
 
@@ -77,10 +80,12 @@ export class ProcessService extends EventEmitter implements IProcessService {
 		options: SpawnOptions = {},
 	): Promise<ExecutionResult<string>> {
 		this.emit("exec", file, args, options);
+
 		if (options.useWorker) {
 			return workerPlainExec(file, args, options);
 		}
 		const execOptions = { ...options, doNotLog: true };
+
 		const promise = plainExec(
 			file,
 			args,
@@ -88,6 +93,7 @@ export class ProcessService extends EventEmitter implements IProcessService {
 			this.env,
 			this.processesToKill,
 		);
+
 		return promise;
 	}
 
@@ -96,11 +102,14 @@ export class ProcessService extends EventEmitter implements IProcessService {
 		options: ShellOptions = {},
 	): Promise<ExecutionResult<string>> {
 		this.emit("exec", command, undefined, options);
+
 		if (options.useWorker) {
 			return workerShellExec(command, options);
 		}
 		const disposables = new Set<IDisposable>();
+
 		const shellOptions = { ...options, doNotLog: true };
+
 		return shellExec(command, shellOptions, this.env, disposables).finally(
 			() => {
 				// Ensure the process we started is cleaned up.

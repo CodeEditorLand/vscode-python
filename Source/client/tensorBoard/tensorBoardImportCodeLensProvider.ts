@@ -85,12 +85,15 @@ export class TensorBoardImportCodeLensProvider
 				},
 			],
 		};
+
 		const codelenses: CodeLens[] = [];
+
 		for (let index = 0; index < document.lineCount; index += 1) {
 			if (cancelToken.isCancellationRequested) {
 				return codelenses;
 			}
 			const line = document.lineAt(index);
+
 			if (containsTensorBoardImport([line.text])) {
 				const range = new Range(
 					new Position(line.lineNumber, 0),

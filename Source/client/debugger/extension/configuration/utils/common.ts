@@ -30,14 +30,18 @@ export function resolveVariables(
 		const workspaceFolder = folder
 			? getWorkspaceFolder(folder.uri)
 			: undefined;
+
 		const variablesObject: { [key: string]: any } = {};
+
 		variablesObject.workspaceFolder = workspaceFolder
 			? workspaceFolder.uri.fsPath
 			: rootFolder;
 
 		const regexp = /\$\{(.*?)\}/g;
+
 		return value.replace(regexp, (match: string, name: string) => {
 			const newValue = variablesObject[name];
+
 			if (isString(newValue)) {
 				return newValue;
 			}

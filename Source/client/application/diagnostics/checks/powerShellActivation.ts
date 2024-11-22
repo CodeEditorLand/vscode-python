@@ -85,6 +85,7 @@ export class PowerShellActivationHackDiagnosticsService extends BaseDiagnosticsS
 			return;
 		}
 		const diagnostic = diagnostics[0];
+
 		if (await this.filterService.shouldIgnoreDiagnostic(diagnostic.code)) {
 			return;
 		}
@@ -92,12 +93,15 @@ export class PowerShellActivationHackDiagnosticsService extends BaseDiagnosticsS
 			this.serviceContainer.get<IDiagnosticsCommandFactory>(
 				IDiagnosticsCommandFactory,
 			);
+
 		const currentProcess =
 			this.serviceContainer.get<ICurrentProcess>(ICurrentProcess);
+
 		const configurationService =
 			this.serviceContainer.get<IConfigurationService>(
 				IConfigurationService,
 			);
+
 		const options = [
 			{
 				prompt: Common.useCommandPrompt,

@@ -33,7 +33,9 @@ export async function readRegistryValues(
 	if (!useWorkerThreads) {
 		// eslint-disable-next-line global-require
 		const WinReg = require("winreg");
+
 		const regKey = new WinReg(options);
+
 		const deferred = createDeferred<RegistryItem[]>();
 		regKey.values((err: Error, res: RegistryItem[]) => {
 			if (err) {
@@ -41,6 +43,7 @@ export async function readRegistryValues(
 			}
 			deferred.resolve(res);
 		});
+
 		return deferred.promise;
 	}
 	return executeWorkerFile(
@@ -56,7 +59,9 @@ export async function readRegistryKeys(
 	if (!useWorkerThreads) {
 		// eslint-disable-next-line global-require
 		const WinReg = require("winreg");
+
 		const regKey = new WinReg(options);
+
 		const deferred = createDeferred<Registry[]>();
 		regKey.keys((err: Error, res: Registry[]) => {
 			if (err) {
@@ -64,6 +69,7 @@ export async function readRegistryKeys(
 			}
 			deferred.resolve(res);
 		});
+
 		return deferred.promise;
 	}
 	return executeWorkerFile(

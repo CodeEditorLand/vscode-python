@@ -12,6 +12,7 @@ import { Executables, FileSystemPaths, FileSystemPathUtils } from "./fs-paths";
 @injectable()
 export class PathUtils implements IPathUtils {
 	private readonly utils: FileSystemPathUtils;
+
 	constructor(
 		// "true" if targeting a Windows host.
 		@inject(IsWindows) isWindows: boolean,

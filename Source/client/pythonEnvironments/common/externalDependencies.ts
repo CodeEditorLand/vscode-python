@@ -36,10 +36,12 @@ export async function shellExecute(
 	options: ShellOptions = {},
 ): Promise<ExecutionResult<string>> {
 	const useWorker = false;
+
 	const service = await internalServiceContainer
 		.get<IProcessServiceFactory>(IProcessServiceFactory)
 		.create();
 	options = { ...options, useWorker };
+
 	return service.shellExec(command, options);
 }
 
@@ -53,12 +55,14 @@ export async function exec(
 		.get<IProcessServiceFactory>(IProcessServiceFactory)
 		.create();
 	options = { ...options, useWorker };
+
 	return service.exec(file, args, options);
 }
 
 export function inExperiment(experimentName: string): boolean {
 	const service =
 		internalServiceContainer.get<IExperimentService>(IExperimentService);
+
 	return service.inExperimentSync(experimentName);
 }
 
@@ -67,6 +71,7 @@ export function inExperiment(experimentName: string): boolean {
 export function isVirtualWorkspace(): boolean {
 	const service =
 		internalServiceContainer.get<IWorkspaceService>(IWorkspaceService);
+
 	return service.isVirtualWorkspace;
 }
 
@@ -105,6 +110,7 @@ export function isParentPath(filePath: string, parentPath: string): boolean {
 
 export async function isDirectory(filename: string): Promise<boolean> {
 	const stat = await fsapi.lstat(filename);
+
 	return stat.isDirectory();
 }
 
@@ -132,11 +138,13 @@ export async function resolveSymbolicLink(
 	count?: number,
 ): Promise<string> {
 	stats = stats ?? (await fsapi.lstat(absPath));
+
 	if (stats.isSymbolicLink()) {
 		if (count && count > 5) {
 			traceError(
 				`Detected a potential symbolic link loop at ${absPath}, terminating resolution.`,
 			);
+
 			return absPath;
 		}
 		const link = await fsapi.readlink(absPath);
@@ -148,6 +156,7 @@ export async function resolveSymbolicLink(
 			? link
 			: path.resolve(path.dirname(absPath), link);
 		count = count ? count + 1 : 1;
+
 		return resolveSymbolicLink(absLinkPath, undefined, count);
 	}
 	return absPath;
@@ -158,6 +167,7 @@ export async function getFileInfo(
 ): Promise<{ ctime: number; mtime: number }> {
 	try {
 		const data = await fsapi.lstat(filePath);
+
 		return {
 			ctime: data.ctime.valueOf(),
 			mtime: data.mtime.valueOf(),
@@ -166,15 +176,19 @@ export async function getFileInfo(
 		// This can fail on some cases, such as, `reparse points` on windows. So, return the
 		// time as -1. Which we treat as not set in the extension.
 		traceVerbose(`Failed to get file info for ${filePath}`, ex);
+
 		return { ctime: -1, mtime: -1 };
 	}
 }
 
 export async function isFile(filePath: string): Promise<boolean> {
 	const stats = await fsapi.lstat(filePath);
+
 	if (stats.isSymbolicLink()) {
 		const resolvedPath = await resolveSymbolicLink(filePath, stats);
+
 		const resolvedStats = await fsapi.lstat(resolvedPath);
+
 		return resolvedStats.isFile();
 	}
 	return stats.isFile();
@@ -192,16 +206,20 @@ export async function* getSubDirs(
 	options?: { resolveSymlinks?: boolean },
 ): AsyncIterableIterator<string> {
 	const dirContents = await fsapi.readdir(root, { withFileTypes: true });
+
 	const generators = dirContents.map((item) => {
 		async function* generator() {
 			const fullPath = path.join(root, item.name);
+
 			if (item.isDirectory()) {
 				yield fullPath;
 			} else if (options?.resolveSymlinks && item.isSymbolicLink()) {
 				// The current FS item is a symlink. It can potentially be a file
 				// or a directory. Resolve it first and then check if it is a directory.
 				const resolvedPath = await resolveSymbolicLink(fullPath);
+
 				const resolvedPathStat = await fsapi.lstat(resolvedPath);
+
 				if (resolvedPathStat.isDirectory()) {
 					yield resolvedPath;
 				}
@@ -223,6 +241,7 @@ export function getPythonSetting<T>(
 	root?: string,
 ): T | undefined {
 	const resource = root ? vscode.Uri.file(root) : undefined;
+
 	const settings = internalServiceContainer
 		.get<IConfigurationService>(IConfigurationService)
 		.getSettings(resource);
@@ -243,6 +262,7 @@ export function onDidChangePythonSetting(
 	return vscode.workspace.onDidChangeConfiguration(
 		(event: vscode.ConfigurationChangeEvent) => {
 			const scope = root ? vscode.Uri.file(root) : undefined;
+
 			if (event.affectsConfiguration(`python.${name}`, scope)) {
 				callback();
 			}

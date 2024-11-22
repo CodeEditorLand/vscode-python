@@ -23,6 +23,7 @@ import { LanguageServerType } from "./types";
 
 // Only send 100 events per hour.
 const globalDebounce = 1000 * 60 * 60;
+
 const globalLimit = 100;
 
 // For calls that are more likely to happen during a session (hover, completion, document symbols).
@@ -79,12 +80,14 @@ export class LanguageClientMiddlewareBase implements Middleware {
 				this.serviceContainer.get<IInterpreterService>(
 					IInterpreterService,
 				);
+
 			const envService =
 				this.serviceContainer.get<IEnvironmentVariablesProvider>(
 					IEnvironmentVariablesProvider,
 				);
 
 			let settings = next(params, token);
+
 			if (isThenable(settings)) {
 				settings = await settings;
 			}
@@ -108,12 +111,15 @@ export class LanguageClientMiddlewareBase implements Middleware {
 						pythonPath: string;
 						_envPYTHONPATH: string;
 					};
+
 					settingDict.pythonPath =
 						(await interpreterService.getActiveInterpreter(uri))
 							?.path ?? "python";
 
 					const env = await envService.getEnvironmentVariables(uri);
+
 					const envPYTHONPATH = env.PYTHONPATH;
+
 					if (envPYTHONPATH) {
 						settingDict._envPYTHONPATH = envPYTHONPATH;
 					}
@@ -233,6 +239,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 					const resultLength = Array.isArray(result)
 						? result.length
 						: result.items.length;
+
 					return { resultLength };
 				},
 			);
@@ -258,7 +265,9 @@ export class LanguageClientMiddlewareBase implements Middleware {
 		if (await this.connected) {
 			// Skip sending if this is a special file.
 			const filePath = uri.fsPath;
+
 			const baseName = filePath ? path.basename(filePath) : undefined;
+
 			if (!baseName || !baseName.startsWith(HiddenFilePrefix)) {
 				return this.callNext("handleDiagnostics", arguments);
 			}
@@ -585,7 +594,9 @@ export class LanguageClientMiddlewareBase implements Middleware {
 		) => Record<string, number>,
 	): ReturnType<MiddleWareMethods[T]> {
 		const now = Date.now();
+
 		const stopWatch = new StopWatch();
+
 		let calledNext = false;
 		// Change the 'last' argument (which is our next) in order to track if
 		// telemetry should be sent or not.
@@ -636,6 +647,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 
 				let measures: number | Record<string, number> =
 					stopWatch.elapsedTime;
+
 				if (lazyMeasures) {
 					measures = {
 						duration: measures,

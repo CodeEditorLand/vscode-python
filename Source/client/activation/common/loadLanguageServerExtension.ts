@@ -36,6 +36,7 @@ export class LoadLanguageServerExtension
 			},
 		);
 		this.disposables.push(disposable);
+
 		return Promise.resolve();
 	}
 }

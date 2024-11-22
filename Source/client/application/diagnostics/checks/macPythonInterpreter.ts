@@ -92,7 +92,9 @@ export class InvalidMacPythonInterpreterService extends BaseDiagnosticsService {
 			this.serviceContainer.get<IConfigurationService>(
 				IConfigurationService,
 			);
+
 		const settings = configurationService.getSettings(resource);
+
 		if (!(await this.helper.isMacDefaultPythonPath(settings.pythonPath))) {
 			return [];
 		}
@@ -114,10 +116,12 @@ export class InvalidMacPythonInterpreterService extends BaseDiagnosticsService {
 		await Promise.all(
 			diagnostics.map(async (diagnostic) => {
 				const canHandle = await this.canHandle(diagnostic);
+
 				const shouldIgnore =
 					await this.filterService.shouldIgnoreDiagnostic(
 						diagnostic.code,
 					);
+
 				if (!canHandle || shouldIgnore) {
 					return;
 				}
@@ -133,6 +137,7 @@ export class InvalidMacPythonInterpreterService extends BaseDiagnosticsService {
 	protected addPythonPathChangedHandler(): void {
 		const disposables =
 			this.serviceContainer.get<IDisposableRegistry>(IDisposableRegistry);
+
 		const interpreterPathService =
 			this.serviceContainer.get<IInterpreterPathService>(
 				IInterpreterPathService,
@@ -168,6 +173,7 @@ export class InvalidMacPythonInterpreterService extends BaseDiagnosticsService {
 			this.serviceContainer.get<IDiagnosticsCommandFactory>(
 				IDiagnosticsCommandFactory,
 			);
+
 		switch (diagnostic.code) {
 			case DiagnosticCodes.MacInterpreterSelected: {
 				return [

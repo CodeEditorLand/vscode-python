@@ -70,6 +70,7 @@ export function registerCreateEnvironmentProvider(
 	provider: CreateEnvironmentProvider,
 ): Disposable {
 	_createEnvironmentProviders.add(provider);
+
 	return new Disposable(() => {
 		_createEnvironmentProviders.remove(provider);
 	});
@@ -95,6 +96,7 @@ export function registerCreateEnvironmentFeatures(
 					CreateEnvironmentOptionsInternal,
 			): Promise<CreateEnvironmentResult | undefined> => {
 				const providers = _createEnvironmentProviders.getAll();
+
 				return handleCreateEnvironmentCommand(providers, options);
 			},
 		),
@@ -136,6 +138,7 @@ export function buildEnvironmentCreationApi(): ProposedCreateEnvironmentAPI {
 			options?: CreateEnvironmentOptions | undefined,
 		): Promise<CreateEnvironmentResult | undefined> => {
 			const providers = _createEnvironmentProviders.getAll();
+
 			try {
 				return await handleCreateEnvironmentCommand(providers, options);
 			} catch (err) {

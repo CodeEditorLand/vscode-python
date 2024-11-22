@@ -25,6 +25,7 @@ const SCRIPTS: ActivationScripts = {
 
 export function getAllScripts(pathJoin: (...p: string[]) => string): string[] {
 	const scripts: string[] = [];
+
 	for (const names of Object.values(SCRIPTS)) {
 		for (const name of names) {
 			if (!scripts.includes(name)) {
@@ -49,9 +50,12 @@ export class CommandPromptAndPowerShell extends VenvBaseActivationCommandProvide
 	) {
 		super(serviceContainer);
 		this.scripts = {};
+
 		for (const [key, names] of Object.entries(SCRIPTS)) {
 			const shell = key as TerminalShellType;
+
 			const scripts: string[] = [];
+
 			for (const name of names) {
 				scripts.push(
 					name,
@@ -69,6 +73,7 @@ export class CommandPromptAndPowerShell extends VenvBaseActivationCommandProvide
 		targetShell: TerminalShellType,
 	): Promise<string[] | undefined> {
 		const scriptFile = await this.findScriptFile(pythonPath, targetShell);
+
 		if (!scriptFile) {
 			return undefined;
 		}

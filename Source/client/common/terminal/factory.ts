@@ -34,23 +34,29 @@ export class TerminalServiceFactory implements ITerminalServiceFactory {
 		options: TerminalCreationOptions & { newTerminalPerFile?: boolean },
 	): ITerminalService {
 		const resource = options?.resource;
+
 		const title = options?.title;
+
 		let terminalTitle =
 			typeof title === "string" && title.trim().length > 0
 				? title.trim()
 				: "Python";
+
 		const interpreter = options?.interpreter;
+
 		const id = this.getTerminalId(
 			terminalTitle,
 			resource,
 			interpreter,
 			options.newTerminalPerFile,
 		);
+
 		if (!this.terminalServices.has(id)) {
 			if (resource && options.newTerminalPerFile) {
 				terminalTitle = `${terminalTitle}: ${path.basename(resource.fsPath).replace(".py", "")}`;
 			}
 			options.title = terminalTitle;
+
 			const terminalService = new TerminalService(
 				this.serviceContainer,
 				options,
@@ -74,6 +80,7 @@ export class TerminalServiceFactory implements ITerminalServiceFactory {
 			typeof title === "string" && title.trim().length > 0
 				? title.trim()
 				: "Python";
+
 		return new TerminalService(this.serviceContainer, { resource, title });
 	}
 	private getTerminalId(
@@ -88,7 +95,9 @@ export class TerminalServiceFactory implements ITerminalServiceFactory {
 		const workspaceFolder = this.serviceContainer
 			.get<IWorkspaceService>(IWorkspaceService)
 			.getWorkspaceFolder(resource || undefined);
+
 		const fileId = resource && newTerminalPerFile ? resource.fsPath : "";
+
 		return `${title}:${workspaceFolder?.uri.fsPath || ""}:${interpreter?.path}:${fileId}`;
 	}
 }

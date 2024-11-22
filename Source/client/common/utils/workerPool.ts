@@ -57,6 +57,7 @@ class Worker<T, R> implements IWorker {
 		while (!this.stopProcessing) {
 			try {
 				const workItem = await this.next();
+
 				try {
 					const result = await this.workFunc(workItem);
 					this.postResult(workItem, result);
@@ -67,6 +68,7 @@ class Worker<T, R> implements IWorker {
 				// Next got rejected. Likely worker pool is shutting down.
 				// continue here and worker will exit if the worker pool is shutting down.
 				traceError(`Error while running worker[${this.name}].`, ex);
+
 				continue;
 			}
 		}
@@ -84,6 +86,7 @@ class WorkQueue<T, R> {
 		// approach is to ensure each gets a unique promise, and let the worker function figure out
 		// how to handle repeat submissions.
 		const workItem: IWorkItem<T> = { item };
+
 		if (position === QueuePosition.Front) {
 			this.items.unshift(workItem);
 		} else {
@@ -101,8 +104,10 @@ class WorkQueue<T, R> {
 
 	public completed(workItem: IWorkItem<T>, result?: R, error?: Error): void {
 		const deferred = this.results.get(workItem);
+
 		if (deferred !== undefined) {
 			this.results.delete(workItem);
+
 			if (error !== undefined) {
 				deferred.reject(error);
 			}
@@ -161,8 +166,10 @@ class WorkerPool<T, R> implements IWorkerPool<T, R> {
 		const deferred = this.queue.add(item, position);
 
 		const worker = this.waitingWorkersUnblockQueue.shift();
+
 		if (worker) {
 			const workItem = this.queue.next();
+
 			if (workItem !== undefined) {
 				// If we are here it means there were no items to process in the queue.
 				// At least one worker is free and waiting for a work item. Call 'unblock'
@@ -182,7 +189,9 @@ class WorkerPool<T, R> implements IWorkerPool<T, R> {
 
 	public start() {
 		this.stopProcessing = false;
+
 		let num = this.numWorkers;
+
 		while (num > 0) {
 			this.workers.push(
 				new Worker<IWorkItem<T>, R>(
@@ -204,6 +213,7 @@ class WorkerPool<T, R> implements IWorkerPool<T, R> {
 		// Signal all registered workers with this worker pool to stop processing.
 		// Workers should complete the task they are currently doing.
 		let worker = this.workers.shift();
+
 		while (worker) {
 			worker.stop();
 			worker = this.workers.shift();
@@ -216,6 +226,7 @@ class WorkerPool<T, R> implements IWorkerPool<T, R> {
 		// If we don't unblock here then the worker just remains blocked
 		// forever.
 		let blockedWorker = this.waitingWorkersUnblockQueue.shift();
+
 		while (blockedWorker) {
 			blockedWorker.stop();
 			blockedWorker = this.waitingWorkersUnblockQueue.shift();
@@ -225,6 +236,7 @@ class WorkerPool<T, R> implements IWorkerPool<T, R> {
 	public nextWorkItem(): Promise<IWorkItem<T>> {
 		// Note that next() will return `undefined` if the queue is empty.
 		const nextWorkItem = this.queue.next();
+
 		if (nextWorkItem !== undefined) {
 			return Promise.resolve(nextWorkItem);
 		}
@@ -257,5 +269,6 @@ export function createRunningWorkerPool<T, R>(
 ): WorkerPool<T, R> {
 	const pool = new WorkerPool<T, R>(workerFunc, numWorkers, name);
 	pool.start();
+
 	return pool;
 }

@@ -47,7 +47,9 @@ async function getPyenvBinary(): Promise<string> {
 	}
 
 	const pyenvDir = getPyenvDir();
+
 	const pyenvBin = path.join(pyenvDir, "bin", "pyenv");
+
 	if (await pathExists(pyenvBin)) {
 		return pyenvBin;
 	}
@@ -58,14 +60,17 @@ export async function getActivePyenvForDirectory(
 	cwd: string,
 ): Promise<string | undefined> {
 	const pyenvBin = await getPyenvBinary();
+
 	try {
 		const pyenvInterpreterPath = await shellExecute(
 			`${pyenvBin} which python`,
 			{ cwd },
 		);
+
 		return pyenvInterpreterPath.stdout.trim();
 	} catch (ex) {
 		traceVerbose(ex);
+
 		return undefined;
 	}
 }
@@ -83,6 +88,7 @@ export function getPyenvVersionsDir(): string {
 
 export function isPyenvShimDir(dirPath: string): boolean {
 	const shimPath = path.join(getPyenvDir(), "shims");
+
 	return (
 		arePathsSame(shimPath, dirPath) ||
 		arePathsSame(`${shimPath}${path.sep}`, dirPath)
@@ -98,6 +104,7 @@ export async function isPyenvEnvironment(
 	interpreterPath: string,
 ): Promise<boolean> {
 	const pathToCheck = interpreterPath;
+
 	const pyenvDir = getPyenvDir();
 
 	if (!(await pathExists(pyenvDir))) {
@@ -149,6 +156,7 @@ function getKnownPyenvVersionParsers(): Map<
 	 */
 	function distroOnly(str: string): IPyenvVersionStrings | undefined {
 		const parts = str.split("-");
+
 		if (parts.length === 3) {
 			return {
 				pythonVer: undefined,
@@ -193,10 +201,12 @@ function getKnownPyenvVersionParsers(): Map<
 		const pattern = /[0-9\.]+/;
 
 		const parts = str.split("-");
+
 		const pythonVer =
 			parts[0].search(pattern) > 0
 				? parts[0].substr("pypy".length)
 				: undefined;
+
 		if (parts.length === 2) {
 			return {
 				pythonVer,
@@ -215,6 +225,7 @@ function getKnownPyenvVersionParsers(): Map<
 			const part1 = parts[1].startsWith("v")
 				? parts[1].substr(1)
 				: parts[1];
+
 			return {
 				pythonVer,
 				distroVer: `${part1}-${parts[2]}`,
@@ -286,6 +297,7 @@ export function parsePyenvVersion(
 	str: string,
 ): IPyenvVersionStrings | undefined {
 	const allParsers = getKnownPyenvVersionParsers();
+
 	const knownPrefixes = Array.from(allParsers.keys());
 
 	const parsers = knownPrefixes

@@ -27,22 +27,28 @@ export class CondaEnvironmentLocator extends FSWatchingLocator {
 	public async *doIterEnvs(_: unknown): IPythonEnvsIterator<BasicEnvInfo> {
 		const stopWatch = new StopWatch();
 		traceInfo("Searching for conda environments");
+
 		const conda = await Conda.getConda();
+
 		if (conda === undefined) {
 			traceVerbose(`Couldn't locate the conda binary.`);
+
 			return;
 		}
 		traceVerbose(`Searching for conda environments using ${conda.command}`);
 
 		const envs = await conda.getEnvList();
+
 		for (const env of envs) {
 			try {
 				traceVerbose(
 					`Looking into conda env for executable: ${JSON.stringify(env)}`,
 				);
+
 				const executablePath =
 					await conda.getInterpreterPathForEnvironment(env);
 				traceVerbose(`Found conda executable: ${executablePath}`);
+
 				yield {
 					kind: PythonEnvKind.Conda,
 					executablePath,

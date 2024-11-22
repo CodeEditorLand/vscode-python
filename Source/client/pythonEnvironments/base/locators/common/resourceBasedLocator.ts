@@ -65,17 +65,23 @@ export abstract class LazyResourceBasedLocator
 		query?: PythonLocatorQuery,
 	): IPythonEnvsIterator<BasicEnvInfo> {
 		await this.activate();
+
 		const iterator = this.doIterEnvs(query);
+
 		if (query?.envPath) {
 			let result = await iterator.next();
+
 			while (!result.done) {
 				const currEnv = result.value;
+
 				const { path } = getEnvPath(
 					currEnv.executablePath,
 					currEnv.envPath,
 				);
+
 				if (arePathsSame(path, query.envPath)) {
 					yield currEnv;
+
 					break;
 				}
 				result = await iterator.next();
@@ -132,6 +138,7 @@ export abstract class LazyResourceBasedLocator
 	protected async ensureResourcesReady(): Promise<void> {
 		if (this.resourcesReady !== undefined) {
 			await this.resourcesReady.promise;
+
 			return;
 		}
 		this.resourcesReady = createDeferred<void>();
@@ -145,6 +152,7 @@ export abstract class LazyResourceBasedLocator
 	private async ensureWatchersReady(): Promise<void> {
 		if (this.watchersReady !== undefined) {
 			await this.watchersReady.promise;
+
 			return;
 		}
 		this.watchersReady = createDeferred<void>();

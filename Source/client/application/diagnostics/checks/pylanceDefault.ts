@@ -25,6 +25,7 @@ import {
 } from "../types";
 
 export const PYLANCE_PROMPT_MEMENTO = "pylanceDefaultPromptMemento";
+
 const EXTENSION_VERSION_MEMENTO = "extensionVersion";
 
 export class PylanceDefaultDiagnostic extends BaseDiagnostic {
@@ -85,6 +86,7 @@ export class PylanceDefaultDiagnosticService extends BaseDiagnosticsService {
 		}
 
 		const diagnostic = diagnostics[0];
+
 		if (await this.filterService.shouldIgnoreDiagnostic(diagnostic.code)) {
 			return;
 		}
@@ -103,6 +105,7 @@ export class PylanceDefaultDiagnosticService extends BaseDiagnosticsService {
 
 	private async shouldShowPrompt(): Promise<boolean> {
 		const savedVersion: string | undefined = this.initialMementoValue;
+
 		const promptShown: boolean | undefined = this.context.globalState.get(
 			PYLANCE_PROMPT_MEMENTO,
 		);
@@ -113,6 +116,7 @@ export class PylanceDefaultDiagnosticService extends BaseDiagnosticsService {
 		// in case the user reloads the extension and savedVersion becomes set
 		if (savedVersion === undefined) {
 			await this.updateMemento();
+
 			return false;
 		}
 

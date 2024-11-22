@@ -45,6 +45,7 @@ function normalizeVersionPart(part: unknown): [number, ErrorMsg] {
 	}
 	if (typeof part === "string") {
 		const parsed = parseInt(part, 10);
+
 		if (Number.isNaN(parsed)) {
 			return [-1, "string not numeric"];
 		}
@@ -82,6 +83,7 @@ function copyStrict<T extends BasicVersionInfo>(info: T): RawBasicVersionInfo {
 	};
 
 	const { unnormalized } = info as unknown as RawBasicVersionInfo;
+
 	if (unnormalized !== undefined) {
 		copied.unnormalized = {
 			major: unnormalized.major,
@@ -153,6 +155,7 @@ function validateBasicVersionInfo<T extends BasicVersionInfo>(info: T): void {
 	validateVersionPart("major", info.major, raw.unnormalized?.major);
 	validateVersionPart("minor", info.minor, raw.unnormalized?.minor);
 	validateVersionPart("micro", info.micro, raw.unnormalized?.micro);
+
 	if (info.major < 0) {
 		throw Error("missing major version");
 	}
@@ -204,6 +207,7 @@ const basicVersionPattern = `
     ([^\\d].*)?  # <after>
     $
 `;
+
 const basicVersionRegexp = verboseRegExp(basicVersionPattern, "s");
 
 /**
@@ -216,11 +220,13 @@ export function parseBasicVersionInfo<T extends BasicVersionInfo>(
 	verStr: string,
 ): ParseResult<T> | undefined {
 	const match = verStr.match(basicVersionRegexp);
+
 	if (!match) {
 		return undefined;
 	}
 	// Ignore the first element (the full match).
 	const [, before, majorStr, minorStr, microStr, after] = match;
+
 	if (before && before.endsWith(".")) {
 		return undefined;
 	}
@@ -237,8 +243,11 @@ export function parseBasicVersionInfo<T extends BasicVersionInfo>(
 		}
 	}
 	const major = parseInt(majorStr, 10);
+
 	const minor = minorStr ? parseInt(minorStr, 10) : -1;
+
 	const micro = microStr ? parseInt(microStr, 10) : -1;
+
 	return {
 		// This is effectively normalized.
 		version: { major, minor, micro } as unknown as T,
@@ -342,6 +351,7 @@ export type VersionInfo = BasicVersionInfo & {
 export function normalizeVersionInfo<T extends VersionInfo>(info: T): T {
 	const norm = normalizeBasicVersionInfo(info);
 	norm.raw = info.raw;
+
 	if (!norm.raw) {
 		norm.raw = "";
 	}
@@ -371,10 +381,12 @@ export function parseVersionInfo<T extends VersionInfo>(
 	verStr: string,
 ): ParseResult<T> | undefined {
 	const result = parseBasicVersionInfo<T>(verStr);
+
 	if (result === undefined) {
 		return undefined;
 	}
 	result.version.raw = verStr;
+
 	return result;
 }
 
@@ -393,6 +405,7 @@ export function areIdenticalVersion<
 	compareExtra?: (v1: T, v2: V) => [number, string],
 ): boolean {
 	const [result] = compareVersions(left, right, compareExtra);
+
 	return result === 0;
 }
 
@@ -411,6 +424,7 @@ export function areSimilarVersions<
 	compareExtra?: (v1: T, v2: V) => [number, string],
 ): boolean {
 	const [result, prop] = compareVersions(left, right, compareExtra);
+
 	if (result === 0) {
 		return true;
 	}
@@ -432,7 +446,9 @@ export function areSimilarVersions<
 
 export function parseSemVerSafe(raw: string): semver.SemVer {
 	raw = raw.replace(/\.00*(?=[1-9]|0\.)/, ".");
+
 	const ver = semver.coerce(raw);
+
 	if (ver === null || !semver.valid(ver)) {
 		// TODO: Raise an exception instead?
 		return new semver.SemVer("0.0.0");

@@ -133,6 +133,7 @@ export function withProgress<R>(
 
 export function getActiveTextEditor(): TextEditor | undefined {
 	const { activeTextEditor } = window;
+
 	return activeTextEditor;
 }
 
@@ -161,6 +162,7 @@ export async function showQuickPickWithBack<T extends QuickPickItem>(
 	itemButtonHandler?: (e: QuickPickItemButtonEvent<T>) => void,
 ): Promise<T | T[] | undefined> {
 	const quickPick: QuickPick<T> = window.createQuickPick<T>();
+
 	const disposables: Disposable[] = [quickPick];
 
 	quickPick.items = items;
@@ -206,6 +208,7 @@ export async function showQuickPickWithBack<T extends QuickPickItem>(
 			}
 		}),
 	);
+
 	if (token) {
 		disposables.push(
 			token.onCancellationRequested(() => {
@@ -236,7 +239,9 @@ export class MultiStepNode {
 		context?: MultiStepAction,
 	): Promise<MultiStepAction> {
 		let nextStep: MultiStepNode | undefined = step;
+
 		let flowAction = await nextStep.current(context);
+
 		while (nextStep !== undefined) {
 			if (flowAction === MultiStepAction.Cancel) {
 				return flowAction;
@@ -292,10 +297,12 @@ export function createStepForwardEndNode<T>(
 
 export function getActiveResource(): Resource {
 	const editor = window.activeTextEditor;
+
 	if (editor && !editor.document.isUntitled) {
 		return editor.document.uri;
 	}
 	const workspaces = getWorkspaceFolders();
+
 	return Array.isArray(workspaces) && workspaces.length > 0
 		? workspaces[0].uri
 		: undefined;

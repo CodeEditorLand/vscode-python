@@ -78,6 +78,7 @@ export abstract class BaseConfigurationResolver<T extends DebugConfiguration>
 			return folder.uri;
 		}
 		const program = getProgram();
+
 		const workspaceFolders = getWorkspaceFolders();
 
 		if (!Array.isArray(workspaceFolders) || workspaceFolders.length === 0) {
@@ -88,6 +89,7 @@ export abstract class BaseConfigurationResolver<T extends DebugConfiguration>
 		}
 		if (program) {
 			const workspaceFolder = getVSCodeWorkspaceFolder(Uri.file(program));
+
 			if (workspaceFolder) {
 				return workspaceFolder.uri;
 			}
@@ -162,6 +164,7 @@ export abstract class BaseConfigurationResolver<T extends DebugConfiguration>
 
 		if (debugConfiguration.python === "${command:python.interpreterPath}") {
 			this.pythonPathSource = PythonPathSource.settingsJson;
+
 			const interpreterPath =
 				(
 					await this.interpreterService.getActiveInterpreter(
@@ -215,6 +218,7 @@ export abstract class BaseConfigurationResolver<T extends DebugConfiguration>
 
 	protected static isLocalHost(hostName?: string): boolean {
 		const LocalHosts = ["localhost", "127.0.0.1", "::1"];
+
 		return !!(hostName && LocalHosts.indexOf(hostName.toLowerCase()) >= 0);
 	}
 
@@ -246,6 +250,7 @@ export abstract class BaseConfigurationResolver<T extends DebugConfiguration>
 						defaultLocalRoot,
 						undefined,
 					);
+
 					return {
 						localRoot: resolvedLocalRoot || "",
 						// TODO: Apply to remoteRoot too?
@@ -262,6 +267,7 @@ export abstract class BaseConfigurationResolver<T extends DebugConfiguration>
 			pathMappings = pathMappings.map(
 				({ localRoot: windowsLocalRoot, remoteRoot }) => {
 					let localRoot = windowsLocalRoot;
+
 					if (windowsLocalRoot.match(/^[A-Z]:/)) {
 						localRoot = `${windowsLocalRoot[0].toLowerCase()}${windowsLocalRoot.substr(1)}`;
 					}
@@ -302,7 +308,9 @@ export abstract class BaseConfigurationResolver<T extends DebugConfiguration>
 		>,
 	): void {
 		const name = debugConfiguration.name || "";
+
 		const moduleName = debugConfiguration.module || "";
+
 		const telemetryProps: DebuggerTelemetry = {
 			trigger,
 			console: debugConfiguration.console,

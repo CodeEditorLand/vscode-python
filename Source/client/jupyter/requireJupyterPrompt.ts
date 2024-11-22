@@ -39,7 +39,9 @@ export class RequireJupyterPrompt implements IExtensionSingleActivationService {
 
 	public async _showPrompt(): Promise<void> {
 		const prompts = [Common.bannerLabelYes, Common.bannerLabelNo];
+
 		const telemetrySelections: ["Yes", "No"] = ["Yes", "No"];
+
 		const selection = await this.appShell.showInformationMessage(
 			Interpreters.requireJupyter,
 			...prompts,
@@ -49,6 +51,7 @@ export class RequireJupyterPrompt implements IExtensionSingleActivationService {
 				? telemetrySelections[prompts.indexOf(selection)]
 				: undefined,
 		});
+
 		if (!selection) {
 			return;
 		}

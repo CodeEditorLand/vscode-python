@@ -60,11 +60,13 @@ function getJunitResults(parserResult: unknown): TestSuiteResult | undefined {
 	const fullResults = parserResult as {
 		testsuites: { testsuite: TestSuiteResult[] };
 	};
+
 	if (!fullResults.testsuites) {
 		return (parserResult as { testsuite: TestSuiteResult }).testsuite;
 	}
 
 	const junitSuites = fullResults.testsuites.testsuite;
+
 	if (!Array.isArray(junitSuites)) {
 		throw Error("bad JUnit XML data");
 	}
@@ -84,8 +86,11 @@ export async function updateResultFromJunitXml(
 	idToRawData: Map<string, TestData>,
 ): Promise<void> {
 	const data = await fsapi.readFile(outputXmlFile);
+
 	const parserResult = await parseXML(data.toString("utf8"));
+
 	const junitSuite = getJunitResults(parserResult);
+
 	const testCaseNodes = getTestCaseNodes(testNode);
 
 	if (
@@ -94,12 +99,16 @@ export async function updateResultFromJunitXml(
 		testCaseNodes.length > 0
 	) {
 		let failures = 0;
+
 		let skipped = 0;
+
 		let errors = 0;
+
 		let passed = 0;
 
 		testCaseNodes.forEach((node) => {
 			const rawTestCaseNode = idToRawData.get(node.id);
+
 			if (!rawTestCaseNode) {
 				return;
 			}
@@ -108,14 +117,20 @@ export async function updateResultFromJunitXml(
 				const idResult = getRunIdFromRawData(
 					`${t.$.classname}::${t.$.name}`,
 				);
+
 				const idNode = rawTestCaseNode.runId;
+
 				return idResult === idNode || idNode.endsWith(idResult);
 			});
+
 			if (result) {
 				if (result.error) {
 					errors += 1;
+
 					const error = result.error[0];
+
 					const text = `${rawTestCaseNode.rawId} Failed with Error: [${error.$.type}]${error.$.message}\r\n${error._}\r\n\r\n`;
+
 					const message = new TestMessage(text);
 
 					if (node.uri && node.range) {
@@ -126,8 +141,11 @@ export async function updateResultFromJunitXml(
 					runInstance.appendOutput(fixLogLines(text));
 				} else if (result.failure) {
 					failures += 1;
+
 					const failure = result.failure[0];
+
 					const text = `${rawTestCaseNode.rawId} Failed: [${failure.$.type}]${failure.$.message}\r\n${failure._}\r\n`;
+
 					const message = new TestMessage(text);
 
 					if (node.uri && node.range) {
@@ -138,7 +156,9 @@ export async function updateResultFromJunitXml(
 					runInstance.appendOutput(fixLogLines(text));
 				} else if (result.skipped) {
 					const skip = result.skipped[0];
+
 					let text = "";
+
 					if (skip.$.type === "pytest.xfail") {
 						passed += 1;
 						// pytest.xfail ==> expected failure via @unittest.expectedFailure
@@ -152,6 +172,7 @@ export async function updateResultFromJunitXml(
 					runInstance.appendOutput(fixLogLines(text));
 				} else {
 					passed += 1;
+
 					const text = `${rawTestCaseNode.rawId} Passed\r\n`;
 					runInstance.passed(node);
 					runInstance.appendOutput(fixLogLines(text));
@@ -159,6 +180,7 @@ export async function updateResultFromJunitXml(
 			} else {
 				const text = `Test result not found for: ${rawTestCaseNode.rawId}\r\n`;
 				runInstance.appendOutput(fixLogLines(text));
+
 				const message = new TestMessage(text);
 
 				if (node.uri && node.range) {

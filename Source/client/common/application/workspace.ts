@@ -85,6 +85,7 @@ export class WorkspaceService implements IWorkspaceService {
 	): Thenable<Uri[]> {
 		const excludePattern =
 			exclude === undefined ? this.searchExcludes : exclude;
+
 		return workspace.findFiles(include, excludePattern, maxResults, token);
 	}
 	public getWorkspaceFolderIdentifier(
@@ -94,6 +95,7 @@ export class WorkspaceService implements IWorkspaceService {
 		const workspaceFolder = resource
 			? workspace.getWorkspaceFolder(resource)
 			: undefined;
+
 		return workspaceFolder
 			? path.normalize(
 					getOSType() === OSType.Windows
@@ -107,6 +109,7 @@ export class WorkspaceService implements IWorkspaceService {
 		const isVirtualWorkspace =
 			workspace.workspaceFolders &&
 			workspace.workspaceFolders.every((f) => f.uri.scheme !== "file");
+
 		return !!isVirtualWorkspace;
 	}
 
@@ -127,9 +130,11 @@ export class WorkspaceService implements IWorkspaceService {
 
 	private get searchExcludes() {
 		const searchExcludes = this.getConfiguration("search.exclude");
+
 		const enabledSearchExcludes = Object.keys(searchExcludes).filter(
 			(key) => searchExcludes.get(key) === true,
 		);
+
 		return `{${enabledSearchExcludes.join(",")}}`;
 	}
 
@@ -137,6 +142,7 @@ export class WorkspaceService implements IWorkspaceService {
 		try {
 			// This is a proposed API hence putting it inside try...catch.
 			const result = await workspace.save(uri);
+
 			return result;
 		} catch (ex) {
 			return undefined;

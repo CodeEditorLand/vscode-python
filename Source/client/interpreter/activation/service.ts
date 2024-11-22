@@ -42,8 +42,11 @@ import { cache } from '../../common/utils/decorators';
 import { getRunPixiPythonCommand } from '../../pythonEnvironments/common/environmentManagers/pixi';
 
 const ENVIRONMENT_PREFIX = 'e8b39361-0157-4923-80e1-22d70d46dee6';
+
 const CACHE_DURATION = 10 * 60 * 1000;
+
 const ENVIRONMENT_TIMEOUT = 30000;
+
 const CONDA_ENVIRONMENT_TIMEOUT = 60_000;
 
 // The shell under which we'll execute activation scripts.
@@ -148,7 +151,9 @@ export class EnvironmentActivationService implements IEnvironmentActivationServi
         // Cache key = resource + interpreter.
         const workspaceKey = this.workspace.getWorkspaceFolderIdentifier(resource);
         interpreter = interpreter ?? (await this.interpreterService.getActiveInterpreter(resource));
+
         const interpreterPath = this.platform.isWindows ? interpreter?.path.toLowerCase() : interpreter?.path;
+
         const cacheKey = `${workspaceKey}_${interpreterPath}_${shell}`;
 
         if (this.activatedEnvVariablesCache.get(cacheKey)?.hasData) {
@@ -157,6 +162,7 @@ export class EnvironmentActivationService implements IEnvironmentActivationServi
 
         // Cache only if successful, else keep trying & failing if necessary.
         const memCache = new InMemoryCache<NodeJS.ProcessEnv | undefined>(CACHE_DURATION);
+
         return this.getActivatedEnvironmentVariablesImpl(resource, interpreter, allowExceptions, shell)
             .then((vars) => {
                 memCache.data = vars;
@@ -166,6 +172,7 @@ export class EnvironmentActivationService implements IEnvironmentActivationServi
                     stopWatch.elapsedTime,
                     { failed: false },
                 );
+
                 return vars;
             })
             .catch((ex) => {
@@ -174,6 +181,7 @@ export class EnvironmentActivationService implements IEnvironmentActivationServi
                     stopWatch.elapsedTime,
                     { failed: true },
                 );
+
                 throw ex;
             });
     }
@@ -185,22 +193,29 @@ export class EnvironmentActivationService implements IEnvironmentActivationServi
         const globalInterpreters = this.interpreterService
             .getInterpreters()
             .filter((i) => !virtualEnvTypes.includes(i.envType));
+
         const interpreterPath =
             globalInterpreters.length > 0 && globalInterpreters[0] ? globalInterpreters[0].path : 'python';
+
         try {
             const [args, parse] = internalScripts.printEnvVariables();
             args.forEach((arg, i) => {
                 args[i] = arg.toCommandArgumentForPythonExt();
             });
+
             const command = `${interpreterPath} ${args.join(' ')}`;
+
             const processService = await this.processServiceFactory.create(resource, { doNotUseCustomEnvs: true });
+
             const result = await processService.shellExec(command, {
                 shell,
                 timeout: ENVIRONMENT_TIMEOUT,
                 maxBuffer: 1000 * 1000,
                 throwOnStdErr: false,
             });
+
             const returnedEnv = this.parseEnvironmentOutput(result.stdout, parse);
+
             return returnedEnv ?? process.env;
         } catch (ex) {
             return process.env;
@@ -212,6 +227,7 @@ export class EnvironmentActivationService implements IEnvironmentActivationServi
         interpreter?: PythonEnvironment,
     ): Promise<string[] | undefined> {
         const shellInfo = defaultShells[this.platform.osType];
+
         if (!shellInfo) {
             return [];
         }
@@ -225,6 +241,7 @@ export class EnvironmentActivationService implements IEnvironmentActivationServi
         shell?: string,
     ): Promise<NodeJS.ProcessEnv | undefined> {
         let shellInfo = defaultShells[this.platform.osType];
+
         if (!shellInfo) {
             return undefined;
         }
@@ -234,27 +251,35 @@ export class EnvironmentActivationService implements IEnvironmentActivationServi
         }
         try {
             const processService = await this.processServiceFactory.create(resource);
+
             const customEnvVars = (await this.envVarsService.getEnvironmentVariables(resource)) ?? {};
+
             const hasCustomEnvVars = Object.keys(customEnvVars).length;
+
             const env = hasCustomEnvVars ? customEnvVars : { ...this.currentProcess.env };
 
             let command: string | undefined;
+
             const [args, parse] = internalScripts.printEnvVariables();
             args.forEach((arg, i) => {
                 args[i] = arg.toCommandArgumentForPythonExt();
             });
+
             if (interpreter?.envType === EnvironmentType.Conda) {
                 const conda = await Conda.getConda(shell);
+
                 const pythonArgv = await conda?.getRunPythonArgs({
                     name: interpreter.envName,
                     prefix: interpreter.envPath ?? '',
                 });
+
                 if (pythonArgv) {
                     // Using environment prefix isn't needed as the marker script already takes care of it.
                     command = [...pythonArgv, ...args].map((arg) => arg.toCommandArgumentForPythonExt()).join(' ');
                 }
             } else if (interpreter?.envType === EnvironmentType.Pixi) {
                 const pythonArgv = await getRunPixiPythonCommand(interpreter.path);
+
                 if (pythonArgv) {
                     command = [...pythonArgv, ...args].map((arg) => arg.toCommandArgumentForPythonExt()).join(' ');
                 }
@@ -268,9 +293,11 @@ export class EnvironmentActivationService implements IEnvironmentActivationServi
                 traceVerbose(
                     `Activation Commands received ${activationCommands} for shell ${shellInfo.shell}, resource ${resource?.fsPath} and interpreter ${interpreter?.path}`,
                 );
+
                 if (!activationCommands || !Array.isArray(activationCommands) || activationCommands.length === 0) {
                     if (interpreter && [EnvironmentType.Venv, EnvironmentType.Pyenv].includes(interpreter?.envType)) {
                         const key = getSearchPathEnvVarNames()[0];
+
                         if (env[key]) {
                             env[key] = `${path.dirname(interpreter.path)}${path.delimiter}${env[key]}`;
                         } else {
@@ -310,8 +337,11 @@ export class EnvironmentActivationService implements IEnvironmentActivationServi
             // 2) Retry because of this issue here: https://github.com/microsoft/vscode-python/issues/9244
             // This happens on AzDo machines a bunch when using Conda (and we can't dictate the conda version in order to get the fix)
             let result: ExecutionResult<string> | undefined;
+
             let tryCount = 1;
+
             let returnedEnv: NodeJS.ProcessEnv | undefined;
+
             while (!result) {
                 try {
                     result = await processService.shellExec(command, {
@@ -337,6 +367,7 @@ export class EnvironmentActivationService implements IEnvironmentActivationServi
                     if (result.stderr) {
                         if (returnedEnv) {
                             traceWarn('Got env variables but with errors', result.stderr, returnedEnv);
+
                             if (
                                 result.stderr.includes('running scripts is disabled') ||
                                 result.stderr.includes('FullyQualifiedErrorId : UnauthorizedAccess')
@@ -353,9 +384,11 @@ export class EnvironmentActivationService implements IEnvironmentActivationServi
                     // Special case. Conda for some versions will state a file is in use. If
                     // that's the case, wait and try again. This happens especially on AzDo
                     const excString = (exc as Error).toString();
+
                     if (condaRetryMessages.find((m) => excString.includes(m)) && tryCount < 10) {
                         traceInfo(`Conda is busy, attempting to retry ...`);
                         result = undefined;
+
                         tryCount += 1;
                         await sleep(500);
                     } else {
@@ -394,7 +427,9 @@ export class EnvironmentActivationService implements IEnvironmentActivationServi
             return parse(output);
         }
         output = output.substring(output.indexOf(ENVIRONMENT_PREFIX) + ENVIRONMENT_PREFIX.length);
+
         const js = output.substring(output.indexOf('{')).trim();
+
         return parse(js);
     }
 }

@@ -39,7 +39,9 @@ export class AttachProcessProviderFactory
 			this.platformService,
 			this.processServiceFactory,
 		);
+
 		const picker = new AttachPicker(this.applicationShell, provider);
+
 		const disposable = this.commandManager.registerCommand(
 			Commands.PickLocalProcess,
 			() => picker.showQuickPick(),

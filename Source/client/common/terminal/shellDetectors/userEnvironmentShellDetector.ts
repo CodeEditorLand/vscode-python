@@ -31,6 +31,7 @@ export class UserEnvironmentShellDetector extends BaseShellDetector {
     ): TerminalShellType | undefined {
         const shellPath = this.getDefaultPlatformShell();
         telemetryProperties.hasShellInEnv = !!shellPath;
+
         const shell = this.identifyShellFromShellPath(shellPath);
 
         if (shell !== TerminalShellType.other) {
@@ -57,10 +58,13 @@ function getDefaultShell(platform: IPlatformService, currentProcess: ICurrentPro
 }
 function getTerminalDefaultShellWindows(platform: IPlatformService, currentProcess: ICurrentProcess): string {
     const isAtLeastWindows10 = parseFloat(platform.osRelease) >= 10;
+
     const is32ProcessOn64Windows = currentProcess.env.hasOwnProperty('PROCESSOR_ARCHITEW6432');
+
     const powerShellPath = `${currentProcess.env.windir}\\${
         is32ProcessOn64Windows ? 'Sysnative' : 'System32'
     }\\WindowsPowerShell\\v1.0\\powershell.exe`;
+
     return isAtLeastWindows10 ? powerShellPath : getWindowsShell(currentProcess);
 }
 

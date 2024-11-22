@@ -80,6 +80,7 @@ export class WorkspaceVirtualEnvironmentLocator extends FSWatchingLocator {
 	protected doIterEnvs(): IPythonEnvsIterator<BasicEnvInfo> {
 		async function* iterator(root: string) {
 			const envRootDirs = await getWorkspaceVirtualEnvDirs(root);
+
 			const envGenerators = envRootDirs.map((envRootDir) => {
 				async function* generator() {
 					traceVerbose(
@@ -102,6 +103,7 @@ export class WorkspaceVirtualEnvironmentLocator extends FSWatchingLocator {
 							// check multiple times. Those checks are file system heavy and
 							// we can use the kind to determine this anyway.
 							const kind = await getVirtualEnvKind(filename);
+
 							yield { kind, executablePath: filename };
 							traceVerbose(
 								`Workspace Virtual Environment: [added] ${filename}`,

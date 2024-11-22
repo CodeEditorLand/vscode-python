@@ -35,6 +35,7 @@ export async function promptForPylanceInstall(
 			.inspect<string>("languageServer");
 
 		let target: ConfigurationTarget | undefined;
+
 		if (inspection?.workspaceValue) {
 			target = ConfigurationTarget.Workspace;
 		} else if (inspection?.globalValue) {
@@ -123,6 +124,7 @@ export class LanguageServerChangeHandler implements Disposable {
 		const oldInstallState = this.pylanceInstalled;
 
 		this.pylanceInstalled = this.isPylanceInstalled();
+
 		if (oldInstallState === this.pylanceInstalled) {
 			this.pylanceInstallCompletedDeferred.resolve();
 		}

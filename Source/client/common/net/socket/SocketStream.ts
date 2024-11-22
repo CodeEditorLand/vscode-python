@@ -28,6 +28,7 @@ export class SocketStream {
 	public WriteString(value: string) {
 		const stringBuffer = Buffer.from(value, "utf-8");
 		this.WriteInt32(stringBuffer.length);
+
 		if (stringBuffer.length > 0) {
 			this.socket.write(stringBuffer);
 		}
@@ -79,6 +80,7 @@ export class SocketStream {
 	public Append(additionalData: Buffer) {
 		if (this.buffer.length === 0) {
 			this.buffer = additionalData;
+
 			return;
 		}
 		const newBuffer = Buffer.alloc(
@@ -103,6 +105,7 @@ export class SocketStream {
 		}
 
 		const value = this.buffer.slice(this.bytesRead, this.bytesRead + 1)[0];
+
 		if (this.isInTransaction) {
 			this.bytesRead += 1;
 		} else {
@@ -113,6 +116,7 @@ export class SocketStream {
 
 	public ReadString(): string {
 		const byteRead = this.ReadByte();
+
 		if (this.HasInsufficientDataForReading) {
 			return null as any;
 		}
@@ -124,15 +128,21 @@ export class SocketStream {
 		}
 
 		const type = Buffer.from([byteRead]).toString();
+
 		let isUnicode = false;
+
 		switch (type) {
 			case "N": // null string
 				return null as any;
+
 			case "U":
 				isUnicode = true;
+
 				break;
+
 			case "A": {
 				isUnicode = false;
+
 				break;
 			}
 			default: {
@@ -143,6 +153,7 @@ export class SocketStream {
 		}
 
 		const len = this.ReadInt32();
+
 		if (this.HasInsufficientDataForReading) {
 			return null as any;
 		}
@@ -155,6 +166,7 @@ export class SocketStream {
 			this.bytesRead,
 			this.bytesRead + len,
 		);
+
 		if (this.isInTransaction) {
 			this.bytesRead = this.bytesRead + len;
 		} else {
@@ -195,6 +207,7 @@ export class SocketStream {
 			this.bytesRead,
 			this.bytesRead + length,
 		);
+
 		if (this.isInTransaction) {
 			this.bytesRead = this.bytesRead + length;
 		} else {
@@ -205,22 +218,27 @@ export class SocketStream {
 
 	private readValueInTransaction<T>(dataType: DataType): T {
 		let startedTransaction = false;
+
 		if (!this.isInTransaction) {
 			this.BeginTransaction();
 			startedTransaction = true;
 		}
 		let data: any;
+
 		switch (dataType) {
 			case DataType.string: {
 				data = this.ReadString();
+
 				break;
 			}
 			case DataType.int32: {
 				data = this.ReadInt32();
+
 				break;
 			}
 			case DataType.int64: {
 				data = this.ReadInt64();
+
 				break;
 			}
 			default: {
