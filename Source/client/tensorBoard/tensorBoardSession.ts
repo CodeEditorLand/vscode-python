@@ -63,6 +63,7 @@ import {
 enum Messages {
 	JumpToSource = "jump_to_source",
 }
+
 const TensorBoardSemVerRequirement = ">= 2.4.1";
 
 const TorchProfilerSemVerRequirement = ">= 0.2.0";
