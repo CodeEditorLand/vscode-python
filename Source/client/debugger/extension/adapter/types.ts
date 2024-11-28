@@ -4,6 +4,7 @@
 "use strict";
 
 export const IPromptShowState = Symbol("IPromptShowState");
+
 export interface IPromptShowState {
 	shouldShowPrompt(): boolean;
 

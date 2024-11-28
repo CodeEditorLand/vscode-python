@@ -30,7 +30,9 @@ import {
 import { getRegistryInterpreters } from "../windowsUtils";
 
 export const AnacondaCompanyName = "Anaconda, Inc.";
+
 export const CONDAPATH_SETTING_KEY = "condaPath";
+
 export type CondaEnvironmentInfo = {
 	name: string;
 	path: string;
@@ -278,6 +280,7 @@ export function getCondaInterpreterPath(condaEnvironmentPath: string): string {
 
 // Minimum version number of conda required to be able to use 'conda run' with '--no-capture-output' flag.
 export const CONDA_RUN_VERSION = "4.9.0";
+
 export const CONDA_ACTIVATION_TIMEOUT = 45000;
 
 const CONDA_GENERAL_TIMEOUT = 45000;

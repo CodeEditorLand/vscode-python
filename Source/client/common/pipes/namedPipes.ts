@@ -15,6 +15,7 @@ import { isWindows } from "../platform/platformService";
 import { createDeferred } from "../utils/async";
 
 const { XDG_RUNTIME_DIR } = process.env;
+
 export function generateRandomPipeName(prefix: string): string {
 	// length of 10 picked because of the name length restriction for sockets
 	const randomSuffix = crypto.randomBytes(10).toString("hex");

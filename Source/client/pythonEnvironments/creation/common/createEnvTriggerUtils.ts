@@ -14,6 +14,7 @@ import { traceVerbose } from "../../../logging";
 import { getPipRequirementsFiles } from "../provider/venvUtils";
 
 export const CREATE_ENV_TRIGGER_SETTING_PART = "createEnvironment.trigger";
+
 export const CREATE_ENV_TRIGGER_SETTING = `python.${CREATE_ENV_TRIGGER_SETTING_PART}`;
 
 export async function fileContainsInlineDependencies(

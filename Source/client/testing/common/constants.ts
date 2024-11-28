@@ -6,5 +6,7 @@ export const UNIT_TEST_PRODUCTS: UnitTestProduct[] = [
 	Product.pytest,
 	Product.unittest,
 ];
+
 export const PYTEST_PROVIDER: TestProvider = "pytest";
+
 export const UNITTEST_PROVIDER: TestProvider = "unittest";

@@ -24,6 +24,7 @@ export type PythonEnvironmentsChangedEvent = {
 };
 
 export const IComponentAdapter = Symbol("IComponentAdapter");
+
 export interface IComponentAdapter {
 	readonly onProgress: Event<ProgressNotificationEvent>;
 	triggerRefresh(
@@ -106,6 +107,7 @@ export interface ICondaService {
 }
 
 export const IInterpreterService = Symbol("IInterpreterService");
+
 export interface IInterpreterService {
 	triggerRefresh(
 		query?: PythonLocatorQuery,
@@ -147,6 +149,7 @@ export interface IInterpreterService {
 }
 
 export const IInterpreterDisplay = Symbol("IInterpreterDisplay");
+
 export interface IInterpreterDisplay {
 	refresh(resource?: Uri): Promise<void>;
 	registerVisibilityFilter(
@@ -155,6 +158,7 @@ export interface IInterpreterDisplay {
 }
 
 export const IInterpreterHelper = Symbol("IInterpreterHelper");
+
 export interface IInterpreterHelper {
 	getActiveWorkspaceUri(resource: Resource): WorkspacePythonPath | undefined;
 
@@ -193,6 +197,7 @@ export type WorkspacePythonPath = {
 export const IActivatedEnvironmentLaunch = Symbol(
 	"IActivatedEnvironmentLaunch",
 );
+
 export interface IActivatedEnvironmentLaunch {
 	selectIfLaunchedViaActivatedEnv(
 		doNotBlockOnSelection?: boolean,

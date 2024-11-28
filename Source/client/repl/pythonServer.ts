@@ -15,6 +15,7 @@ const SERVER_PATH = path.join(
 );
 
 let serverInstance: PythonServer | undefined;
+
 export interface ExecutionResult {
 	status: boolean;
 	output: string;

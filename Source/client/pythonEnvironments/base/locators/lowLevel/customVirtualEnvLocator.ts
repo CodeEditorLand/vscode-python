@@ -38,6 +38,7 @@ import { traceError, traceInfo, traceVerbose } from "../../../../logging";
 const DEFAULT_SEARCH_DEPTH = 2;
 
 export const VENVPATH_SETTING_KEY = "venvPath";
+
 export const VENVFOLDERS_SETTING_KEY = "venvFolders";
 
 /**

@@ -10,12 +10,14 @@ import {
 } from "vscode";
 
 export const IDebugConfigurationService = Symbol("IDebugConfigurationService");
+
 export interface IDebugConfigurationService
 	extends DebugConfigurationProvider {}
 
 export const IDebugAdapterDescriptorFactory = Symbol(
 	"IDebugAdapterDescriptorFactory",
 );
+
 export interface IDebugAdapterDescriptorFactory
 	extends DebugAdapterDescriptorFactory {}
 

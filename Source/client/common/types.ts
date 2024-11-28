@@ -33,19 +33,28 @@ export interface IDisposable {
 }
 
 export const ILogOutputChannel = Symbol("ILogOutputChannel");
+
 export interface ILogOutputChannel extends LogOutputChannel {}
 export const ITestOutputChannel = Symbol("ITestOutputChannel");
+
 export interface ITestOutputChannel extends OutputChannel {}
 export const IDocumentSymbolProvider = Symbol("IDocumentSymbolProvider");
+
 export interface IDocumentSymbolProvider extends DocumentSymbolProvider {}
 export const IsWindows = Symbol("IS_WINDOWS");
+
 export const IDisposableRegistry = Symbol("IDisposableRegistry");
+
 export type IDisposableRegistry = IDisposable[];
+
 export const IMemento = Symbol("IGlobalMemento");
+
 export const GLOBAL_MEMENTO = Symbol("IGlobalMemento");
+
 export const WORKSPACE_MEMENTO = Symbol("IWorkspaceMemento");
 
 export type Resource = Uri | undefined;
+
 export interface IPersistentState<T> {
 	/**
 	 * Storage is exposed in this type to make sure folks always use persistent state
@@ -140,6 +149,7 @@ export interface IInstaller {
 // TODO: Drop IPathUtils in favor of IFileSystemPathUtils.
 // See https://github.com/microsoft/vscode-python/issues/8542.
 export const IPathUtils = Symbol("IPathUtils");
+
 export interface IPathUtils {
 	readonly delimiter: string;
 	readonly home: string;
@@ -157,11 +167,13 @@ export interface IPathUtils {
 }
 
 export const IRandom = Symbol("IRandom");
+
 export interface IRandom {
 	getRandomInt(min?: number, max?: number): number;
 }
 
 export const ICurrentProcess = Symbol("ICurrentProcess");
+
 export interface ICurrentProcess {
 	readonly env: EnvironmentVariables;
 	readonly argv: string[];
@@ -239,6 +251,7 @@ export interface IAutoCompleteSettings {
 }
 
 export const IConfigurationService = Symbol("IConfigurationService");
+
 export interface IConfigurationService {
 	readonly onDidChange: Event<ConfigurationChangeEvent | undefined>;
 
@@ -265,6 +278,7 @@ export interface IConfigurationService {
  * common interface to all the components.
  */
 export const IToolExecutionPath = Symbol("IToolExecutionPath");
+
 export interface IToolExecutionPath {
 	readonly executable: string;
 }
@@ -274,6 +288,7 @@ export enum ToolExecutionPath {
 }
 
 export const ISocketServer = Symbol("ISocketServer");
+
 export interface ISocketServer extends Disposable {
 	readonly client: Promise<Socket>;
 	Start(options?: { port?: number; host?: string }): Promise<number>;
@@ -295,9 +310,11 @@ export type DownloadOptions = {
 };
 
 export const IExtensionContext = Symbol("ExtensionContext");
+
 export interface IExtensionContext extends ExtensionContext {}
 
 export const IExtensions = Symbol("IExtensions");
+
 export interface IExtensions {
 	/**
 	 * All extensions currently known to the system.
@@ -338,6 +355,7 @@ export interface IExtensions {
 }
 
 export const IBrowserService = Symbol("IBrowserService");
+
 export interface IBrowserService {
 	launch(url: string): void;
 }
@@ -354,6 +372,7 @@ export interface IHashFormat {
  * Experiment service leveraging VS Code's experiment framework.
  */
 export const IExperimentService = Symbol("IExperimentService");
+
 export interface IExperimentService {
 	activate(): Promise<void>;
 	inExperiment(experimentName: string): Promise<boolean>;
@@ -368,6 +387,7 @@ export type InterpreterConfigurationScope = {
 	uri: Resource;
 	configTarget: ConfigurationTarget;
 };
+
 export type InspectInterpreterSettingType = {
 	globalValue?: string;
 	workspaceValue?: string;
@@ -378,6 +398,7 @@ export type InspectInterpreterSettingType = {
  * Interface used to access current Interpreter Path
  */
 export const IInterpreterPathService = Symbol("IInterpreterPathService");
+
 export interface IInterpreterPathService {
 	onDidChange: Event<InterpreterConfigurationScope>;
 

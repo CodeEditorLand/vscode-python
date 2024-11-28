@@ -18,6 +18,7 @@ import { LaunchRequestArguments } from "../../../types";
 export const IDebugEnvironmentVariablesService = Symbol(
 	"IDebugEnvironmentVariablesService",
 );
+
 export interface IDebugEnvironmentVariablesService {
 	getEnvironmentVariables(
 		args: LaunchRequestArguments,

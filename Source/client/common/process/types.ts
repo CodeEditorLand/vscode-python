@@ -20,6 +20,7 @@ export type Output<T extends string | Buffer> = {
 	source: "stdout" | "stderr";
 	out: T;
 };
+
 export type ObservableExecutionResult<T extends string | Buffer> = {
 	proc: ChildProcess | undefined;
 	out: Observable<Output<T>>;
@@ -49,6 +50,7 @@ export type ExecutionResult<T extends string | Buffer> = {
 };
 
 export const IProcessLogger = Symbol("IProcessLogger");
+
 export interface IProcessLogger {
 	/**
 	 * Pass `args` as `undefined` if first argument is supposed to be a shell command.
@@ -97,10 +99,12 @@ export interface IProcessServiceFactory {
 }
 
 export const IPythonExecutionFactory = Symbol("IPythonExecutionFactory");
+
 export type ExecutionFactoryCreationOptions = {
 	resource?: Uri;
 	pythonPath?: string;
 };
+
 export type ExecutionFactoryCreateWithEnvironmentOptions = {
 	resource?: Uri;
 	interpreter?: PythonEnvironment;
@@ -112,6 +116,7 @@ export type ExecutionFactoryCreateWithEnvironmentOptions = {
 	 * @type {boolean}
 	 */
 };
+
 export interface IPythonExecutionFactory {
 	create(
 		options: ExecutionFactoryCreationOptions,

@@ -137,6 +137,7 @@ export interface ITerminalHelper {
 }
 
 export const ITerminalActivator = Symbol("ITerminalActivator");
+
 export type TerminalActivationOptions = {
 	resource?: Resource;
 	preserveFocus?: boolean;
@@ -144,6 +145,7 @@ export type TerminalActivationOptions = {
 	// When sending commands to the terminal, do not display the terminal.
 	hideFromUser?: boolean;
 };
+
 export interface ITerminalActivator {
 	activateEnvironmentInTerminal(
 		terminal: Terminal,
@@ -170,6 +172,7 @@ export interface ITerminalActivationCommandProvider {
 }
 
 export const ITerminalActivationHandler = Symbol("ITerminalActivationHandler");
+
 export interface ITerminalActivationHandler {
 	handleActivation(
 		terminal: Terminal,

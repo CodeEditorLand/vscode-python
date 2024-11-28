@@ -36,9 +36,12 @@ import { SystemVariables } from "./variables/systemVariables";
 
 export const remoteWorkspaceKeysForWhichTheCopyIsDone_Key =
 	"remoteWorkspaceKeysForWhichTheCopyIsDone_Key";
+
 export const remoteWorkspaceFolderKeysForWhichTheCopyIsDone_Key =
 	"remoteWorkspaceFolderKeysForWhichTheCopyIsDone_Key";
+
 export const isRemoteGlobalSettingCopiedKey = "isRemoteGlobalSettingCopiedKey";
+
 export const defaultInterpreterPathSetting: keyof IPythonSettings =
 	"defaultInterpreterPath";
 

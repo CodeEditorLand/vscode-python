@@ -10,6 +10,7 @@ export interface IPythonPathUpdaterService {
 export const IPythonPathUpdaterServiceFactory = Symbol(
 	"IPythonPathUpdaterServiceFactory",
 );
+
 export interface IPythonPathUpdaterServiceFactory {
 	getGlobalPythonPathConfigurationService(): IPythonPathUpdaterService;
 
@@ -25,6 +26,7 @@ export interface IPythonPathUpdaterServiceFactory {
 export const IPythonPathUpdaterServiceManager = Symbol(
 	"IPythonPathUpdaterServiceManager",
 );
+
 export interface IPythonPathUpdaterServiceManager {
 	updatePythonPath(
 		pythonPath: string | undefined,
@@ -35,6 +37,7 @@ export interface IPythonPathUpdaterServiceManager {
 }
 
 export const IInterpreterSelector = Symbol("IInterpreterSelector");
+
 export interface IInterpreterSelector extends Disposable {
 	getRecommendedSuggestion(
 		suggestions: IInterpreterQuickPickItem[],
@@ -72,6 +75,7 @@ export interface ISpecialQuickPickItem extends QuickPickItem {
 }
 
 export const IInterpreterComparer = Symbol("IInterpreterComparer");
+
 export interface IInterpreterComparer {
 	initialize(resource: Resource): Promise<void>;
 	compare(a: PythonEnvironment, b: PythonEnvironment): number;
@@ -108,6 +112,7 @@ export interface InterpreterQuickPickParams {
 }
 
 export const IInterpreterQuickPick = Symbol("IInterpreterQuickPick");
+
 export interface IInterpreterQuickPick {
 	getInterpreterViaQuickPick(
 		workspace: Resource,

@@ -566,6 +566,7 @@ function getPythonSettingAndUntildify<T>(
 }
 
 let _finder: NativePythonFinder | undefined;
+
 export function getNativePythonFinder(
 	context?: IExtensionContext,
 ): NativePythonFinder {

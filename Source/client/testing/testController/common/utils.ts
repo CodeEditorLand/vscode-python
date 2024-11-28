@@ -72,8 +72,11 @@ export interface ExtractOutput {
 }
 
 export const JSONRPC_UUID_HEADER = "Request-uuid";
+
 export const JSONRPC_CONTENT_LENGTH_HEADER = "Content-Length";
+
 export const JSONRPC_CONTENT_TYPE_HEADER = "Content-Type";
+
 export const MESSAGE_ON_TESTING_OUTPUT_MOVE =
 	"Starting now, all test run output will be sent to the Test Result panel," +
 	' while test discovery output will be sent to the "Python" output channel instead of the "Python Test Log" channel.' +

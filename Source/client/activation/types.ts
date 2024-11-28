@@ -56,6 +56,7 @@ export enum LanguageServerType {
 }
 
 export const ILanguageServerActivator = Symbol("ILanguageServerActivator");
+
 export interface ILanguageServerActivator {
 	start(
 		resource: Resource,
@@ -66,6 +67,7 @@ export interface ILanguageServerActivator {
 }
 
 export const ILanguageClientFactory = Symbol("ILanguageClientFactory");
+
 export interface ILanguageClientFactory {
 	createLanguageClient(
 		resource: Resource,
@@ -77,6 +79,7 @@ export interface ILanguageClientFactory {
 export const ILanguageServerAnalysisOptions = Symbol(
 	"ILanguageServerAnalysisOptions",
 );
+
 export interface ILanguageServerAnalysisOptions extends IDisposable {
 	readonly onDidChange: Event<void>;
 	initialize(
@@ -87,6 +90,7 @@ export interface ILanguageServerAnalysisOptions extends IDisposable {
 	getAnalysisOptions(): Promise<LanguageClientOptions>;
 }
 export const ILanguageServerManager = Symbol("ILanguageServerManager");
+
 export interface ILanguageServerManager extends IDisposable {
 	start(
 		resource: Resource,
@@ -97,6 +101,7 @@ export interface ILanguageServerManager extends IDisposable {
 }
 
 export const ILanguageServerProxy = Symbol("ILanguageServerProxy");
+
 export interface ILanguageServerProxy extends IDisposable {
 	start(
 		resource: Resource,
@@ -115,6 +120,7 @@ export interface ILanguageServerProxy extends IDisposable {
 export const ILanguageServerOutputChannel = Symbol(
 	"ILanguageServerOutputChannel",
 );
+
 export interface ILanguageServerOutputChannel {
 	/**
 	 * Creates output channel if necessary and returns it

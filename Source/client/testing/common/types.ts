@@ -62,6 +62,7 @@ export enum TestFilter {
 // interfaces
 
 export const ITestsHelper = Symbol("ITestsHelper");
+
 export interface ITestsHelper {
 	parseProviderName(product: UnitTestProduct): TestProvider;
 	parseProduct(provider: TestProvider): UnitTestProduct;
@@ -70,6 +71,7 @@ export interface ITestsHelper {
 }
 
 export const ITestConfigurationService = Symbol("ITestConfigurationService");
+
 export interface ITestConfigurationService {
 	hasConfiguredTests(wkspace: Uri): boolean;
 	displayTestFrameworkError(wkspace: Uri): Promise<void>;
@@ -81,6 +83,7 @@ export interface ITestConfigurationService {
 }
 
 export const ITestConfigSettingsService = Symbol("ITestConfigSettingsService");
+
 export interface ITestConfigSettingsService {
 	updateTestArgs(
 		testDirectory: string | Uri,
@@ -109,6 +112,7 @@ export interface ITestConfigurationManager {
 export const ITestConfigurationManagerFactory = Symbol(
 	"ITestConfigurationManagerFactory",
 );
+
 export interface ITestConfigurationManagerFactory {
 	create(
 		wkspace: Uri,
@@ -117,6 +121,7 @@ export interface ITestConfigurationManagerFactory {
 	): ITestConfigurationManager;
 }
 export const ITestDebugLauncher = Symbol("ITestDebugLauncher");
+
 export interface ITestDebugLauncher {
 	launchDebugger(
 		options: LaunchOptions,
@@ -126,6 +131,7 @@ export interface ITestDebugLauncher {
 }
 
 export const IUnitTestSocketServer = Symbol("IUnitTestSocketServer");
+
 export interface IUnitTestSocketServer extends Disposable {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	on(event: string | symbol, listener: (...args: any[]) => void): this;
@@ -135,6 +141,7 @@ export interface IUnitTestSocketServer extends Disposable {
 }
 
 export const ITestRunner = Symbol("ITestRunner");
+
 export interface ITestRunner {
 	run(testProvider: TestProvider, options: Options): Promise<string>;
 }

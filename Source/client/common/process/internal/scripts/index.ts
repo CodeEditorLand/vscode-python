@@ -32,6 +32,7 @@ export * as testingTools from "./testing_tools";
 
 type ReleaseLevel = "alpha" | "beta" | "candidate" | "final";
 type PythonVersionInfo = [number, number, number, ReleaseLevel, number];
+
 export type InterpreterInfoJson = {
 	versionInfo: PythonVersionInfo;
 	sysPrefix: string;

@@ -20,6 +20,7 @@ export interface IAttachProcessProvider {
 export const IAttachProcessProviderFactory = Symbol(
 	"IAttachProcessProviderFactory",
 );
+
 export interface IAttachProcessProviderFactory {
 	registerCommands(): void;
 }

@@ -23,6 +23,7 @@ import { IServiceContainer } from "../../ioc/types";
 import { traceError, traceVerbose } from "../../logging";
 
 let internalServiceContainer: IServiceContainer;
+
 export function initializeExternalDependencies(
 	serviceContainer: IServiceContainer,
 ): void {

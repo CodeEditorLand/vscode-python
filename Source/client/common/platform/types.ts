@@ -10,8 +10,11 @@ import { Architecture, OSType } from "../utils/platform";
 
 // We could use FileType from utils/filesystem.ts, but it's simpler this way.
 export import FileType = vscode.FileType;
+
 export import FileStat = vscode.FileStat;
+
 export type ReadStream = fs.ReadStream;
+
 export type WriteStream = fs.WriteStream;
 
 //= ==========================
@@ -23,6 +26,7 @@ export enum RegistryHive {
 }
 
 export const IRegistry = Symbol("IRegistry");
+
 export interface IRegistry {
 	getKeys(
 		key: string,
@@ -42,6 +46,7 @@ export interface IRegistry {
 // platform
 
 export const IPlatformService = Symbol("IPlatformService");
+
 export interface IPlatformService {
 	readonly osType: OSType;
 	osRelease: string;
@@ -204,6 +209,7 @@ export interface IFileSystemUtils {
 // See https://github.com/microsoft/vscode-python/issues/8542.
 
 export const IFileSystem = Symbol("IFileSystem");
+
 export interface IFileSystem {
 	// path-related
 	directorySeparatorChar: string;

@@ -13,6 +13,7 @@ type ExecuteVSCCommandOption = CommandOption<
 	"executeVSCCommand",
 	CommandsWithoutArgs
 >;
+
 export type CommandOptions =
 	| LaunchBrowserOption
 	| IgnoreDiagnosticOption

@@ -8,6 +8,7 @@ import { CancellationToken, DebugConfiguration, WorkspaceFolder } from "vscode";
 export const IDebugConfigurationResolver = Symbol(
 	"IDebugConfigurationResolver",
 );
+
 export interface IDebugConfigurationResolver<T extends DebugConfiguration> {
 	resolveDebugConfiguration(
 		folder: WorkspaceFolder | undefined,

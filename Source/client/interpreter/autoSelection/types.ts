@@ -35,6 +35,7 @@ export interface IInterpreterAutoSelectionProxyService {
 export const IInterpreterAutoSelectionService = Symbol(
 	"IInterpreterAutoSelectionService",
 );
+
 export interface IInterpreterAutoSelectionService
 	extends IInterpreterAutoSelectionProxyService {
 	readonly onDidChangeAutoSelectedInterpreter: Event<void>;

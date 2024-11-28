@@ -10,6 +10,7 @@ import { PythonEnvironment } from "../../pythonEnvironments/info";
 export const IEnvironmentActivationService = Symbol(
 	"IEnvironmentActivationService",
 );
+
 export interface IEnvironmentActivationService {
 	getProcessEnvironmentVariables(
 		resource: Resource,

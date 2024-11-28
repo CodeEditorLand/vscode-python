@@ -25,6 +25,7 @@ const DEFAULT_OPTS: TraceOptions =
 	TraceOptions.Arguments | TraceOptions.ReturnValue;
 
 let loggers: ILogging[] = [];
+
 export function registerLogger(logger: ILogging): Disposable {
 	loggers.push(logger);
 

@@ -12,6 +12,7 @@ export type TestProvider = "pytest" | "unittest";
 // interfaces
 
 export const ITestingService = Symbol("ITestingService");
+
 export interface ITestingService {
 	getSettingsPropertyNames(product: Product): TestSettingsPropertyNames;
 }

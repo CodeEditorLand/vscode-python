@@ -107,6 +107,7 @@ export interface TerminalExecutedCommand {
 }
 
 export const IApplicationShell = Symbol("IApplicationShell");
+
 export interface IApplicationShell {
 	/**
 	 * An event that is emitted when a terminal with shell integration activated has completed
@@ -628,6 +629,7 @@ export interface ICommandManager {
 }
 
 export const IContextKeyManager = Symbol("IContextKeyManager");
+
 export interface IContextKeyManager {
 	setContext(key: ExtensionContextKey, value: boolean): Promise<void>;
 }
@@ -635,6 +637,7 @@ export interface IContextKeyManager {
 export const IJupyterExtensionDependencyManager = Symbol(
 	"IJupyterExtensionDependencyManager",
 );
+
 export interface IJupyterExtensionDependencyManager {
 	readonly isJupyterExtensionInstalled: boolean;
 }
@@ -1156,6 +1159,7 @@ export interface IDebugService {
 }
 
 export const IApplicationEnvironment = Symbol("IApplicationEnvironment");
+
 export interface IApplicationEnvironment {
 	/**
 	 * The application name of the editor, like 'VS Code'.
@@ -1264,6 +1268,7 @@ export interface IApplicationEnvironment {
 }
 
 export const ILanguageService = Symbol("ILanguageService");
+
 export interface ILanguageService {
 	/**
 	 * Register a completion provider.
@@ -1290,11 +1295,13 @@ export interface ILanguageService {
  * Wraps the `ActiveResourceService` API class. Created for injecting and mocking class methods in testing
  */
 export const IActiveResourceService = Symbol("IActiveResourceService");
+
 export interface IActiveResourceService {
 	getActiveResource(): Resource;
 }
 
 export const IClipboard = Symbol("IClipboard");
+
 export interface IClipboard {
 	/**
 	 * Read the current clipboard contents as text.

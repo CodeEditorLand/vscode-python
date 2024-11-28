@@ -88,6 +88,7 @@ export function _resetSharedProperties(): void {
 }
 
 let telemetryReporter: TelemetryReporter | undefined;
+
 export function getTelemetryReporter(): TelemetryReporter {
 	if (!isTestExecution() && telemetryReporter) {
 		return telemetryReporter;
@@ -307,6 +308,7 @@ export function captureTelemetry<
 }
 
 // function sendTelemetryWhenDone<T extends IDSMappings, K extends keyof T>(eventName: K, properties?: T[K]);
+
 export function sendTelemetryWhenDone<
 	P extends IEventNamePropertyMapping,
 	E extends keyof P,

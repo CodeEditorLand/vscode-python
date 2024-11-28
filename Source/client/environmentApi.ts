@@ -66,6 +66,7 @@ type ActiveEnvironmentChangeEvent = {
 
 const onDidActiveInterpreterChangedEvent =
 	new EventEmitter<ActiveEnvironmentPathChangeEvent>();
+
 export function reportActiveInterpreterChanged(
 	e: ActiveEnvironmentChangeEvent,
 ): void {

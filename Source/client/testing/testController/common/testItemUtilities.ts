@@ -30,6 +30,7 @@ import {
 
 // Todo: Use `TestTag` when the proposed API gets into stable.
 export const RunTestTag = { id: "python-run" };
+
 export const DebugTestTag = { id: "python-debug" };
 
 function testItemCollectionToArray(collection: TestItemCollection): TestItem[] {

@@ -35,6 +35,7 @@ import { VariablesProvider } from "./variables/variablesProvider";
 
 export const NATIVE_REPL_URI_MEMENTO = "nativeReplUri";
 let nativeRepl: NativeRepl | undefined;
+
 export class NativeRepl implements Disposable {
 	// Adding ! since it will get initialized in create method, not the constructor.
 	private pythonServer!: PythonServer;

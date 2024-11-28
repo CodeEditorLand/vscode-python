@@ -41,6 +41,7 @@ export interface TestData {
 }
 
 export const ITestDiscoveryHelper = Symbol("ITestDiscoveryHelper");
+
 export interface ITestDiscoveryHelper {
 	runTestDiscovery(
 		options: TestDiscoveryOptions,
@@ -50,6 +51,7 @@ export interface ITestDiscoveryHelper {
 export type TestRefreshOptions = { forceRefresh: boolean };
 
 export const ITestController = Symbol("ITestController");
+
 export interface ITestController {
 	refreshTestData(
 		resource?: Uri,
@@ -69,6 +71,7 @@ export interface ITestRun {
 }
 
 export const ITestFrameworkController = Symbol("ITestFrameworkController");
+
 export interface ITestFrameworkController {
 	resolveChildren(
 		testController: TestController,
@@ -89,6 +92,7 @@ export interface ITestFrameworkController {
 }
 
 export const ITestsRunner = Symbol("ITestsRunner");
+
 export interface ITestsRunner {
 	runTests(
 		testRun: ITestRun,
@@ -112,6 +116,7 @@ type RawTestNode = {
 	name: string;
 	parentid: string;
 };
+
 export type RawTestParent = RawTestNode & {
 	kind: "folder" | "file" | "suite" | "function" | "workspace";
 };
@@ -119,12 +124,15 @@ type RawTestFSNode = RawTestParent & {
 	kind: "folder" | "file";
 	relpath: string;
 };
+
 export type RawTestFolder = RawTestFSNode & {
 	kind: "folder";
 };
+
 export type RawTestFile = RawTestFSNode & {
 	kind: "file";
 };
+
 export type RawTestSuite = RawTestParent & {
 	kind: "suite";
 };
@@ -132,9 +140,11 @@ export type RawTestSuite = RawTestParent & {
 export type RawTestFunction = RawTestParent & {
 	kind: "function";
 };
+
 export type RawTest = RawTestNode & {
 	source: string;
 };
+
 export type RawDiscoveredTests = {
 	rootid: string;
 	root: string;

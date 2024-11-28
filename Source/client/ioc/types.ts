@@ -80,6 +80,7 @@ export interface IServiceManager extends IDisposable {
 }
 
 export const IServiceContainer = Symbol("IServiceContainer");
+
 export interface IServiceContainer {
 	get<T>(
 		serviceIdentifier: interfaces.ServiceIdentifier<T>,

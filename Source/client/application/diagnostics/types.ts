@@ -75,6 +75,7 @@ export interface IInvalidPythonPathInDebuggerService
 	): Promise<boolean>;
 }
 export const ISourceMapSupportService = Symbol("ISourceMapSupportService");
+
 export interface ISourceMapSupportService {
 	register(): void;
 	enable(): Promise<void>;

@@ -6,6 +6,7 @@ import { Disposable, Event, WorkspaceFolder } from "vscode";
 import { EnvironmentTools } from "../../api/types";
 
 export type CreateEnvironmentUserActions = "Back" | "Cancel";
+
 export type EnvironmentProviderId = string;
 
 /**

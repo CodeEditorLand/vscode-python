@@ -41,6 +41,7 @@ export const OPEN_REQUIREMENTS_BUTTON = {
 
 const exclude =
 	"**/{.venv*,.git,.nox,.tox,.conda,site-packages,__pypackages__}/**";
+
 export async function getPipRequirementsFiles(
 	workspaceFolder: WorkspaceFolder,
 	token?: CancellationToken,

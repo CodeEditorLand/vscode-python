@@ -18,6 +18,7 @@ import {
 export type InterpreterUri = Resource | PythonEnvironment;
 
 export const IModuleInstaller = Symbol("IModuleInstaller");
+
 export interface IModuleInstaller {
 	readonly name: string;
 	readonly displayName: string;
@@ -40,6 +41,7 @@ export interface IModuleInstaller {
 }
 
 export const IBaseInstaller = Symbol("IBaseInstaller");
+
 export interface IBaseInstaller {
 	install(
 		product: Product,
@@ -63,6 +65,7 @@ export interface IBaseInstaller {
 }
 
 export const IPythonInstallation = Symbol("IPythonInstallation");
+
 export interface IPythonInstallation {
 	checkInstallation(): Promise<boolean>;
 }
@@ -70,6 +73,7 @@ export interface IPythonInstallation {
 export const IInstallationChannelManager = Symbol(
 	"IInstallationChannelManager",
 );
+
 export interface IInstallationChannelManager {
 	getInstallationChannel(
 		product: Product,
@@ -82,10 +86,12 @@ export interface IInstallationChannelManager {
 	showNoInstallersMessage(): void;
 }
 export const IProductService = Symbol("IProductService");
+
 export interface IProductService {
 	getProductType(product: Product): ProductType;
 }
 export const IProductPathService = Symbol("IProductPathService");
+
 export interface IProductPathService {
 	getExecutableNameFromSettings(product: Product, resource?: Uri): string;
 	isExecutableAModule(product: Product, resource?: Uri): boolean;

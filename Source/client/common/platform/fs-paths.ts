@@ -205,11 +205,14 @@ export function readFileSync(
 	filePath: string,
 	encoding: BufferEncoding,
 ): string;
+
 export function readFileSync(filePath: string): Buffer;
+
 export function readFileSync(
 	filePath: string,
 	options: { encoding: BufferEncoding },
 ): string;
+
 export function readFileSync(
 	filePath: string,
 	options?: { encoding: BufferEncoding } | BufferEncoding | undefined,
@@ -225,18 +228,21 @@ export function readJSONSync(filePath: string): any {
 }
 
 export function readdirSync(path: string): string[];
+
 export function readdirSync(
 	path: string,
 	options: fs.ObjectEncodingOptions & {
 		withFileTypes: true;
 	},
 ): fs.Dirent[];
+
 export function readdirSync(
 	path: string,
 	options: fs.ObjectEncodingOptions & {
 		withFileTypes: false;
 	},
 ): string[];
+
 export function readdirSync(
 	path: fs.PathLike,
 	options?: fs.ObjectEncodingOptions & {
@@ -326,11 +332,14 @@ export function readFile(
 	filePath: string,
 	encoding: BufferEncoding,
 ): Promise<string>;
+
 export function readFile(filePath: string): Promise<Buffer>;
+
 export function readFile(
 	filePath: string,
 	options: { encoding: BufferEncoding },
 ): Promise<string>;
+
 export function readFile(
 	filePath: string,
 	options?: { encoding: BufferEncoding } | BufferEncoding | undefined,
@@ -390,12 +399,14 @@ export function appendFile(
 }
 
 export function readdir(path: string): Promise<string[]>;
+
 export function readdir(
 	path: string,
 	options: fs.ObjectEncodingOptions & {
 		withFileTypes: true;
 	},
 ): Promise<fs.Dirent[]>;
+
 export function readdir(
 	path: fs.PathLike,
 	options?: fs.ObjectEncodingOptions & {

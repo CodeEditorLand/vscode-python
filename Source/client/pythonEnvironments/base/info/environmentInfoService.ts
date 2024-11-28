@@ -269,6 +269,7 @@ function addToQueue(
 }
 
 let envInfoService: IEnvironmentInfoService | undefined;
+
 export function getEnvironmentInfoService(
 	disposables?: IDisposableRegistry,
 ): IEnvironmentInfoService {

@@ -42,6 +42,7 @@ export interface ICodeExecutionManager {
 }
 
 export const ITerminalAutoActivation = Symbol("ITerminalAutoActivation");
+
 export interface ITerminalAutoActivation extends IDisposable {
 	register(): void;
 	disableAutoActivation(terminal: Terminal): void;
@@ -50,6 +51,7 @@ export interface ITerminalAutoActivation extends IDisposable {
 export const ITerminalEnvVarCollectionService = Symbol(
 	"ITerminalEnvVarCollectionService",
 );
+
 export interface ITerminalEnvVarCollectionService {
 	/**
 	 * Returns true if we know with high certainity the terminal prompt is set correctly for a particular resource.
@@ -60,12 +62,14 @@ export interface ITerminalEnvVarCollectionService {
 export const IShellIntegrationDetectionService = Symbol(
 	"IShellIntegrationDetectionService",
 );
+
 export interface IShellIntegrationDetectionService {
 	onDidChangeStatus: Event<void>;
 	isWorking(): Promise<boolean>;
 }
 
 export const ITerminalDeactivateService = Symbol("ITerminalDeactivateService");
+
 export interface ITerminalDeactivateService {
 	initializeScriptParams(shell: string): Promise<void>;
 
@@ -78,6 +82,7 @@ export interface ITerminalDeactivateService {
 export const IPythonStartupEnvVarService = Symbol(
 	"IPythonStartupEnvVarService",
 );
+
 export interface IPythonStartupEnvVarService {
 	register(): void;
 }

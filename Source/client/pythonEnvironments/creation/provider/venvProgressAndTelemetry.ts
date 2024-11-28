@@ -7,6 +7,7 @@ import { EventName } from "../../../telemetry/constants";
 import { CreateEnvironmentProgress } from "../types";
 
 export const VENV_CREATED_MARKER = "CREATED_VENV:";
+
 export const VENV_EXISTING_MARKER = "EXISTING_VENV:";
 
 const INSTALLING_REQUIREMENTS = "VENV_INSTALLING_REQUIREMENTS:";

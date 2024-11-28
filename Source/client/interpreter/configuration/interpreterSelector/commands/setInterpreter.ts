@@ -67,6 +67,7 @@ import {
 import { BaseInterpreterSelectorCommand } from "./base";
 
 export type InterpreterStateArgs = { path?: string; workspace: Resource };
+
 export type QuickPickType =
 	| IInterpreterQuickPickItem
 	| ISpecialQuickPickItem
