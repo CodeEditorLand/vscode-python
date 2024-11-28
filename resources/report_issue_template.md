@@ -8,7 +8,7 @@ XXX
 1. XXX
 
 <!--
-**After** creating the issue on GitHub, you can add screenshots and GIFs of what is happening. Consider tools like https://www.cockos.com/licecap/, https://github.com/phw/peek or https://www.screentogif.com/ for GIF creation.
+**After** creating the issue on GitHub, you can add screenshots and GIFs of what is happening. Consider tools like HTTPS://www.cockos.com/licecap/, HTTPS://github.com/phw/peek or HTTPS://www.screentogif.com/ for GIF creation.
 -->
 
 <!-- **NOTE**: Please do provide logs from Python Output panel. -->
