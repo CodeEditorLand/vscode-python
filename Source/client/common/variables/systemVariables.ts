@@ -14,11 +14,15 @@ import { IStringDictionary, ISystemVariables } from "./types";
 
 abstract class AbstractSystemVariables implements ISystemVariables {
 	public resolve(value: string): string;
+
 	public resolve(value: string[]): string[];
+
 	public resolve(value: IStringDictionary<string>): IStringDictionary<string>;
+
 	public resolve(
 		value: IStringDictionary<string[]>,
 	): IStringDictionary<string[]>;
+
 	public resolve(
 		value: IStringDictionary<IStringDictionary<string>>,
 	): IStringDictionary<IStringDictionary<string>>;
@@ -74,6 +78,7 @@ abstract class AbstractSystemVariables implements ISystemVariables {
 		const result: IStringDictionary<
 			string | IStringDictionary<string> | string[]
 		> = Object.create(null);
+
 		Object.keys(values).forEach((key) => {
 			const value = values[key];
 
@@ -89,6 +94,7 @@ abstract class AbstractSystemVariables implements ISystemVariables {
 		const result: IStringDictionary<
 			string | IStringDictionary<string> | string[]
 		> = Object.create(null);
+
 		Object.keys(values).forEach((key) => {
 			const value = values[key];
 
@@ -111,10 +117,15 @@ abstract class AbstractSystemVariables implements ISystemVariables {
 
 export class SystemVariables extends AbstractSystemVariables {
 	private _workspaceFolder: string;
+
 	private _workspaceFolderName: string;
+
 	private _filePath: string | undefined;
+
 	private _lineNumber: number | undefined;
+
 	private _selectedText: string | undefined;
+
 	private _execPath: string;
 
 	constructor(
@@ -127,15 +138,19 @@ export class SystemVariables extends AbstractSystemVariables {
 
 		const workspaceFolder =
 			workspace && file ? workspace.getWorkspaceFolder(file) : undefined;
+
 		this._workspaceFolder = workspaceFolder
 			? workspaceFolder.uri.fsPath
 			: rootFolder || __dirname;
+
 		this._workspaceFolderName = Path.basename(this._workspaceFolder);
+
 		this._filePath = file ? file.fsPath : undefined;
 
 		if (documentManager && documentManager.activeTextEditor) {
 			this._lineNumber =
 				documentManager.activeTextEditor.selection.anchor.line + 1;
+
 			this._selectedText =
 				documentManager.activeTextEditor.document.getText(
 					new Range(
@@ -144,13 +159,16 @@ export class SystemVariables extends AbstractSystemVariables {
 					),
 				);
 		}
+
 		this._execPath = process.execPath;
+
 		Object.keys(process.env).forEach((key) => {
 			(this as any as Record<string, string | undefined>)[`env:${key}`] =
 				(this as any as Record<string, string | undefined>)[
 					`env.${key}`
 				] = process.env[key];
 		});
+
 		workspace = workspace ?? new WorkspaceService();
 
 		try {

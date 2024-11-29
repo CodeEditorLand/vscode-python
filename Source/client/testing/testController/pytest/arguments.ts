@@ -166,6 +166,7 @@ function pytestFilterArguments(
 			if (OptionsWithArguments.indexOf(item) >= 0) {
 				optionsWithArgsToRemove.push(item);
 			}
+
 			if (OptionsWithoutArguments.indexOf(item) >= 0) {
 				optionsWithoutArgsToRemove.push(item);
 			}
@@ -183,13 +184,16 @@ function pytestFilterArguments(
 						"--new-first",
 					],
 				);
+
 				optionsWithArgsToRemove.push(
 					...["-k", "-m", "--lfnf", "--last-failed-no-failures"],
 				);
+
 				removePositionalArgs = true;
 
 				break;
 			}
+
 			case TestFilter.discovery: {
 				optionsWithoutArgsToRemove.push(
 					...[
@@ -220,6 +224,7 @@ function pytestFilterArguments(
 						"--trace",
 					],
 				);
+
 				optionsWithArgsToRemove.push(
 					...[
 						"-m",
@@ -241,10 +246,12 @@ function pytestFilterArguments(
 						"--log-*",
 					],
 				);
+
 				removePositionalArgs = true;
 
 				break;
 			}
+
 			case TestFilter.debugAll:
 			case TestFilter.runAll: {
 				optionsWithoutArgsToRemove.push(
@@ -253,6 +260,7 @@ function pytestFilterArguments(
 
 				break;
 			}
+
 			case TestFilter.debugSpecific:
 			case TestFilter.runSpecific: {
 				optionsWithoutArgsToRemove.push(
@@ -267,13 +275,16 @@ function pytestFilterArguments(
 						"--trace",
 					],
 				);
+
 				optionsWithArgsToRemove.push(
 					...["-k", "-m", "--lfnf", "--last-failed-no-failures"],
 				);
+
 				removePositionalArgs = true;
 
 				break;
 			}
+
 			default: {
 				throw new Error(
 					`Unsupported Filter '${argumentToRemoveOrFilter}'`,
@@ -290,10 +301,12 @@ function pytestFilterArguments(
 			OptionsWithArguments,
 			OptionsWithoutArguments,
 		);
+
 		filteredArgs = filteredArgs.filter(
 			(item) => positionalArgs.indexOf(item) === -1,
 		);
 	}
+
 	return filterArguments(
 		filteredArgs,
 		optionsWithArgsToRemove,
@@ -310,6 +323,7 @@ export function preparePytestArgumentsForDiscovery(
 	if (options.ignoreCache && args.indexOf("--cache-clear") === -1) {
 		args.splice(0, 0, "--cache-clear");
 	}
+
 	if (args.indexOf("-s") === -1) {
 		args.splice(0, 0, "-s");
 	}
@@ -318,5 +332,6 @@ export function preparePytestArgumentsForDiscovery(
 	if (args.filter((a) => a.startsWith("--rootdir")).length === 0) {
 		args.splice(0, 0, "--rootdir", options.cwd);
 	}
+
 	return args;
 }

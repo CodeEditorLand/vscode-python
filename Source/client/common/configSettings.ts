@@ -158,7 +158,9 @@ export class PythonSettings implements IPythonSettings {
 		private readonly defaultLS: IDefaultLanguageServer | undefined,
 	) {
 		this.workspace = workspace || new WorkspaceService();
+
 		this.workspaceRoot = workspaceFolder;
+
 		this.initialize();
 	}
 
@@ -188,6 +190,7 @@ export class PythonSettings implements IPythonSettings {
 				interpreterPathService,
 				defaultLS,
 			);
+
 			PythonSettings.pythonSettings.set(workspaceFolderKey, settings);
 
 			settings.onDidChange((event) =>
@@ -204,6 +207,7 @@ export class PythonSettings implements IPythonSettings {
 			const formatOnType = config
 				? config.get("formatOnType", false)
 				: false;
+
 			sendTelemetryEvent(EventName.FORMAT_ON_TYPE, undefined, {
 				enabled: formatOnType,
 			});
@@ -255,6 +259,7 @@ export class PythonSettings implements IPythonSettings {
 		}
 
 		PythonSettings.pythonSettings.forEach((item) => item && item.dispose());
+
 		PythonSettings.pythonSettings.clear();
 	}
 
@@ -263,6 +268,7 @@ export class PythonSettings implements IPythonSettings {
 		const clone: any = {};
 
 		const keys = Object.entries(settings);
+
 		keys.forEach((e) => {
 			const [k, v] = e;
 
@@ -282,6 +288,7 @@ export class PythonSettings implements IPythonSettings {
 		this.disposables.forEach(
 			(disposable) => disposable && disposable.dispose(),
 		);
+
 		this.disposables = [];
 	}
 
@@ -299,6 +306,7 @@ export class PythonSettings implements IPythonSettings {
 		const defaultInterpreterPath = systemVariables.resolveAny(
 			pythonSettings.get<string>("defaultInterpreterPath"),
 		);
+
 		this.defaultInterpreterPath =
 			defaultInterpreterPath || DEFAULT_INTERPRETER_SETTING;
 
@@ -307,10 +315,12 @@ export class PythonSettings implements IPythonSettings {
 				this.interpreterAutoSelectionService.getAutoSelectedInterpreter(
 					this.workspaceRoot,
 				);
+
 			this.defaultInterpreterPath =
 				autoSelectedPythonInterpreter?.path ??
 				this.defaultInterpreterPath;
 		}
+
 		this.defaultInterpreterPath = getAbsolutePath(
 			this.defaultInterpreterPath,
 			workspaceRoot,
@@ -319,6 +329,7 @@ export class PythonSettings implements IPythonSettings {
 		this.venvPath = systemVariables.resolveAny(
 			pythonSettings.get<string>("venvPath"),
 		)!;
+
 		this.venvFolders = systemVariables.resolveAny(
 			pythonSettings.get<string[]>("venvFolders"),
 		)!;
@@ -326,6 +337,7 @@ export class PythonSettings implements IPythonSettings {
 		const activeStateToolPath = systemVariables.resolveAny(
 			pythonSettings.get<string>("activeStateToolPath"),
 		)!;
+
 		this.activeStateToolPath =
 			activeStateToolPath && activeStateToolPath.length > 0
 				? getAbsolutePath(activeStateToolPath, workspaceRoot)
@@ -334,6 +346,7 @@ export class PythonSettings implements IPythonSettings {
 		const condaPath = systemVariables.resolveAny(
 			pythonSettings.get<string>("condaPath"),
 		)!;
+
 		this.condaPath =
 			condaPath && condaPath.length > 0
 				? getAbsolutePath(condaPath, workspaceRoot)
@@ -342,6 +355,7 @@ export class PythonSettings implements IPythonSettings {
 		const pipenvPath = systemVariables.resolveAny(
 			pythonSettings.get<string>("pipenvPath"),
 		)!;
+
 		this.pipenvPath =
 			pipenvPath && pipenvPath.length > 0
 				? getAbsolutePath(pipenvPath, workspaceRoot)
@@ -350,6 +364,7 @@ export class PythonSettings implements IPythonSettings {
 		const poetryPath = systemVariables.resolveAny(
 			pythonSettings.get<string>("poetryPath"),
 		)!;
+
 		this.poetryPath =
 			poetryPath && poetryPath.length > 0
 				? getAbsolutePath(poetryPath, workspaceRoot)
@@ -358,6 +373,7 @@ export class PythonSettings implements IPythonSettings {
 		const pixiToolPath = systemVariables.resolveAny(
 			pythonSettings.get<string>("pixiToolPath"),
 		)!;
+
 		this.pixiToolPath =
 			pixiToolPath && pixiToolPath.length > 0
 				? getAbsolutePath(pixiToolPath, workspaceRoot)
@@ -370,6 +386,7 @@ export class PythonSettings implements IPythonSettings {
 		};
 		// Get as a string and verify; don't just accept.
 		let userLS = pythonSettings.get<string>("languageServer");
+
 		userLS = systemVariables.resolveAny(userLS);
 
 		// Validate the user's input; if invalid, set it to the default.
@@ -383,13 +400,16 @@ export class PythonSettings implements IPythonSettings {
 		) {
 			this.languageServer =
 				this.defaultLS?.defaultLSType ?? LanguageServerType.None;
+
 			this.languageServerIsDefault = true;
 		} else if (userLS === "JediLSP") {
 			// Switch JediLSP option to Jedi.
 			this.languageServer = LanguageServerType.Jedi;
+
 			this.languageServerIsDefault = false;
 		} else {
 			this.languageServer = userLS as LanguageServerType;
+
 			this.languageServerIsDefault = false;
 		}
 
@@ -407,13 +427,16 @@ export class PythonSettings implements IPythonSettings {
 		}
 
 		const envFileSetting = pythonSettings.get<string>("envFile");
+
 		this.envFile = systemVariables.resolveAny(envFileSetting)!;
+
 		sendSettingTelemetry(this.workspace, envFileSetting);
 
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		this.devOptions = systemVariables.resolveAny(
 			pythonSettings.get<any[]>("devOptions"),
 		)!;
+
 		this.devOptions = Array.isArray(this.devOptions) ? this.devOptions : [];
 
 		this.globalModuleInstallation =
@@ -458,6 +481,7 @@ export class PythonSettings implements IPythonSettings {
 					unittestEnabled: false,
 					autoTestDiscoverOnSaveEnabled: true,
 				};
+
 		this.testing.pytestPath = getAbsolutePath(
 			systemVariables.resolveAny(this.testing.pytestPath),
 			workspaceRoot,
@@ -474,6 +498,7 @@ export class PythonSettings implements IPythonSettings {
 		this.testing.pytestArgs = this.testing.pytestArgs.map((arg) =>
 			systemVariables.resolveAny(arg),
 		);
+
 		this.testing.unittestArgs = this.testing.unittestArgs.map((arg) =>
 			systemVariables.resolveAny(arg),
 		);
@@ -531,6 +556,7 @@ export class PythonSettings implements IPythonSettings {
 		const tensorBoardSettings = systemVariables.resolveAny(
 			pythonSettings.get<ITensorBoardSettings>("tensorBoard"),
 		)!;
+
 		this.tensorBoard = tensorBoardSettings || { logDirectory: "" };
 
 		if (this.tensorBoard.logDirectory) {
@@ -569,6 +595,7 @@ export class PythonSettings implements IPythonSettings {
 
 	public register(): void {
 		PythonSettings.pythonSettings = new Map();
+
 		this.initialize();
 	}
 
@@ -577,6 +604,7 @@ export class PythonSettings implements IPythonSettings {
 			"python",
 			this.workspaceRoot,
 		);
+
 		this.update(currentConfig);
 
 		// If workspace config changes, then we could have a cascading effect of on change events.
@@ -591,6 +619,7 @@ export class PythonSettings implements IPythonSettings {
 				this,
 			),
 		);
+
 		this.disposables.push(
 			this.interpreterAutoSelectionService.onDidChangeAutoSelectedInterpreter(
 				() => {
@@ -598,6 +627,7 @@ export class PythonSettings implements IPythonSettings {
 				},
 			),
 		);
+
 		this.disposables.push(
 			this.workspace.onDidChangeConfiguration(
 				(event: ConfigurationChangeEvent) => {
@@ -664,6 +694,7 @@ export class PythonSettings implements IPythonSettings {
 				}
 			}
 		}
+
 		return getAbsolutePath(this.pythonPath, workspaceRoot);
 	}
 }
@@ -681,9 +712,11 @@ function getAbsolutePath(
 	if (isTestExecution() && !pathToCheck) {
 		return rootDir;
 	}
+
 	if (pathToCheck.indexOf(path.sep) === -1) {
 		return pathToCheck;
 	}
+
 	return path.isAbsolute(pathToCheck)
 		? pathToCheck
 		: path.resolve(rootDir, pathToCheck);
@@ -727,6 +760,7 @@ function getPythonExecutable(pythonPath: string): string {
 			if (isValidPythonPath(path.join(pythonPath, executableName))) {
 				return path.join(pythonPath, executableName);
 			}
+
 			if (
 				isValidPythonPath(
 					path.join(pythonPath, "Scripts", executableName),
@@ -738,6 +772,7 @@ function getPythonExecutable(pythonPath: string): string {
 			if (isValidPythonPath(path.join(pythonPath, executableName))) {
 				return path.join(pythonPath, executableName);
 			}
+
 			if (
 				isValidPythonPath(path.join(pythonPath, "bin", executableName))
 			) {

@@ -42,8 +42,10 @@ export const IExtensionActivationService = Symbol(
 export interface IExtensionActivationService {
 	supportedWorkspaceTypes: {
 		untrustedWorkspace: boolean;
+
 		virtualWorkspace: boolean;
 	};
+
 	activate(resource: Resource, startupStopWatch?: StopWatch): Promise<void>;
 }
 
@@ -62,7 +64,9 @@ export interface ILanguageServerActivator {
 		resource: Resource,
 		interpreter: PythonEnvironment | undefined,
 	): Promise<void>;
+
 	activate(): void;
+
 	deactivate(): void;
 }
 
@@ -82,6 +86,7 @@ export const ILanguageServerAnalysisOptions = Symbol(
 
 export interface ILanguageServerAnalysisOptions extends IDisposable {
 	readonly onDidChange: Event<void>;
+
 	initialize(
 		resource: Resource,
 		interpreter: PythonEnvironment | undefined,
@@ -96,7 +101,9 @@ export interface ILanguageServerManager extends IDisposable {
 		resource: Resource,
 		interpreter: PythonEnvironment | undefined,
 	): Promise<void>;
+
 	connect(): void;
+
 	disconnect(): void;
 }
 
@@ -108,6 +115,7 @@ export interface ILanguageServerProxy extends IDisposable {
 		interpreter: PythonEnvironment | undefined,
 		options: LanguageClientOptions,
 	): Promise<void>;
+
 	stop(): Promise<void>;
 	/**
 	 * Sends a request to LS so as to load other extensions.
@@ -140,7 +148,9 @@ export const IExtensionSingleActivationService = Symbol(
 export interface IExtensionSingleActivationService {
 	supportedWorkspaceTypes: {
 		untrustedWorkspace: boolean;
+
 		virtualWorkspace: boolean;
 	};
+
 	activate(): Promise<void>;
 }

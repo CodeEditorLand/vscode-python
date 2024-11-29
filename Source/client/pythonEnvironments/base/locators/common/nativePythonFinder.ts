@@ -47,23 +47,33 @@ const PYTHON_ENV_TOOLS_PATH = isWindows()
 
 export interface NativeEnvInfo {
 	displayName?: string;
+
 	name?: string;
+
 	executable?: string;
+
 	kind?: NativePythonEnvironmentKind;
+
 	version?: string;
+
 	prefix?: string;
+
 	manager?: NativeEnvManagerInfo;
 	/**
 	 * Path to the project directory when dealing with pipenv virtual environments.
 	 */
 	project?: string;
+
 	arch?: "x64" | "x86";
+
 	symlinks?: string[];
 }
 
 export interface NativeEnvManagerInfo {
 	tool: string;
+
 	executable: string;
+
 	version?: string;
 }
 
@@ -73,16 +83,23 @@ export function isNativeEnvInfo(
 	if ((info as NativeEnvManagerInfo).tool) {
 		return false;
 	}
+
 	return true;
 }
 
 export type NativeCondaInfo = {
 	canSpawnConda: boolean;
+
 	userProvidedEnvFound?: boolean;
+
 	condaRcs: string[];
+
 	envDirs: string[];
+
 	environmentsTxt?: string;
+
 	environmentsTxtExists?: boolean;
+
 	environmentsFromTxt: string[];
 };
 
@@ -112,6 +129,7 @@ export interface NativePythonFinder extends Disposable {
 
 interface NativeLog {
 	level: string;
+
 	message: string;
 }
 
@@ -137,8 +155,11 @@ class NativePythonFinderImpl
 
 	constructor(private readonly cacheDirectory?: Uri) {
 		super();
+
 		this.connection = this.start();
+
 		void this.configure();
+
 		this.firstRefreshResults = this.refreshFirstTime();
 	}
 
@@ -167,6 +188,7 @@ class NativePythonFinderImpl
 			// Then get the results from the first refresh.
 			// Those would have started earlier and cached in memory.
 			const results = this.firstRefreshResults();
+
 			this.firstRefreshResults = undefined;
 
 			yield* results;
@@ -174,6 +196,7 @@ class NativePythonFinderImpl
 			const result = this.doRefresh(options);
 
 			let completed = false;
+
 			void result.completed.finally(() => {
 				completed = true;
 			});
@@ -184,6 +207,7 @@ class NativePythonFinderImpl
 
 			const disposable = result.discovered((data) => {
 				envs.push(data);
+
 				discovered.resolve();
 			});
 
@@ -191,18 +215,22 @@ class NativePythonFinderImpl
 				if (!envs.length) {
 					await Promise.race([result.completed, discovered.promise]);
 				}
+
 				if (envs.length) {
 					const dataToSend = [...envs];
+
 					envs.length = 0;
 
 					for (const data of dataToSend) {
 						yield data;
 					}
 				}
+
 				if (!completed) {
 					discovered = createDeferred();
 				}
 			} while (!completed);
+
 			disposable.dispose();
 		}
 	}
@@ -218,6 +246,7 @@ class NativePythonFinderImpl
 
 		const disposable = result.discovered((data) => {
 			envs.push(data);
+
 			discovered.resolve();
 		});
 
@@ -226,18 +255,22 @@ class NativePythonFinderImpl
 				if (!envs.length) {
 					await Promise.race([completed.promise, discovered.promise]);
 				}
+
 				if (envs.length) {
 					const dataToSend = [...envs];
+
 					envs.length = 0;
 
 					for (const data of dataToSend) {
 						yield data;
 					}
 				}
+
 				if (!completed.completed) {
 					discovered = createDeferred();
 				}
 			} while (!completed.completed);
+
 			disposable.dispose();
 		};
 
@@ -265,11 +298,15 @@ class NativePythonFinderImpl
 			const proc = ch.spawn(PYTHON_ENV_TOOLS_PATH, ["server"], {
 				env: process.env,
 			});
+
 			this.initialRefreshMetrics.timeToSpawn = stopWatch.elapsedTime;
+
 			proc.stdout.pipe(readable, { end: false });
+
 			proc.stderr.on("data", (data) =>
 				this.outputChannel.error(data.toString()),
 			);
+
 			writable.pipe(proc.stdin, { end: false });
 
 			disposables.push({
@@ -289,8 +326,10 @@ class NativePythonFinderImpl
 				ex,
 			);
 		}
+
 		const disposeStreams = new Disposable(() => {
 			readable.end();
+
 			writable.end();
 		});
 
@@ -298,11 +337,13 @@ class NativePythonFinderImpl
 			new rpc.StreamMessageReader(readable),
 			new rpc.StreamMessageWriter(writable),
 		);
+
 		disposables.push(
 			connection,
 			disposeStreams,
 			connection.onError((ex) => {
 				disposeStreams.dispose();
+
 				this.outputChannel.error("Connection Error:", ex);
 			}),
 			connection.onNotification("log", (data: NativeLog) => {
@@ -342,6 +383,7 @@ class NativePythonFinderImpl
 		);
 
 		connection.listen();
+
 		this._register(Disposable.from(...disposables));
 
 		return connection;
@@ -349,6 +391,7 @@ class NativePythonFinderImpl
 
 	private doRefresh(options?: NativePythonEnvironmentKind | Uri[]): {
 		completed: Promise<void>;
+
 		discovered: Event<NativeEnvInfo | NativeEnvManagerInfo>;
 	} {
 		const disposable = this._register(new DisposableStore());
@@ -365,6 +408,7 @@ class NativePythonFinderImpl
 
 		const notifyUponCompletion = () => {
 			const initialCount = pendingPromises.length;
+
 			Promise.all(pendingPromises)
 				.then(() => {
 					if (initialCount === pendingPromises.length) {
@@ -378,6 +422,7 @@ class NativePythonFinderImpl
 
 		const trackPromiseAndNotifyOnCompletion = (promise: Promise<void>) => {
 			pendingPromises.push(promise);
+
 			notifyUponCompletion();
 		};
 
@@ -408,6 +453,7 @@ class NativePythonFinderImpl
 								this.outputChannel.info(
 									`Resolved ${environment.executable}`,
 								);
+
 								discovered.fire(environment);
 							})
 							.catch((ex) =>
@@ -416,6 +462,7 @@ class NativePythonFinderImpl
 									ex,
 								),
 							);
+
 						trackPromiseAndNotifyOnCompletion(promise);
 					} else {
 						discovered.fire(data);
@@ -423,6 +470,7 @@ class NativePythonFinderImpl
 				},
 			),
 		);
+
 		disposable.add(
 			this.connection.onNotification(
 				"manager",
@@ -430,6 +478,7 @@ class NativePythonFinderImpl
 					this.outputChannel.info(
 						`Discovered manager: (${data.tool}) ${data.executable}`,
 					);
+
 					discovered.fire(data);
 				},
 			),
@@ -437,6 +486,7 @@ class NativePythonFinderImpl
 
 		type RefreshOptions = {
 			searchKind?: NativePythonEnvironmentKind;
+
 			searchPaths?: string[];
 		};
 
@@ -447,6 +497,7 @@ class NativePythonFinderImpl
 		} else if (options && typeof options === "string") {
 			refreshOptions.searchKind = options;
 		}
+
 		trackPromiseAndNotifyOnCompletion(
 			this.configure().then(() =>
 				this.connection
@@ -458,6 +509,7 @@ class NativePythonFinderImpl
 						this.outputChannel.info(
 							`Refresh completed in ${duration}ms`,
 						);
+
 						this.initialRefreshMetrics.timeToRefresh =
 							stopWatch.elapsedTime;
 					})
@@ -500,10 +552,14 @@ class NativePythonFinderImpl
 		) {
 			return;
 		}
+
 		try {
 			const stopWatch = new StopWatch();
+
 			this.lastConfiguration = options;
+
 			await this.connection.sendRequest("configure", options);
+
 			this.initialRefreshMetrics.timeToConfigure = stopWatch.elapsedTime;
 		} catch (ex) {
 			this.outputChannel.error("Refresh error", ex);
@@ -522,8 +578,11 @@ type ConfigurationOptions = {
 	 * Should not contain workspace folders.
 	 */
 	environmentDirectories: string[];
+
 	condaExecutable: string | undefined;
+
 	poetryExecutable: string | undefined;
+
 	cacheDirectory?: string;
 };
 /**
@@ -537,6 +596,7 @@ function getCustomVirtualEnvDirs(): string[] {
 	if (venvPath) {
 		venvDirs.push(untildify(venvPath));
 	}
+
 	const venvFolders =
 		getPythonSettingAndUntildify<string[]>(VENVFOLDERS_SETTING_KEY) ?? [];
 
@@ -548,8 +608,10 @@ function getCustomVirtualEnvDirs(): string[] {
 				item.startsWith(homeDir) ? item : path.join(homeDir, item),
 			)
 			.forEach((d) => venvDirs.push(d));
+
 		venvFolders.forEach((item) => venvDirs.push(untildify(item)));
 	}
+
 	return Array.from(new Set(venvDirs));
 }
 
@@ -562,6 +624,7 @@ function getPythonSettingAndUntildify<T>(
 	if (typeof value === "string") {
 		return value ? (untildify(value as string) as unknown as T) : undefined;
 	}
+
 	return value;
 }
 
@@ -598,14 +661,17 @@ export function getNativePythonFinder(
 			},
 		};
 	}
+
 	if (!_finder) {
 		const cacheDirectory = context ? getCacheDirectory(context) : undefined;
+
 		_finder = new NativePythonFinderImpl(cacheDirectory);
 
 		if (context) {
 			context.subscriptions.push(_finder);
 		}
 	}
+
 	return _finder;
 }
 
@@ -617,5 +683,6 @@ export async function clearCacheDirectory(
 	context: IExtensionContext,
 ): Promise<void> {
 	const cacheDirectory = getCacheDirectory(context);
+
 	await fs.emptyDir(cacheDirectory.fsPath).catch(noop);
 }

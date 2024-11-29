@@ -18,34 +18,45 @@ import { ExecutionInfo, IDisposable } from "../types";
 
 export type Output<T extends string | Buffer> = {
 	source: "stdout" | "stderr";
+
 	out: T;
 };
 
 export type ObservableExecutionResult<T extends string | Buffer> = {
 	proc: ChildProcess | undefined;
+
 	out: Observable<Output<T>>;
+
 	dispose(): void;
 };
 
 export type SpawnOptions = ChildProcessSpawnOptions & {
 	encoding?: string;
+
 	token?: CancellationToken;
+
 	mergeStdOutErr?: boolean;
 
 	throwOnStdErr?: boolean;
+
 	extraVariables?: NodeJS.ProcessEnv;
+
 	outputChannel?: OutputChannel;
+
 	stdinStr?: string;
+
 	useWorker?: boolean;
 };
 
 export type ShellOptions = ExecOptions & {
 	throwOnStdErr?: boolean;
+
 	useWorker?: boolean;
 };
 
 export type ExecutionResult<T extends string | Buffer> = {
 	stdout: T;
+
 	stderr?: T;
 };
 
@@ -70,15 +81,18 @@ export interface IProcessService extends IDisposable {
 		args: string[],
 		options?: SpawnOptions,
 	): ObservableExecutionResult<string>;
+
 	exec(
 		file: string,
 		args: string[],
 		options?: SpawnOptions,
 	): Promise<ExecutionResult<string>>;
+
 	shellExec(
 		command: string,
 		options?: ShellOptions,
 	): Promise<ExecutionResult<string>>;
+
 	on(
 		event: "exec",
 		listener: (
@@ -102,12 +116,15 @@ export const IPythonExecutionFactory = Symbol("IPythonExecutionFactory");
 
 export type ExecutionFactoryCreationOptions = {
 	resource?: Uri;
+
 	pythonPath?: string;
 };
 
 export type ExecutionFactoryCreateWithEnvironmentOptions = {
 	resource?: Uri;
+
 	interpreter?: PythonEnvironment;
+
 	allowEnvironmentFetchExceptions?: boolean;
 	/**
 	 * Ignore running `conda run` when running code.
@@ -121,9 +138,11 @@ export interface IPythonExecutionFactory {
 	create(
 		options: ExecutionFactoryCreationOptions,
 	): Promise<IPythonExecutionService>;
+
 	createActivatedEnvironment(
 		options: ExecutionFactoryCreateWithEnvironmentOptions,
 	): Promise<IPythonExecutionService>;
+
 	createCondaExecutionService(
 		pythonPath: string,
 		processService: IProcessService,
@@ -135,6 +154,7 @@ export interface IPythonExecutionService {
 	getInterpreterInformation(): Promise<InterpreterInformation | undefined>;
 
 	getExecutablePath(): Promise<string | undefined>;
+
 	isModuleInstalled(moduleName: string): Promise<boolean>;
 
 	getModuleVersion(moduleName: string): Promise<string | undefined>;
@@ -145,6 +165,7 @@ export interface IPythonExecutionService {
 		args: string[],
 		options: SpawnOptions,
 	): ObservableExecutionResult<string>;
+
 	execModuleObservable(
 		moduleName: string,
 		args: string[],
@@ -155,11 +176,13 @@ export interface IPythonExecutionService {
 		args: string[],
 		options: SpawnOptions,
 	): Promise<ExecutionResult<string>>;
+
 	execModule(
 		moduleName: string,
 		args: string[],
 		options: SpawnOptions,
 	): Promise<ExecutionResult<string>>;
+
 	execForLinter(
 		moduleName: string,
 		args: string[],
@@ -176,6 +199,7 @@ export interface IPythonEnvironment {
 	): PythonExecInfo;
 
 	getExecutablePath(): Promise<string | undefined>;
+
 	isModuleInstalled(moduleName: string): Promise<boolean>;
 
 	getModuleVersion(moduleName: string): Promise<string | undefined>;
@@ -205,11 +229,13 @@ export interface IPythonToolExecutionService {
 		options: SpawnOptions,
 		resource: Uri,
 	): Promise<ObservableExecutionResult<string>>;
+
 	exec(
 		executionInfo: ExecutionInfo,
 		options: SpawnOptions,
 		resource: Uri,
 	): Promise<ExecutionResult<string>>;
+
 	execForLinter(
 		executionInfo: ExecutionInfo,
 		options: SpawnOptions,

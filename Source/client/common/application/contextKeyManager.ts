@@ -22,6 +22,7 @@ export class ContextKeyManager implements IContextKeyManager {
 		if (this.values.get(key) === value) {
 			return Promise.resolve();
 		}
+
 		this.values.set(key, value);
 
 		return this.commandManager.executeCommand("setContext", key, value);

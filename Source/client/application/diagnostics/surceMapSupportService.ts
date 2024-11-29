@@ -26,6 +26,7 @@ export class SourceMapSupportService implements ISourceMapSupportService {
 		private readonly configurationService: IConfigurationService,
 		@inject(IApplicationShell) private readonly shell: IApplicationShell,
 	) {}
+
 	public register(): void {
 		this.disposables.push(
 			this.commandManager.registerCommand(
@@ -35,6 +36,7 @@ export class SourceMapSupportService implements ISourceMapSupportService {
 			),
 		);
 	}
+
 	public async enable(): Promise<void> {
 		await this.configurationService.updateSetting(
 			"diagnostics.sourceMapsEnabled",
@@ -42,10 +44,12 @@ export class SourceMapSupportService implements ISourceMapSupportService {
 			undefined,
 			ConfigurationTarget.Global,
 		);
+
 		await this.commandManager.executeCommand(
 			"workbench.action.reloadWindow",
 		);
 	}
+
 	protected async onEnable(): Promise<void> {
 		const enableSourceMapsAndReloadVSC =
 			Diagnostics.enableSourceMapsAndReloadVSC;

@@ -8,23 +8,32 @@ import { SocketStream } from "./SocketStream";
 
 export abstract class SocketCallbackHandler extends EventEmitter {
 	private _stream!: SocketStream;
+
 	private commandHandlers: Map<string, Function>;
+
 	private handeshakeDone!: boolean;
 
 	constructor(socketServer: SocketServer) {
 		super();
+
 		this.commandHandlers = new Map<string, Function>();
+
 		socketServer.on("data", this.onData.bind(this));
 	}
+
 	private disposed!: boolean;
+
 	public dispose() {
 		this.disposed = true;
+
 		this.commandHandlers.clear();
 	}
+
 	private onData(socketClient: net.Socket, data: Buffer) {
 		if (this.disposed) {
 			return;
 		}
+
 		this.HandleIncomingData(data, socketClient);
 	}
 
@@ -67,6 +76,7 @@ export abstract class SocketCallbackHandler extends EventEmitter {
 		if (this.stream.Length === 0) {
 			return;
 		}
+
 		this.stream.BeginTransaction();
 
 		let cmd = this.stream.ReadAsciiString(4);
@@ -79,6 +89,7 @@ export abstract class SocketCallbackHandler extends EventEmitter {
 
 		if (this.commandHandlers.has(cmd)) {
 			const handler = this.commandHandlers.get(cmd)!;
+
 			handler();
 		} else {
 			this.emit("error", `Unhandled command '${cmd}'`);

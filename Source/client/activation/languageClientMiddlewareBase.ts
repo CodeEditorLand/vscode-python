@@ -91,6 +91,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 			if (isThenable(settings)) {
 				settings = await settings;
 			}
+
 			if (settings instanceof ResponseError) {
 				return settings;
 			}
@@ -106,9 +107,11 @@ export class LanguageClientMiddlewareBase implements Middleware {
 					// can be considered as active interpreter path.
 					const settingDict: LSPObject & {
 						pythonPath: string;
+
 						_envPYTHONPATH: string;
 					} = settings[i] as LSPObject & {
 						pythonPath: string;
+
 						_envPYTHONPATH: string;
 					};
 
@@ -154,10 +157,15 @@ export class LanguageClientMiddlewareBase implements Middleware {
 	) {
 		this.handleDiagnostics = this.handleDiagnostics.bind(this); // VS Code calls function without context.
 		this.didOpen = this.didOpen.bind(this);
+
 		this.didSave = this.didSave.bind(this);
+
 		this.didChange = this.didChange.bind(this);
+
 		this.didClose = this.didClose.bind(this);
+
 		this.willSave = this.willSave.bind(this);
+
 		this.willSaveWaitUntil = this.willSaveWaitUntil.bind(this);
 
 		if (serverType === LanguageServerType.Node) {
@@ -173,6 +181,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 
 	public disconnect() {
 		this.connectedPromise = createDeferred<boolean>();
+
 		this.connectedPromise.resolve(false);
 	}
 
@@ -236,6 +245,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 					if (!result) {
 						return { resultLength: 0 };
 					}
+
 					const resultLength = Array.isArray(result)
 						? result.length
 						: result.items.length;
@@ -615,8 +625,10 @@ export class LanguageClientMiddlewareBase implements Middleware {
 		if (now > this.nextWindow) {
 			// Past the end of the last window, reset.
 			this.nextWindow = now + globalDebounce;
+
 			this.eventCount = 0;
 		}
+
 		const lastCapture = this.lastCaptured.get(lspMethod);
 
 		const sendTelemetry = (
@@ -635,6 +647,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 			) {
 				// We're sending, so update event count and last captured time
 				this.lastCaptured.set(lspMethod, now);
+
 				this.eventCount += 1;
 
 				// Replace all slashes in the method name so it doesn't get scrubbed by @vscode/extension-telemetry.
@@ -661,6 +674,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 					properties,
 				);
 			}
+
 			return result;
 		};
 
@@ -674,6 +688,7 @@ export class LanguageClientMiddlewareBase implements Middleware {
 		if (isThenable(result)) {
 			return result.then(sendTelemetry);
 		}
+
 		return sendTelemetry(result as any) as ReturnType<MiddleWareMethods[T]>;
 	}
 }

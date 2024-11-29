@@ -30,6 +30,7 @@ export function registerTestControllerTypes(
 		PytestController,
 		PYTEST_PROVIDER,
 	);
+
 	serviceManager.addSingleton<ITestsRunner>(
 		ITestsRunner,
 		PytestRunner,
@@ -41,15 +42,18 @@ export function registerTestControllerTypes(
 		UnittestController,
 		UNITTEST_PROVIDER,
 	);
+
 	serviceManager.addSingleton<ITestsRunner>(
 		ITestsRunner,
 		UnittestRunner,
 		UNITTEST_PROVIDER,
 	);
+
 	serviceManager.addSingleton<ITestController>(
 		ITestController,
 		PythonTestController,
 	);
+
 	serviceManager.addBinding(
 		ITestController,
 		IExtensionSingleActivationService,

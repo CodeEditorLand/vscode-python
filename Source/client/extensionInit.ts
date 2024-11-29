@@ -55,6 +55,7 @@ export function initializeGlobals(
 		IServiceContainer,
 		serviceContainer,
 	);
+
 	serviceManager.addSingletonInstance<IServiceManager>(
 		IServiceManager,
 		serviceManager,
@@ -64,16 +65,19 @@ export function initializeGlobals(
 		IDisposableRegistry,
 		disposables,
 	);
+
 	serviceManager.addSingletonInstance<Memento>(
 		IMemento,
 		context.globalState,
 		GLOBAL_MEMENTO,
 	);
+
 	serviceManager.addSingletonInstance<Memento>(
 		IMemento,
 		context.workspaceState,
 		WORKSPACE_MEMENTO,
 	);
+
 	serviceManager.addSingletonInstance<IExtensionContext>(
 		IExtensionContext,
 		context,
@@ -83,7 +87,9 @@ export function initializeGlobals(
 		OutputChannelNames.python,
 		{ log: true },
 	);
+
 	disposables.push(standardOutputChannel);
+
 	disposables.push(
 		registerLogger(new OutputChannelLogger(standardOutputChannel)),
 	);
@@ -91,6 +97,7 @@ export function initializeGlobals(
 	const unitTestOutChannel = window.createOutputChannel(
 		OutputChannelNames.pythonTest,
 	);
+
 	disposables.push(unitTestOutChannel);
 
 	if (isVirtualWorkspace() || !isTrusted()) {
@@ -103,6 +110,7 @@ export function initializeGlobals(
 		ILogOutputChannel,
 		standardOutputChannel,
 	);
+
 	serviceManager.addSingletonInstance<ITestOutputChannel>(
 		ITestOutputChannel,
 		unitTestOutChannel,
@@ -124,8 +132,11 @@ export function initializeStandard(ext: ExtensionState): void {
 	commonRegisterTypes(serviceManager);
 
 	variableRegisterTypes(serviceManager);
+
 	platformRegisterTypes(serviceManager);
+
 	processRegisterTypes(serviceManager);
+
 	interpretersRegisterTypes(serviceManager);
 
 	// We will be pulling other code over from activateLegacy().

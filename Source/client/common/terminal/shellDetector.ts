@@ -76,6 +76,7 @@ export class ShellDetector {
 			undefined,
 			telemetryProperties,
 		);
+
 		traceVerbose(
 			`Shell identified as ${shell} ${terminal ? `(Terminal name is ${terminal.name})` : ""}`,
 		);
@@ -88,9 +89,12 @@ export class ShellDetector {
 				" for OS ",
 				this.platform.osType,
 			);
+
 			traceVerbose("Using default OS shell");
+
 			shell = defaultOSShells[this.platform.osType];
 		}
+
 		return shell;
 	}
 }

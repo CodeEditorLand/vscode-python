@@ -49,6 +49,7 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 		if (!baseCondaPrefix) {
 			return;
 		}
+
 		const info =
 			await this.interpreterService.getInterpreterDetails(
 				baseCondaPrefix,
@@ -58,6 +59,7 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 			// Only show prompt for base conda environments, as we need to check config for such envs which can be slow.
 			return;
 		}
+
 		const conda = await Conda.getConda();
 
 		if (!conda) {
@@ -67,6 +69,7 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 
 			return;
 		}
+
 		const service = await this.processServiceFactory.create();
 
 		const autoActivateBaseConfig = await service
@@ -95,6 +98,7 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 			Interpreters.activatedCondaEnvLaunch,
 			...prompts,
 		);
+
 		sendTelemetryEvent(EventName.ACTIVATED_CONDA_ENV_LAUNCH, undefined, {
 			selection: selection
 				? telemetrySelections[prompts.indexOf(selection)]
@@ -104,6 +108,7 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 		if (!selection) {
 			return;
 		}
+
 		if (selection === prompts[0]) {
 			await this.setInterpeterInStorage(prefix);
 		}
@@ -115,6 +120,7 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 		if (this.wasSelected) {
 			return this.inMemorySelection;
 		}
+
 		return this._selectIfLaunchedViaActivatedEnv(doNotBlockOnSelection);
 	}
 
@@ -126,10 +132,12 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 			// Assuming multiroot workspaces cannot be directly launched via `code .` command.
 			return undefined;
 		}
+
 		if (process.env.VSCODE_CLI !== "1") {
 			// We only want to select the interpreter if VS Code was launched from the command line.
 			return undefined;
 		}
+
 		traceVerbose("VS Code was not launched from the command line");
 
 		const prefix = await this.getPrefixOfSelectedActivatedEnv();
@@ -139,8 +147,11 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 
 			return undefined;
 		}
+
 		this.wasSelected = true;
+
 		this.inMemorySelection = prefix;
+
 		traceLog(
 			`VS Code was launched from an activated environment: '${path.basename(
 				prefix,
@@ -151,8 +162,10 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 			this.setInterpeterInStorage(prefix).ignoreErrors();
 		} else {
 			await this.setInterpeterInStorage(prefix);
+
 			await sleep(1); // Yield control so config service can update itself.
 		}
+
 		this.inMemorySelection = undefined; // Once we have set the prefix in storage, clear the in memory selection.
 		return prefix;
 	}
@@ -184,11 +197,13 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 		if (virtualEnvVar !== undefined && virtualEnvVar.length > 0) {
 			return virtualEnvVar;
 		}
+
 		const condaPrefixVar = getPrefixOfActivatedCondaEnv();
 
 		if (!condaPrefixVar) {
 			return undefined;
 		}
+
 		const info =
 			await this.interpreterService.getInterpreterDetails(condaPrefixVar);
 
@@ -203,6 +218,7 @@ export class ActivatedEnvironmentLaunch implements IActivatedEnvironmentLaunch {
 				return condaPrefixVar;
 			}
 		}
+
 		return undefined;
 	}
 }
@@ -221,5 +237,6 @@ function getPrefixOfActivatedCondaEnv() {
 			return condaPrefixVar;
 		}
 	}
+
 	return undefined;
 }

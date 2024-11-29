@@ -26,6 +26,7 @@ export class ConfigurationManager extends TestConfigurationManager {
 		) {
 			return false;
 		}
+
 		return true;
 	}
 
@@ -52,6 +53,7 @@ export class ConfigurationManager extends TestConfigurationManager {
 				description: "setup.cfg",
 			});
 		}
+
 		const subDirs = await this.getTestDirs(wkspace.fsPath);
 
 		const testDir = await this.selectTestDir(
@@ -63,11 +65,13 @@ export class ConfigurationManager extends TestConfigurationManager {
 		if (typeof testDir === "string" && testDir !== configFileOptionLabel) {
 			args.push(testDir);
 		}
+
 		const installed = await this.installer.isInstalled(Product.pytest);
 
 		if (!installed) {
 			await this.installer.install(Product.pytest);
 		}
+
 		await this.testConfigSettingsService.updateTestArgs(
 			wkspace.fsPath,
 			Product.pytest,

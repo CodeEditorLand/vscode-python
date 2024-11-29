@@ -45,6 +45,7 @@ export function activate(
 
 		if (newPylanceExtension) {
 			changeDisposable.dispose();
+
 			await runPylance(context, newPylanceExtension);
 		}
 	});
@@ -55,15 +56,19 @@ export function activate(
 export async function deactivate(): Promise<void> {
 	if (pylanceApi) {
 		const api = pylanceApi;
+
 		pylanceApi = undefined;
+
 		await api.client!.stop();
 	}
 
 	if (languageClient) {
 		const client = languageClient;
+
 		languageClient = undefined;
 
 		await client.stop();
+
 		await client.dispose();
 	}
 }
@@ -80,6 +85,7 @@ async function runPylance(
 
 	if (api.client && api.client.isEnabled()) {
 		pylanceApi = api;
+
 		await api.client.start();
 
 		return;
@@ -100,6 +106,7 @@ async function runPylance(
 		// This is the same method used by the TS worker:
 		// https://github.com/microsoft/vscode/blob/90aa979bb75a795fd8c33d38aee263ea655270d0/extensions/typescript-language-features/src/tsServer/serverProcess.browser.ts#L55
 		const config: BrowserConfig = { distUrl: distUrl.toString() };
+
 		worker.postMessage(config);
 
 		const middleware = new LanguageClientMiddlewareBase(
@@ -108,6 +115,7 @@ async function runPylance(
 			sendTelemetryEventBrowser,
 			packageJSON.version,
 		);
+
 		middleware.connect();
 
 		const clientOptions: LanguageClientOptions = {
@@ -130,6 +138,7 @@ async function runPylance(
 			worker,
 			clientOptions,
 		);
+
 		languageClient = client;
 
 		context.subscriptions.push(
@@ -142,8 +151,11 @@ async function runPylance(
 		client.onTelemetry(
 			(telemetryEvent: {
 				EventName: EventName;
+
 				Properties: { method: string };
+
 				Measurements: number | Record<string, number> | undefined;
+
 				Exception: Error | undefined;
 			}) => {
 				const eventName =
@@ -158,6 +170,7 @@ async function runPylance(
 						".",
 					),
 				};
+
 				sendTelemetryEventBrowser(
 					eventName,
 					telemetryEvent.Measurements,
@@ -185,6 +198,7 @@ function getTelemetryReporter() {
 	// eslint-disable-next-line global-require
 	const Reporter = require("@vscode/extension-telemetry")
 		.default as typeof TelemetryReporter;
+
 	telemetryReporter = new Reporter(AppinsightsKey, [
 		{
 			lookup: /(errorName|errorMessage|errorStack)/g,
@@ -215,10 +229,12 @@ function sendTelemetryEventBrowser(
 	if (properties) {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const data = properties as any;
+
 		Object.getOwnPropertyNames(data).forEach((prop) => {
 			if (data[prop] === undefined || data[prop] === null) {
 				return;
 			}
+
 			try {
 				// If there are any errors in serializing one property, ignore that and move on.
 				// Else nothing will be sent.
@@ -256,6 +272,7 @@ function sendTelemetryEventBrowser(
 			errorName: ex.name,
 			errorStack: ex.stack ?? "",
 		};
+
 		Object.assign(customProperties, errorProps);
 
 		reporter.sendTelemetryErrorEvent(

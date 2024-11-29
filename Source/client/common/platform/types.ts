@@ -49,14 +49,20 @@ export const IPlatformService = Symbol("IPlatformService");
 
 export interface IPlatformService {
 	readonly osType: OSType;
+
 	osRelease: string;
+
 	readonly pathVariableName: "Path" | "PATH";
+
 	readonly virtualEnvBinName: "bin" | "Scripts";
 
 	// convenience methods
 	readonly isWindows: boolean;
+
 	readonly isMac: boolean;
+
 	readonly isLinux: boolean;
+
 	readonly is64bit: boolean;
 
 	getVersion(): Promise<SemVer>;
@@ -77,10 +83,15 @@ export interface ITempFileSystem {
 // The low-level file path operations used by the extension.
 export interface IFileSystemPaths {
 	readonly sep: string;
+
 	join(...filenames: string[]): string;
+
 	dirname(filename: string): string;
+
 	basename(filename: string, suffix?: string): string;
+
 	normalize(filename: string): string;
+
 	normCase(filename: string): string;
 }
 
@@ -90,6 +101,7 @@ export interface IFileSystemPaths {
 // executables, including through an environment variable.
 export interface IExecutables {
 	delimiter: string;
+
 	envVar: string;
 }
 
@@ -97,7 +109,9 @@ export const IFileSystemPathUtils = Symbol("IFileSystemPathUtils");
 // A collection of high-level utilities related to filesystem paths.
 export interface IFileSystemPathUtils {
 	readonly paths: IFileSystemPaths;
+
 	readonly executables: IExecutables;
+
 	readonly home: string;
 	// Return true if the two paths are equivalent on the current
 	// filesystem and false otherwise.  On Windows this is significant.
@@ -166,15 +180,20 @@ export interface IRawFileSystem {
 // High-level filesystem operations used by the extension.
 export interface IFileSystemUtils {
 	readonly raw: IRawFileSystem;
+
 	readonly paths: IFileSystemPaths;
+
 	readonly pathUtils: IFileSystemPathUtils;
+
 	readonly tmp: ITempFileSystem;
 
 	//* **********************
 	// aliases
 
 	createDirectory(dirname: string): Promise<void>;
+
 	deleteDirectory(dirname: string): Promise<void>;
+
 	deleteFile(filename: string): Promise<void>;
 
 	//* **********************
@@ -213,36 +232,53 @@ export const IFileSystem = Symbol("IFileSystem");
 export interface IFileSystem {
 	// path-related
 	directorySeparatorChar: string;
+
 	arePathsSame(path1: string, path2: string): boolean;
 
 	getDisplayName(path: string): string;
 
 	// "raw" operations
 	stat(filePath: string): Promise<FileStat>;
+
 	createDirectory(path: string): Promise<void>;
+
 	deleteDirectory(path: string): Promise<void>;
+
 	listdir(dirname: string): Promise<[string, FileType][]>;
+
 	readFile(filePath: string): Promise<string>;
+
 	readData(filePath: string): Promise<Buffer>;
+
 	writeFile(
 		filePath: string,
 		text: string | Buffer,
 		options?: string | fsextra.WriteFileOptions,
 	): Promise<void>;
+
 	appendFile(filename: string, text: string | Buffer): Promise<void>;
+
 	copyFile(src: string, dest: string): Promise<void>;
+
 	deleteFile(filename: string): Promise<void>;
+
 	chmod(path: string, mode: string | number): Promise<void>;
+
 	move(src: string, tgt: string): Promise<void>;
 	// sync
 	readFileSync(filename: string): string;
+
 	createReadStream(path: string): fs.ReadStream;
+
 	createWriteStream(path: string): fs.WriteStream;
 
 	// utils
 	pathExists(path: string): Promise<boolean>;
+
 	fileExists(path: string): Promise<boolean>;
+
 	fileExistsSync(path: string): boolean;
+
 	directoryExists(path: string): Promise<boolean>;
 
 	getSubDirectories(rootDir: string): Promise<string[]>;
@@ -250,10 +286,13 @@ export interface IFileSystem {
 	getFiles(rootDir: string): Promise<string[]>;
 
 	getFileHash(filePath: string): Promise<string>;
+
 	search(globPattern: string, cwd?: string, dot?: boolean): Promise<string[]>;
+
 	createTemporaryFile(
 		extension: string,
 		mode?: number,
 	): Promise<TemporaryFile>;
+
 	isDirReadonly(dirname: string): Promise<boolean>;
 }

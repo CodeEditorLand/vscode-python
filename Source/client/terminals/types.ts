@@ -10,10 +10,12 @@ export const ICodeExecutionService = Symbol("ICodeExecutionService");
 
 export interface ICodeExecutionService {
 	execute(code: string, resource?: Uri): Promise<void>;
+
 	executeFile(
 		file: Uri,
 		options?: { newTerminalPerFile: boolean },
 	): Promise<void>;
+
 	initializeRepl(resource?: Uri): Promise<void>;
 }
 
@@ -28,6 +30,7 @@ export interface ICodeExecutionHelper {
 	): Promise<string>;
 
 	getFileToExecute(): Promise<Uri | undefined>;
+
 	saveFileIfDirty(file: Uri): Promise<Resource>;
 
 	getSelectedTextToExecute(
@@ -45,6 +48,7 @@ export const ITerminalAutoActivation = Symbol("ITerminalAutoActivation");
 
 export interface ITerminalAutoActivation extends IDisposable {
 	register(): void;
+
 	disableAutoActivation(terminal: Terminal): void;
 }
 
@@ -65,6 +69,7 @@ export const IShellIntegrationDetectionService = Symbol(
 
 export interface IShellIntegrationDetectionService {
 	onDidChangeStatus: Event<void>;
+
 	isWorking(): Promise<boolean>;
 }
 

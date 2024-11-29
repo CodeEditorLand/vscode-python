@@ -52,8 +52,11 @@ export class JediLSExtensionManager
 			configurationService,
 			workspaceService,
 		);
+
 		this.clientFactory = new JediLanguageClientFactory(interpreterService);
+
 		this.serverProxy = new JediLanguageServerProxy(this.clientFactory);
+
 		this.serverManager = new JediLanguageServerManager(
 			serviceContainer,
 			this.analysisOptions,
@@ -64,8 +67,11 @@ export class JediLSExtensionManager
 
 	dispose(): void {
 		this.serverManager.disconnect();
+
 		this.serverManager.dispose();
+
 		this.serverProxy.dispose();
+
 		this.analysisOptions.dispose();
 	}
 
@@ -74,11 +80,13 @@ export class JediLSExtensionManager
 		interpreter?: PythonEnvironment,
 	): Promise<void> {
 		await this.serverManager.start(resource, interpreter);
+
 		this.serverManager.connect();
 	}
 
 	async stopLanguageServer(): Promise<void> {
 		this.serverManager.disconnect();
+
 		await this.serverProxy.stop();
 	}
 

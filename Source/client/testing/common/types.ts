@@ -17,10 +17,15 @@ export type UnitTestProduct = Product.pytest | Product.unittest;
 
 export type TestDiscoveryOptions = {
 	workspaceFolder: Uri;
+
 	cwd: string;
+
 	args: string[];
+
 	token?: CancellationToken;
+
 	ignoreCache: boolean;
+
 	outChannel?: OutputChannel;
 };
 
@@ -30,12 +35,19 @@ export type UnitTestParserOptions = TestDiscoveryOptions & {
 
 export type LaunchOptions = {
 	cwd: string;
+
 	args: string[];
+
 	testProvider: TestProvider;
+
 	token?: CancellationToken;
+
 	outChannel?: OutputChannel;
+
 	pytestPort?: string;
+
 	pytestUUID?: string;
+
 	runTestIdsPort?: string;
 };
 
@@ -43,9 +55,13 @@ export type ParserOptions = TestDiscoveryOptions;
 
 export type Options = {
 	workspaceFolder: Uri;
+
 	cwd: string;
+
 	args: string[];
+
 	outChannel?: OutputChannel;
+
 	token?: CancellationToken;
 };
 
@@ -65,6 +81,7 @@ export const ITestsHelper = Symbol("ITestsHelper");
 
 export interface ITestsHelper {
 	parseProviderName(product: UnitTestProduct): TestProvider;
+
 	parseProduct(provider: TestProvider): UnitTestProduct;
 
 	getSettingsPropertyNames(product: Product): TestSettingsPropertyNames;
@@ -74,11 +91,15 @@ export const ITestConfigurationService = Symbol("ITestConfigurationService");
 
 export interface ITestConfigurationService {
 	hasConfiguredTests(wkspace: Uri): boolean;
+
 	displayTestFrameworkError(wkspace: Uri): Promise<void>;
+
 	selectTestRunner(
 		placeHolderMessage: string,
 	): Promise<UnitTestProduct | undefined>;
+
 	enableTest(wkspace: Uri, product: UnitTestProduct): Promise<void>;
+
 	promptToEnableAndConfigureTestFramework(wkspace: Uri): Promise<void>;
 }
 
@@ -90,10 +111,12 @@ export interface ITestConfigSettingsService {
 		product: UnitTestProduct,
 		args: string[],
 	): Promise<void>;
+
 	enable(
 		testDirectory: string | Uri,
 		product: UnitTestProduct,
 	): Promise<void>;
+
 	disable(
 		testDirectory: string | Uri,
 		product: UnitTestProduct,
@@ -104,8 +127,11 @@ export interface ITestConfigSettingsService {
 
 export interface ITestConfigurationManager {
 	requiresUserToConfigure(wkspace: Uri): Promise<boolean>;
+
 	configure(wkspace: Uri): Promise<void>;
+
 	enable(): Promise<void>;
+
 	disable(): Promise<void>;
 }
 
@@ -135,8 +161,11 @@ export const IUnitTestSocketServer = Symbol("IUnitTestSocketServer");
 export interface IUnitTestSocketServer extends Disposable {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	on(event: string | symbol, listener: (...args: any[]) => void): this;
+
 	removeAllListeners(event?: string | symbol): this;
+
 	start(options?: { port?: number; host?: string }): Promise<number>;
+
 	stop(): void;
 }
 

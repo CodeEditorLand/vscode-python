@@ -49,9 +49,11 @@ export class PythonPathUpdaterService
 				reason && typeof reason.message === "string"
 					? (reason.message as string)
 					: "";
+
 			window.showErrorMessage(
 				l10n.t("Failed to set interpreter path. Error: {0}", message),
 			);
+
 			traceError(reason);
 		}
 		// do not wait for this to complete
@@ -107,6 +109,7 @@ export class PythonPathUpdaterService
 			case ConfigurationTarget.Global: {
 				return this.pythonPathSettingsUpdaterFactory.getGlobalPythonPathConfigurationService();
 			}
+
 			case ConfigurationTarget.Workspace: {
 				if (!wkspace) {
 					throw new Error("Workspace Uri not defined");
@@ -116,6 +119,7 @@ export class PythonPathUpdaterService
 					wkspace!,
 				);
 			}
+
 			default: {
 				if (!wkspace) {
 					throw new Error("Workspace Uri not defined");

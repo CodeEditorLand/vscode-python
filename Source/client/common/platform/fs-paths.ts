@@ -12,9 +12,13 @@ import { IExecutables, IFileSystemPaths, IFileSystemPathUtils } from "./types";
 // The parts of node's 'path' module used by FileSystemPaths.
 interface INodePath {
 	sep: string;
+
 	join(...filenames: string[]): string;
+
 	dirname(filename: string): string;
+
 	basename(filename: string, ext?: string): string;
+
 	normalize(filename: string): string;
 }
 
@@ -35,6 +39,7 @@ export class FileSystemPaths implements IFileSystemPaths {
 		if (isCaseInsensitive === undefined) {
 			isCaseInsensitive = getOSType() === OSType.Windows;
 		}
+
 		return new FileSystemPaths(
 			isCaseInsensitive,
 			// Use the actual node "path" module.
@@ -119,6 +124,7 @@ export class FileSystemPathUtils implements IFileSystemPathUtils {
 		if (paths === undefined) {
 			paths = FileSystemPaths.withDefaults();
 		}
+
 		return new FileSystemPathUtils(
 			// Use the current user's home directory.
 			os.homedir(),
@@ -131,6 +137,7 @@ export class FileSystemPathUtils implements IFileSystemPathUtils {
 
 	public arePathsSame(path1: string, path2: string): boolean {
 		path1 = this.paths.normCase(path1);
+
 		path2 = this.paths.normCase(path2);
 
 		return path1 === path2;
@@ -164,9 +171,11 @@ export function isParentPath(filePath: string, parentPath: string): boolean {
 	if (!parentPath.endsWith(nodepath.sep)) {
 		parentPath += nodepath.sep;
 	}
+
 	if (!filePath.endsWith(nodepath.sep)) {
 		filePath += nodepath.sep;
 	}
+
 	return normCasePath(filePath).startsWith(normCasePath(parentPath));
 }
 
@@ -220,6 +229,7 @@ export function readFileSync(
 	if (typeof options === "string") {
 		return fs.readFileSync(filePath, { encoding: options });
 	}
+
 	return fs.readFileSync(filePath, options);
 }
 
@@ -247,12 +257,14 @@ export function readdirSync(
 	path: fs.PathLike,
 	options?: fs.ObjectEncodingOptions & {
 		withFileTypes: boolean;
+
 		recursive?: boolean | undefined;
 	},
 ): string[] | fs.Dirent[] {
 	if (options === undefined || options.withFileTypes === false) {
 		return fs.readdirSync(path);
 	}
+
 	return fs.readdirSync(path, { ...options, withFileTypes: true });
 }
 
@@ -347,6 +359,7 @@ export function readFile(
 	if (typeof options === "string") {
 		return fs.readFile(filePath, { encoding: options });
 	}
+
 	return fs.readFile(filePath, options);
 }
 
@@ -416,6 +429,7 @@ export function readdir(
 	if (options === undefined) {
 		return fs.readdir(path);
 	}
+
 	return fs.readdir(path, options);
 }
 

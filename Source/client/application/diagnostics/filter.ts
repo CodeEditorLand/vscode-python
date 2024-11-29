@@ -19,6 +19,7 @@ export class DiagnosticFilterService implements IDiagnosticFilterService {
 	constructor(
 		@inject(IServiceContainer) private serviceContainer: IServiceContainer,
 	) {}
+
 	public async shouldIgnoreDiagnostic(code: string): Promise<boolean> {
 		const factory = this.serviceContainer.get<IPersistentStateFactory>(
 			IPersistentStateFactory,
@@ -39,6 +40,7 @@ export class DiagnosticFilterService implements IDiagnosticFilterService {
 			workspaceState.value.indexOf(code) >= 0
 		);
 	}
+
 	public async ignoreDiagnostic(
 		code: string,
 		scope: DiagnosticScope,
@@ -59,6 +61,7 @@ export class DiagnosticFilterService implements IDiagnosticFilterService {
 					);
 
 		const currentValue = state.value.slice();
+
 		await state.updateValue(currentValue.concat(code));
 	}
 }

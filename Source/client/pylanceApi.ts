@@ -13,6 +13,7 @@ export interface TelemetryReporter {
 		properties?: TelemetryEventProperties,
 		measurements?: TelemetryEventMeasurements,
 	): void;
+
 	sendTelemetryErrorEvent(
 		eventName: string,
 		properties?: TelemetryEventProperties,
@@ -23,7 +24,9 @@ export interface TelemetryReporter {
 export interface ApiForPylance {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	createClient(...args: any[]): BaseLanguageClient;
+
 	start(client: BaseLanguageClient): Promise<void>;
+
 	stop(client: BaseLanguageClient): Promise<void>;
 
 	getTelemetryReporter(): TelemetryReporter;

@@ -74,6 +74,7 @@ export class ShellIntegrationDetectionService
 			if (persistedResult.value) {
 				this.isWorkingForShell.add(activeShellType);
 			}
+
 			this.appShell.onDidWriteTerminalData(
 				(e) => {
 					if (
@@ -88,7 +89,9 @@ export class ShellIntegrationDetectionService
 						) {
 							shell = e.terminal.creationOptions.shellPath;
 						}
+
 						const shellType = identifyShellFromShellPath(shell);
+
 						traceVerbose(
 							"Received shell integration sequence for",
 							shellType,
@@ -96,6 +99,7 @@ export class ShellIntegrationDetectionService
 
 						const wasWorking =
 							this.isWorkingForShell.has(shellType);
+
 						this.isWorkingForShell.add(shellType);
 
 						if (!wasWorking) {
@@ -107,6 +111,7 @@ export class ShellIntegrationDetectionService
 				this,
 				this.disposables,
 			);
+
 			this.appEnvironment.onDidChangeShell(
 				async (shell: string) => {
 					this.createDummyHiddenTerminal(shell);
@@ -114,11 +119,14 @@ export class ShellIntegrationDetectionService
 				this,
 				this.disposables,
 			);
+
 			this.createDummyHiddenTerminal(this.appEnvironment.shell);
 		} catch (ex) {
 			this.isDataWriteEventWorking = false;
+
 			traceError("Unable to check if shell integration is active", ex);
 		}
+
 		const isEnabled = !!this.workspaceService
 			.getConfiguration("terminal")
 			.get<boolean>("integrated.shellIntegration.enabled");
@@ -152,6 +160,7 @@ export class ShellIntegrationDetectionService
 		if (!isSupposedToWork) {
 			return false;
 		}
+
 		const key = getKeyForShell(shellType);
 
 		const persistedResult =
@@ -162,12 +171,14 @@ export class ShellIntegrationDetectionService
 		if (persistedResult.value !== undefined) {
 			return persistedResult.value;
 		}
+
 		const result = await this.useDataWriteApproach(shellType);
 
 		if (result) {
 			// Once we know that shell integration is working for a shell, persist it so we need not do this check every session.
 			await persistedResult.updateValue(result);
 		}
+
 		return result;
 	}
 
@@ -177,6 +188,7 @@ export class ShellIntegrationDetectionService
 			// Assume shell integration is working, if data write event isn't working.
 			return true;
 		}
+
 		if (
 			shellType === TerminalShellType.powershell ||
 			shellType === TerminalShellType.powershellCore
@@ -184,10 +196,12 @@ export class ShellIntegrationDetectionService
 			// Due to upstream bug: https://github.com/microsoft/vscode/issues/204616, assume shell integration is working for now.
 			return true;
 		}
+
 		if (!this.isWorkingForShell.has(shellType)) {
 			// Maybe data write event has not been processed yet, wait a bit.
 			await sleep(1000);
 		}
+
 		traceVerbose(
 			"Did we determine shell integration to be working for",
 			shellType,

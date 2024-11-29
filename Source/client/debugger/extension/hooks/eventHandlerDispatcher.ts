@@ -17,6 +17,7 @@ export class DebugSessionEventDispatcher {
 		@inject(IDisposableRegistry)
 		private readonly disposables: IDisposableRegistry,
 	) {}
+
 	public registerEventHandlers() {
 		this.disposables.push(
 			this.debugService.onDidReceiveDebugSessionCustomEvent((e) => {
@@ -27,6 +28,7 @@ export class DebugSessionEventDispatcher {
 				);
 			}),
 		);
+
 		this.disposables.push(
 			this.debugService.onDidTerminateDebugSession((e) => {
 				this.eventHandlers.forEach((handler) =>

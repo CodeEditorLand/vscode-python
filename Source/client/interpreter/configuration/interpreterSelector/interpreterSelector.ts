@@ -38,6 +38,7 @@ export class InterpreterSelector implements IInterpreterSelector {
 		useFullDisplayName = false,
 	): IInterpreterQuickPickItem[] {
 		const interpreters = this.interpreterManager.getInterpreters(resource);
+
 		interpreters.sort(
 			this.envTypeComparer.compare.bind(this.envTypeComparer),
 		);
@@ -52,6 +53,7 @@ export class InterpreterSelector implements IInterpreterSelector {
 	): Promise<IInterpreterQuickPickItem[]> {
 		const interpreters =
 			await this.interpreterManager.getAllInterpreters(resource);
+
 		interpreters.sort(
 			this.envTypeComparer.compare.bind(this.envTypeComparer),
 		);
@@ -79,6 +81,7 @@ export class InterpreterSelector implements IInterpreterSelector {
 				useDetailedName = true;
 			}
 		}
+
 		const path =
 			interpreter.envPath &&
 			getEnvPath(interpreter.path, interpreter.envPath).pathType ===
@@ -118,6 +121,7 @@ export class InterpreterSelector implements IInterpreterSelector {
 		if (!recommendedEnv) {
 			return undefined;
 		}
+
 		return suggestions.find((item) =>
 			arePathsSame(item.interpreter.path, recommendedEnv.path),
 		);

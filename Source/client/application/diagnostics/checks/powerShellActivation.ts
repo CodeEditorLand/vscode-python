@@ -69,6 +69,7 @@ export class PowerShellActivationHackDiagnosticsService extends BaseDiagnosticsS
 			disposableRegistry,
 			true,
 		);
+
 		this.messageService = serviceContainer.get<
 			IDiagnosticHandlerService<MessageCommandPrompt>
 		>(IDiagnosticHandlerService, DiagnosticCommandPromptHandlerServiceId);
@@ -84,11 +85,13 @@ export class PowerShellActivationHackDiagnosticsService extends BaseDiagnosticsS
 		if (diagnostics.length === 0 || !this.canHandle(diagnostics[0])) {
 			return;
 		}
+
 		const diagnostic = diagnostics[0];
 
 		if (await this.filterService.shouldIgnoreDiagnostic(diagnostic.code)) {
 			return;
 		}
+
 		const commandFactory =
 			this.serviceContainer.get<IDiagnosticsCommandFactory>(
 				IDiagnosticsCommandFactory,
@@ -116,6 +119,7 @@ export class PowerShellActivationHackDiagnosticsService extends BaseDiagnosticsS
 								action: "switchToCommandPrompt",
 							},
 						);
+
 						useCommandPromptAsDefaultShell(
 							currentProcess,
 							configurationService,

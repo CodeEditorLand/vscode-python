@@ -67,15 +67,21 @@ function getResolvers(): Map<
 		PythonEnvKind,
 		(_: BasicEnvInfo) => Promise<PythonEnvInfo>
 	>();
+
 	Object.values(PythonEnvKind).forEach((k) => {
 		resolvers.set(k, resolveGloballyInstalledEnv);
 	});
+
 	virtualEnvKinds.forEach((k) => {
 		resolvers.set(k, resolveSimpleEnv);
 	});
+
 	resolvers.set(PythonEnvKind.Conda, resolveCondaEnv);
+
 	resolvers.set(PythonEnvKind.MicrosoftStore, resolveMicrosoftStoreEnv);
+
 	resolvers.set(PythonEnvKind.Pyenv, resolvePyenvEnv);
+
 	resolvers.set(PythonEnvKind.ActiveState, resolveActiveStateEnv);
 
 	return resolvers;
@@ -96,7 +102,9 @@ export async function resolveBasicEnv(
 	const resolverForKind = resolvers.get(kind)!;
 
 	const resolvedEnv = await resolverForKind(env);
+
 	resolvedEnv.searchLocation = getSearchLocation(resolvedEnv, searchLocation);
+
 	resolvedEnv.source = uniq(resolvedEnv.source.concat(source ?? []));
 
 	if (
@@ -107,21 +115,27 @@ export async function resolveBasicEnv(
 		// We can update env further using information we can get from the Windows registry.
 		await updateEnvUsingRegistry(resolvedEnv);
 	}
+
 	setEnvDisplayString(resolvedEnv);
 
 	if (env.arch && !resolvedEnv.arch) {
 		resolvedEnv.arch = env.arch;
 	}
+
 	if (env.ctime && env.mtime) {
 		resolvedEnv.executable.ctime = env.ctime;
+
 		resolvedEnv.executable.mtime = env.mtime;
 	} else {
 		const { ctime, mtime } = await getFileInfo(
 			resolvedEnv.executable.filename,
 		);
+
 		resolvedEnv.executable.ctime = ctime;
+
 		resolvedEnv.executable.mtime = mtime;
 	}
+
 	if (!env.identifiedUsingNativeLocator) {
 		const type = await getEnvType(resolvedEnv);
 
@@ -129,6 +143,7 @@ export async function resolveBasicEnv(
 			resolvedEnv.type = type;
 		}
 	}
+
 	return resolvedEnv;
 }
 
@@ -136,12 +151,15 @@ async function getEnvType(env: PythonEnvInfo) {
 	if (env.type) {
 		return env.type;
 	}
+
 	if (await isVirtualEnvironment(env.executable.filename)) {
 		return PythonEnvType.Virtual;
 	}
+
 	if (await isCondaEnvironment(env.executable.filename)) {
 		return PythonEnvType.Conda;
 	}
+
 	return undefined;
 }
 
@@ -153,6 +171,7 @@ function getSearchLocation(
 		// A search location has already been established by the downstream locators, simply use that.
 		return searchLocation;
 	}
+
 	const folders = getWorkspaceFolderPaths();
 
 	const isRootedEnv = folders.some(
@@ -171,6 +190,7 @@ function getSearchLocation(
 		//        |__ python  <--- executable
 		return Uri.file(env.location);
 	}
+
 	return undefined;
 }
 
@@ -183,8 +203,10 @@ async function updateEnvUsingRegistry(env: PythonEnvInfo): Promise<void> {
 		traceError(
 			"Expected registry interpreter cache to be initialized already",
 		);
+
 		interpreters = await getRegistryInterpreters();
 	}
+
 	const data = interpreters.find((i) =>
 		arePathsSame(i.interpreterPath, env.executable.filename),
 	);
@@ -200,18 +222,24 @@ async function updateEnvUsingRegistry(env: PythonEnvInfo): Promise<void> {
 		} catch (ex) {
 			version = UNKNOWN_PYTHON_VERSION;
 		}
+
 		env.kind =
 			env.kind === PythonEnvKind.Unknown
 				? PythonEnvKind.OtherGlobal
 				: env.kind;
+
 		env.version =
 			comparePythonVersionSpecificity(version, env.version) > 0
 				? version
 				: env.version;
+
 		env.distro.defaultDisplayName = data.companyDisplayName;
+
 		env.arch =
 			data.bitnessStr === "32bit" ? Architecture.x86 : Architecture.x64;
+
 		env.distro.org = data.distroOrgName ?? env.distro.org;
+
 		env.source = uniq(env.source.concat(PythonEnvSource.WindowsRegistry));
 	} else {
 		traceWarn(
@@ -234,6 +262,7 @@ async function resolveGloballyInstalledEnv(
 	} catch {
 		version = UNKNOWN_PYTHON_VERSION;
 	}
+
 	const envInfo = buildEnvInfo({
 		kind: env.kind,
 		name: env.name,
@@ -268,7 +297,9 @@ async function resolveSimpleEnv(env: BasicEnvInfo): Promise<PythonEnvInfo> {
 	});
 
 	const location = env.envPath ?? getEnvironmentDirFromPath(executablePath);
+
 	envInfo.location = location;
+
 	envInfo.name = path.basename(location);
 
 	return envInfo;
@@ -312,8 +343,10 @@ async function resolveCondaEnv(env: BasicEnvInfo): Promise<PythonEnvInfo> {
 			// Another alternative could've been to set ID of all conda environments to the environment path, as that
 			// remains constant even after python installation.
 			const predictedExecutable = getCondaInterpreterPath(env.envPath);
+
 			info.id = getEnvID(predictedExecutable, env.envPath);
 		}
+
 		return info;
 	}
 
@@ -331,6 +364,7 @@ async function resolveCondaEnv(env: BasicEnvInfo): Promise<PythonEnvInfo> {
 		env.kind = PythonEnvKind.Unknown;
 
 		const envInfo = await resolveSimpleEnv(env);
+
 		envInfo.type = PythonEnvType.Conda;
 		// Assume it's a prefixed env by default because prefixed CLIs work even for named environments.
 		envInfo.name = "";
@@ -350,6 +384,7 @@ async function resolveCondaEnv(env: BasicEnvInfo): Promise<PythonEnvInfo> {
 			prefix: envPath,
 		});
 	}
+
 	const version = executable
 		? await getPythonVersionFromConda(executable)
 		: undefined;
@@ -370,8 +405,10 @@ async function resolveCondaEnv(env: BasicEnvInfo): Promise<PythonEnvInfo> {
 		// Another alternative could've been to set ID of all conda environments to the environment path, as that
 		// remains constant even after python installation.
 		const predictedExecutable = getCondaInterpreterPath(env.envPath);
+
 		info.id = getEnvID(predictedExecutable, env.envPath);
 	}
+
 	return info;
 }
 
@@ -439,6 +476,7 @@ async function resolvePyenvEnv(env: BasicEnvInfo): Promise<PythonEnvInfo> {
 			envInfo.name = name;
 		}
 	}
+
 	return envInfo;
 }
 
@@ -470,6 +508,7 @@ async function resolveActiveStateEnv(
 			}
 		}
 	}
+
 	return info;
 }
 
@@ -477,6 +516,7 @@ async function isBaseCondaPyenvEnvironment(executablePath: string) {
 	if (!(await isCondaEnvironment(executablePath))) {
 		return false;
 	}
+
 	const location = getEnvironmentDirFromPath(executablePath);
 
 	const pyenvVersionDir = getPyenvVersionsDir();

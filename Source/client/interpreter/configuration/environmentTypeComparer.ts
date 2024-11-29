@@ -63,6 +63,7 @@ export class EnvironmentTypeComparer implements IInterpreterComparer {
 		if (isProblematicCondaEnvironment(a)) {
 			return 1;
 		}
+
 		if (isProblematicCondaEnvironment(b)) {
 			return -1;
 		}
@@ -89,6 +90,7 @@ export class EnvironmentTypeComparer implements IInterpreterComparer {
 				if (arePathsSame(preferredPyenv, b.path)) {
 					return 1;
 				}
+
 				if (arePathsSame(preferredPyenv, a.path)) {
 					return -1;
 				}
@@ -142,7 +144,9 @@ export class EnvironmentTypeComparer implements IInterpreterComparer {
 		if (!cwd) {
 			return;
 		}
+
 		const preferredPyenvInterpreter = await getActivePyenvForDirectory(cwd);
+
 		this.preferredPyenvInterpreterPath.set(cwd, preferredPyenvInterpreter);
 	}
 
@@ -160,6 +164,7 @@ export class EnvironmentTypeComparer implements IInterpreterComparer {
 			if (isProblematicCondaEnvironment(i)) {
 				return false;
 			}
+
 			if (
 				i.envType === EnvironmentType.ActiveState &&
 				(!i.path ||
@@ -171,6 +176,7 @@ export class EnvironmentTypeComparer implements IInterpreterComparer {
 			) {
 				return false;
 			}
+
 			if (
 				getEnvLocationHeuristic(
 					i,
@@ -179,6 +185,7 @@ export class EnvironmentTypeComparer implements IInterpreterComparer {
 			) {
 				return true;
 			}
+
 			if (
 				!workspaceVirtualEnvTypes.includes(i.envType) &&
 				virtualEnvTypes.includes(i.envType)
@@ -186,11 +193,14 @@ export class EnvironmentTypeComparer implements IInterpreterComparer {
 				// These are global virtual envs so we're not sure if these envs were created for the workspace, skip them.
 				return false;
 			}
+
 			if (i.version?.major === 2) {
 				return false;
 			}
+
 			return true;
 		});
+
 		filteredInterpreters.sort(this.compare.bind(this));
 
 		return filteredInterpreters.length
@@ -215,9 +225,11 @@ function getSortName(
 	if (info.version) {
 		sortNameParts.push(info.version.raw);
 	}
+
 	if (info.architecture) {
 		sortNameParts.push(getArchitectureSortName(info.architecture));
 	}
+
 	if (info.companyDisplayName && info.companyDisplayName.length > 0) {
 		sortNameParts.push(info.companyDisplayName.trim());
 	} else {
@@ -233,6 +245,7 @@ function getSortName(
 			envSuffixParts.push(name);
 		}
 	}
+
 	if (info.envName && info.envName.length > 0) {
 		envSuffixParts.push(info.envName);
 	}
@@ -297,8 +310,10 @@ function comparePythonVersionDescending(
 			if (a.patch === b.patch) {
 				return a.build.join(" ") > b.build.join(" ") ? -1 : 1;
 			}
+
 			return a.patch > b.patch ? -1 : 1;
 		}
+
 		return a.minor > b.minor ? -1 : 1;
 	}
 
@@ -335,6 +350,7 @@ export function getEnvLocationHeuristic(
 	) {
 		return EnvLocationHeuristic.Local;
 	}
+
 	return EnvLocationHeuristic.Global;
 }
 
@@ -353,14 +369,17 @@ function compareEnvironmentType(
 		) {
 			return -1;
 		}
+
 		if (
 			a.envType !== EnvironmentType.Pyenv &&
 			b.envType === EnvironmentType.Pyenv
 		) {
 			return 1;
 		}
+
 		return 0;
 	}
+
 	const envTypeByPriority = getPrioritizedEnvironmentType();
 
 	return Math.sign(

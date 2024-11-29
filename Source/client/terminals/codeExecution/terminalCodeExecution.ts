@@ -41,7 +41,9 @@ import { ICodeExecutionService } from "../../terminals/types";
 @injectable()
 export class TerminalCodeExecutionProvider implements ICodeExecutionService {
 	private hasRanOutsideCurrentDrive = false;
+
 	protected terminalTitle!: string;
+
 	private replActive?: Promise<boolean>;
 
 	constructor(
@@ -80,6 +82,7 @@ export class TerminalCodeExecutionProvider implements ICodeExecutionService {
 		if (!code || code.trim().length === 0) {
 			return;
 		}
+
 		await this.initializeRepl(resource);
 
 		if (code == "deprecated") {
@@ -88,6 +91,7 @@ export class TerminalCodeExecutionProvider implements ICodeExecutionService {
 				Diagnostics.invalidSmartSendMessage,
 				Repl.disableSmartSend,
 			);
+
 			traceInfo(
 				`Selected file contains invalid Python or Deprecated Python 2 code`,
 			);
@@ -112,11 +116,14 @@ export class TerminalCodeExecutionProvider implements ICodeExecutionService {
 
 			return;
 		}
+
 		sendTelemetryEvent(EventName.REPL, undefined, { replType: "Terminal" });
+
 		this.replActive = new Promise<boolean>(async (resolve) => {
 			const replCommandArgs = await this.getExecutableInfo(resource);
 
 			let listener: IDisposable;
+
 			Promise.race([
 				new Promise<boolean>((resolve) =>
 					setTimeout(() => resolve(true), 3000),
@@ -136,6 +143,7 @@ export class TerminalCodeExecutionProvider implements ICodeExecutionService {
 
 									if (count === 3) {
 										clearTimeout(terminalDataTimeout);
+
 										resolve(true);
 									}
 								}
@@ -147,6 +155,7 @@ export class TerminalCodeExecutionProvider implements ICodeExecutionService {
 				if (listener) {
 					listener.dispose();
 				}
+
 				resolve(true);
 			});
 
@@ -155,6 +164,7 @@ export class TerminalCodeExecutionProvider implements ICodeExecutionService {
 				replCommandArgs.args,
 			);
 		});
+
 		this.disposables.push(
 			terminalService.onDidCloseTerminal(() => {
 				this.replActive = undefined;
@@ -191,6 +201,7 @@ export class TerminalCodeExecutionProvider implements ICodeExecutionService {
 	): Promise<PythonExecInfo> {
 		return this.getExecutableInfo(resource, executeArgs);
 	}
+
 	private getTerminalService(
 		resource: Resource,
 		options?: { newTerminalPerFile: boolean },
@@ -201,6 +212,7 @@ export class TerminalCodeExecutionProvider implements ICodeExecutionService {
 			newTerminalPerFile: options?.newTerminalPerFile,
 		});
 	}
+
 	private async setCwdForFileExecution(
 		file: Uri,
 		options?: { newTerminalPerFile: boolean },
@@ -210,6 +222,7 @@ export class TerminalCodeExecutionProvider implements ICodeExecutionService {
 		if (!pythonSettings.terminal.executeInFileDir) {
 			return;
 		}
+
 		const fileDirPath = path.dirname(file.fsPath);
 
 		if (fileDirPath.length > 0) {
@@ -229,11 +242,13 @@ export class TerminalCodeExecutionProvider implements ICodeExecutionService {
 					this.hasRanOutsideCurrentDrive
 				) {
 					this.hasRanOutsideCurrentDrive = true;
+
 					await this.getTerminalService(file).sendText(
 						`${fileDrive}:`,
 					);
 				}
 			}
+
 			await this.getTerminalService(file, options).sendText(
 				`cd ${fileDirPath.fileToCommandArgumentForPythonExt()}`,
 			);

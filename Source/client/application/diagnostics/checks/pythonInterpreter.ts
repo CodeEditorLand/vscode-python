@@ -95,6 +95,7 @@ export class InvalidPythonInterpreterDiagnostic extends BaseDiagnostic {
 				formatArg = ` ${l10n.t("for workspace")} ${path.basename(folder.uri.fsPath)}`;
 			}
 		}
+
 		super(
 			code,
 			messages[code].format(formatArg),
@@ -164,6 +165,7 @@ export class InvalidPythonInterpreterService
 	public async activate(): Promise<void> {
 		const commandManager =
 			this.serviceContainer.get<ICommandManager>(ICommandManager);
+
 		this.disposableRegistry.push(
 			commandManager.registerCommand(
 				Commands.TriggerEnvironmentSelection,
@@ -174,6 +176,7 @@ export class InvalidPythonInterpreterService
 
 		const interpreterService =
 			this.serviceContainer.get<IInterpreterService>(IInterpreterService);
+
 		this.disposableRegistry.push(
 			interpreterService.onDidChangeInterpreterConfiguration((e) =>
 				commandManager
@@ -199,6 +202,7 @@ export class InvalidPythonInterpreterService
 		if (diagnostics.length > 0) {
 			return diagnostics;
 		}
+
 		const hasInterpreters = await interpreterService.hasInterpreters();
 
 		const interpreterPathService =
@@ -232,6 +236,7 @@ export class InvalidPythonInterpreterService
 				),
 			];
 		}
+
 		return [];
 	}
 
@@ -243,6 +248,7 @@ export class InvalidPythonInterpreterService
 		if (!diagnostics.length) {
 			return true;
 		}
+
 		this.handle(diagnostics).ignoreErrors();
 
 		return false;
@@ -254,6 +260,7 @@ export class InvalidPythonInterpreterService
 		if (getOSType() !== OSType.Windows) {
 			return [];
 		}
+
 		const interpreterService =
 			this.serviceContainer.get<IInterpreterService>(IInterpreterService);
 
@@ -263,6 +270,7 @@ export class InvalidPythonInterpreterService
 		if (currentInterpreter) {
 			return [];
 		}
+
 		try {
 			await this.shellExecPython();
 		} catch (ex) {
@@ -282,6 +290,7 @@ export class InvalidPythonInterpreterService
 						),
 					];
 				}
+
 				if (this.isPathVarIncomplete()) {
 					traceError(
 						"PATH env var appears to be incomplete",
@@ -296,6 +305,7 @@ export class InvalidPythonInterpreterService
 						),
 					];
 				}
+
 				return [
 					new DefaultShellDiagnostic(
 						DiagnosticCodes.DefaultShellErrorDiagnostic,
@@ -304,6 +314,7 @@ export class InvalidPythonInterpreterService
 				];
 			}
 		}
+
 		return [];
 	}
 
@@ -331,6 +342,7 @@ export class InvalidPythonInterpreterService
 				return false;
 			}
 		}
+
 		return true;
 	}
 
@@ -371,17 +383,21 @@ export class InvalidPythonInterpreterService
 		if (diagnostics.length === 0) {
 			return;
 		}
+
 		const messageService = this.serviceContainer.get<
 			IDiagnosticHandlerService<MessageCommandPrompt>
 		>(IDiagnosticHandlerService, DiagnosticCommandPromptHandlerServiceId);
+
 		await Promise.all(
 			diagnostics.map(async (diagnostic) => {
 				if (!this.canHandle(diagnostic)) {
 					return;
 				}
+
 				const commandPrompts = this.getCommandPrompts(diagnostic);
 
 				const onClose = getOnCloseHandler(diagnostic);
+
 				await messageService.handle(diagnostic, {
 					commandPrompts,
 					message: diagnostic.message,
@@ -420,6 +436,7 @@ export class InvalidPythonInterpreterService
 				},
 			];
 		}
+
 		const prompts = [
 			{
 				prompt: Common.selectPythonInterpreter,
@@ -442,6 +459,7 @@ export class InvalidPythonInterpreterService
 				}),
 			});
 		}
+
 		return prompts;
 	}
 }
@@ -460,5 +478,6 @@ function getOnCloseHandler(
 			);
 		};
 	}
+
 	return undefined;
 }

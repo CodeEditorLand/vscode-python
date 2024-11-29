@@ -37,6 +37,7 @@ export class Hatch {
 		if (Hatch.hatchPromise.get(cwd) === undefined || isTestExecution()) {
 			Hatch.hatchPromise.set(cwd, Hatch.locate(cwd));
 		}
+
 		return Hatch.hatchPromise.get(cwd);
 	}
 
@@ -44,6 +45,7 @@ export class Hatch {
 		// First thing this method awaits on should be hatch command execution,
 		// hence perform all operations before that synchronously.
 		const hatchPath = "hatch";
+
 		traceVerbose(`Probing Hatch binary ${hatchPath}`);
 
 		const hatch = new Hatch(hatchPath, cwd);
@@ -55,6 +57,7 @@ export class Hatch {
 
 			return hatch;
 		}
+
 		traceVerbose(`Failed to find Hatch binary ${hatchPath}`);
 
 		// Didn't find anything.
@@ -93,6 +96,7 @@ export class Hatch {
 		if (!envInfoOutput) {
 			return undefined;
 		}
+
 		const envPaths = await Promise.all(
 			Object.keys(JSON.parse(envInfoOutput.stdout)).map(async (name) => {
 				const envPathOutput = await exec(
@@ -129,7 +133,9 @@ export class Hatch {
 			if (/^[a-z]:/.test(this.cwd)) {
 				// Replace first character by the upper case version of the character.
 				const a = this.cwd.split(":");
+
 				a[0] = a[0].toUpperCase();
+
 				this.cwd = a.join(":");
 			}
 		}

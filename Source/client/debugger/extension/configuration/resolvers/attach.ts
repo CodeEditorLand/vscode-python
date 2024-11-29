@@ -36,10 +36,12 @@ export class AttachConfigurationResolver extends BaseConfigurationResolver<Attac
 				(item, pos) => dbgConfig.debugOptions!.indexOf(item) === pos,
 			);
 		}
+
 		if (debugConfiguration.clientOS === undefined) {
 			debugConfiguration.clientOS =
 				getOSType() === OSType.Windows ? "windows" : "unix";
 		}
+
 		return debugConfiguration;
 	}
 
@@ -50,6 +52,7 @@ export class AttachConfigurationResolver extends BaseConfigurationResolver<Attac
 		if (!Array.isArray(debugConfiguration.debugOptions)) {
 			debugConfiguration.debugOptions = [];
 		}
+
 		if (
 			!(debugConfiguration.connect || debugConfiguration.listen) &&
 			!debugConfiguration.host
@@ -57,6 +60,7 @@ export class AttachConfigurationResolver extends BaseConfigurationResolver<Attac
 			// Connect and listen cannot be mixed with host property.
 			debugConfiguration.host = "localhost";
 		}
+
 		debugConfiguration.showReturnValue =
 			debugConfiguration.showReturnValue !== false;
 		// Pass workspace folder so we can get this when we get debug events firing.
@@ -72,18 +76,21 @@ export class AttachConfigurationResolver extends BaseConfigurationResolver<Attac
 				DebugOptions.Django,
 			);
 		}
+
 		if (debugConfiguration.jinja) {
 			AttachConfigurationResolver.debugOption(
 				debugOptions,
 				DebugOptions.Jinja,
 			);
 		}
+
 		if (debugConfiguration.subProcess === true) {
 			AttachConfigurationResolver.debugOption(
 				debugOptions,
 				DebugOptions.SubProcess,
 			);
 		}
+
 		if (
 			debugConfiguration.pyramid &&
 			debugOptions.indexOf(DebugOptions.Jinja) === -1 &&
@@ -94,6 +101,7 @@ export class AttachConfigurationResolver extends BaseConfigurationResolver<Attac
 				DebugOptions.Jinja,
 			);
 		}
+
 		if (
 			debugConfiguration.redirectOutput ||
 			debugConfiguration.redirectOutput === undefined
@@ -116,10 +124,12 @@ export class AttachConfigurationResolver extends BaseConfigurationResolver<Attac
 				DebugOptions.FixFilePathCase,
 			);
 		}
+
 		if (debugConfiguration.clientOS === undefined) {
 			debugConfiguration.clientOS =
 				getOSType() === OSType.Windows ? "windows" : "unix";
 		}
+
 		if (debugConfiguration.showReturnValue) {
 			AttachConfigurationResolver.debugOption(
 				debugOptions,
@@ -134,6 +144,7 @@ export class AttachConfigurationResolver extends BaseConfigurationResolver<Attac
 			debugConfiguration.remoteRoot,
 			workspaceFolder,
 		);
+
 		AttachConfigurationResolver.sendTelemetry("attach", debugConfiguration);
 	}
 
@@ -159,6 +170,7 @@ export class AttachConfigurationResolver extends BaseConfigurationResolver<Attac
 				workspaceFolder ? workspaceFolder.fsPath : "",
 			);
 		}
+
 		return pathMappings.length > 0 ? pathMappings : undefined;
 	}
 }

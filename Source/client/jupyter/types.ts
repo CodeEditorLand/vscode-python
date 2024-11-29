@@ -7,6 +7,7 @@ import { QuickPickItem } from "vscode";
 
 interface IJupyterServerUri {
 	baseUrl: string;
+
 	token: string;
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -20,6 +21,7 @@ type JupyterServerUriHandle = string;
 export interface IJupyterUriProvider {
 	readonly id: string; // Should be a unique string (like a guid)
 	getQuickPickEntryItems(): QuickPickItem[];
+
 	handleQuickPick(
 		item: QuickPickItem,
 		backEnabled: boolean,
@@ -30,7 +32,9 @@ export interface IJupyterUriProvider {
 
 interface IDataFrameInfo {
 	columns?: { key: string; type: ColumnType }[];
+
 	indexColumn?: string;
+
 	rowCount?: number;
 }
 

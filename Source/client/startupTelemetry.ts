@@ -31,6 +31,7 @@ export async function sendStartupTelemetry(
 
 	try {
 		await activatedPromise;
+
 		durations.totalNonBlockingActivateTime =
 			stopWatch.elapsedTime - durations.startActivateTime;
 
@@ -38,6 +39,7 @@ export async function sendStartupTelemetry(
 			serviceContainer,
 			isFirstSession,
 		);
+
 		sendTelemetryEvent(EventName.EDITOR_LOAD, durations, props);
 	} catch (ex) {
 		traceError("sendStartupTelemetry() failed.", ex);
@@ -59,6 +61,7 @@ export async function sendErrorTelemetry(
 				traceError("getActivationTelemetryProps() failed.", ex);
 			}
 		}
+
 		sendTelemetryEvent(EventName.EDITOR_LOAD, durations, props, ex);
 	} catch (exc2) {
 		traceError("sendErrorTelemetry() failed.", exc2);
@@ -78,6 +81,7 @@ function isUsingGlobalInterpreterInWorkspace(
 	if (!globalInterpreter) {
 		return false;
 	}
+
 	return currentPythonPath === globalInterpreter.path;
 }
 
@@ -126,6 +130,7 @@ async function getActivationTelemetryProps(
 			isFirstSession,
 		};
 	}
+
 	const interpreterService =
 		serviceContainer.get<IInterpreterService>(IInterpreterService);
 
@@ -160,15 +165,18 @@ async function getActivationTelemetryProps(
 			JSON.stringify(interpreter),
 		);
 	}
+
 	let condaVersion = undefined;
 
 	if (interpreterType === EnvironmentType.Conda) {
 		const condaLocator = serviceContainer.get<ICondaService>(ICondaService);
+
 		condaVersion = await condaLocator
 			.getCondaVersion()
 			.then((ver) => (ver ? ver.raw : ""))
 			.catch<string>(() => "");
 	}
+
 	const usingUserDefinedInterpreter = hasUserDefinedPythonPath(
 		mainWorkspaceUri,
 		serviceContainer,

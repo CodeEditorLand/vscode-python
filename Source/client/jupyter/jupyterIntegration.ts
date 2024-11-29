@@ -205,6 +205,7 @@ export class JupyterExtensionIntegration {
 			if (!jupyterExtension) {
 				return undefined;
 			}
+
 			await jupyterExtension.activate();
 
 			if (jupyterExtension.isActive) {
@@ -215,6 +216,7 @@ export class JupyterExtensionIntegration {
 		} else {
 			return this.jupyterExtension.exports;
 		}
+
 		return undefined;
 	}
 

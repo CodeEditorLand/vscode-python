@@ -44,8 +44,10 @@ export class ExtensionLocators<I = PythonEnvInfo> extends Locators<I> {
 						(locator) => query.providerId === locator.providerId,
 					)
 				: this.nonWorkspace;
+
 			iterators.push(...nonWorkspace.map((loc) => loc.iterEnvs(query)));
 		}
+
 		return combineIterators(iterators);
 	}
 }
@@ -56,7 +58,9 @@ type RootURI = string;
 
 export type WatchRootsArgs = {
 	initRoot(root: Uri): void;
+
 	addRoot(root: Uri): void;
+
 	removeRoot(root: Uri): void;
 };
 type WatchRootsFunc = (args: WatchRootsArgs) => IDisposable;
@@ -82,6 +86,7 @@ export class WorkspaceLocators extends LazyResourceBasedLocator {
 		private readonly factories: WorkspaceLocatorFactory[],
 	) {
 		super();
+
 		this.activate().ignoreErrors();
 	}
 
@@ -90,6 +95,7 @@ export class WorkspaceLocators extends LazyResourceBasedLocator {
 
 		// Clear all the roots.
 		const roots = Object.keys(this.roots).map((key) => this.roots[key]);
+
 		roots.forEach((root) => this.removeRoot(root));
 	}
 
@@ -109,6 +115,7 @@ export class WorkspaceLocators extends LazyResourceBasedLocator {
 					// This workspace folder did not match the query, so skip it!
 					return iterEmpty<BasicEnvInfo>();
 				}
+
 				if (query.providerId && query.providerId !== this.providerId) {
 					// This is a request for a specific provider, so skip it.
 					return iterEmpty<BasicEnvInfo>();
@@ -129,14 +136,18 @@ export class WorkspaceLocators extends LazyResourceBasedLocator {
 			addRoot: (root: Uri) => {
 				// Drop the old one, if necessary.
 				this.removeRoot(root);
+
 				this.addRoot(root);
+
 				this.emitter.fire({ searchLocation: root });
 			},
 			removeRoot: (root: Uri) => {
 				this.removeRoot(root);
+
 				this.emitter.fire({ searchLocation: root });
 			},
 		});
+
 		this.disposables.push(disposable);
 	}
 
@@ -145,6 +156,7 @@ export class WorkspaceLocators extends LazyResourceBasedLocator {
 		const locators: ILocator<BasicEnvInfo>[] = [];
 
 		const disposables = new Disposables();
+
 		this.factories.forEach((create) => {
 			create(root).forEach((loc) => {
 				locators.push(loc);
@@ -158,7 +170,9 @@ export class WorkspaceLocators extends LazyResourceBasedLocator {
 		const locator = new Locators(locators);
 		// Cache it.
 		const key = root.toString();
+
 		this.locators[key] = [locator, disposables];
+
 		this.roots[key] = root;
 		// Hook up the watchers.
 		disposables.push(
@@ -166,6 +180,7 @@ export class WorkspaceLocators extends LazyResourceBasedLocator {
 				if (e.searchLocation === undefined) {
 					e.searchLocation = root;
 				}
+
 				this.emitter.fire(e);
 			}),
 		);
@@ -179,9 +194,13 @@ export class WorkspaceLocators extends LazyResourceBasedLocator {
 		if (found === undefined) {
 			return;
 		}
+
 		const [, disposables] = found;
+
 		delete this.locators[key];
+
 		delete this.roots[key];
+
 		disposables.dispose();
 	}
 }

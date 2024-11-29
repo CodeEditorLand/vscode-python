@@ -45,12 +45,14 @@ class PythonEnvironment implements IPythonEnvironment {
 			getPythonArgv(python: string): string[];
 
 			getObservablePythonArgv(python: string): string[];
+
 			isValidExecutable(python: string): Promise<boolean>;
 			// from ProcessService:
 			exec(
 				file: string,
 				args: string[],
 			): Promise<ExecutionResult<string>>;
+
 			shellExec(
 				command: string,
 				options?: ShellOptions,
@@ -66,6 +68,7 @@ class PythonEnvironment implements IPythonEnvironment {
 
 		return buildPythonExecInfo(python, pythonArgs, pythonExecutable);
 	}
+
 	public getExecutionObservableInfo(
 		pythonArgs: string[] = [],
 		pythonExecutable?: string,
@@ -82,6 +85,7 @@ class PythonEnvironment implements IPythonEnvironment {
 			this.cachedInterpreterInformation =
 				await this.getInterpreterInformationImpl();
 		}
+
 		return this.cachedInterpreterInformation;
 	}
 
@@ -91,15 +95,18 @@ class PythonEnvironment implements IPythonEnvironment {
 		if (await this.deps.isValidExecutable(this.pythonPath)) {
 			return this.pythonPath;
 		}
+
 		const result = cachedExecutablePath.get(this.pythonPath);
 
 		if (result !== undefined && !isTestExecution()) {
 			// Another call for this environment has already been made, return its result
 			return result;
 		}
+
 		const python = this.getExecutionInfo();
 
 		const promise = getExecutablePath(python, this.deps.shellExec);
+
 		cachedExecutablePath.set(this.pythonPath, promise);
 
 		return promise;
@@ -124,6 +131,7 @@ class PythonEnvironment implements IPythonEnvironment {
 
 			return undefined;
 		}
+
 		return parse(data.stdout);
 	}
 
@@ -143,6 +151,7 @@ class PythonEnvironment implements IPythonEnvironment {
 
 			return false;
 		}
+
 		return true;
 	}
 
@@ -186,12 +195,14 @@ function createDeps(
 				// Say when python is `py -3.8` or `conda run python`
 				pythonArgv = python.split(" ");
 			}
+
 			return pythonArgv || [python];
 		},
 		getObservablePythonArgv: (python: string) => {
 			if (path.basename(python) === python) {
 				observablePythonArgv = python.split(" ");
 			}
+
 			return observablePythonArgv || [python];
 		},
 		isValidExecutable,
@@ -235,6 +246,7 @@ export async function createCondaEnv(
 	if (!pythonArgv) {
 		return undefined;
 	}
+
 	const deps = createDeps(
 		async (filename) => fs.pathExists(filename),
 		pythonArgv,
@@ -251,6 +263,7 @@ export async function createCondaEnv(
 	if (!interpreterPath) {
 		return undefined;
 	}
+
 	return new PythonEnvironment(interpreterPath, deps);
 }
 

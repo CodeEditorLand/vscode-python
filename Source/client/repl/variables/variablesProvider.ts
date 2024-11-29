@@ -92,9 +92,11 @@ export class VariablesProvider implements NotebookVariableProvider {
 				if (token.isCancellationRequested) {
 					return;
 				}
+
 				results = variables.map((variable) =>
 					this.createVariableResult(variable),
 				);
+
 				this.variableResultCache.setResults(
 					executionCount,
 					cacheKey,
@@ -138,9 +140,11 @@ export class VariablesProvider implements NotebookVariableProvider {
 				if (token.isCancellationRequested) {
 					return;
 				}
+
 				results = variables.map((variable) =>
 					this.createVariableResult(variable),
 				);
+
 				this.variableResultCache.setResults(
 					executionCount,
 					cacheKey,
@@ -199,6 +203,7 @@ function createExpression(
 			expression += `[${property}]`;
 		}
 	}
+
 	return expression;
 }
 
@@ -214,6 +219,7 @@ function getVariableResultCacheKey(
 	if (parentDescription) {
 		parentKey = `${parentDescription.name}.${parentDescription.propertyChain.join(".")}[[${start}`;
 	}
+
 	return `${uri}:${parentKey}`;
 }
 

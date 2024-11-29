@@ -123,12 +123,14 @@ export class DebugAdapterDescriptorFactory
 					configuration.debugAdapterPath,
 					...logArgs,
 				]);
+
 				traceLog(
 					`DAP Server launched with command: ${executable} ${args.join(" ")}`,
 				);
 
 				return new DebugAdapterExecutable(executable, args);
 			}
+
 			const debugpyPath = await getDebugpyPath();
 
 			if (!debugpyPath) {
@@ -136,12 +138,15 @@ export class DebugAdapterDescriptorFactory
 
 				throw new Error("Could not find debugpy path.");
 			}
+
 			const debuggerAdapterPathToUse = path.join(debugpyPath, "adapter");
 
 			const args = command.concat([debuggerAdapterPathToUse, ...logArgs]);
+
 			traceLog(
 				`DAP Server launched with command: ${executable} ${args.join(" ")}`,
 			);
+
 			sendTelemetryEvent(
 				EventName.DEBUG_ADAPTER_USING_WHEELS_PATH,
 				undefined,
@@ -224,6 +229,7 @@ export class DebugAdapterDescriptorFactory
 		if (notificationPromptEnabled.value) {
 			return;
 		}
+
 		const prompts = [
 			Interpreters.changePythonInterpreter,
 			Common.doNotShowAgain,
@@ -240,9 +246,11 @@ export class DebugAdapterDescriptorFactory
 		if (!selection) {
 			return;
 		}
+
 		if (selection == Interpreters.changePythonInterpreter) {
 			await this.commandManager.executeCommand(Commands.Set_Interpreter);
 		}
+
 		if (selection == Common.doNotShowAgain) {
 			// Never show the message again
 			await this.persistentState
@@ -265,8 +273,10 @@ export class DebugAdapterDescriptorFactory
 			) {
 				this.showDeprecatedPythonMessage();
 			}
+
 			return interpreter.path.length > 0 ? [interpreter.path] : [];
 		}
+
 		return [];
 	}
 

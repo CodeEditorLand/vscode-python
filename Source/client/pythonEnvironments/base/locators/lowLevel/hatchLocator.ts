@@ -49,6 +49,7 @@ export class HatchLocator extends LazyResourceBasedLocator {
 								executablePath: filename,
 								kind: PythonEnvKind.Hatch,
 							};
+
 							traceVerbose(
 								`Hatch Virtual Environment: [added] ${filename}`,
 							);
@@ -60,10 +61,12 @@ export class HatchLocator extends LazyResourceBasedLocator {
 						}
 					}
 				}
+
 				return generator();
 			});
 
 			yield* iterable(chain(envGenerators));
+
 			traceVerbose(`Finished searching for Hatch envs`);
 		}
 

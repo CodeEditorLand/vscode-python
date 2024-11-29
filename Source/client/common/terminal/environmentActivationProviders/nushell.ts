@@ -26,6 +26,7 @@ export function getAllScripts(): string[] {
 			}
 		}
 	}
+
 	return scripts;
 }
 
@@ -42,6 +43,7 @@ export class Nushell extends VenvBaseActivationCommandProvider {
 		if (!scriptFile) {
 			return undefined;
 		}
+
 		return [
 			`overlay use ${scriptFile.fileToCommandArgumentForPythonExt()}`,
 		];

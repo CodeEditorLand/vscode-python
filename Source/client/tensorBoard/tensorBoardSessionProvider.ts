@@ -75,11 +75,13 @@ export class TensorBoardSessionProvider
 		private readonly experiment: TensorboardExperiment,
 	) {
 		disposables.push(this);
+
 		this.preferredViewGroupMemento =
 			this.stateFactory.createGlobalPersistentState<ViewColumn>(
 				PREFERRED_VIEWGROUP,
 				ViewColumn.Active,
 			);
+
 		this.hasActiveTensorBoardSessionContext = new ContextKey(
 			"python.hasActiveTensorBoardSession",
 			this.commandManager,
@@ -94,6 +96,7 @@ export class TensorBoardSessionProvider
 		if (TensorboardExperiment.isTensorboardExtensionInstalled) {
 			return;
 		}
+
 		this.experiment.disposeOnInstallingTensorboard(this);
 
 		this.disposables.push(
@@ -133,11 +136,13 @@ export class TensorBoardSessionProvider
 
 	private async updateTensorBoardSessionContext() {
 		let hasActiveTensorBoardSession = false;
+
 		this.knownSessions.forEach((viewer) => {
 			if (viewer.active) {
 				hasActiveTensorBoardSession = true;
 			}
 		});
+
 		await this.hasActiveTensorBoardSessionContext.set(
 			hasActiveTensorBoardSession,
 		);
@@ -145,6 +150,7 @@ export class TensorBoardSessionProvider
 
 	private async didDisposeSession(session: TensorBoardSession) {
 		this.knownSessions = this.knownSessions.filter((s) => s !== session);
+
 		this.updateTensorBoardSessionContext();
 	}
 
@@ -164,17 +170,21 @@ export class TensorBoardSessionProvider
 				this.multiStepFactory,
 				this.configurationService,
 			);
+
 			newSession.onDidChangeViewState(
 				() => this.updateTensorBoardSessionContext(),
 				this,
 				this.disposables,
 			);
+
 			newSession.onDidDispose(
 				(e) => this.didDisposeSession(e),
 				this,
 				this.disposables,
 			);
+
 			this.knownSessions.push(newSession);
+
 			await newSession.initialize();
 
 			return newSession;
@@ -182,6 +192,7 @@ export class TensorBoardSessionProvider
 			traceError(
 				`Encountered error while starting new TensorBoard session: ${e}`,
 			);
+
 			await this.applicationShell.showErrorMessage(
 				l10n.t(
 					"We failed to start a TensorBoard session due to the following error: {0}",
@@ -189,6 +200,7 @@ export class TensorBoardSessionProvider
 				),
 			);
 		}
+
 		return undefined;
 	}
 }

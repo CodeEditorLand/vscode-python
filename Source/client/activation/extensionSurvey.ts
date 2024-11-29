@@ -68,11 +68,13 @@ export class ExtensionSurveyPrompt
 		) {
 			return;
 		}
+
 		const show = this.shouldShowBanner();
 
 		if (!show) {
 			return;
 		}
+
 		setTimeout(
 			() => this.showSurvey().ignoreErrors(),
 			this.waitTimeToShowSurvey,
@@ -86,6 +88,7 @@ export class ExtensionSurveyPrompt
 		if (env.uiKind === UIKind?.Web) {
 			return false;
 		}
+
 		const doNotShowSurveyAgain =
 			this.persistentState.createGlobalPersistentState(
 				extensionSurveyStateKeys.doNotShowAgain,
@@ -95,6 +98,7 @@ export class ExtensionSurveyPrompt
 		if (doNotShowSurveyAgain.value) {
 			return false;
 		}
+
 		const isSurveyDisabledForTimeState =
 			this.persistentState.createGlobalPersistentState(
 				extensionSurveyStateKeys.disableSurveyForTime,
@@ -111,6 +115,7 @@ export class ExtensionSurveyPrompt
 		if (randomSample >= this.sampleSizePerOneHundredUsers) {
 			return false;
 		}
+
 		return true;
 	}
 
@@ -129,6 +134,7 @@ export class ExtensionSurveyPrompt
 			ExtensionSurveyBanner.bannerMessage,
 			...prompts,
 		);
+
 		sendTelemetryEvent(EventName.EXTENSION_SURVEY_PROMPT, undefined, {
 			selection: selection
 				? telemetrySelections[prompts.indexOf(selection)]
@@ -138,6 +144,7 @@ export class ExtensionSurveyPrompt
 		if (!selection) {
 			return;
 		}
+
 		if (selection === ExtensionSurveyBanner.bannerLabelYes) {
 			this.launchSurvey();
 			// Disable survey for a few weeks
@@ -168,6 +175,7 @@ export class ExtensionSurveyPrompt
 		});
 
 		const url = `https://aka.ms/AA5rjx5?${query}`;
+
 		this.browserService.launch(url);
 	}
 }

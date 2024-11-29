@@ -20,6 +20,7 @@ export class ReplProvider implements Disposable {
 			this.serviceContainer.get<IActiveResourceService>(
 				IActiveResourceService,
 			);
+
 		this.registerCommand();
 	}
 
@@ -36,6 +37,7 @@ export class ReplProvider implements Disposable {
 			this.commandHandler,
 			this,
 		);
+
 		this.disposables.push(disposable);
 	}
 
@@ -56,10 +58,12 @@ export class ReplProvider implements Disposable {
 
 			return;
 		}
+
 		const replProvider = this.serviceContainer.get<ICodeExecutionService>(
 			ICodeExecutionService,
 			"standard",
 		);
+
 		await replProvider.initializeRepl(resource);
 	}
 }

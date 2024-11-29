@@ -60,7 +60,9 @@ export class ExperimentService implements IExperimentService {
 
 		const optOutFrom =
 			settings.get<string[]>("experiments.optOutFrom") || [];
+
 		this._optInto = optInto.filter((exp) => !exp.endsWith("control"));
+
 		this._optOutFrom = optOutFrom.filter((exp) => !exp.endsWith("control"));
 
 		// If users opt out of all experiments we treat it as disabling them.
@@ -100,6 +102,7 @@ export class ExperimentService implements IExperimentService {
 	public async activate(): Promise<void> {
 		if (this.experimentationService) {
 			const initStart = Date.now();
+
 			await this.experimentationService.initializePromise;
 
 			if (this.experiments.value.features.length === 0) {
@@ -114,13 +117,16 @@ export class ExperimentService implements IExperimentService {
 				// `overrideInMemoryFeatures` was always passed in as `false`. So, the experiment
 				// states did not change mid way.
 				await this.experimentationService.initialFetch;
+
 				sendTelemetryEvent(
 					EventName.PYTHON_EXPERIMENTS_INIT_PERFORMANCE,
 					Date.now() - initStart,
 				);
 			}
+
 			this.logExperiments();
 		}
+
 		sendOptInOptOutTelemetry(
 			this._optInto,
 			this._optOutFrom,
@@ -200,6 +206,7 @@ export class ExperimentService implements IExperimentService {
 			telemetrySettings.get<boolean>("enableTelemetry") === false
 		) {
 			traceLog("Telemetry is disabled");
+
 			experimentsDisabled = true;
 		}
 
@@ -208,6 +215,7 @@ export class ExperimentService implements IExperimentService {
 			telemetrySettings.get<string>("telemetryLevel") === "off"
 		) {
 			traceLog("Telemetry level is off");
+
 			experimentsDisabled = true;
 		}
 
@@ -226,6 +234,7 @@ export class ExperimentService implements IExperimentService {
 			// confusion. So skip printing out any specific experiment details to the log.
 			return;
 		}
+
 		if (this._optInto.includes("All")) {
 			// Only if 'All' is not in optOut then check if it is in Opt In.
 			traceLog(l10n.t("Experiment '{0}' is active", "All"));

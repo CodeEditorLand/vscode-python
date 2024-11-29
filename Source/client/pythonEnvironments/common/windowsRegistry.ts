@@ -12,17 +12,25 @@ export { HKCU, HKLM, REG_SZ, Options };
 
 export interface IRegistryKey {
 	hive: string;
+
 	arch: string;
+
 	key: string;
+
 	parentKey?: IRegistryKey;
 }
 
 export interface IRegistryValue {
 	hive: string;
+
 	arch: string;
+
 	key: string;
+
 	name: string;
+
 	type: string;
+
 	value: string;
 }
 
@@ -37,15 +45,18 @@ export async function readRegistryValues(
 		const regKey = new WinReg(options);
 
 		const deferred = createDeferred<RegistryItem[]>();
+
 		regKey.values((err: Error, res: RegistryItem[]) => {
 			if (err) {
 				deferred.reject(err);
 			}
+
 			deferred.resolve(res);
 		});
 
 		return deferred.promise;
 	}
+
 	return executeWorkerFile(
 		path.join(__dirname, "registryValues.worker.js"),
 		options,
@@ -63,15 +74,18 @@ export async function readRegistryKeys(
 		const regKey = new WinReg(options);
 
 		const deferred = createDeferred<Registry[]>();
+
 		regKey.keys((err: Error, res: Registry[]) => {
 			if (err) {
 				deferred.reject(err);
 			}
+
 			deferred.resolve(res);
 		});
 
 		return deferred.promise;
 	}
+
 	return executeWorkerFile(
 		path.join(__dirname, "registryKeys.worker.js"),
 		options,

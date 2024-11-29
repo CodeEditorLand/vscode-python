@@ -75,13 +75,17 @@ export class WindowsPathEnvVarLocator
 						inExp,
 					),
 				);
+
 		this.disposables.push(...dirLocators);
+
 		this.locators = new Locators(dirLocators);
+
 		this.onChanged = this.locators.onChanged;
 	}
 
 	public async dispose(): Promise<void> {
 		this.locators.dispose();
+
 		await this.disposables.dispose();
 	}
 
@@ -93,15 +97,18 @@ export class WindowsPathEnvVarLocator
 		// locators).
 		async function* iterator(it: IPythonEnvsIterator<BasicEnvInfo>) {
 			const stopWatch = new StopWatch();
+
 			traceInfo(`Searching windows known paths locator`);
 
 			for await (const env of it) {
 				yield env;
 			}
+
 			traceInfo(
 				`Finished searching windows known paths locator: ${stopWatch.elapsedTime} milliseconds`,
 			);
 		}
+
 		return iterator(this.locators.iterEnvs(query));
 	}
 }
@@ -150,6 +157,7 @@ function getDirFilesLocator(
 	): IPythonEnvsIterator<BasicEnvInfo> {
 		yield* await getEnvs(locator.iterEnvs(query)).then((res) => res);
 	}
+
 	return {
 		providerId: locator.providerId,
 		iterEnvs,

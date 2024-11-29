@@ -17,6 +17,7 @@ export class ExperimentationTelemetry implements IExperimentationTelemetry {
 
 	public postEvent(eventName: string, properties: Map<string, string>): void {
 		const formattedProperties: { [key: string]: string } = {};
+
 		properties.forEach((value, key) => {
 			formattedProperties[key] = value;
 		});

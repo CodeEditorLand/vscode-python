@@ -9,7 +9,9 @@ import { getDebugpyPath } from "../../pythonDebugger";
 
 type RemoteDebugOptions = {
 	host: string;
+
 	port: number;
+
 	waitUntilDebuggerAttaches: boolean;
 };
 

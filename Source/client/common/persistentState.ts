@@ -39,9 +39,11 @@ export function getWorkspaceStateValue<T>(
 	if (!_workspaceState) {
 		throw new Error("Workspace state not initialized");
 	}
+
 	if (defaultValue === undefined) {
 		return _workspaceState.get<T>(key);
 	}
+
 	return _workspaceState.get<T>(key, defaultValue);
 }
 
@@ -52,15 +54,19 @@ export async function updateWorkspaceStateValue<T>(
 	if (!_workspaceState) {
 		throw new Error("Workspace state not initialized");
 	}
+
 	try {
 		_workspaceKeys.push(key);
+
 		await _workspaceState.update(key, value);
 
 		const after = getWorkspaceStateValue(key);
 
 		if (JSON.stringify(after) !== JSON.stringify(value)) {
 			await _workspaceState.update(key, undefined);
+
 			await _workspaceState.update(key, value);
+
 			traceError("Error while updating workspace state for key:", key);
 		}
 	} catch (ex) {
@@ -120,6 +126,7 @@ export class PersistentState<T> implements IPersistentState<T> {
 			} else {
 				await this.storage.update(this.key, newValue);
 			}
+
 			if (
 				retryOnce &&
 				JSON.stringify(this.value) != JSON.stringify(newValue)
@@ -128,6 +135,7 @@ export class PersistentState<T> implements IPersistentState<T> {
 				// It is noticed however that if we reset the storage first and then update it, it works.
 				// https://github.com/microsoft/vscode/issues/171827
 				await this.updateValue(undefined as any, false);
+
 				await this.updateValue(newValue, false);
 			}
 		} catch (ex) {
@@ -157,11 +165,13 @@ export class PersistentStateFactory
 		untrustedWorkspace: false,
 		virtualWorkspace: true,
 	};
+
 	public readonly _globalKeysStorage = new PersistentState<KeysStorage[]>(
 		this.globalState,
 		GLOBAL_PERSISTENT_KEYS,
 		[],
 	);
+
 	public readonly _workspaceKeysStorage = new PersistentState<KeysStorage[]>(
 		this.workspaceState,
 		WORKSPACE_PERSISTENT_KEYS,
@@ -182,6 +192,7 @@ export class PersistentStateFactory
 	public async activate(): Promise<void> {
 		this.cmdManager?.registerCommand(Commands.ClearStorage, async () => {
 			await clearWorkspaceState();
+
 			await this.cleanAllPersistentStates();
 		});
 
@@ -200,6 +211,7 @@ export class PersistentStateFactory
 		if (globalKeysStorageDeprecated.value.length > 0) {
 			globalKeysStorageDeprecated.updateValue([]).ignoreErrors();
 		}
+
 		if (workspaceKeysStorageDeprecated.value.length > 0) {
 			workspaceKeysStorageDeprecated.updateValue([]).ignoreErrors();
 		}
@@ -264,25 +276,33 @@ export class PersistentStateFactory
 		const clearCacheDirPromise = this.context
 			? clearCacheDirectory(this.context).catch()
 			: Promise.resolve();
+
 		await Promise.all(
 			this._globalKeysStorage.value.map(async (keyContent) => {
 				const storage = this.createGlobalPersistentState(
 					keyContent.key,
 				);
+
 				await storage.updateValue(keyContent.defaultValue);
 			}),
 		);
+
 		await Promise.all(
 			this._workspaceKeysStorage.value.map(async (keyContent) => {
 				const storage = this.createWorkspacePersistentState(
 					keyContent.key,
 				);
+
 				await storage.updateValue(keyContent.defaultValue);
 			}),
 		);
+
 		await this._globalKeysStorage.updateValue([]);
+
 		await this._workspaceKeysStorage.updateValue([]);
+
 		await clearCacheDirPromise;
+
 		this.cmdManager
 			?.executeCommand("workbench.action.reloadWindow")
 			.then(noop);
@@ -317,8 +337,10 @@ export function getGlobalStorage<T>(
 
 	if (!found) {
 		const newValue = [{ key, defaultValue }, ...globalKeysStorage.value];
+
 		globalKeysStorage.updateValue(newValue).ignoreErrors();
 	}
+
 	const raw = new PersistentState<T>(context.globalState, key, defaultValue);
 
 	return {

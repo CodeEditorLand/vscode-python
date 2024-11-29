@@ -67,10 +67,12 @@ detectableShells.set(TerminalShellType.xonsh, IS_XONSH);
 @injectable()
 export abstract class BaseShellDetector implements IShellDetector {
 	constructor(@unmanaged() public readonly priority: number) {}
+
 	public abstract identify(
 		telemetryProperties: ShellIdentificationTelemetry,
 		terminal?: Terminal,
 	): TerminalShellType | undefined;
+
 	public identifyShellFromShellPath(shellPath: string): TerminalShellType {
 		return identifyShellFromShellPath(shellPath);
 	}
@@ -92,6 +94,7 @@ export function identifyShellFromShellPath(
 					return shellToDetect;
 				}
 			}
+
 			return matchedShell;
 		},
 		TerminalShellType.other,

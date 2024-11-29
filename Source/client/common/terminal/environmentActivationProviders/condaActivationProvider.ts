@@ -112,10 +112,12 @@ export class CondaActivationCommandProvider
 						`conda activate ${condaEnv.toCommandArgumentForPythonExt()}`,
 					];
 				}
+
 				return [
 					`source ${activatePath.path} ${condaEnv.toCommandArgumentForPythonExt()}`,
 				];
 			}
+
 			return [
 				`conda activate ${condaEnv.toCommandArgumentForPythonExt()}`,
 			];
@@ -137,6 +139,7 @@ export class CondaActivationCommandProvider
 				if (this.platform.isWindows) {
 					return this.getWindowsCommands(condaEnv);
 				}
+
 				return getUnixCommands(
 					condaEnv,
 					await this.condaService.getCondaFile(),
@@ -153,6 +156,7 @@ export class CondaActivationCommandProvider
 			const condaScriptsPath: string = path.dirname(condaExePath);
 			// prefix the cmd with the found path, and ensure it's quoted properly
 			activateCmd = path.join(condaScriptsPath, activateCmd);
+
 			activateCmd = activateCmd.toCommandArgumentForPythonExt();
 		}
 

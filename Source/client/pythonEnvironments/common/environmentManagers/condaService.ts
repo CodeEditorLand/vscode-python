@@ -99,6 +99,7 @@ export class CondaService implements ICondaService {
 		if (typeof this.isAvailable === "boolean") {
 			return this.isAvailable;
 		}
+
 		return this.getCondaVersion()
 
 			.then((version) => (this.isAvailable = version !== undefined)) // eslint-disable-line no-return-assign

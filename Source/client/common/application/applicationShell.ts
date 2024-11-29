@@ -51,24 +51,29 @@ export class ApplicationShell implements IApplicationShell {
 	public get onDidChangeWindowState(): Event<WindowState> {
 		return window.onDidChangeWindowState;
 	}
+
 	public showInformationMessage(
 		message: string,
 		...items: string[]
 	): Thenable<string>;
+
 	public showInformationMessage(
 		message: string,
 		options: MessageOptions,
 		...items: string[]
 	): Thenable<string>;
+
 	public showInformationMessage<T extends MessageItem>(
 		message: string,
 		...items: T[]
 	): Thenable<T>;
+
 	public showInformationMessage<T extends MessageItem>(
 		message: string,
 		options: MessageOptions,
 		...items: T[]
 	): Thenable<T>;
+
 	public showInformationMessage(
 		message: string,
 		options?: any,
@@ -81,20 +86,24 @@ export class ApplicationShell implements IApplicationShell {
 		message: string,
 		...items: string[]
 	): Thenable<string>;
+
 	public showWarningMessage(
 		message: string,
 		options: MessageOptions,
 		...items: string[]
 	): Thenable<string>;
+
 	public showWarningMessage<T extends MessageItem>(
 		message: string,
 		...items: T[]
 	): Thenable<T>;
+
 	public showWarningMessage<T extends MessageItem>(
 		message: string,
 		options: MessageOptions,
 		...items: T[]
 	): Thenable<T>;
+
 	public showWarningMessage(message: any, options?: any, ...items: any[]) {
 		return window.showWarningMessage(message, options, ...items);
 	}
@@ -103,20 +112,24 @@ export class ApplicationShell implements IApplicationShell {
 		message: string,
 		...items: string[]
 	): Thenable<string>;
+
 	public showErrorMessage(
 		message: string,
 		options: MessageOptions,
 		...items: string[]
 	): Thenable<string>;
+
 	public showErrorMessage<T extends MessageItem>(
 		message: string,
 		...items: T[]
 	): Thenable<T>;
+
 	public showErrorMessage<T extends MessageItem>(
 		message: string,
 		options: MessageOptions,
 		...items: T[]
 	): Thenable<T>;
+
 	public showErrorMessage(message: any, options?: any, ...items: any[]) {
 		return window.showErrorMessage(message, options, ...items);
 	}
@@ -126,11 +139,13 @@ export class ApplicationShell implements IApplicationShell {
 		options?: QuickPickOptions,
 		token?: CancellationToken,
 	): Thenable<string>;
+
 	public showQuickPick<T extends QuickPickItem>(
 		items: T[] | Thenable<T[]>,
 		options?: QuickPickOptions,
 		token?: CancellationToken,
 	): Thenable<T>;
+
 	public showQuickPick(
 		items: any,
 		options?: any,
@@ -144,17 +159,20 @@ export class ApplicationShell implements IApplicationShell {
 	): Thenable<Uri[] | undefined> {
 		return window.showOpenDialog(options);
 	}
+
 	public showSaveDialog(
 		options: SaveDialogOptions,
 	): Thenable<Uri | undefined> {
 		return window.showSaveDialog(options);
 	}
+
 	public showInputBox(
 		options?: InputBoxOptions,
 		token?: CancellationToken,
 	): Thenable<string | undefined> {
 		return window.showInputBox(options, token);
 	}
+
 	public showTextDocument(
 		document: TextDocument,
 		column?: ViewColumn,
@@ -171,11 +189,14 @@ export class ApplicationShell implements IApplicationShell {
 		text: string,
 		hideAfterTimeout: number,
 	): Disposable;
+
 	public setStatusBarMessage(
 		text: string,
 		hideWhenDone: Thenable<any>,
 	): Disposable;
+
 	public setStatusBarMessage(text: string): Disposable;
+
 	public setStatusBarMessage(text: string, arg?: any): Disposable {
 		return window.setStatusBarMessage(text, arg);
 	}
@@ -189,11 +210,13 @@ export class ApplicationShell implements IApplicationShell {
 			? window.createStatusBarItem(id, alignment, priority)
 			: window.createStatusBarItem(alignment, priority);
 	}
+
 	public showWorkspaceFolderPick(
 		options?: WorkspaceFolderPickOptions,
 	): Thenable<WorkspaceFolder | undefined> {
 		return window.showWorkspaceFolderPick(options);
 	}
+
 	public withProgress<R>(
 		options: ProgressOptions,
 		task: (
@@ -203,6 +226,7 @@ export class ApplicationShell implements IApplicationShell {
 	): Thenable<R> {
 		return window.withProgress<R>(options, task);
 	}
+
 	public withProgressCustomIcon<R>(
 		icon: string,
 		task: (
@@ -221,6 +245,7 @@ export class ApplicationShell implements IApplicationShell {
 				statusBarProgress.text = `${icon} ${value.message}`;
 			},
 		};
+
 		statusBarProgress.show();
 
 		return task(progress, token).then((result) => {
@@ -229,27 +254,33 @@ export class ApplicationShell implements IApplicationShell {
 			return result;
 		});
 	}
+
 	public createQuickPick<T extends QuickPickItem>(): QuickPick<T> {
 		return window.createQuickPick<T>();
 	}
+
 	public createInputBox(): InputBox {
 		return window.createInputBox();
 	}
+
 	public createTreeView<T>(
 		viewId: string,
 		options: TreeViewOptions<T>,
 	): TreeView<T> {
 		return window.createTreeView<T>(viewId, options);
 	}
+
 	public createOutputChannel(name: string): LogOutputChannel {
 		return window.createOutputChannel(name, { log: true });
 	}
+
 	public createLanguageStatusItem(
 		id: string,
 		selector: DocumentSelector,
 	): LanguageStatusItem {
 		return languages.createLanguageStatusItem(id, selector);
 	}
+
 	public get onDidWriteTerminalData(): Event<TerminalDataWriteEvent> {
 		try {
 			return window.onDidWriteTerminalData;
@@ -259,6 +290,7 @@ export class ApplicationShell implements IApplicationShell {
 			return new EventEmitter<TerminalDataWriteEvent>().event;
 		}
 	}
+
 	public get onDidExecuteTerminalCommand():
 		| Event<TerminalExecutedCommand>
 		| undefined {

@@ -35,6 +35,7 @@ export class ProcessLogger implements IProcessLogger {
 			// Used only during UI Tests (hence this setting need not be exposed as a valid setting).
 			return;
 		}
+
 		let command = args
 			? [fileOrCommand, ...args]
 					.map((e) => e.trimQuotes().toCommandArgumentForPythonExt())
@@ -48,8 +49,10 @@ export class ProcessLogger implements IProcessLogger {
 				typeof options?.cwd === "string"
 					? options?.cwd
 					: options?.cwd?.toString();
+
 			info.push(`cwd: ${this.getDisplayCommands(cwd)}`);
 		}
+
 		if (typeof options?.shell === "string") {
 			info.push(`shell: ${identifyShellFromShellPath(options?.shell)}`);
 		}
@@ -70,11 +73,13 @@ export class ProcessLogger implements IProcessLogger {
 				".",
 			);
 		}
+
 		const home = getUserHomeDir();
 
 		if (home) {
 			command = replaceMatchesWithCharacter(command, home, "~");
 		}
+
 		return command;
 	}
 }
@@ -96,6 +101,7 @@ function replaceMatchesWithCharacter(
 			// Match both forward and backward slash versions of 'match' for Windows.
 			pattern = replaceAll(pattern, "\\\\", "(\\\\|/)");
 		}
+
 		let regex = new RegExp(pattern, "ig");
 
 		return regex;
@@ -120,8 +126,10 @@ function replaceMatchesWithCharacter(
 				isPrevioustoMatchRegexALetter(chunked[i], regexIndex - 1)
 			)
 				regex = getRegex(match.substring(1));
+
 			chunked[i] = chunked[i].replace(regex, character);
 		}
 	}
+
 	return chunked.join(" ");
 }

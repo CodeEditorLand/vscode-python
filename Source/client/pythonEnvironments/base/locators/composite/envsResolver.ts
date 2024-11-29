@@ -57,6 +57,7 @@ export class PythonEnvsResolver implements IResolvingLocator {
 	public async resolveEnv(path: string): Promise<PythonEnvInfo | undefined> {
 		const [executablePath, envPath] =
 			await getExecutablePathAndEnvPath(path);
+
 		path = executablePath.length ? executablePath : envPath;
 
 		const kind = await identifyEnvironment(path);
@@ -69,6 +70,7 @@ export class PythonEnvsResolver implements IResolvingLocator {
 
 		const info =
 			await this.environmentInfoService.getEnvironmentInfo(environment);
+
 		traceVerbose(
 			`Environment resolver resolved ${path} for ${JSON.stringify(environment)} to ${JSON.stringify(info)}`,
 		);
@@ -76,6 +78,7 @@ export class PythonEnvsResolver implements IResolvingLocator {
 		if (!info) {
 			return undefined;
 		}
+
 		return getResolvedEnv(info, environment);
 	}
 
@@ -87,6 +90,7 @@ export class PythonEnvsResolver implements IResolvingLocator {
 		const incomingIterator = this.parentLocator.iterEnvs(query);
 
 		const iterator = this.iterEnvsIterator(incomingIterator, didUpdate);
+
 		iterator.onUpdated = didUpdate.event;
 
 		return iterator;
@@ -116,7 +120,9 @@ export class PythonEnvsResolver implements IResolvingLocator {
 						didUpdate.fire({
 							stage: ProgressReportStage.allPathsDiscovered,
 						});
+
 						state.done = true;
+
 						listener.dispose();
 					} else {
 						didUpdate.fire(event);
@@ -130,13 +136,17 @@ export class PythonEnvsResolver implements IResolvingLocator {
 					seen[event.index] !== undefined
 				) {
 					const old = seen[event.index];
+
 					await setKind(event.update, environmentKinds);
+
 					seen[event.index] = await resolveBasicEnv(event.update);
+
 					didUpdate.fire({
 						old,
 						index: event.index,
 						update: seen[event.index],
 					});
+
 					this.resolveInBackground(
 						event.index,
 						state,
@@ -149,7 +159,9 @@ export class PythonEnvsResolver implements IResolvingLocator {
 						`Expected already iterated env, got ${event.old} (#${event.index})`,
 					);
 				}
+
 				state.pending -= 1;
+
 				checkIfFinishedAndNotify(state, didUpdate);
 			});
 		} else {
@@ -163,19 +175,24 @@ export class PythonEnvsResolver implements IResolvingLocator {
 			await setKind(result.value, environmentKinds);
 
 			const currEnv = await resolveBasicEnv(result.value);
+
 			seen.push(currEnv);
 
 			yield currEnv;
+
 			this.resolveInBackground(
 				seen.indexOf(currEnv),
 				state,
 				didUpdate,
 				seen,
 			).ignoreErrors();
+
 			result = await iterator.next();
 		}
+
 		if (iterator.onUpdated === undefined) {
 			state.done = true;
+
 			checkIfFinishedAndNotify(state, didUpdate);
 		}
 	}
@@ -203,13 +220,17 @@ export class PythonEnvsResolver implements IResolvingLocator {
 				seen[envIndex],
 				old.identifiedUsingNativeLocator,
 			);
+
 			seen[envIndex] = resolvedEnv;
+
 			didUpdate.fire({ old, index: envIndex, update: resolvedEnv });
 		} else {
 			// Send update that the environment is not valid.
 			didUpdate.fire({ old, index: envIndex, update: undefined });
 		}
+
 		state.pending -= 1;
+
 		checkIfFinishedAndNotify(state, didUpdate);
 	}
 }
@@ -226,6 +247,7 @@ async function setKind(
 
 		return;
 	}
+
 	let kind = environmentKinds.get(path);
 
 	if (!kind) {
@@ -233,9 +255,12 @@ async function setKind(
 			// If identifier is not registered, skip setting env kind.
 			return;
 		}
+
 		kind = await identifyEnvironment(path);
+
 		environmentKinds.set(path, kind);
 	}
+
 	env.kind = kind;
 }
 
@@ -250,7 +275,9 @@ function checkIfFinishedAndNotify(
 ) {
 	if (state.done && state.pending === 0) {
 		didUpdate.fire({ stage: ProgressReportStage.discoveryFinished });
+
 		didUpdate.dispose();
+
 		traceVerbose(`Finished with environment resolver`);
 	}
 }
@@ -262,6 +289,7 @@ function getResolvedEnv(
 ) {
 	// Deep copy into a new object
 	const resolvedEnv = cloneDeep(environment);
+
 	resolvedEnv.executable.sysPrefix = interpreterInfo.executable.sysPrefix;
 
 	const isEnvLackingPython =
@@ -283,6 +311,7 @@ function getResolvedEnv(
 	} else {
 		resolvedEnv.version = interpreterInfo.version;
 	}
+
 	resolvedEnv.arch = interpreterInfo.arch;
 	// Display name should be set after all the properties as we need other properties to build display name.
 	setEnvDisplayString(resolvedEnv);
@@ -306,10 +335,13 @@ async function getExecutablePathAndEnvPath(path: string) {
 
 	if (isPathAnExecutable) {
 		executablePath = path;
+
 		envPath = getEnvironmentDirFromPath(executablePath);
 	} else {
 		envPath = path;
+
 		executablePath = (await getInterpreterPathFromDir(envPath)) ?? "";
 	}
+
 	return [executablePath, envPath];
 }

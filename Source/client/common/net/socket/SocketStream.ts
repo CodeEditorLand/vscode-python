@@ -13,50 +13,69 @@ enum DataType {
 export class SocketStream {
 	constructor(socket: net.Socket, buffer: Buffer) {
 		this.buffer = buffer;
+
 		this.socket = socket;
 	}
 
 	private socket: net.Socket;
+
 	public WriteInt32(num: number) {
 		this.WriteInt64(num);
 	}
 
 	public WriteInt64(num: number) {
 		const buffer = uint64be.encode(num);
+
 		this.socket.write(buffer);
 	}
+
 	public WriteString(value: string) {
 		const stringBuffer = Buffer.from(value, "utf-8");
+
 		this.WriteInt32(stringBuffer.length);
 
 		if (stringBuffer.length > 0) {
 			this.socket.write(stringBuffer);
 		}
 	}
+
 	public Write(buffer: Buffer) {
 		this.socket.write(buffer);
 	}
 
 	private buffer: Buffer;
+
 	private isInTransaction!: boolean;
+
 	private bytesRead: number = 0;
+
 	public get Buffer(): Buffer {
 		return this.buffer;
 	}
+
 	public BeginTransaction() {
 		this.isInTransaction = true;
+
 		this.bytesRead = 0;
+
 		this.ClearErrors();
 	}
+
 	public EndTransaction() {
 		this.isInTransaction = false;
+
 		this.buffer = this.buffer.slice(this.bytesRead);
+
 		this.bytesRead = 0;
+
 		this.ClearErrors();
 	}
+
 	public RollBackTransaction() {
 		this.isInTransaction = false;
+
 		this.bytesRead = 0;
+
 		this.ClearErrors();
 	}
 
@@ -65,6 +84,7 @@ export class SocketStream {
 	}
 
 	private hasInsufficientDataForReading: boolean = false;
+
 	public get HasInsufficientDataForReading(): boolean {
 		return this.hasInsufficientDataForReading;
 	}
@@ -83,11 +103,15 @@ export class SocketStream {
 
 			return;
 		}
+
 		const newBuffer = Buffer.alloc(
 			this.buffer.length + additionalData.length,
 		);
+
 		this.buffer.copy(newBuffer);
+
 		additionalData.copy(newBuffer, this.buffer.length);
+
 		this.buffer = newBuffer;
 	}
 
@@ -111,6 +135,7 @@ export class SocketStream {
 		} else {
 			this.buffer = this.buffer.slice(1);
 		}
+
 		return value;
 	}
 
@@ -145,6 +170,7 @@ export class SocketStream {
 
 				break;
 			}
+
 			default: {
 				throw new Error(
 					`IOException(); Socket.ReadString failed to parse unknown string type ${type}`,
@@ -213,6 +239,7 @@ export class SocketStream {
 		} else {
 			this.buffer = this.buffer.slice(length);
 		}
+
 		return stringBuffer.toString("ascii");
 	}
 
@@ -221,8 +248,10 @@ export class SocketStream {
 
 		if (!this.isInTransaction) {
 			this.BeginTransaction();
+
 			startedTransaction = true;
 		}
+
 		let data: any;
 
 		switch (dataType) {
@@ -231,31 +260,39 @@ export class SocketStream {
 
 				break;
 			}
+
 			case DataType.int32: {
 				data = this.ReadInt32();
 
 				break;
 			}
+
 			case DataType.int64: {
 				data = this.ReadInt64();
 
 				break;
 			}
+
 			default: {
 				break;
 			}
 		}
+
 		if (this.HasInsufficientDataForReading) {
 			if (startedTransaction) {
 				this.RollBackTransaction();
 			}
+
 			return undefined as any;
 		}
+
 		if (startedTransaction) {
 			this.EndTransaction();
 		}
+
 		return data;
 	}
+
 	public readStringInTransaction(): string {
 		return this.readValueInTransaction<string>(DataType.string);
 	}

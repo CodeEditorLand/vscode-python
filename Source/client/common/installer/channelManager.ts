@@ -94,10 +94,12 @@ export class InstallationChannelManager implements IInstallationChannelManager {
 				// If none supported, try next priority group
 				currentPri = mi.priority;
 			}
+
 			if (await mi.isSupported(resource)) {
 				supportedInstallers.push(mi);
 			}
 		}
+
 		return supportedInstallers;
 	}
 
@@ -129,6 +131,7 @@ export class InstallationChannelManager implements IInstallationChannelManager {
 				Installer.searchForHelp,
 			);
 		}
+
 		if (result === search) {
 			const platform =
 				this.serviceContainer.get<IPlatformService>(IPlatformService);
@@ -138,6 +141,7 @@ export class InstallationChannelManager implements IInstallationChannelManager {
 				: platform.isMac
 					? "MacOS"
 					: "Linux";
+
 			appShell.openUrl(
 				`https://www.bing.com/search?q=Install Pip ${osName} ${
 					interpreter.envType === EnvironmentType.Conda ? "Conda" : ""

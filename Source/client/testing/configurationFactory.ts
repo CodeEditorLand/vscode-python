@@ -23,6 +23,7 @@ export class TestConfigurationManagerFactory
 	constructor(
 		@inject(IServiceContainer) private serviceContainer: IServiceContainer,
 	) {}
+
 	public create(
 		wkspace: Uri,
 		product: Product,
@@ -36,6 +37,7 @@ export class TestConfigurationManagerFactory
 					cfg,
 				);
 			}
+
 			case Product.pytest: {
 				return new pytest.ConfigurationManager(
 					wkspace,
@@ -43,6 +45,7 @@ export class TestConfigurationManagerFactory
 					cfg,
 				);
 			}
+
 			default: {
 				throw new Error("Invalid test configuration");
 			}

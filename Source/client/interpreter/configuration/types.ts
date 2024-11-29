@@ -52,6 +52,7 @@ export interface IInterpreterSelector extends Disposable {
 		resource: Resource,
 		useFullDisplayName?: boolean,
 	): IInterpreterQuickPickItem[];
+
 	suggestionToQuickPickItem(
 		suggestion: PythonEnvironment,
 		workspaceUri?: Uri | undefined,
@@ -78,6 +79,7 @@ export const IInterpreterComparer = Symbol("IInterpreterComparer");
 
 export interface IInterpreterComparer {
 	initialize(resource: Resource): Promise<void>;
+
 	compare(a: PythonEnvironment, b: PythonEnvironment): number;
 
 	getRecommended(

@@ -46,6 +46,7 @@ export class RequireJupyterPrompt implements IExtensionSingleActivationService {
 			Interpreters.requireJupyter,
 			...prompts,
 		);
+
 		sendTelemetryEvent(EventName.REQUIRE_JUPYTER_PROMPT, undefined, {
 			selection: selection
 				? telemetrySelections[prompts.indexOf(selection)]
@@ -55,6 +56,7 @@ export class RequireJupyterPrompt implements IExtensionSingleActivationService {
 		if (!selection) {
 			return;
 		}
+
 		if (selection === prompts[0]) {
 			await this.commandManager.executeCommand(
 				"workbench.extensions.installExtension",

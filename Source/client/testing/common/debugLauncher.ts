@@ -64,13 +64,17 @@ export class DebugLauncher implements ITestDebugLauncher {
 			hasCallbackBeenCalled = true;
 
 			return undefined;
+
 			deferred.resolve();
+
 			callback?.();
 		}
 
 		options.token?.onCancellationRequested(() => {
 			deferred.resolve();
+
 			callback?.();
+
 			hasCallbackBeenCalled = true;
 		});
 
@@ -88,12 +92,14 @@ export class DebugLauncher implements ITestDebugLauncher {
 			this.serviceContainer.get<IDebugService>(IDebugService);
 
 		let activatedDebugSession: DebugSession | undefined;
+
 		debugManager
 			.startDebugging(workspaceFolder, launchArgs, sessionOptions)
 			.then(() => {
 				// Save the debug session after it is started so we can check if it is the one that was terminated.
 				activatedDebugSession = debugManager.activeDebugSession;
 			});
+
 		debugManager.onDidTerminateDebugSession((session) => {
 			traceVerbose(`Debug session terminated. sessionId: ${session.id}`);
 			// Only resolve no callback has been made and the session is the one that was started.
@@ -103,6 +109,7 @@ export class DebugLauncher implements ITestDebugLauncher {
 				session.id === activatedDebugSession?.id
 			) {
 				deferred.resolve();
+
 				callback?.();
 			}
 		});
@@ -123,8 +130,10 @@ export class DebugLauncher implements ITestDebugLauncher {
 
 		if (!workspaceFolder) {
 			const [first] = getWorkspaceFolders()!;
+
 			workspaceFolder = first;
 		}
+
 		return workspaceFolder;
 	}
 
@@ -143,9 +152,11 @@ export class DebugLauncher implements ITestDebugLauncher {
 				subProcess: true,
 			};
 		}
+
 		if (!debugConfig.rules) {
 			debugConfig.rules = [];
 		}
+
 		debugConfig.rules.push({
 			path: path.join(EXTENSION_ROOT_DIR, "python_files"),
 			include: false,
@@ -172,6 +183,7 @@ export class DebugLauncher implements ITestDebugLauncher {
 
 			const appShell =
 				this.serviceContainer.get<IApplicationShell>(IApplicationShell);
+
 			await appShell.showErrorMessage(
 				l10n.t(
 					"Could not load unit test config from launch.json as it is missing a field",
@@ -203,9 +215,11 @@ export class DebugLauncher implements ITestDebugLauncher {
 					return cfg as LaunchRequestArguments;
 				}
 			}
+
 			return undefined;
 		} catch (exc) {
 			traceError("could not get debug config", exc);
+
 			await showErrorMessage(
 				l10n.t(
 					"Could not load unit test config from launch.json as it is missing a field",
@@ -226,26 +240,33 @@ export class DebugLauncher implements ITestDebugLauncher {
 		if (!cfg.console) {
 			cfg.console = "internalConsole";
 		}
+
 		if (!cfg.cwd) {
 			cfg.cwd = configSettings.testing.cwd || workspaceFolder.uri.fsPath;
 		}
+
 		if (!cfg.env) {
 			cfg.env = {};
 		}
+
 		if (!cfg.envFile) {
 			cfg.envFile = configSettings.envFile;
 		}
+
 		if (cfg.stopOnEntry === undefined) {
 			cfg.stopOnEntry = false;
 		}
+
 		cfg.showReturnValue = cfg.showReturnValue !== false;
 
 		if (cfg.redirectOutput === undefined) {
 			cfg.redirectOutput = true;
 		}
+
 		if (cfg.debugStdLib === undefined) {
 			cfg.debugStdLib = false;
 		}
+
 		if (cfg.subProcess === undefined) {
 			cfg.subProcess = true;
 		}
@@ -274,6 +295,7 @@ export class DebugLauncher implements ITestDebugLauncher {
 		const args = script(testArgs);
 
 		const [program] = args;
+
 		configArgs.program = program;
 
 		configArgs.args = args.slice(1);
@@ -288,6 +310,7 @@ export class DebugLauncher implements ITestDebugLauncher {
 		if (!launchArgs) {
 			throw Error(`Invalid debug config "${debugConfig.name}"`);
 		}
+
 		launchArgs =
 			await this.launchResolver.resolveDebugConfigurationWithSubstitutedVariables(
 				workspaceFolder,
@@ -298,6 +321,7 @@ export class DebugLauncher implements ITestDebugLauncher {
 		if (!launchArgs) {
 			throw Error(`Invalid debug config "${debugConfig.name}"`);
 		}
+
 		launchArgs.request = "launch";
 
 		if (pythonTestAdapterRewriteExperiment) {
@@ -313,6 +337,7 @@ export class DebugLauncher implements ITestDebugLauncher {
 				);
 			}
 		}
+
 		const pluginPath = path.join(EXTENSION_ROOT_DIR, "python_files");
 		// check if PYTHONPATH is already set in the environment variables
 		if (launchArgs.env) {
@@ -347,14 +372,18 @@ export class DebugLauncher implements ITestDebugLauncher {
 				if (pythonTestAdapterRewriteExperiment) {
 					return internalScripts.execution_py_testlauncher; // this is the new way to run unittest execution, debugger
 				}
+
 				return internalScripts.visualstudio_py_testlauncher; // old way unittest execution, debugger
 			}
+
 			case "pytest": {
 				if (pythonTestAdapterRewriteExperiment) {
 					return internalScripts.pytestlauncher; // this is the new way to run pytest execution, debugger
 				}
+
 				return internalScripts.testlauncher; // old way pytest execution, debugger
 			}
+
 			default: {
 				throw new Error(`Unknown test provider '${testProvider}'`);
 			}

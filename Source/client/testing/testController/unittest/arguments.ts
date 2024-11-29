@@ -50,6 +50,7 @@ export function unittestFilterArguments(
 			if (OptionsWithArguments.indexOf(item) >= 0) {
 				optionsWithArgsToRemove.push(item);
 			}
+
 			if (OptionsWithoutArguments.indexOf(item) >= 0) {
 				optionsWithoutArgsToRemove.push(item);
 			}
@@ -66,10 +67,12 @@ export function unittestFilterArguments(
 			OptionsWithArguments,
 			OptionsWithoutArguments,
 		);
+
 		filteredArgs = filteredArgs.filter(
 			(item) => positionalArgs.indexOf(item) === -1,
 		);
 	}
+
 	return filterArguments(
 		filteredArgs,
 		optionsWithArgsToRemove,
@@ -83,11 +86,13 @@ export function unittestGetTestFolders(args: string[]): string[] {
 	if (shortValue.length === 1) {
 		return shortValue;
 	}
+
 	const longValue = getOptionValues(args, "--start-directory");
 
 	if (longValue.length === 1) {
 		return longValue;
 	}
+
 	return ["."];
 }
 
@@ -97,11 +102,13 @@ export function unittestGetTestPattern(args: string[]): string {
 	if (shortValue.length === 1) {
 		return shortValue[0];
 	}
+
 	const longValue = getOptionValues(args, "--pattern");
 
 	if (longValue.length === 1) {
 		return longValue[0];
 	}
+
 	return "test*.py";
 }
 
@@ -111,11 +118,13 @@ export function unittestGetTopLevelDirectory(args: string[]): string | null {
 	if (shortValue.length === 1) {
 		return shortValue[0];
 	}
+
 	const longValue = getOptionValues(args, "--top-level-directory");
 
 	if (longValue.length === 1) {
 		return longValue[0];
 	}
+
 	return null;
 }
 
@@ -143,8 +152,10 @@ export function getTestRunArgs(args: string[]): string[] {
 	if (topLevelDir) {
 		testArgs.push(`--ut=${topLevelDir}`);
 	}
+
 	if (failFast) {
 		testArgs.push("--uf");
 	}
+
 	return testArgs;
 }

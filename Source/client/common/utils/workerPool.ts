@@ -43,12 +43,14 @@ export interface IWorkerPool<T, R> extends IWorker {
 
 class Worker<T, R> implements IWorker {
 	private stopProcessing: boolean = false;
+
 	public constructor(
 		private readonly next: NextFunc<T>,
 		private readonly workFunc: WorkFunc<T, R>,
 		private readonly postResult: PostResult<T, R>,
 		private readonly name: string,
 	) {}
+
 	public stop() {
 		this.stopProcessing = true;
 	}
@@ -60,6 +62,7 @@ class Worker<T, R> implements IWorker {
 
 				try {
 					const result = await this.workFunc(workItem);
+
 					this.postResult(workItem, result);
 				} catch (ex) {
 					this.postResult(workItem, undefined, ex as Error);
@@ -77,7 +80,9 @@ class Worker<T, R> implements IWorker {
 
 class WorkQueue<T, R> {
 	private readonly items: IWorkItem<T>[] = [];
+
 	private readonly results: Map<IWorkItem<T>, Deferred<R>> = new Map();
+
 	public add(item: T, position?: QueuePosition): Promise<R> {
 		// Wrap the user provided item in a wrapper object. This will allow us to track multiple
 		// submissions of the same item. For example, addToQueue(2), addToQueue(2). If we did not
@@ -97,6 +102,7 @@ class WorkQueue<T, R> {
 		// item is complete. We save this in a map to resolve when
 		// the worker finishes and posts the result.
 		const deferred = createDeferred<R>();
+
 		this.results.set(workItem, deferred);
 
 		return deferred.promise;
@@ -111,6 +117,7 @@ class WorkQueue<T, R> {
 			if (error !== undefined) {
 				deferred.reject(error);
 			}
+
 			deferred.resolve(result);
 		}
 	}
@@ -127,6 +134,7 @@ class WorkQueue<T, R> {
 				map: Map<IWorkItem<T>, Deferred<R>>,
 			) => {
 				v.reject(Error("Queue stopped processing"));
+
 				map.delete(k);
 			},
 		);
@@ -141,6 +149,7 @@ class WorkerPool<T, R> implements IWorkerPool<T, R> {
 	// for a work item when the queue is empty
 	private readonly waitingWorkersUnblockQueue: {
 		unblock(w: IWorkItem<T>): void;
+
 		stop(): void;
 	}[] = [];
 
@@ -202,8 +211,10 @@ class WorkerPool<T, R> implements IWorkerPool<T, R> {
 					`${this.name} ${num}`,
 				),
 			);
+
 			num = num - 1;
 		}
+
 		this.workers.forEach(async (w) => w.start());
 	}
 
@@ -216,6 +227,7 @@ class WorkerPool<T, R> implements IWorkerPool<T, R> {
 
 		while (worker) {
 			worker.stop();
+
 			worker = this.workers.shift();
 		}
 
@@ -229,6 +241,7 @@ class WorkerPool<T, R> implements IWorkerPool<T, R> {
 
 		while (blockedWorker) {
 			blockedWorker.stop();
+
 			blockedWorker = this.waitingWorkersUnblockQueue.shift();
 		}
 	}
@@ -268,6 +281,7 @@ export function createRunningWorkerPool<T, R>(
 	name?: string,
 ): WorkerPool<T, R> {
 	const pool = new WorkerPool<T, R>(workerFunc, numWorkers, name);
+
 	pool.start();
 
 	return pool;

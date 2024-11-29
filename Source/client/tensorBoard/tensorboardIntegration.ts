@@ -58,6 +58,7 @@ export class TensorboardExtensionIntegration {
 		@inject(IDisposableRegistry) disposables: IDisposableRegistry,
 	) {
 		this.hideCommands();
+
 		extensions.onDidChange(this.hideCommands, this, disposables);
 	}
 
@@ -73,6 +74,7 @@ export class TensorboardExtensionIntegration {
 
 			return undefined;
 		}
+
 		tensorboardExtensionApi.registerPythonApi({
 			getActivatedEnvironmentVariables: async (resource: Resource) =>
 				this.envActivation.getActivatedEnvironmentVariables(
@@ -120,6 +122,7 @@ export class TensorboardExtensionIntegration {
 			if (!extension) {
 				return undefined;
 			}
+
 			await extension.activate();
 
 			if (extension.isActive) {
@@ -130,6 +133,7 @@ export class TensorboardExtensionIntegration {
 		} else {
 			return this.tensorboardExtension.exports;
 		}
+
 		return undefined;
 	}
 }

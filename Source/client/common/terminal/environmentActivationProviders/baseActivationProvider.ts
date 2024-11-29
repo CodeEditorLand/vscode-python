@@ -73,6 +73,7 @@ abstract class BaseActivationCommandProvider
 		if (!interpreter) {
 			return undefined;
 		}
+
 		return this.getActivationCommandsForInterpreter(
 			interpreter.path,
 			targetShell,
@@ -105,6 +106,7 @@ export abstract class VenvBaseActivationCommandProvider extends BaseActivationCo
 		if (!candidates) {
 			return undefined;
 		}
+
 		const findScript = getVenvExecutableFinder(
 			candidates,
 			path.dirname,

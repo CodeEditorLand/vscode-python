@@ -35,6 +35,7 @@ export class TerminalAutoActivation implements ITerminalAutoActivation {
 	public dispose(): void {
 		if (this.handler) {
 			this.handler.dispose();
+
 			this.handler = undefined;
 		}
 	}
@@ -43,6 +44,7 @@ export class TerminalAutoActivation implements ITerminalAutoActivation {
 		if (this.handler) {
 			return;
 		}
+
 		this.handler = this.terminalManager.onDidOpenTerminal(
 			this.activateTerminal,
 			this,
@@ -57,6 +59,7 @@ export class TerminalAutoActivation implements ITerminalAutoActivation {
 		if (this.terminalsNotToAutoActivate.has(terminal)) {
 			return;
 		}
+
 		if (
 			"hideFromUser" in terminal.creationOptions &&
 			terminal.creationOptions.hideFromUser

@@ -38,6 +38,7 @@ export function getVenvExecutable(workspaceFolder: WorkspaceFolder): string {
 	if (isWindows()) {
 		return path.join(getVenvPath(workspaceFolder), "Scripts", "python.exe");
 	}
+
 	return path.join(getVenvPath(workspaceFolder), "bin", "python");
 }
 

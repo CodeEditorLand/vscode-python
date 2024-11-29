@@ -49,19 +49,25 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
 	) {
 		this.documentManager =
 			serviceContainer.get<IDocumentManager>(IDocumentManager);
+
 		this.applicationShell =
 			serviceContainer.get<IApplicationShell>(IApplicationShell);
+
 		this.processServiceFactory =
 			serviceContainer.get<IProcessServiceFactory>(
 				IProcessServiceFactory,
 			);
+
 		this.interpreterService =
 			serviceContainer.get<IInterpreterService>(IInterpreterService);
+
 		this.configSettings = serviceContainer.get<IConfigurationService>(
 			IConfigurationService,
 		);
+
 		this.commandManager =
 			serviceContainer.get<ICommandManager>(ICommandManager);
+
 		this.activeResourceService =
 			this.serviceContainer.get<IActiveResourceService>(
 				IActiveResourceService,
@@ -104,6 +110,7 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
 
 			// Read result from the normalization script from stdout, and resolve the promise when done.
 			let normalized = "";
+
 			observable.out.subscribe({
 				next: (output) => {
 					if (output.source === "stdout") {
@@ -139,6 +146,7 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
 				const pythonSettings = configuration.getSettings(
 					this.activeResourceService.getActiveResource(),
 				);
+
 				smartSendSettingsEnabledVal =
 					pythonSettings.REPL.enableREPLSmartSend;
 			}
@@ -151,7 +159,9 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
 				emptyHighlight: emptyHighlightVal,
 				smartSendSettingsEnabled: smartSendSettingsEnabledVal,
 			});
+
 			observable.proc?.stdin?.write(input);
+
 			observable.proc?.stdin?.end();
 
 			// We expect a serialized JSON object back, with the normalized code under the "normalized" key.
@@ -168,6 +178,7 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
 					object.nextBlockLineno -
 					activeEditor!.selection.start.line -
 					1;
+
 				await this.moveToNextBlock(lineOffset, activeEditor);
 			}
 			// For new _pyrepl for Python3.13 and above, we need to send code via bracketed paste mode.
@@ -178,6 +189,7 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
 					// In case where statement is unfinished via :, truncate so auto-indentation lands nicely.
 					trimmedNormalized = trimmedNormalized.replace(/\n$/, "");
 				}
+
 				return `\u001b[200~${trimmedNormalized}\u001b[201~`;
 			}
 
@@ -212,6 +224,7 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
 				by: "line",
 				value: Number(lineOffset),
 			});
+
 			await this.commandManager.executeCommand("cursorEnd");
 		}
 
@@ -228,6 +241,7 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
 
 			return undefined;
 		}
+
 		if (activeEditor.document.isUntitled) {
 			this.applicationShell.showErrorMessage(
 				l10n.t(
@@ -237,6 +251,7 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
 
 			return undefined;
 		}
+
 		if (activeEditor.document.languageId !== PYTHON_LANGUAGE) {
 			this.applicationShell.showErrorMessage(
 				l10n.t("The active file is not a Python source file"),
@@ -244,6 +259,7 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
 
 			return undefined;
 		}
+
 		if (activeEditor.document.isDirty) {
 			await activeEditor.document.save();
 		}
@@ -285,6 +301,7 @@ export class CodeExecutionHelper implements ICodeExecutionHelper {
 
 			return workspaceService.save(docs[0].uri);
 		}
+
 		return undefined;
 	}
 }

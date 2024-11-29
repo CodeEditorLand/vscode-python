@@ -95,6 +95,7 @@ export async function activateComponents(
 	if (!workspaceService.isTrusted) {
 		return [legacyActivationResult];
 	}
+
 	const promises: Promise<ActivationResult>[] = [
 		// More component activations will go here
 		pythonEnvironments.activate(components.pythonEnvs, ext),
@@ -124,7 +125,9 @@ export function activateFeatures(
 
 	const pathUtils =
 		ext.legacyIOC.serviceContainer.get<IPathUtils>(IPathUtils);
+
 	registerPixiFeatures(ext.disposables);
+
 	registerAllCreateEnvironmentFeatures(
 		ext.disposables,
 		interpreterQuickPick,
@@ -140,14 +143,18 @@ export function activateFeatures(
 
 	const commandManager =
 		ext.legacyIOC.serviceContainer.get<ICommandManager>(ICommandManager);
+
 	registerTriggerForTerminalREPL(ext.disposables);
+
 	registerStartNativeReplCommand(ext.disposables, interpreterService);
+
 	registerReplCommands(
 		ext.disposables,
 		interpreterService,
 		executionHelper,
 		commandManager,
 	);
+
 	registerReplExecuteOnEnter(
 		ext.disposables,
 		interpreterService,
@@ -176,6 +183,7 @@ async function activateLegacy(
 
 	// We need to setup this property before any telemetry is sent
 	const fs = serviceManager.get<IFileSystem>(IFileSystem);
+
 	await setExtensionInstallTelemetryProperties(fs);
 
 	const applicationEnv = serviceManager.get<IApplicationEnvironment>(
@@ -183,18 +191,24 @@ async function activateLegacy(
 	);
 
 	const { enableProposedApi } = applicationEnv.packageJson;
+
 	serviceManager.addSingletonInstance<boolean>(
 		UseProposedApi,
 		enableProposedApi,
 	);
 	// Feature specific registrations.
 	unitTestsRegisterTypes(serviceManager);
+
 	installerRegisterTypes(serviceManager);
+
 	commonRegisterTerminalTypes(serviceManager);
+
 	debugConfigurationRegisterTypes(serviceManager);
+
 	tensorBoardRegisterTypes(serviceManager);
 
 	const extensions = serviceContainer.get<IExtensions>(IExtensions);
+
 	await setDefaultLanguageServer(extensions, serviceManager);
 
 	// Settings are dependent on Experiment service, so we need to initialize it after experiments are activated.
@@ -205,7 +219,9 @@ async function activateLegacy(
 
 	// Language feature registrations.
 	appRegisterTypes(serviceManager);
+
 	providersRegisterTypes(serviceManager);
+
 	activationRegisterTypes(serviceManager);
 
 	// "initialize" "services"
@@ -226,6 +242,7 @@ async function activateLegacy(
 	if (workspaceService.isTrusted) {
 		const interpreterManager =
 			serviceContainer.get<IInterpreterService>(IInterpreterService);
+
 		interpreterManager.initialize();
 
 		if (!workspaceService.isVirtualWorkspace) {
@@ -238,15 +255,18 @@ async function activateLegacy(
 				DebugService.instance,
 				disposables,
 			);
+
 			dispatcher.registerEventHandlers();
 
 			const outputChannel =
 				serviceManager.get<ILogOutputChannel>(ILogOutputChannel);
+
 			disposables.push(
 				cmdManager.registerCommand(Commands.ViewOutput, () =>
 					outputChannel.show(),
 				),
 			);
+
 			cmdManager
 				.executeCommand(
 					"setContext",
@@ -272,6 +292,7 @@ async function activateLegacy(
 			disposables.push(new ReplProvider(serviceContainer));
 
 			const terminalProvider = new TerminalProvider(serviceContainer);
+
 			terminalProvider.initialize(window.activeTerminal).ignoreErrors();
 
 			serviceContainer
@@ -284,9 +305,11 @@ async function activateLegacy(
 						),
 					);
 				});
+
 			disposables.push(terminalProvider);
 
 			registerCreateEnvironmentTriggers(disposables);
+
 			initializePersistentStateForTriggers(ext.context);
 		}
 	}
@@ -296,6 +319,7 @@ async function activateLegacy(
 	const manager = serviceContainer.get<IExtensionActivationManager>(
 		IExtensionActivationManager,
 	);
+
 	disposables.push(manager);
 
 	const activationPromise = manager.activate(startupStopWatch);

@@ -176,6 +176,7 @@ export class ServiceManager implements IServiceManager {
 
 	public dispose(): void {
 		this.container.unbindAll();
+
 		this.container.unload();
 	}
 }

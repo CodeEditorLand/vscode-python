@@ -53,7 +53,9 @@ export class CustomWorkspaceLocator extends FSWatchingLocator {
 				// If the user has not set a custom interpreter, our job is done.
 				return;
 			}
+
 			yield { kind: PythonEnvKind.Unknown, executablePath: filename };
+
 			traceVerbose(`Finished searching for custom workspace envs`);
 		};
 

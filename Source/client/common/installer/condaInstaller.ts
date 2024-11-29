@@ -57,8 +57,10 @@ export class CondaInstaller extends ModuleInstaller {
 		if (this._isCondaAvailable === false) {
 			return false;
 		}
+
 		const condaLocator =
 			this.serviceContainer.get<ICondaService>(ICondaService);
+
 		this._isCondaAvailable = await condaLocator.isCondaAvailable();
 
 		if (!this._isCondaAvailable) {
@@ -110,22 +112,29 @@ export class CondaInstaller extends ModuleInstaller {
 		) {
 			args.push("-c", "conda-forge");
 		}
+
 		if (info && info.name) {
 			// If we have the name of the conda environment, then use that.
 			args.push("--name");
+
 			args.push(info.name.toCommandArgumentForPythonExt());
 		} else if (info && info.path) {
 			// Else provide the full path to the environment path.
 			args.push("--prefix");
+
 			args.push(info.path.fileToCommandArgumentForPythonExt());
 		}
+
 		if (flags & ModuleInstallFlags.updateDependencies) {
 			args.push("--update-deps");
 		}
+
 		if (flags & ModuleInstallFlags.reInstall) {
 			args.push("--force-reinstall");
 		}
+
 		args.push(moduleName);
+
 		args.push("-y");
 
 		return {

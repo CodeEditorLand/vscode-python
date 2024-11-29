@@ -53,8 +53,10 @@ export function watchLocationForPythonBinaries(
 			// Skip those events
 			return;
 		}
+
 		callback(type, e);
 	}
+
 	return watchLocationForPattern(baseDir, resolvedGlob, callbackClosure);
 }
 
@@ -75,6 +77,7 @@ export function resolvePythonExeGlobs(
 	if (path.posix.normalize(basenameGlob).includes("/")) {
 		throw Error(`invalid basename glob "${basenameGlob}"`);
 	}
+
 	const globs: string[] = [];
 
 	if (structure === PythonEnvStructure.Standard) {
@@ -90,5 +93,6 @@ export function resolvePythonExeGlobs(
 		// Check only the directory.
 		globs.push(basenameGlob);
 	}
+
 	return globs;
 }

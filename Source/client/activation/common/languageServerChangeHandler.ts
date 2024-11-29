@@ -71,6 +71,7 @@ export class LanguageServerChangeHandler implements Disposable {
 		private readonly configService: IConfigurationService,
 	) {
 		this.pylanceInstalled = this.isPylanceInstalled();
+
 		this.disposables.push(
 			extensions.onDidChange(async () => {
 				await this.extensionsChangeHandler();

@@ -9,6 +9,7 @@ export class GlobalPythonPathUpdaterService
 	constructor(
 		private readonly interpreterPathService: IInterpreterPathService,
 	) {}
+
 	public async updatePythonPath(
 		pythonPath: string | undefined,
 	): Promise<void> {
@@ -17,6 +18,7 @@ export class GlobalPythonPathUpdaterService
 		if (pythonPathValue && pythonPathValue.globalValue === pythonPath) {
 			return;
 		}
+
 		await this.interpreterPathService.update(
 			undefined,
 			ConfigurationTarget.Global,

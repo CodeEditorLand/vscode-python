@@ -26,21 +26,26 @@ export class WorkspaceService implements IWorkspaceService {
 	public get onDidChangeConfiguration(): Event<ConfigurationChangeEvent> {
 		return workspace.onDidChangeConfiguration;
 	}
+
 	public get rootPath(): string | undefined {
 		return Array.isArray(workspace.workspaceFolders) &&
 			workspace.workspaceFolders.length > 0
 			? workspace.workspaceFolders[0].uri.fsPath
 			: undefined;
 	}
+
 	public get workspaceFolders(): readonly WorkspaceFolder[] | undefined {
 		return workspace.workspaceFolders;
 	}
+
 	public get onDidChangeWorkspaceFolders(): Event<WorkspaceFoldersChangeEvent> {
 		return workspace.onDidChangeWorkspaceFolders;
 	}
+
 	public get workspaceFile() {
 		return workspace.workspaceFile;
 	}
+
 	public getConfiguration(
 		section?: string,
 		resource?: Uri,
@@ -55,15 +60,18 @@ export class WorkspaceService implements IWorkspaceService {
 			return workspace.getConfiguration(section, resource);
 		}
 	}
+
 	public getWorkspaceFolder(uri: Resource): WorkspaceFolder | undefined {
 		return uri ? workspace.getWorkspaceFolder(uri) : undefined;
 	}
+
 	public asRelativePath(
 		pathOrUri: string | Uri,
 		includeWorkspaceFolder?: boolean,
 	): string {
 		return workspace.asRelativePath(pathOrUri, includeWorkspaceFolder);
 	}
+
 	public createFileSystemWatcher(
 		globPattern: GlobPattern,
 		ignoreCreateEvents?: boolean,
@@ -77,6 +85,7 @@ export class WorkspaceService implements IWorkspaceService {
 			ignoreDeleteEvents,
 		);
 	}
+
 	public findFiles(
 		include: GlobPattern,
 		exclude?: GlobPattern,
@@ -88,6 +97,7 @@ export class WorkspaceService implements IWorkspaceService {
 
 		return workspace.findFiles(include, excludePattern, maxResults, token);
 	}
+
 	public getWorkspaceFolderIdentifier(
 		resource: Resource,
 		defaultValue: string = "",
@@ -123,6 +133,7 @@ export class WorkspaceService implements IWorkspaceService {
 
 	public openTextDocument(options?: {
 		language?: string;
+
 		content?: string;
 	}): Thenable<TextDocument> {
 		return workspace.openTextDocument(options);

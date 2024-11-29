@@ -23,6 +23,7 @@ export function isExtensionDisabled(extensionId: string): boolean {
 
 	if (pythonExt) {
 		let found = false;
+
 		fs.readdirSync(path.dirname(pythonExt.extensionPath), {
 			withFileTypes: false,
 		}).forEach((s) => {
@@ -33,6 +34,7 @@ export function isExtensionDisabled(extensionId: string): boolean {
 
 		return found;
 	}
+
 	return false;
 }
 

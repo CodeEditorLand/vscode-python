@@ -87,14 +87,18 @@ function convertEnvInfo(info: PythonEnvInfo): PythonEnvironment {
 		}
 
 		const semverLikeVersion: PythonVersion = toSemverLikeVersion(version);
+
 		env.version = semverLikeVersion;
 	}
 
 	if (distro !== undefined && distro.org !== "") {
 		env.companyDisplayName = distro.org;
 	}
+
 	env.displayName = info.display;
+
 	env.detailedDisplayName = info.detailedDisplayName;
+
 	env.type = info.type;
 	// We do not worry about using distro.defaultDisplayName.
 
@@ -153,6 +157,7 @@ class ComponentAdapter implements IComponentAdapter {
 			if (!workspaceFolder || !e.searchLocation) {
 				return;
 			}
+
 			traceVerbose(
 				`Received event ${JSON.stringify(e)} file change event`,
 			);
@@ -198,6 +203,7 @@ class ComponentAdapter implements IComponentAdapter {
 		if (!env) {
 			return undefined;
 		}
+
 		return convertEnvInfo(env);
 	}
 
@@ -327,6 +333,7 @@ class ComponentAdapter implements IComponentAdapter {
 		if (!workspaceFolder) {
 			return [];
 		}
+
 		const query: PythonLocatorQuery = {
 			searchLocations: {
 				roots: [workspaceFolder.uri],
@@ -337,6 +344,7 @@ class ComponentAdapter implements IComponentAdapter {
 		if (options?.ignoreCache) {
 			await this.api.triggerRefresh(query);
 		}
+
 		await this.api.getRefreshPromise();
 
 		const envs = this.api.getEnvs(query);
@@ -350,6 +358,7 @@ export function registerNewDiscoveryForIOC(
 	api: IDiscoveryAPI,
 ): void {
 	serviceManager.addSingleton<ICondaService>(ICondaService, CondaService);
+
 	serviceManager.addSingletonInstance<IComponentAdapter>(
 		IComponentAdapter,
 		new ComponentAdapter(api),

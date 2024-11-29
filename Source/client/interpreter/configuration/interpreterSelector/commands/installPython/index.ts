@@ -61,6 +61,7 @@ export class InstallPythonCommand implements IExtensionSingleActivationService {
 				return;
 			}
 		}
+
 		this.showInstallPythonTile();
 	}
 
@@ -79,6 +80,7 @@ export class InstallPythonCommand implements IExtensionSingleActivationService {
 		} else {
 			step = PythonWelcome.macOSInstallId;
 		}
+
 		this.commandManager.executeCommand(
 			"workbench.action.openWalkthrough",
 			{

@@ -90,6 +90,7 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 		if (!hasWorkspaceFolders) {
 			return [];
 		}
+
 		const workspaceFolder = resource
 			? this.workspaceService.getWorkspaceFolder(resource)!
 			: this.workspaceService.workspaceFolders![0];
@@ -139,6 +140,7 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 				),
 			);
 		}
+
 		if (fileContents.indexOf('"debugStdLib"') > 0) {
 			diagnostics.push(
 				new InvalidLaunchJsonDebuggerDiagnostic(
@@ -147,6 +149,7 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 				),
 			);
 		}
+
 		if (fileContents.indexOf('"console": "none"') > 0) {
 			diagnostics.push(
 				new InvalidLaunchJsonDebuggerDiagnostic(
@@ -155,6 +158,7 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 				),
 			);
 		}
+
 		if (
 			fileContents.indexOf('"pythonPath":') > 0 ||
 			fileContents.indexOf("{config:python.pythonPath}") > 0 ||
@@ -168,6 +172,7 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 				),
 			);
 		}
+
 		return diagnostics;
 	}
 
@@ -177,6 +182,7 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 
 			return;
 		}
+
 		const commandPrompts = [
 			{
 				prompt: Diagnostics.yesUpdateLaunch,
@@ -205,6 +211,7 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 		) {
 			return;
 		}
+
 		const launchJson = getLaunchJsonFile(workspaceFolder);
 
 		let fileContents = await this.fs.readFile(launchJson);
@@ -216,6 +223,7 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 					'"pythonExperimental"',
 					'"python"',
 				);
+
 				fileContents = findAndReplace(
 					fileContents,
 					'"Python Experimental:',
@@ -224,12 +232,14 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 
 				break;
 			}
+
 			case DiagnosticCodes.JustMyCodeDiagnostic: {
 				fileContents = findAndReplace(
 					fileContents,
 					'"debugStdLib": false',
 					'"justMyCode": true',
 				);
+
 				fileContents = findAndReplace(
 					fileContents,
 					'"debugStdLib": true',
@@ -238,6 +248,7 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 
 				break;
 			}
+
 			case DiagnosticCodes.ConsoleTypeDiagnostic: {
 				fileContents = findAndReplace(
 					fileContents,
@@ -247,17 +258,20 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 
 				break;
 			}
+
 			case DiagnosticCodes.ConfigPythonPathDiagnostic: {
 				fileContents = findAndReplace(
 					fileContents,
 					'"pythonPath":',
 					'"python":',
 				);
+
 				fileContents = findAndReplace(
 					fileContents,
 					"{config:python.pythonPath}",
 					"{command:python.interpreterPath}",
 				);
+
 				fileContents = findAndReplace(
 					fileContents,
 					"{config:python.interpreterPath}",
@@ -266,6 +280,7 @@ export class InvalidLaunchJsonDebuggerService extends BaseDiagnosticsService {
 
 				break;
 			}
+
 			default: {
 				return;
 			}

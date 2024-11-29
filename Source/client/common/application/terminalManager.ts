@@ -25,20 +25,25 @@ export class TerminalManager implements ITerminalManager {
 			this.didOpenTerminal.fire(monkeyPatchTerminal(terminal));
 		});
 	}
+
 	public get onDidCloseTerminal(): Event<Terminal> {
 		return window.onDidCloseTerminal;
 	}
+
 	public get onDidOpenTerminal(): Event<Terminal> {
 		return this.didOpenTerminal.event;
 	}
+
 	public createTerminal(options: TerminalOptions): Terminal {
 		return monkeyPatchTerminal(window.createTerminal(options));
 	}
+
 	public onDidChangeTerminalShellIntegration(
 		handler: (e: TerminalShellIntegrationChangeEvent) => void,
 	): Disposable {
 		return window.onDidChangeTerminalShellIntegration(handler);
 	}
+
 	public onDidEndTerminalShellExecution(
 		handler: (e: TerminalShellExecutionEndEvent) => void,
 	): Disposable {
@@ -52,6 +57,7 @@ export class TerminalManager implements ITerminalManager {
 function monkeyPatchTerminal(terminal: Terminal) {
 	if (!(terminal as any).isPatched) {
 		const oldSendText = terminal.sendText.bind(terminal);
+
 		terminal.sendText = (text: string, addNewLine: boolean = true) => {
 			traceLog(`Send text to terminal: ${text}`);
 
@@ -59,5 +65,6 @@ function monkeyPatchTerminal(terminal: Terminal) {
 		};
 		(terminal as any).isPatched = true;
 	}
+
 	return terminal;
 }

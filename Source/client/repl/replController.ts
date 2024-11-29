@@ -8,6 +8,7 @@ export function createReplController(
 	cwd?: string,
 ): vscode.NotebookController {
 	const server = createPythonServer([interpreterPath], cwd);
+
 	disposables.push(server);
 
 	const controller = vscode.notebooks.createNotebookController(
@@ -15,7 +16,9 @@ export function createReplController(
 		"jupyter-notebook",
 		"Python REPL",
 	);
+
 	controller.supportedLanguages = ["python"];
+
 	controller.supportsExecutionOrder = true;
 
 	controller.description = "Python REPL";
@@ -27,6 +30,7 @@ export function createReplController(
 	controller.executeHandler = async (cells) => {
 		for (const cell of cells) {
 			const exec = controller.createNotebookCellExecution(cell);
+
 			exec.start(Date.now());
 
 			const result = await server.execute(cell.document.getText());
@@ -46,6 +50,7 @@ export function createReplController(
 			exec.end(result?.status);
 		}
 	};
+
 	disposables.push(controller);
 
 	return controller;

@@ -63,6 +63,7 @@ export class InstallPythonViaTerminal
 				() => this._installPythonOnUnix(OSType.OSX),
 			),
 		);
+
 		this.disposables.push(
 			this.commandManager.registerCommand(
 				Commands.InstallPythonOnLinux,
@@ -85,11 +86,14 @@ export class InstallPythonViaTerminal
 			name: "Python",
 			message: commands.length ? undefined : installMessage,
 		});
+
 		terminal.show(true);
+
 		await waitForTerminalToStartup();
 
 		for (const command of commands) {
 			terminal.sendText(command);
+
 			await waitForCommandToProcess();
 		}
 	}
@@ -98,12 +102,14 @@ export class InstallPythonViaTerminal
 		if (os === OSType.OSX) {
 			return this.getCommandsForPackageManagers([PackageManagers.brew]);
 		}
+
 		if (os === OSType.Linux) {
 			return this.getCommandsForPackageManagers([
 				PackageManagers.apt,
 				PackageManagers.dnf,
 			]);
 		}
+
 		throw new Error("OS not supported");
 	}
 
@@ -115,6 +121,7 @@ export class InstallPythonViaTerminal
 				return this.packageManagerCommands[packageManager];
 			}
 		}
+
 		return [];
 	}
 }
@@ -124,6 +131,7 @@ async function isPackageAvailable(packageManager: PackageManagers) {
 		const which = require("which") as typeof whichTypes;
 
 		const resolvedPath = await which.default(packageManager);
+
 		traceVerbose(
 			`Resolved path to ${packageManager} module:`,
 			resolvedPath,

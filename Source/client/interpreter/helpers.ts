@@ -43,10 +43,13 @@ function sortInterpreters(
 	if (interpreters.length === 0) {
 		return [];
 	}
+
 	if (interpreters.length === 1) {
 		return [interpreters[0]];
 	}
+
 	const sorted = interpreters.slice();
+
 	sorted.sort((a, b) =>
 		a.version && b.version
 			? compareSemVerLikeVersions(a.version, b.version)
@@ -75,6 +78,7 @@ export class InterpreterHelper implements IInterpreterHelper {
 		if (!hasWorkspaceFolders) {
 			return;
 		}
+
 		if (
 			Array.isArray(workspaceService.workspaceFolders) &&
 			workspaceService.workspaceFolders.length === 1
@@ -96,6 +100,7 @@ export class InterpreterHelper implements IInterpreterHelper {
 				};
 			}
 		}
+
 		const documentManager =
 			this.serviceContainer.get<IDocumentManager>(IDocumentManager);
 
@@ -160,6 +165,7 @@ export class InterpreterHelper implements IInterpreterHelper {
 		if (!Array.isArray(interpreters) || interpreters.length === 0) {
 			return;
 		}
+
 		const sorted = sortInterpreters(interpreters);
 
 		return sorted[sorted.length - 1];

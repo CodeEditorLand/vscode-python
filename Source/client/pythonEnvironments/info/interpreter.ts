@@ -44,9 +44,11 @@ function extractInterpreterInfo(
 			} catch (ex) {
 				serial = -1;
 			}
+
 			rawVersion = serial >= 0 ? `${rawVersion}${serial}` : rawVersion;
 		}
 	}
+
 	return {
 		architecture: raw.is64Bit ? Architecture.x64 : Architecture.x86,
 		path: python,
@@ -58,6 +60,7 @@ function extractInterpreterInfo(
 
 type Logger = {
 	verbose(msg: string): void;
+
 	error(msg: string): void;
 };
 
@@ -100,13 +103,16 @@ export async function getInterpreterInfo(
 			);
 		}
 	}
+
 	const json = parse(result.stdout);
 
 	if (logger) {
 		logger.verbose(`Found interpreter for ${argv}`);
 	}
+
 	if (!json) {
 		return undefined;
 	}
+
 	return extractInterpreterInfo(python.pythonExecutable, json);
 }

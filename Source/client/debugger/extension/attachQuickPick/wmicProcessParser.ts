@@ -50,6 +50,7 @@ export namespace WmicProcessParser {
 			// Each entry of processes has ProcessId as the last line
 			if (line.lastIndexOf(wmicPidTitle, 0) === 0) {
 				processEntries.push(entry);
+
 				entry = { ...defaultEmptyEntry };
 			}
 		}
@@ -69,9 +70,11 @@ export namespace WmicProcessParser {
 
 			if (key === wmicNameTitle) {
 				currentItem.label = value;
+
 				currentItem.processName = value;
 			} else if (key === wmicPidTitle) {
 				currentItem.description = value;
+
 				currentItem.id = value;
 			} else if (key === wmicCommandLineTitle) {
 				const dosDevicePrefix = "\\??\\"; // DOS device prefix, see https://reverseengineering.stackexchange.com/a/15178
@@ -80,6 +83,7 @@ export namespace WmicProcessParser {
 				}
 
 				currentItem.detail = value;
+
 				currentItem.commandLine = value;
 			}
 		}

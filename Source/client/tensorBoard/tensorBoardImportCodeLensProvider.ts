@@ -66,7 +66,9 @@ export class TensorBoardImportCodeLensProvider
 		if (TensorboardExperiment.isTensorboardExtensionInstalled) {
 			return;
 		}
+
 		this.experiment.disposeOnInstallingTensorboard(this);
+
 		this.activateInternal().ignoreErrors();
 	}
 
@@ -92,6 +94,7 @@ export class TensorBoardImportCodeLensProvider
 			if (cancelToken.isCancellationRequested) {
 				return codelenses;
 			}
+
 			const line = document.lineAt(index);
 
 			if (containsTensorBoardImport([line.text])) {
@@ -99,10 +102,13 @@ export class TensorBoardImportCodeLensProvider
 					new Position(line.lineNumber, 0),
 					new Position(line.lineNumber, 1),
 				);
+
 				codelenses.push(new CodeLens(range, command));
+
 				this.sendTelemetryOnce();
 			}
 		}
+
 		return codelenses;
 	}
 

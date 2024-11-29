@@ -42,6 +42,7 @@ export class PythonEnvsReducer implements ICompositeLocator<BasicEnvInfo> {
 		const incomingIterator = this.parentLocator.iterEnvs(query);
 
 		const iterator = iterEnvsIterator(incomingIterator, didUpdate);
+
 		iterator.onUpdated = didUpdate.event;
 
 		return iterator;
@@ -66,6 +67,7 @@ async function* iterEnvsIterator(
 			if (isProgressEvent(event)) {
 				if (event.stage === ProgressReportStage.discoveryFinished) {
 					state.done = true;
+
 					listener.dispose();
 				} else {
 					didUpdate.fire(event);
@@ -79,7 +81,9 @@ async function* iterEnvsIterator(
 				seen[event.index] !== undefined
 			) {
 				const oldEnv = seen[event.index];
+
 				seen[event.index] = event.update;
+
 				didUpdate.fire({
 					index: event.index,
 					old: oldEnv,
@@ -91,7 +95,9 @@ async function* iterEnvsIterator(
 					`Expected already iterated env, got ${event.old} (#${event.index})`,
 				);
 			}
+
 			state.pending -= 1;
+
 			checkIfFinishedAndNotify(state, didUpdate);
 		});
 	} else {
@@ -116,12 +122,16 @@ async function* iterEnvsIterator(
 		} else {
 			// We haven't yielded a matching env so yield this one as-is.
 			yield currEnv;
+
 			seen.push(currEnv);
 		}
+
 		result = await iterator.next();
 	}
+
 	if (iterator.onUpdated === undefined) {
 		state.done = true;
+
 		checkIfFinishedAndNotify(state, didUpdate);
 	}
 }
@@ -144,9 +154,12 @@ async function resolveDifferencesInBackground(
 
 	if (!isEqual(oldEnv, merged)) {
 		seen[oldIndex] = merged;
+
 		didUpdate.fire({ index: oldIndex, old: oldEnv, update: merged });
 	}
+
 	state.pending -= 1;
+
 	checkIfFinishedAndNotify(state, didUpdate);
 }
 
@@ -163,7 +176,9 @@ function checkIfFinishedAndNotify(
 ) {
 	if (state.done && state.pending === 0) {
 		didUpdate.fire({ stage: ProgressReportStage.discoveryFinished });
+
 		didUpdate.dispose();
+
 		traceVerbose(`Finished with environment reducer`);
 	}
 }
@@ -175,7 +190,9 @@ function resolveEnvCollision(
 	const [env] = sortEnvInfoByPriority(oldEnv, newEnv);
 
 	const merged = cloneDeep(env);
+
 	merged.source = uniq((oldEnv.source ?? []).concat(newEnv.source ?? []));
+
 	merged.searchLocation = getMergedSearchLocation(oldEnv, newEnv);
 
 	return merged;
@@ -196,6 +213,7 @@ function getMergedSearchLocation(
 		) {
 			return oldEnv.searchLocation;
 		}
+
 		if (
 			isParentPath(
 				newEnv.searchLocation.fsPath,
@@ -205,6 +223,7 @@ function getMergedSearchLocation(
 			return newEnv.searchLocation;
 		}
 	}
+
 	return oldEnv.searchLocation ?? newEnv.searchLocation;
 }
 

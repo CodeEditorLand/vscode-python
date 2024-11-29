@@ -67,5 +67,6 @@ export function getUserHomeDir(): string | undefined {
 	if (getOSType() === OSType.Windows) {
 		return getEnvironmentVariable("USERPROFILE");
 	}
+
 	return getEnvironmentVariable("HOME") || getEnvironmentVariable("HOMEPATH");
 }

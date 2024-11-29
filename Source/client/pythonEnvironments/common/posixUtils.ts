@@ -105,9 +105,11 @@ function pickShortestPath(pythonPaths: string[]) {
 	for (const p of pythonPaths) {
 		if (p.length <= shortestLen) {
 			shortestLen = p.length;
+
 			shortestPath = p;
 		}
 	}
+
 	return shortestPath;
 }
 
@@ -150,6 +152,7 @@ export async function getPythonBinFromPosixPaths(
 				} else {
 					binToLinkMap.set(resolvedBin, [filepath]);
 				}
+
 				traceInfo(`Found: ${filepath} --> ${resolvedBin}`);
 			} catch (ex) {
 				traceError("Failed to resolve symbolic link: ", ex);

@@ -10,9 +10,11 @@ import { createDeferred, Deferred } from "../common/utils/async";
 
 export class ProgressReporting implements Disposable {
 	private statusBarMessage: Disposable | undefined;
+
 	private progress:
 		| Progress<{ message?: string; increment?: number }>
 		| undefined;
+
 	private progressDeferred: Deferred<void> | undefined;
 
 	constructor(private readonly languageClient: LanguageClient) {
@@ -22,6 +24,7 @@ export class ProgressReporting implements Disposable {
 				if (this.statusBarMessage) {
 					this.statusBarMessage.dispose();
 				}
+
 				this.statusBarMessage = window.setStatusBarMessage(m);
 			},
 		);
@@ -30,6 +33,7 @@ export class ProgressReporting implements Disposable {
 			if (this.progressDeferred) {
 				return;
 			}
+
 			this.beginProgress();
 		});
 
@@ -39,6 +43,7 @@ export class ProgressReporting implements Disposable {
 				if (!this.progress) {
 					this.beginProgress();
 				}
+
 				this.progress!.report({ message: m }); // NOSONAR
 			},
 		);
@@ -46,7 +51,9 @@ export class ProgressReporting implements Disposable {
 		this.languageClient.onNotification("python/endProgress", (_) => {
 			if (this.progressDeferred) {
 				this.progressDeferred.resolve();
+
 				this.progressDeferred = undefined;
+
 				this.progress = undefined;
 			}
 		});

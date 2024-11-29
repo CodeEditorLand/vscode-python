@@ -175,12 +175,19 @@ export async function showQuickPickWithBack<T extends QuickPickItem>(
 	const disposables: Disposable[] = [quickPick];
 
 	quickPick.items = items;
+
 	quickPick.buttons = [QuickInputButtons.Back];
+
 	quickPick.canSelectMany = options?.canPickMany ?? false;
+
 	quickPick.ignoreFocusOut = options?.ignoreFocusOut ?? false;
+
 	quickPick.matchOnDescription = options?.matchOnDescription ?? false;
+
 	quickPick.matchOnDetail = options?.matchOnDetail ?? false;
+
 	quickPick.placeholder = options?.placeHolder;
+
 	quickPick.title = options?.title;
 
 	const deferred = createDeferred<T | T[] | undefined>();
@@ -190,6 +197,7 @@ export async function showQuickPickWithBack<T extends QuickPickItem>(
 		quickPick.onDidTriggerButton((item) => {
 			if (item === QuickInputButtons.Back) {
 				deferred.reject(MultiStepAction.Back);
+
 				quickPick.hide();
 			}
 		}),
@@ -225,6 +233,7 @@ export async function showQuickPickWithBack<T extends QuickPickItem>(
 			}),
 		);
 	}
+
 	quickPick.show();
 
 	try {
@@ -255,9 +264,11 @@ export class MultiStepNode {
 			if (flowAction === MultiStepAction.Cancel) {
 				return flowAction;
 			}
+
 			if (flowAction === MultiStepAction.Back) {
 				nextStep = nextStep?.previous;
 			}
+
 			if (flowAction === MultiStepAction.Continue) {
 				nextStep = nextStep?.next;
 			}
@@ -281,6 +292,7 @@ export function createStepBackEndNode<T>(
 				// This is to ensure we don't leave behind any pending promises.
 				deferred.reject(MultiStepAction.Back);
 			}
+
 			return Promise.resolve(MultiStepAction.Back);
 		},
 		undefined,
@@ -298,6 +310,7 @@ export function createStepForwardEndNode<T>(
 				// This is to ensure we don't leave behind any pending promises.
 				deferred.resolve(result);
 			}
+
 			return Promise.resolve(MultiStepAction.Back);
 		},
 		undefined,
@@ -310,6 +323,7 @@ export function getActiveResource(): Resource {
 	if (editor && !editor.document.isUntitled) {
 		return editor.document.uri;
 	}
+
 	const workspaces = getWorkspaceFolders();
 
 	return Array.isArray(workspaces) && workspaces.length > 0

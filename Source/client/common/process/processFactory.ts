@@ -24,6 +24,7 @@ export class ProcessServiceFactory implements IProcessServiceFactory {
 		@inject(IDisposableRegistry)
 		private readonly disposableRegistry: IDisposableRegistry,
 	) {}
+
 	public async create(
 		resource?: Uri,
 		options?: { doNotUseCustomEnvs: boolean },
@@ -33,6 +34,7 @@ export class ProcessServiceFactory implements IProcessServiceFactory {
 			: await this.envVarsService.getEnvironmentVariables(resource);
 
 		const proc: IProcessService = new ProcessService(customEnvVars);
+
 		this.disposableRegistry.push(proc);
 
 		return proc.on(

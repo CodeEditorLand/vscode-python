@@ -18,6 +18,7 @@ import { PythonEnvInfo, PythonEnvKind } from "./info";
  */
 export type BasicPythonEnvsChangedEvent = {
 	kind?: PythonEnvKind;
+
 	type?: FileChangeType;
 };
 
@@ -42,11 +43,13 @@ export type PythonEnvsChangedEvent = BasicPythonEnvsChangedEvent & {
 export type PythonEnvCollectionChangedEvent =
 	BasicPythonEnvCollectionChangedEvent & {
 		type?: FileChangeType;
+
 		searchLocation?: Uri;
 	};
 
 export type BasicPythonEnvCollectionChangedEvent = {
 	old?: PythonEnvInfo;
+
 	new?: PythonEnvInfo | undefined;
 };
 

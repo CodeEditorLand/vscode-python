@@ -51,6 +51,7 @@ export class TensorBoardPrompt {
 				TensorBoardPromptStateKeys.ShowNativeTensorBoardPrompt,
 				true,
 			);
+
 		this.enabled = this.isPromptEnabled();
 	}
 
@@ -69,7 +70,9 @@ export class TensorBoardPrompt {
 			const doNotAskAgain = Common.doNotShowAgain;
 
 			const options = [yes, no, doNotAskAgain];
+
 			this.waitingForUserSelection = true;
+
 			this.sendTelemetryOnce(trigger);
 
 			const selection =
@@ -77,7 +80,9 @@ export class TensorBoardPrompt {
 					TensorBoard.nativeTensorBoardPrompt,
 					...options,
 				);
+
 			this.waitingForUserSelection = false;
+
 			this.enabledInCurrentSession = false;
 
 			let telemetrySelection = TensorBoardPromptSelection.None;
@@ -85,6 +90,7 @@ export class TensorBoardPrompt {
 			switch (selection) {
 				case yes:
 					telemetrySelection = TensorBoardPromptSelection.Yes;
+
 					await this.commandManager.executeCommand(
 						Commands.LaunchTensorBoard,
 						TensorBoardEntrypoint.prompt,
@@ -96,6 +102,7 @@ export class TensorBoardPrompt {
 				case doNotAskAgain:
 					telemetrySelection =
 						TensorBoardPromptSelection.DoNotAskAgain;
+
 					await this.disablePrompt();
 
 					break;
@@ -108,6 +115,7 @@ export class TensorBoardPrompt {
 				default:
 					break;
 			}
+
 			sendTelemetryEvent(
 				EventName.TENSORBOARD_LAUNCH_PROMPT_SELECTION,
 				undefined,

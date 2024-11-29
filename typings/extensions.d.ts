@@ -17,6 +17,7 @@ declare interface String {
 	 */
 	splitLines(splitOptions?: {
 		trim: boolean;
+
 		removeEmptyEntries?: boolean;
 	}): string[];
 	/**

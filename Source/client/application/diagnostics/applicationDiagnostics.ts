@@ -27,6 +27,7 @@ function log(diagnostics: IDiagnostic[]): void {
 
 				break;
 			}
+
 			default: {
 				traceVerbose(message);
 			}
@@ -44,6 +45,7 @@ async function runDiagnostics(
 
 			if (diagnostics.length > 0) {
 				log(diagnostics);
+
 				await diagnosticService.handle(diagnostics);
 			}
 		}),
@@ -70,6 +72,7 @@ export class ApplicationDiagnostics implements IApplicationDiagnostics {
 		if (isTestExecution()) {
 			return;
 		}
+
 		let services =
 			this.serviceContainer.getAll<IDiagnosticsService>(
 				IDiagnosticsService,

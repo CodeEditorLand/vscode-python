@@ -9,22 +9,37 @@ export type NativePythonTelemetry = MissingCondaEnvironments | MissingPoetryEnvi
 
 export type MissingCondaEnvironments = {
     event: 'MissingCondaEnvironments';
+
     data: {
         missingCondaEnvironments: {
             missing: number;
+
             envDirsNotFound?: number;
+
             userProvidedCondaExe?: boolean;
+
             rootPrefixNotFound?: boolean;
+
             condaPrefixNotFound?: boolean;
+
             condaManagerNotFound?: boolean;
+
             sysRcNotFound?: boolean;
+
             userRcNotFound?: boolean;
+
             otherRcNotFound?: boolean;
+
             missingEnvDirsFromSysRc?: number;
+
             missingEnvDirsFromUserRc?: number;
+
             missingEnvDirsFromOtherRc?: number;
+
             missingFromSysRcEnvDirs?: number;
+
             missingFromUserRcEnvDirs?: number;
+
             missingFromOtherRcEnvDirs?: number;
         };
     };
@@ -32,17 +47,27 @@ export type MissingCondaEnvironments = {
 
 export type MissingPoetryEnvironments = {
     event: 'MissingPoetryEnvironments';
+
     data: {
         missingPoetryEnvironments: {
             missing: number;
+
             missingInPath: number;
+
             userProvidedPoetryExe?: boolean;
+
             poetryExeNotFound?: boolean;
+
             globalConfigNotFound?: boolean;
+
             cacheDirNotFound?: boolean;
+
             cacheDirIsDifferent?: boolean;
+
             virtualenvsPathNotFound?: boolean;
+
             virtualenvsPathIsDifferent?: boolean;
+
             inProjectIsDifferent?: boolean;
         };
     };
@@ -50,30 +75,50 @@ export type MissingPoetryEnvironments = {
 
 export type RefreshPerformance = {
     event: 'RefreshPerformance';
+
     data: {
         refreshPerformance: {
             total: number;
+
             breakdown: {
                 Locators: number;
+
                 Path: number;
+
                 GlobalVirtualEnvs: number;
+
                 Workspaces: number;
             };
+
             locators: {
                 Conda?: number;
+
                 Homebrew?: number;
+
                 LinuxGlobalPython?: number;
+
                 MacCmdLineTools?: number;
+
                 MacPythonOrg?: number;
+
                 MacXCode?: number;
+
                 PipEnv?: number;
+
                 PixiEnv?: number;
+
                 Poetry?: number;
+
                 PyEnv?: number;
+
                 Venv?: number;
+
                 VirtualEnv?: number;
+
                 VirtualEnvWrapper?: number;
+
                 WindowsRegistry?: number;
+
                 WindowsStore?: number;
             };
         };
@@ -86,7 +131,9 @@ export function sendNativeTelemetry(
     data: NativePythonTelemetry,
     initialRefreshMetrics: {
         timeToSpawn: number;
+
         timeToConfigure: number;
+
         timeToRefresh: number;
     },
 ): void {
@@ -97,21 +144,27 @@ export function sendNativeTelemetry(
                 undefined,
                 data.data.missingCondaEnvironments,
             );
+
             break;
         }
+
         case 'MissingPoetryEnvironments': {
             sendTelemetryEvent(
                 EventName.NATIVE_FINDER_MISSING_POETRY_ENVS,
                 undefined,
                 data.data.missingPoetryEnvironments,
             );
+
             break;
         }
+
         case 'RefreshPerformance': {
             if (refreshTelemetrySent) {
                 break;
             }
+
             refreshTelemetrySent = true;
+
             sendTelemetryEvent(EventName.NATIVE_FINDER_PERF, {
                 duration: data.data.refreshPerformance.total,
                 totalDuration: data.data.refreshPerformance.total,
@@ -138,8 +191,10 @@ export function sendNativeTelemetry(
                 timeToConfigure: initialRefreshMetrics.timeToConfigure,
                 timeToRefresh: initialRefreshMetrics.timeToRefresh,
             });
+
             break;
         }
+
         default: {
             traceError(`Unhandled Telemetry Event type ${JSON.stringify(data)}`);
         }

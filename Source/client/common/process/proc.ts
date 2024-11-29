@@ -46,6 +46,7 @@ export class ProcessService extends EventEmitter implements IProcessService {
 
 	public dispose(): void {
 		this.removeAllListeners();
+
 		this.processesToKill.forEach((p) => {
 			try {
 				p.dispose();
@@ -69,6 +70,7 @@ export class ProcessService extends EventEmitter implements IProcessService {
 			this.env,
 			this.processesToKill,
 		);
+
 		this.emit("exec", file, args, options);
 
 		return result;
@@ -84,6 +86,7 @@ export class ProcessService extends EventEmitter implements IProcessService {
 		if (options.useWorker) {
 			return workerPlainExec(file, args, options);
 		}
+
 		const execOptions = { ...options, doNotLog: true };
 
 		const promise = plainExec(
@@ -106,6 +109,7 @@ export class ProcessService extends EventEmitter implements IProcessService {
 		if (options.useWorker) {
 			return workerShellExec(command, options);
 		}
+
 		const disposables = new Set<IDisposable>();
 
 		const shellOptions = { ...options, doNotLog: true };

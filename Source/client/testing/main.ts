@@ -59,14 +59,20 @@ export class TestingService implements ITestingService {
 @injectable()
 export class UnitTestManagementService implements IExtensionActivationService {
 	private activatedOnce: boolean = false;
+
 	public readonly supportedWorkspaceTypes = {
 		untrustedWorkspace: false,
 		virtualWorkspace: false,
 	};
+
 	private readonly disposableRegistry: Disposable[];
+
 	private workspaceService: IWorkspaceService;
+
 	private context: IContextKeyManager;
+
 	private testController: ITestController | undefined;
+
 	private configChangeTrigger: IDelayedTrigger;
 
 	// This is temporarily needed until the proposed API settles for this part
@@ -77,8 +83,10 @@ export class UnitTestManagementService implements IExtensionActivationService {
 	) {
 		this.disposableRegistry =
 			serviceContainer.get<Disposable[]>(IDisposableRegistry);
+
 		this.workspaceService =
 			serviceContainer.get<IWorkspaceService>(IWorkspaceService);
+
 		this.context =
 			this.serviceContainer.get<IContextKeyManager>(IContextKeyManager);
 
@@ -92,7 +100,9 @@ export class UnitTestManagementService implements IExtensionActivationService {
 			500,
 			"Test Configuration Change",
 		);
+
 		this.configChangeTrigger = configChangeTrigger;
+
 		this.disposableRegistry.push(configChangeTrigger);
 	}
 
@@ -100,13 +110,16 @@ export class UnitTestManagementService implements IExtensionActivationService {
 		if (this.activatedOnce) {
 			return;
 		}
+
 		this.activatedOnce = true;
 
 		this.registerHandlers();
+
 		this.registerCommands();
 
 		if (!!tests.testResults) {
 			await this.updateTestUIButtons();
+
 			this.disposableRegistry.push(
 				tests.onDidChangeTestResults(() => {
 					this.updateTestUIButtons();
@@ -121,12 +134,14 @@ export class UnitTestManagementService implements IExtensionActivationService {
 					true,
 				);
 			});
+
 			this.testController.onRefreshingCompleted(async () => {
 				await this.context.setContext(
 					ExtensionContextKey.RefreshingTests,
 					false,
 				);
 			});
+
 			this.testController.onRunWithoutConfiguration(
 				async (unconfigured: WorkspaceFolder[]) => {
 					const workspaces =
@@ -137,6 +152,7 @@ export class UnitTestManagementService implements IExtensionActivationService {
 							this.serviceContainer.get<ICommandManager>(
 								ICommandManager,
 							);
+
 						await commandManager.executeCommand(
 							"workbench.view.testing.focus",
 						);
@@ -174,6 +190,7 @@ export class UnitTestManagementService implements IExtensionActivationService {
 		updateTestResultMap(this.testStateMap, tests.testResults);
 
 		const hasFailedTests = checkForFailedTests(this.testStateMap);
+
 		await this.context.setContext(
 			ExtensionContextKey.HasFailedTests,
 			hasFailedTests,
@@ -205,15 +222,19 @@ export class UnitTestManagementService implements IExtensionActivationService {
 		if (resource) {
 			const wkspaceFolder =
 				this.workspaceService.getWorkspaceFolder(resource);
+
 			wkspace = wkspaceFolder ? wkspaceFolder.uri : undefined;
 		} else {
 			const appShell =
 				this.serviceContainer.get<IApplicationShell>(IApplicationShell);
+
 			wkspace = await selectTestWorkspace(appShell);
 		}
+
 		if (!wkspace) {
 			return;
 		}
+
 		const interpreterService =
 			this.serviceContainer.get<IInterpreterService>(IInterpreterService);
 
@@ -228,10 +249,12 @@ export class UnitTestManagementService implements IExtensionActivationService {
 
 			return;
 		}
+
 		const configurationService =
 			this.serviceContainer.get<ITestConfigurationService>(
 				ITestConfigurationService,
 			);
+
 		await configurationService.promptToEnableAndConfigureTestFramework(
 			wkspace!,
 		);
@@ -253,9 +276,11 @@ export class UnitTestManagementService implements IExtensionActivationService {
 					// Ignore the exceptions returned.
 					// This command will be invoked from other places of the extension.
 					this.configureTests(resource).ignoreErrors();
+
 					traceVerbose(
 						"Testing: Trigger refresh after config change",
 					);
+
 					this.testController?.refreshTestData(resource, {
 						forceRefresh: true,
 					});
@@ -307,6 +332,7 @@ export class UnitTestManagementService implements IExtensionActivationService {
 	private registerHandlers() {
 		const interpreterService =
 			this.serviceContainer.get<IInterpreterService>(IInterpreterService);
+
 		this.disposableRegistry.push(
 			this.workspaceService.onDidChangeConfiguration((e) => {
 				this.configChangeTrigger.trigger(e);
@@ -315,11 +341,13 @@ export class UnitTestManagementService implements IExtensionActivationService {
 				traceVerbose(
 					"Testing: Triggered refresh due to interpreter change.",
 				);
+
 				sendTelemetryEvent(
 					EventName.UNITTEST_DISCOVERY_TRIGGER,
 					undefined,
 					{ trigger: "interpreter" },
 				);
+
 				await this.testController?.refreshTestData(undefined, {
 					forceRefresh: true,
 				});

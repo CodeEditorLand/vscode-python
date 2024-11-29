@@ -56,9 +56,11 @@ export class PoetryInstaller extends ModuleInstaller {
 		if (!resource) {
 			return false;
 		}
+
 		if (!isResource(resource)) {
 			return false;
 		}
+
 		const interpreter = await this.serviceContainer
 			.get<IInterpreterService>(IInterpreterService)
 			.getActiveInterpreter(resource);

@@ -62,12 +62,16 @@ export class NativeRepl implements Disposable {
 		interpreter: PythonEnvironment,
 	): Promise<NativeRepl> {
 		const nativeRepl = new NativeRepl();
+
 		nativeRepl.interpreter = interpreter;
+
 		await nativeRepl.setReplDirectory();
+
 		nativeRepl.pythonServer = createPythonServer(
 			[interpreter.path as string],
 			nativeRepl.cwd,
 		);
+
 		nativeRepl.setReplController();
 
 		return nativeRepl;
@@ -89,7 +93,9 @@ export class NativeRepl implements Disposable {
 					nb.uri.toString() === this.notebookDocument.uri.toString()
 				) {
 					this.notebookDocument = undefined;
+
 					this.newReplSession = true;
+
 					await updateWorkspaceStateValue<string | undefined>(
 						NATIVE_REPL_URI_MEMENTO,
 						undefined,
@@ -134,6 +140,7 @@ export class NativeRepl implements Disposable {
 						ignoreFocusOut: true,
 					},
 				)) as QuickPickItem;
+
 				this.cwd = selection?.description;
 			}
 		}
@@ -149,12 +156,14 @@ export class NativeRepl implements Disposable {
 				this.disposables,
 				this.cwd,
 			);
+
 			this.replController.variableProvider = new VariablesProvider(
 				new VariableRequester(this.pythonServer),
 				() => this.notebookDocument,
 				this.pythonServer.onCodeExecuted,
 			);
 		}
+
 		return this.replController;
 	}
 
@@ -166,9 +175,12 @@ export class NativeRepl implements Disposable {
 		activeEditor: TextEditor | undefined,
 	): Promise<boolean> {
 		let completeCode = false;
+
 		let userTextInput;
+
 		if (activeEditor) {
 			const { document } = activeEditor;
+
 			userTextInput = document.getText();
 		}
 
@@ -194,6 +206,7 @@ export class NativeRepl implements Disposable {
 			const wsMemento = getWorkspaceStateValue<string>(
 				NATIVE_REPL_URI_MEMENTO,
 			);
+
 			wsMementoUri = wsMemento ? Uri.parse(wsMemento) : undefined;
 
 			if (
@@ -204,6 +217,7 @@ export class NativeRepl implements Disposable {
 					NATIVE_REPL_URI_MEMENTO,
 					undefined,
 				);
+
 				wsMementoUri = undefined;
 			}
 		}
@@ -213,8 +227,10 @@ export class NativeRepl implements Disposable {
 			this.notebookDocument ?? wsMementoUri,
 			preserveFocus,
 		);
+
 		if (notebookEditor) {
 			this.notebookDocument = notebookEditor.notebook;
+
 			await updateWorkspaceStateValue<string | undefined>(
 				NATIVE_REPL_URI_MEMENTO,
 				this.notebookDocument.uri.toString(),
@@ -225,11 +241,13 @@ export class NativeRepl implements Disposable {
 					this.notebookDocument,
 					NotebookControllerAffinity.Default,
 				);
+
 				await selectNotebookKernel(
 					notebookEditor,
 					this.replController.id,
 					PVSC_EXTENSION_ID,
 				);
+
 				if (code) {
 					await executeNotebookCell(notebookEditor, code);
 				}
@@ -249,11 +267,15 @@ export async function getNativeRepl(
 ): Promise<NativeRepl> {
 	if (!nativeRepl) {
 		nativeRepl = await NativeRepl.create(interpreter);
+
 		disposables.push(nativeRepl);
 	}
+
 	if (nativeRepl && nativeRepl.newReplSession) {
 		sendTelemetryEvent(EventName.REPL, undefined, { replType: "Native" });
+
 		nativeRepl.newReplSession = false;
 	}
+
 	return nativeRepl;
 }

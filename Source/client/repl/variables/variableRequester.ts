@@ -30,6 +30,7 @@ export class VariableRequester {
 			const printCall = `import json;return json.dumps(getAllChildrenDescriptions(\'${
 				parent.root
 			}\', ${JSON.stringify(parent.propertyChain)}, ${start}))`;
+
 			scriptLines.push(printCall);
 		} else {
 			scriptLines.push(
@@ -64,7 +65,9 @@ async function getContentsOfVariablesScript(): Promise<string> {
 	if (VariableRequester.scriptContents) {
 		return VariableRequester.scriptContents;
 	}
+
 	const contents = await fsapi.readFile(VARIABLE_SCRIPT_LOCATION, "utf-8");
+
 	VariableRequester.scriptContents = contents;
 
 	return VariableRequester.scriptContents;

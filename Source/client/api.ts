@@ -40,10 +40,12 @@ export function buildApi(
 
 	const interpreterService =
 		serviceContainer.get<IInterpreterService>(IInterpreterService);
+
 	serviceManager.addSingleton<JupyterExtensionIntegration>(
 		JupyterExtensionIntegration,
 		JupyterExtensionIntegration,
 	);
+
 	serviceManager.addSingleton<TensorboardExtensionIntegration>(
 		TensorboardExtensionIntegration,
 		TensorboardExtensionIntegration,
@@ -163,6 +165,7 @@ export function buildApi(
 				// Make sure we share output channel so that we can share one with
 				// Jedi as well.
 				const clientOptions = args[1] as LanguageClientOptions;
+
 				clientOptions.outputChannel =
 					clientOptions.outputChannel ?? outputChannel.channel;
 
@@ -186,5 +189,6 @@ export function buildApi(
 		(api as any).serviceContainer = serviceContainer;
 		(api as any).serviceManager = serviceManager;
 	}
+
 	return api;
 }

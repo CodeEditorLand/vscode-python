@@ -31,6 +31,7 @@ export class PowershellTerminalActivationFailedHandler
 		@named(PowerShellActivationHackDiagnosticsServiceId)
 		private readonly diagnosticService: IDiagnosticsService,
 	) {}
+
 	public async handleActivation(
 		terminal: Terminal,
 		resource: Resource,
@@ -40,6 +41,7 @@ export class PowershellTerminalActivationFailedHandler
 		if (activated || !this.platformService.isWindows) {
 			return;
 		}
+
 		const shell = this.helper.identifyTerminalShell(terminal);
 
 		if (
@@ -62,6 +64,7 @@ export class PowershellTerminalActivationFailedHandler
 		) {
 			return;
 		}
+
 		this.diagnosticService
 			.handle([new PowershellActivationNotAvailableDiagnostic(resource)])
 			.ignoreErrors();

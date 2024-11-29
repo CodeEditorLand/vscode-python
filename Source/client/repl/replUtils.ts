@@ -36,6 +36,7 @@ export async function getSelectedTextToExecute(
 	textEditor: TextEditor,
 ): Promise<string | undefined> {
 	const { selection } = textEditor;
+
 	let code: string;
 
 	if (selection.isEmpty) {
@@ -55,7 +56,9 @@ export async function getSelectedTextToExecute(
  */
 export function getSendToNativeREPLSetting(): boolean {
 	const uri = getActiveResource();
+
 	const configuration = getConfiguration("python", uri);
+
 	return configuration.get<boolean>("REPL.sendToNativeREPL", false);
 }
 
@@ -65,10 +68,12 @@ export function insertNewLineToREPLInput(
 ): void {
 	if (activeEditor) {
 		const position = activeEditor.selection.active;
+
 		const newPosition = position.with(
 			position.line,
 			activeEditor.document.lineAt(position.line).text.length,
 		);
+
 		activeEditor.selection = new Selection(newPosition, newPosition);
 
 		activeEditor.edit((editBuilder) => {
@@ -90,12 +95,15 @@ export async function getActiveInterpreter(
 	interpreterService: IInterpreterService,
 ): Promise<PythonEnvironment | undefined> {
 	const interpreter = await interpreterService.getActiveInterpreter(uri);
+
 	if (!interpreter) {
 		commands
 			.executeCommand(Commands.TriggerEnvironmentSelection, uri)
 			.then(noop, noop);
+
 		return undefined;
 	}
+
 	return interpreter;
 }
 
@@ -108,19 +116,24 @@ export function getExistingReplViewColumn(
 	const ourNotebookUri = notebookDocument.uri.toString();
 	// Use Tab groups, to locate previously opened Python REPL tab and fetch view column.
 	const ourTb = window.tabGroups;
+
 	for (const tabGroup of ourTb.all) {
 		for (const tab of tabGroup.tabs) {
 			if (tab.label === "Python REPL") {
 				const tabInput = tab.input as unknown as TabInputNotebook;
+
 				const tabUri = tabInput.uri.toString();
+
 				if (tab.input && tabUri === ourNotebookUri) {
 					// This is the tab we are looking for.
 					const existingReplViewColumn = tab.group.viewColumn;
+
 					return existingReplViewColumn;
 				}
 			}
 		}
 	}
+
 	return undefined;
 }
 

@@ -20,6 +20,7 @@ function getSearchHeight() {
 	if (maxDepthStr === undefined) {
 		return 3;
 	}
+
 	const maxDepth = parseInt(maxDepthStr, 10);
 	// eslint-disable-next-line no-restricted-globals
 	if (isNaN(maxDepth)) {
@@ -29,6 +30,7 @@ function getSearchHeight() {
 
 		return 1;
 	}
+
 	return maxDepth;
 }
 
@@ -56,9 +58,12 @@ export async function _getAssociatedPipfile(
 		if (await pathExists(pipFile)) {
 			return pipFile;
 		}
+
 		searchDir = path.dirname(searchDir);
+
 		heightToSearch -= 1;
 	}
+
 	return undefined;
 }
 
@@ -83,6 +88,7 @@ async function getPipfileIfLocal(
 	if (path.basename(venvFolder) !== ".venv") {
 		return undefined;
 	}
+
 	const directoryWhereVenvResides = path.dirname(venvFolder);
 
 	return _getAssociatedPipfile(directoryWhereVenvResides, {
@@ -110,6 +116,7 @@ export async function getProjectDir(
 	if (!(await pathExists(dotProjectFile))) {
 		return undefined;
 	}
+
 	const projectDir = (await readFile(dotProjectFile)).trim();
 
 	if (!(await pathExists(projectDir))) {
@@ -119,6 +126,7 @@ export async function getProjectDir(
 
 		return undefined;
 	}
+
 	return projectDir;
 }
 
@@ -165,9 +173,11 @@ export async function isPipenvEnvironment(
 	if (await getPipfileIfLocal(interpreterPath)) {
 		return true;
 	}
+
 	if (await getPipfileIfGlobal(interpreterPath)) {
 		return true;
 	}
+
 	return false;
 }
 
@@ -199,6 +209,7 @@ export async function isPipenvEnvironmentRelatedToFolder(
 	if (!pipFileAssociatedWithFolder) {
 		return false;
 	}
+
 	return arePathsSame(
 		pipFileAssociatedWithEnvironment,
 		pipFileAssociatedWithFolder,

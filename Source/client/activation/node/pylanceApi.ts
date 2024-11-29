@@ -13,9 +13,12 @@ import {
 export interface PylanceApi {
 	client?: {
 		isEnabled(): boolean;
+
 		start(): Promise<void>;
+
 		stop(): Promise<void>;
 	};
+
 	notebook?: {
 		registerJupyterPythonPathFunction(
 			func: (uri: Uri) => Promise<string | undefined>,

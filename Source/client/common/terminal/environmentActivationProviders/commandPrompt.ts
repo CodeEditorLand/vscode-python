@@ -38,6 +38,7 @@ export function getAllScripts(pathJoin: (...p: string[]) => string): string[] {
 			}
 		}
 	}
+
 	return scripts;
 }
 
@@ -49,6 +50,7 @@ export class CommandPromptAndPowerShell extends VenvBaseActivationCommandProvide
 		@inject(IServiceContainer) serviceContainer: IServiceContainer,
 	) {
 		super(serviceContainer);
+
 		this.scripts = {};
 
 		for (const [key, names] of Object.entries(SCRIPTS)) {
@@ -64,6 +66,7 @@ export class CommandPromptAndPowerShell extends VenvBaseActivationCommandProvide
 					path.join("scripts", name),
 				);
 			}
+
 			this.scripts[shell] = scripts;
 		}
 	}
@@ -84,6 +87,7 @@ export class CommandPromptAndPowerShell extends VenvBaseActivationCommandProvide
 		) {
 			return [scriptFile.fileToCommandArgumentForPythonExt()];
 		}
+
 		if (
 			(targetShell === TerminalShellType.powershell ||
 				targetShell === TerminalShellType.powershellCore) &&
@@ -91,6 +95,7 @@ export class CommandPromptAndPowerShell extends VenvBaseActivationCommandProvide
 		) {
 			return [`& ${scriptFile.fileToCommandArgumentForPythonExt()}`];
 		}
+
 		if (
 			targetShell === TerminalShellType.commandPrompt &&
 			scriptFile.endsWith("Activate.ps1")

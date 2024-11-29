@@ -21,8 +21,11 @@ export const IModuleInstaller = Symbol("IModuleInstaller");
 
 export interface IModuleInstaller {
 	readonly name: string;
+
 	readonly displayName: string;
+
 	readonly priority: number;
+
 	readonly type: ModuleInstallerType;
 	/**
 	 * Installs a module
@@ -37,6 +40,7 @@ export interface IModuleInstaller {
 		flags?: ModuleInstallFlags,
 		options?: InstallOptions,
 	): Promise<void>;
+
 	isSupported(resource?: InterpreterUri): Promise<boolean>;
 }
 
@@ -50,17 +54,20 @@ export interface IBaseInstaller {
 		flags?: ModuleInstallFlags,
 		options?: InstallOptions,
 	): Promise<InstallerResponse>;
+
 	promptToInstall(
 		product: Product,
 		resource?: InterpreterUri,
 		cancel?: CancellationToken,
 		flags?: ModuleInstallFlags,
 	): Promise<InstallerResponse>;
+
 	isProductVersionCompatible(
 		product: Product,
 		semVerRequirement: string,
 		resource?: InterpreterUri,
 	): Promise<ProductInstallStatus>;
+
 	isInstalled(product: Product, resource?: InterpreterUri): Promise<boolean>;
 }
 
@@ -83,6 +90,7 @@ export interface IInstallationChannelManager {
 	getInstallationChannels(
 		resource?: InterpreterUri,
 	): Promise<IModuleInstaller[]>;
+
 	showNoInstallersMessage(): void;
 }
 export const IProductService = Symbol("IProductService");
@@ -94,6 +102,7 @@ export const IProductPathService = Symbol("IProductPathService");
 
 export interface IProductPathService {
 	getExecutableNameFromSettings(product: Product, resource?: Uri): string;
+
 	isExecutableAModule(product: Product, resource?: Uri): boolean;
 }
 

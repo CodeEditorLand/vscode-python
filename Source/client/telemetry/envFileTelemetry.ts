@@ -71,6 +71,7 @@ function shouldSendTelemetry(): boolean {
 function defaultEnvFileSetting(workspaceService: IWorkspaceService) {
 	if (!_defaultEnvFileSetting) {
 		const section = workspaceService.getConfiguration("python");
+
 		_defaultEnvFileSetting =
 			section.inspect<string>("envFile")?.defaultValue || "";
 	}
@@ -91,12 +92,14 @@ export const EnvFileTelemetryTests = {
 		if (telemetrySent !== undefined) {
 			envFileTelemetrySent = telemetrySent;
 		}
+
 		if (defaultEnvFileSetting !== undefined) {
 			_defaultEnvFileSetting = defaultSetting;
 		}
 	},
 	resetState: (): void => {
 		_defaultEnvFileSetting = undefined;
+
 		envFileTelemetrySent = false;
 	},
 };

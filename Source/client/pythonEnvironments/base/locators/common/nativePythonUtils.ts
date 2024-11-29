@@ -49,7 +49,9 @@ export function categoryToKind(category?: NativePythonEnvironmentKind, logger?: 
     if (!category) {
         return PythonEnvKind.Unknown;
     }
+
     const kind = mapping.get(category);
+
     if (kind) {
         return kind;
     }
@@ -59,5 +61,6 @@ export function categoryToKind(category?: NativePythonEnvironmentKind, logger?: 
     } else {
         traceError(`Unknown Python Environment category '${category}' from Native Locator.`);
     }
+
     return PythonEnvKind.Unknown;
 }

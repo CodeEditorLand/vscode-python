@@ -18,6 +18,7 @@ import { FSWatchingLocator } from "./fsWatchingLocator";
  */
 async function* getPyenvEnvironments(): AsyncIterableIterator<BasicEnvInfo> {
 	const stopWatch = new StopWatch();
+
 	traceInfo("Searching for pyenv environments");
 
 	try {
@@ -46,6 +47,7 @@ async function* getPyenvEnvironments(): AsyncIterableIterator<BasicEnvInfo> {
 		// This is expected when pyenv is not installed
 		traceInfo(`pyenv is not installed`);
 	}
+
 	traceInfo(
 		`Finished searching for pyenv environments: ${stopWatch.elapsedTime} milliseconds`,
 	);

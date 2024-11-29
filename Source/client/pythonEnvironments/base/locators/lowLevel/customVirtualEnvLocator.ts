@@ -52,6 +52,7 @@ async function getCustomVirtualEnvDirs(): Promise<string[]> {
 	if (venvPath) {
 		venvDirs.push(untildify(venvPath));
 	}
+
 	const venvFolders =
 		getPythonSetting<string[]>(VENVFOLDERS_SETTING_KEY) ?? [];
 
@@ -63,8 +64,10 @@ async function getCustomVirtualEnvDirs(): Promise<string[]> {
 				item.startsWith(homeDir) ? item : path.join(homeDir, item),
 			)
 			.forEach((d) => venvDirs.push(d));
+
 		venvFolders.forEach((item) => venvDirs.push(untildify(item)));
 	}
+
 	return asyncFilter(uniq(venvDirs), pathExists);
 }
 
@@ -116,6 +119,7 @@ export class CustomVirtualEnvironmentLocator extends FSWatchingLocator {
 		this.disposables.push(
 			onDidChangePythonSetting(VENVPATH_SETTING_KEY, () => this.fire()),
 		);
+
 		this.disposables.push(
 			onDidChangePythonSetting(VENVFOLDERS_SETTING_KEY, () =>
 				this.fire(),
@@ -127,6 +131,7 @@ export class CustomVirtualEnvironmentLocator extends FSWatchingLocator {
 	protected doIterEnvs(): IPythonEnvsIterator<BasicEnvInfo> {
 		async function* iterator() {
 			const stopWatch = new StopWatch();
+
 			traceInfo("Searching for custom virtual environments");
 
 			const envRootDirs = await getCustomVirtualEnvDirs();
@@ -156,6 +161,7 @@ export class CustomVirtualEnvironmentLocator extends FSWatchingLocator {
 								const kind = await getVirtualEnvKind(filename);
 
 								yield { kind, executablePath: filename };
+
 								traceVerbose(
 									`Custom Virtual Environment: [added] ${filename}`,
 								);
@@ -172,10 +178,12 @@ export class CustomVirtualEnvironmentLocator extends FSWatchingLocator {
 						}
 					}
 				}
+
 				return generator();
 			});
 
 			yield* iterable(chain(envGenerators));
+
 			traceInfo(
 				`Finished searching for custom virtual envs: ${stopWatch.elapsedTime} milliseconds`,
 			);

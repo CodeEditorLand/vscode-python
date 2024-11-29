@@ -105,6 +105,7 @@ export class WorkspaceVirtualEnvironmentLocator extends FSWatchingLocator {
 							const kind = await getVirtualEnvKind(filename);
 
 							yield { kind, executablePath: filename };
+
 							traceVerbose(
 								`Workspace Virtual Environment: [added] ${filename}`,
 							);
@@ -115,10 +116,12 @@ export class WorkspaceVirtualEnvironmentLocator extends FSWatchingLocator {
 						}
 					}
 				}
+
 				return generator();
 			});
 
 			yield* iterable(chain(envGenerators));
+
 			traceVerbose(`Finished searching for workspace virtual envs`);
 		}
 

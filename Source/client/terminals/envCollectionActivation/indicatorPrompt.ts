@@ -63,10 +63,12 @@ export class TerminalIndicatorPrompt
 		if (!inTerminalEnvVarExperiment(this.experimentService)) {
 			return;
 		}
+
 		if (!isTestExecution()) {
 			// Avoid showing prompt until startup completes.
 			await sleep(6000);
 		}
+
 		this.disposableRegistry.push(
 			this.terminalManager.onDidOpenTerminal(async (terminal) => {
 				const hideFromUser =
@@ -85,6 +87,7 @@ export class TerminalIndicatorPrompt
 					// Only show this notification for basic terminals created using the '+' button.
 					return;
 				}
+
 				const cwd =
 					"cwd" in terminal.creationOptions &&
 					terminal.creationOptions.cwd
@@ -99,6 +102,7 @@ export class TerminalIndicatorPrompt
 				if (!settings.terminal.activateEnvironment) {
 					return;
 				}
+
 				if (
 					this.terminalEnvVarCollectionService.isTerminalPromptSetCorrectly(
 						resource,
@@ -107,6 +111,7 @@ export class TerminalIndicatorPrompt
 					// No need to show notification if terminal prompt already indicates when env is activated.
 					return;
 				}
+
 				await this.notifyUsers(resource);
 			}),
 		);
@@ -122,6 +127,7 @@ export class TerminalIndicatorPrompt
 		if (!notificationPromptEnabled.value) {
 			return;
 		}
+
 		const prompts = [Common.doNotShowAgain];
 
 		const interpreter =
@@ -130,6 +136,7 @@ export class TerminalIndicatorPrompt
 		if (!interpreter || !interpreter.type) {
 			return;
 		}
+
 		const terminalPromptName = getPromptName(interpreter);
 
 		const environmentType =
@@ -148,6 +155,7 @@ export class TerminalIndicatorPrompt
 		if (!selection) {
 			return;
 		}
+
 		if (selection === prompts[0]) {
 			await notificationPromptEnabled.updateValue(false);
 		}
@@ -158,8 +166,10 @@ function getPromptName(interpreter: PythonEnvironment) {
 	if (interpreter.envName) {
 		return `"(${interpreter.envName})"`;
 	}
+
 	if (interpreter.envPath) {
 		return `"(${path.basename(interpreter.envPath)})"`;
 	}
+
 	return "environment indicator";
 }

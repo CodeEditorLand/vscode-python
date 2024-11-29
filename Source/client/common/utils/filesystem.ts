@@ -10,12 +10,15 @@ export import FileType = vscode.FileType;
 
 export type DirEntry = {
 	filename: string;
+
 	filetype: FileType;
 };
 
 interface IKnowsFileType {
 	isFile(): boolean;
+
 	isDirectory(): boolean;
+
 	isSymbolicLink(): boolean;
 }
 
@@ -26,14 +29,17 @@ export function convertFileType(info: IKnowsFileType): FileType {
 	if (info.isFile()) {
 		return FileType.File;
 	}
+
 	if (info.isDirectory()) {
 		return FileType.Directory;
 	}
+
 	if (info.isSymbolicLink()) {
 		// The caller is responsible for combining this ("logical or")
 		// with File or Directory as necessary.
 		return FileType.SymbolicLink;
 	}
+
 	return FileType.Unknown;
 }
 
@@ -56,13 +62,16 @@ export async function getFileType(
 		if (error.code === "ENOENT") {
 			return undefined;
 		}
+
 		if (opts.ignoreErrors) {
 			traceError(`lstat() failed for "${filename}" (${err})`);
 
 			return FileType.Unknown;
 		}
+
 		throw err; // re-throw
 	}
+
 	return convertFileType(stat);
 }
 
@@ -72,12 +81,15 @@ function normalizeFileTypes(
 	if (filetypes === undefined) {
 		return undefined;
 	}
+
 	if (Array.isArray(filetypes)) {
 		if (filetypes.length === 0) {
 			return undefined;
 		}
+
 		return filetypes;
 	}
+
 	return [filetypes];
 }
 
@@ -85,6 +97,7 @@ async function resolveFile(
 	file: string | DirEntry,
 	opts: {
 		ensure?: boolean;
+
 		onMissing?: FileType;
 	} = {},
 ): Promise<DirEntry | undefined> {
@@ -100,6 +113,7 @@ async function resolveFile(
 				return file;
 			}
 		}
+
 		filename = file.filename;
 	} else {
 		filename = file;
@@ -110,6 +124,7 @@ async function resolveFile(
 	if (filetype === undefined) {
 		return undefined;
 	}
+
 	return { filename, filetype };
 }
 
@@ -118,7 +133,9 @@ type FileFilterFunc = (file: string | DirEntry) => Promise<boolean>;
 export function getFileFilter(
 	opts: {
 		ignoreMissing?: boolean;
+
 		ignoreFileType?: FileType | FileType[];
+
 		ensureEntry?: boolean;
 	} = {
 		ignoreMissing: true,
@@ -138,15 +155,20 @@ export function getFileFilter(
 			if (opts.ignoreMissing) {
 				return false;
 			}
+
 			const filename = typeof file === "string" ? file : file.filename;
+
 			entry = { filename, filetype: FileType.Unknown };
 		}
+
 		if (ignoreFileType) {
 			if (ignoreFileType.includes(entry!.filetype)) {
 				return false;
 			}
 		}
+
 		return true;
 	}
+
 	return filterFile;
 }

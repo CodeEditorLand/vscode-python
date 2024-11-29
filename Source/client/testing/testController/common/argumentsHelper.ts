@@ -19,6 +19,7 @@ export function getOptionValues(args: string[], option: string): string[] {
 			returnNextValue = true;
 		}
 	}
+
 	return values;
 }
 
@@ -28,6 +29,7 @@ export function getPositionalArguments(
 	optionsWithoutArguments: string[] = [],
 ): string[] {
 	const nonPositionalIndexes: number[] = [];
+
 	args.forEach((arg, index) => {
 		if (optionsWithoutArguments.indexOf(arg) !== -1) {
 			nonPositionalIndexes.push(index);
@@ -46,12 +48,14 @@ export function getPositionalArguments(
 			traceWarn(
 				`Unknown command line option passed into args parser for tests '${arg}'. Please report on https://github.com/Microsoft/vscode-python/issues/new`,
 			);
+
 			nonPositionalIndexes.push(index);
 		} else if (arg.indexOf("=") > 0) {
 			// Ok this is an unknown option with a value
 			traceWarn(
 				`Unknown command line option passed into args parser for tests '${arg}'. Please report on https://github.com/Microsoft/vscode-python/issues/new`,
 			);
+
 			nonPositionalIndexes.push(index);
 		}
 	});
@@ -120,6 +124,7 @@ export function filterArguments(
 		) {
 			return false;
 		}
+
 		return true;
 	});
 }

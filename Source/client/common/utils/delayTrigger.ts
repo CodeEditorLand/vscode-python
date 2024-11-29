@@ -51,9 +51,11 @@ export class DelayedTrigger implements IDelayedTrigger, Disposable {
 
 		this.timerId = setTimeout(() => {
 			this.calledCounter += 1;
+
 			traceVerbose(
 				`Delay Trigger[${this.name}]: triggered=${this.triggeredCounter}, called=${this.calledCounter}`,
 			);
+
 			this.callback(...args);
 		}, this.ms);
 	}

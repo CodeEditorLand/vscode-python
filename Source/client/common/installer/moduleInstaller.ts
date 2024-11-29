@@ -74,6 +74,7 @@ export abstract class ModuleInstaller implements IModuleInstaller {
 			typeof productOrModuleName === "string"
 				? name
 				: ProductNames.get(productOrModuleName);
+
 		sendTelemetryEvent(EventName.PYTHON_INSTALL_PACKAGE, undefined, {
 			installer: this.displayName,
 			productName,
@@ -207,6 +208,7 @@ export abstract class ModuleInstaller implements IModuleInstaller {
 				cancellable: true,
 				title: l10n.t("Installing {0}", name),
 			};
+
 			await shell.withProgress(
 				options,
 				async (_, token: CancellationToken) =>
@@ -242,6 +244,7 @@ export abstract class ModuleInstaller implements IModuleInstaller {
 						this.serviceContainer.get<IApplicationShell>(
 							IApplicationShell,
 						);
+
 					await shell.showErrorMessage(error);
 				} else {
 					outputChannel.show();
@@ -249,6 +252,7 @@ export abstract class ModuleInstaller implements IModuleInstaller {
 					if (stdout) {
 						traceLog(stdout);
 					}
+
 					if (stderr) {
 						traceError(`Warning: ${stderr}`);
 					}
@@ -274,6 +278,7 @@ export abstract class ModuleInstaller implements IModuleInstaller {
 		if (indexOfPylint === -1) {
 			return args;
 		}
+
 		const interpreterService =
 			this.serviceContainer.get<IInterpreterService>(IInterpreterService);
 
@@ -292,6 +297,7 @@ export abstract class ModuleInstaller implements IModuleInstaller {
 
 			return newArgs;
 		}
+
 		return args;
 	}
 
@@ -310,6 +316,7 @@ export abstract class ModuleInstaller implements IModuleInstaller {
 		} else {
 			options.interpreter = resource;
 		}
+
 		if (executeInTerminal) {
 			const terminalService = this.serviceContainer
 				.get<ITerminalServiceFactory>(ITerminalServiceFactory)
@@ -336,6 +343,7 @@ export abstract class ModuleInstaller implements IModuleInstaller {
 							: `${c.toCommandArgumentForPythonExt()}`,
 					"",
 				);
+
 				await processService.shellExec(quoted);
 			} else {
 				await processService.exec(command, args);

@@ -40,6 +40,7 @@ export async function getExecutablePath(
 		if (executable === "") {
 			throw new Error(`${quoted} resulted in empty stdout`);
 		}
+
 		return executable;
 	} catch (ex) {
 		traceError(ex);

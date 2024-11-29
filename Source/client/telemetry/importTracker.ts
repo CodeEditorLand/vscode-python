@@ -73,6 +73,7 @@ export class ImportTracker implements IExtensionSingleActivationService {
 			this,
 			this.disposables,
 		);
+
 		this.documentManager.onDidSaveTextDocument(
 			(t) => this.onOpenedOrSavedDocument(t),
 			this,
@@ -115,6 +116,7 @@ export class ImportTracker implements IExtensionSingleActivationService {
 
 		if (currentTimeout) {
 			clearTimeout(currentTimeout);
+
 			this.pendingChecks.delete(file);
 		}
 
@@ -132,6 +134,7 @@ export class ImportTracker implements IExtensionSingleActivationService {
 		this.pendingChecks.delete(document.fileName);
 
 		const lines = getDocumentLines(document);
+
 		this.lookForImports(lines);
 	}
 
@@ -140,10 +143,12 @@ export class ImportTracker implements IExtensionSingleActivationService {
 		if (ImportTracker.sentMatches.has(packageName)) {
 			return;
 		}
+
 		ImportTracker.sentMatches.add(packageName);
 		// Hash the package name so that we will never accidentally see a
 		// user's private package name.
 		const hash = this.hashFn().update(packageName).digest("hex");
+
 		sendTelemetryEvent(EventName.HASHED_PACKAGE_NAME, undefined, {
 			hashedName: hash,
 		});
@@ -167,6 +172,7 @@ export class ImportTracker implements IExtensionSingleActivationService {
 						packageNames.forEach((p) => this.sendTelemetry(p));
 					}
 				}
+
 				if (s && TorchProfilerImportRegEx.test(s)) {
 					sendTelemetryEvent(
 						EventName.TENSORBOARD_TORCH_PROFILER_IMPORT,
@@ -194,6 +200,7 @@ export function getDocumentLines(
 			if (line && !line.isEmptyOrWhitespace) {
 				return line.text;
 			}
+
 			return undefined;
 		})
 		.filter((f: string | undefined) => f);

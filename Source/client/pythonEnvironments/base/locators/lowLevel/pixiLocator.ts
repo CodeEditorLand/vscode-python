@@ -78,10 +78,12 @@ export class PixiLocator extends FSWatchingLocator {
 						}
 					}
 				}
+
 				return generator();
 			});
 
 			yield* iterable(chain(envGenerators));
+
 			traceVerbose(`Finished searching for Pixi envs`);
 		}
 

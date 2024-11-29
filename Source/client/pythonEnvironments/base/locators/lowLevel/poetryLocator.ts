@@ -36,6 +36,7 @@ async function getVirtualEnvDirs(root: string): Promise<string[]> {
 	if (virtualenvs) {
 		envDirs.push(...virtualenvs);
 	}
+
 	return asyncFilter(envDirs, pathExists);
 }
 
@@ -83,6 +84,7 @@ export class PoetryLocator extends LazyResourceBasedLocator {
 								kind,
 								searchLocation: Uri.file(root),
 							};
+
 							traceVerbose(
 								`Poetry Virtual Environment: [added] ${filename}`,
 							);
@@ -94,10 +96,12 @@ export class PoetryLocator extends LazyResourceBasedLocator {
 						}
 					}
 				}
+
 				return generator();
 			});
 
 			yield* iterable(chain(envGenerators));
+
 			traceVerbose(`Finished searching for poetry envs`);
 		}
 

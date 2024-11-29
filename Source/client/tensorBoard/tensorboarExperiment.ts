@@ -40,7 +40,9 @@ export class TensorboardExperiment {
 		this.isExperimentEnabled = experiments.inExperimentSync(
 			RecommendTensobardExtension.experiment,
 		);
+
 		disposables.push(this._onDidChange);
+
 		extensions.onDidChange(
 			() =>
 				TensorboardExperiment.isTensorboardExtensionInstalled
@@ -59,10 +61,13 @@ export class TensorboardExperiment {
 		if (!this.isExperimentEnabled) {
 			return "continueWithPythonExtension";
 		}
+
 		if (TensorboardExperiment.isTensorboardExtensionInstalled) {
 			return "usingTensorboardExtension";
 		}
+
 		const install = l10n.t("Install Tensorboard Extension");
+
 		window
 			.showInformationMessage(
 				l10n.t(

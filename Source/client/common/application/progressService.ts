@@ -20,6 +20,7 @@ export class ProgressService {
 	public hideProgress(): void {
 		if (this.deferred) {
 			this.deferred.resolve();
+
 			this.deferred = undefined;
 		}
 	}

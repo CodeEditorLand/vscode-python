@@ -47,6 +47,7 @@ export class InterpreterPathCommand
 			workspaceFolder = args.workspaceFolder;
 		} else if (args[1]) {
 			const [, second] = args;
+
 			workspaceFolder = second;
 		} else {
 			workspaceFolder = undefined;

@@ -18,15 +18,21 @@ let serverInstance: PythonServer | undefined;
 
 export interface ExecutionResult {
 	status: boolean;
+
 	output: string;
 }
 
 export interface PythonServer extends Disposable {
 	onCodeExecuted: Event<void>;
+
 	execute(code: string): Promise<ExecutionResult | undefined>;
+
 	executeSilently(code: string): Promise<ExecutionResult | undefined>;
+
 	interrupt(): void;
+
 	input(): void;
+
 	checkValidCommand(code: string): Promise<boolean>;
 }
 
@@ -42,6 +48,7 @@ class PythonServerImpl implements PythonServer, Disposable {
 		private pythonServer: ch.ChildProcess,
 	) {
 		this.initialize();
+
 		this.input();
 	}
 
@@ -51,6 +58,7 @@ class PythonServerImpl implements PythonServer, Disposable {
 				console.log("Log:", message);
 			}),
 		);
+
 		this.connection.listen();
 	}
 
@@ -63,6 +71,7 @@ class PythonServerImpl implements PythonServer, Disposable {
 			if (request && request.prompt) {
 				userPrompt = request.prompt;
 			}
+
 			const input = await window.showInputBox({
 				title: "Input Request",
 				prompt: userPrompt,
@@ -80,6 +89,7 @@ class PythonServerImpl implements PythonServer, Disposable {
 		if (result?.status) {
 			this._onCodeExecuted.fire();
 		}
+
 		return result;
 	}
 
@@ -96,8 +106,10 @@ class PythonServerImpl implements PythonServer, Disposable {
 			return result as ExecutionResult;
 		} catch (err) {
 			const error = err as Error;
+
 			traceError(`Error getting response from REPL server:`, error);
 		}
+
 		return undefined;
 	}
 
@@ -117,12 +129,15 @@ class PythonServerImpl implements PythonServer, Disposable {
 		if (completeCode.output === "True") {
 			return new Promise((resolve) => resolve(true));
 		}
+
 		return new Promise((resolve) => resolve(false));
 	}
 
 	public dispose(): void {
 		this.connection.sendNotification("exit");
+
 		this.disposables.forEach((d) => d.dispose());
+
 		this.connection.dispose();
 	}
 }
@@ -146,9 +161,11 @@ export function createPythonServer(
 	pythonServer.stderr.on("data", (data) => {
 		traceError(data.toString());
 	});
+
 	pythonServer.on("exit", (code) => {
 		traceError(`Python server exited with code ${code}`);
 	});
+
 	pythonServer.on("error", (err) => {
 		traceError(err);
 	});
@@ -157,6 +174,7 @@ export function createPythonServer(
 		new rpc.StreamMessageReader(pythonServer.stdout),
 		new rpc.StreamMessageWriter(pythonServer.stdin),
 	);
+
 	serverInstance = new PythonServerImpl(connection, pythonServer);
 
 	return serverInstance;

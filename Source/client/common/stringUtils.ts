@@ -3,6 +3,7 @@
 
 export interface SplitLinesOptions {
 	trim?: boolean;
+
 	removeEmptyEntries?: boolean;
 }
 
@@ -20,9 +21,11 @@ export function splitLines(
 	if (splitOptions?.trim) {
 		lines = lines.map((line) => line.trim());
 	}
+
 	if (splitOptions?.removeEmptyEntries) {
 		lines = lines.filter((line) => line.length > 0);
 	}
+
 	return lines;
 }
 

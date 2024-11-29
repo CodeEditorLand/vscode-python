@@ -28,6 +28,7 @@ export async function registerPythonStartup(
 		} catch {
 			// already exists, most likely
 		}
+
 		const destPath = Uri.joinPath(storageUri, "pythonrc.py");
 
 		const sourcePath = path.join(
@@ -35,7 +36,9 @@ export async function registerPythonStartup(
 			"python_files",
 			"pythonrc.py",
 		);
+
 		await copy(Uri.file(sourcePath), destPath, { overwrite: true });
+
 		context.environmentVariableCollection.replace(
 			"PYTHONSTARTUP",
 			destPath.fsPath,

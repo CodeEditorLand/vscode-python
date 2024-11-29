@@ -44,6 +44,7 @@ export class TensorBoardUsageTracker
 		if (TensorboardExperiment.isTensorboardExtensionInstalled) {
 			return;
 		}
+
 		this.experiment.disposeOnInstallingTensorboard(this);
 
 		if (testExecution) {
@@ -68,6 +69,7 @@ export class TensorBoardUsageTracker
 		if (!editor || !editor.document) {
 			return;
 		}
+
 		const { document } = editor;
 
 		const extName = path.extname(document.fileName).toLowerCase();

@@ -57,6 +57,7 @@ export class TerminalDeactivateService implements ITerminalDeactivateService {
 		if (!location) {
 			return;
 		}
+
 		const shellType = identifyShellFromShellPath(shell);
 
 		const terminal = this.terminalManager.createTerminal({
@@ -86,12 +87,15 @@ export class TerminalDeactivateService implements ITerminalDeactivateService {
 			interpreterPath,
 			[this.envVarScript, outputFile],
 		);
+
 		terminal.sendText(command);
+
 		await waitForCondition(
 			checkIfFileHasBeenCreated,
 			30_000,
 			`"${outputFile}" file not created`,
 		);
+
 		traceVerbose(
 			`Time taken to get env vars using terminal is ${stopWatch.elapsedTime}ms`,
 		);
@@ -107,6 +111,7 @@ export class TerminalDeactivateService implements ITerminalDeactivateService {
 		if (interpreter?.type !== PythonEnvType.Virtual) {
 			return undefined;
 		}
+
 		return this.getLocation(shell);
 	}
 
@@ -116,6 +121,7 @@ export class TerminalDeactivateService implements ITerminalDeactivateService {
 		if (!ShellIntegrationShells.includes(shellType)) {
 			return undefined;
 		}
+
 		return path.join(
 			_SCRIPTS_DIR,
 			"deactivate",

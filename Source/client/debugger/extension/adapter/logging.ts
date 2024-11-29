@@ -19,7 +19,9 @@ import { EXTENSION_ROOT_DIR } from "../../../constants";
 
 class DebugSessionLoggingTracker implements DebugAdapterTracker {
 	private readonly enabled: boolean = false;
+
 	private stream?: WriteStream;
+
 	private timer = new StopWatch();
 
 	constructor(
@@ -30,6 +32,7 @@ class DebugSessionLoggingTracker implements DebugAdapterTracker {
 
 		if (this.enabled) {
 			const fileName = `debugger.vscode_${this.session.id}.log`;
+
 			this.stream = fileSystem.createWriteStream(
 				path.join(EXTENSION_ROOT_DIR, fileName),
 			);
@@ -38,6 +41,7 @@ class DebugSessionLoggingTracker implements DebugAdapterTracker {
 
 	public onWillStartSession() {
 		this.timer.reset();
+
 		this.log(
 			`Starting Session:\n${this.stringify(this.session.configuration)}\n`,
 		);
@@ -63,6 +67,7 @@ class DebugSessionLoggingTracker implements DebugAdapterTracker {
 		this.log(
 			`Exit:\nExit-Code: ${code ? code : 0}\nSignal: ${signal ? signal : "none"}\n`,
 		);
+
 		this.stream?.close();
 	}
 

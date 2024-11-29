@@ -93,6 +93,7 @@ export class FileBasedCancellationStrategy
 
 	constructor() {
 		const folderName = randomBytes(21).toString("hex");
+
 		this._sender = new FileCancellationSenderStrategy(folderName);
 	}
 

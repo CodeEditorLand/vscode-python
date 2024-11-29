@@ -70,7 +70,9 @@ export interface ICommandNameArgumentTypeMapping
 		(
 			| {
 					installOnlyNewlyAddedFromExtensionPackVSIX?: boolean;
+
 					installPreReleaseVersion?: boolean;
+
 					donotSync?: boolean;
 			  }
 			| undefined
@@ -129,7 +131,9 @@ export interface ICommandNameArgumentTypeMapping
 	["cursorMove"]: [
 		{
 			to: string;
+
 			by: string;
+
 			value: number;
 		},
 	];

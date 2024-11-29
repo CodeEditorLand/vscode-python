@@ -38,6 +38,7 @@ export abstract class BaseDiagnosticsService
 	implements IDiagnosticsService, IDisposable
 {
 	protected static handledDiagnosticCodeKeys: string[] = [];
+
 	protected readonly filterService: IDiagnosticFilterService;
 
 	constructor(
@@ -50,25 +51,32 @@ export abstract class BaseDiagnosticsService
 		this.filterService = serviceContainer.get<IDiagnosticFilterService>(
 			IDiagnosticFilterService,
 		);
+
 		disposableRegistry.push(this);
 	}
+
 	public abstract diagnose(resource: Resource): Promise<IDiagnostic[]>;
+
 	public dispose() {
 		// Nothing to do, but can be overidden
 	}
+
 	public async handle(diagnostics: IDiagnostic[]): Promise<void> {
 		if (diagnostics.length === 0) {
 			return;
 		}
+
 		const diagnosticsToHandle = await asyncFilter(
 			diagnostics,
 			async (item) => {
 				if (!(await this.canHandle(item))) {
 					return false;
 				}
+
 				if (item.invokeHandler && item.invokeHandler === "always") {
 					return true;
 				}
+
 				const key = this.getDiagnosticsKey(item);
 
 				if (
@@ -78,13 +86,16 @@ export abstract class BaseDiagnosticsService
 				) {
 					return false;
 				}
+
 				BaseDiagnosticsService.handledDiagnosticCodeKeys.push(key);
 
 				return true;
 			},
 		);
+
 		await this.onHandle(diagnosticsToHandle);
 	}
+
 	public async canHandle(diagnostic: IDiagnostic): Promise<boolean> {
 		sendTelemetryEvent(EventName.DIAGNOSTICS_MESSAGE, undefined, {
 			code: diagnostic.code,
@@ -96,6 +107,7 @@ export abstract class BaseDiagnosticsService
 			).length > 0
 		);
 	}
+
 	protected abstract onHandle(diagnostics: IDiagnostic[]): Promise<void>;
 	/**
 	 * Returns a key used to keep track of whether a diagnostic was handled or not.
@@ -105,6 +117,7 @@ export abstract class BaseDiagnosticsService
 		if (diagnostic.scope === DiagnosticScope.Global) {
 			return diagnostic.code;
 		}
+
 		const workspace =
 			this.serviceContainer.get<IWorkspaceService>(IWorkspaceService);
 

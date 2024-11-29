@@ -96,6 +96,7 @@ export class ReportIssueCommandHandler
 		const keys: [keyof IPythonSettings] = Object.keys(settings) as [
 			keyof IPythonSettings,
 		];
+
 		keys.forEach((property) => {
 			const argSetting = argSettings[property];
 
@@ -129,14 +130,17 @@ export class ReportIssueCommandHandler
 											property,
 											os.EOL,
 										);
+
 										propertyHeaderAdded = true;
 									}
+
 									const value =
 										prop === true
 											? JSON.stringify(
 													argSettingsDict[item],
 												)
 											: '"<placeholder>"';
+
 									userSettings = userSettings.concat(
 										"• ",
 										item,
@@ -159,6 +163,7 @@ export class ReportIssueCommandHandler
 							argSetting === true
 								? JSON.stringify(settings[property])
 								: '"<placeholder>"';
+
 						userSettings = userSettings.concat(
 							os.EOL,
 							property,
@@ -206,6 +211,7 @@ export class ReportIssueCommandHandler
 						b.packageJSON.displayName,
 					);
 				}
+
 				return a.id.localeCompare(b.id);
 			})
 			.map(
@@ -228,6 +234,7 @@ export class ReportIssueCommandHandler
 				),
 			},
 		);
+
 		sendTelemetryEvent(EventName.USE_REPORT_ISSUE_COMMAND, undefined, {});
 	}
 
@@ -235,6 +242,7 @@ export class ReportIssueCommandHandler
 		if (!this.packageJSONSettings) {
 			return undefined;
 		}
+
 		const resource = PythonSettings.getSettingsUriAndTarget(
 			undefined,
 			this.workspaceService,

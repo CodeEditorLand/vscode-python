@@ -25,6 +25,7 @@ export class JediLanguageServerAnalysisOptions extends LanguageServerAnalysisOpt
 		workspace: IWorkspaceService,
 	) {
 		super(envVarsProvider, lsOutputChannel, workspace);
+
 		this.resource = undefined;
 	}
 
@@ -33,6 +34,7 @@ export class JediLanguageServerAnalysisOptions extends LanguageServerAnalysisOpt
 		interpreter: PythonEnvironment | undefined,
 	) {
 		this.resource = resource;
+
 		this.interpreter = interpreter;
 
 		return super.initialize(resource, interpreter);
@@ -54,6 +56,7 @@ export class JediLanguageServerAnalysisOptions extends LanguageServerAnalysisOpt
 					if (path.isAbsolute(extraPath)) {
 						return extraPath;
 					}
+
 					return workspacePath
 						? path.join(workspacePath, extraPath)
 						: "";

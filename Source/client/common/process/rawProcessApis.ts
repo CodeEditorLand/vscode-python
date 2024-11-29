@@ -42,9 +42,12 @@ function getDefaultOptions<T extends ShellOptions | SpawnOptions>(
 				: DEFAULT_ENCODING;
 
 		const { encoding } = execOptions;
+
 		delete execOptions.encoding;
+
 		execOptions.encoding = encoding;
 	}
+
 	if (!defaultOptions.env || Object.keys(defaultOptions.env).length === 0) {
 		const env = defaultEnv || process.env;
 
@@ -80,8 +83,10 @@ export function shellExec(
 
 	if (!options.doNotLog) {
 		const processLogger = new ProcessLogger(new WorkspaceService());
+
 		processLogger.logProcess(command, undefined, shellOptions);
 	}
+
 	return new Promise((resolve, reject) => {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const callback = (e: any, stdout: any, stderr: any) => {
@@ -106,9 +111,11 @@ export function shellExec(
 		proc.once("close", () => {
 			procExited = true;
 		});
+
 		proc.once("exit", () => {
 			procExited = true;
 		});
+
 		proc.once("error", () => {
 			procExited = true;
 		});
@@ -145,12 +152,15 @@ export function plainExec(
 
 	if (!options.doNotLog) {
 		const processLogger = new ProcessLogger(new WorkspaceService());
+
 		processLogger.logProcess(file, args, options);
 	}
+
 	const proc = spawn(file, args, spawnOptions);
 	// Listen to these errors (unhandled errors in streams tears down the process).
 	// Errors will be bubbled up to the `error` event in `proc`, hence no need to log.
 	proc.stdout?.on("error", noop);
+
 	proc.stderr?.on("error", noop);
 
 	const deferred = createDeferred<ExecutionResult<string>>();
@@ -167,6 +177,7 @@ export function plainExec(
 			}
 		},
 	};
+
 	disposables?.add(disposable);
 
 	const internalDisposables: IDisposable[] = [];
@@ -188,19 +199,24 @@ export function plainExec(
 	}
 
 	const stdoutBuffers: Buffer[] = [];
+
 	on(proc.stdout, "data", (data: Buffer) => {
 		stdoutBuffers.push(data);
+
 		options.outputChannel?.append(data.toString());
 	});
 
 	const stderrBuffers: Buffer[] = [];
+
 	on(proc.stderr, "data", (data: Buffer) => {
 		if (options.mergeStdOutErr) {
 			stdoutBuffers.push(data);
+
 			stderrBuffers.push(data);
 		} else {
 			stderrBuffers.push(data);
 		}
+
 		options.outputChannel?.append(data.toString());
 	});
 
@@ -208,6 +224,7 @@ export function plainExec(
 		if (deferred.completed) {
 			return;
 		}
+
 		const stderr: string | undefined =
 			stderrBuffers.length === 0
 				? undefined
@@ -226,15 +243,22 @@ export function plainExec(
 			deferred.reject(new StdErrError(stderr));
 		} else {
 			let stdout = decodeBuffer(stdoutBuffers, encoding);
+
 			stdout = filterOutputUsingCondaRunMarkers(stdout);
+
 			deferred.resolve({ stdout, stderr });
 		}
+
 		internalDisposables.forEach((d) => d.dispose());
+
 		disposable.dispose();
 	});
+
 	proc.once("error", (ex) => {
 		deferred.reject(ex);
+
 		internalDisposables.forEach((d) => d.dispose());
+
 		disposable.dispose();
 	});
 
@@ -277,8 +301,10 @@ export function execObservable(
 
 	if (!options.doNotLog) {
 		const processLogger = new ProcessLogger(new WorkspaceService());
+
 		processLogger.logProcess(file, args, options);
 	}
+
 	const proc = spawn(file, args, spawnOptions);
 
 	let procExited = false;
@@ -288,11 +314,13 @@ export function execObservable(
 			if (proc && proc.pid && !proc.killed && !procExited) {
 				killPid(proc.pid);
 			}
+
 			if (proc) {
 				proc.unref();
 			}
 		},
 	};
+
 	disposables?.add(disposable);
 
 	const output = new Observable<Output<string>>((subscriber) => {
@@ -317,6 +345,7 @@ export function execObservable(
 						} else {
 							proc.kill();
 						}
+
 						procExited = true;
 					}
 				}),
@@ -333,31 +362,42 @@ export function execObservable(
 				// actual output using markers is not possible. Hence simply remove
 				// the markers and return original output.
 				out = removeCondaRunMarkers(out);
+
 				subscriber.next({ source, out });
 			}
 		};
 
 		on(proc.stdout, "data", (data: Buffer) => sendOutput("stdout", data));
+
 		on(proc.stderr, "data", (data: Buffer) => sendOutput("stderr", data));
 
 		proc.once("close", () => {
 			procExited = true;
+
 			subscriber.complete();
+
 			internalDisposables.forEach((d) => d.dispose());
 		});
+
 		proc.once("exit", () => {
 			procExited = true;
+
 			subscriber.complete();
+
 			internalDisposables.forEach((d) => d.dispose());
 		});
+
 		proc.once("error", (ex) => {
 			procExited = true;
+
 			subscriber.error(ex);
+
 			internalDisposables.forEach((d) => d.dispose());
 		});
 
 		if (options.stdinStr !== undefined) {
 			proc.stdin?.write(options.stdinStr);
+
 			proc.stdin?.end();
 		}
 	});

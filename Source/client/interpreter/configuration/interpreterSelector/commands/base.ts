@@ -33,6 +33,7 @@ export abstract class BaseInterpreterSelectorCommand
 		untrustedWorkspace: false,
 		virtualWorkspace: true,
 	};
+
 	protected disposables: Disposable[] = [];
 
 	constructor(
@@ -59,6 +60,7 @@ export abstract class BaseInterpreterSelectorCommand
 	}): Promise<
 		| {
 				folderUri: Resource;
+
 				configTarget: ConfigurationTarget;
 		  }[]
 		| undefined
@@ -73,6 +75,7 @@ export abstract class BaseInterpreterSelectorCommand
 				},
 			];
 		}
+
 		if (workspaceFolders.length === 1) {
 			return [
 				{
@@ -92,6 +95,7 @@ export abstract class BaseInterpreterSelectorCommand
 						},
 					]
 				: [];
+
 		quickPickItems.push(
 			...workspaceFolders.map((w) => {
 				const selectedInterpreter = this.pathUtils.getDisplayName(
@@ -128,6 +132,7 @@ export abstract class BaseInterpreterSelectorCommand
 		if (selection?.label === Common.clearAll) {
 			const folderTargets: {
 				folderUri: Resource;
+
 				configTarget: ConfigurationTarget;
 			}[] = workspaceFolders.map((w) => ({
 				folderUri: w.uri,

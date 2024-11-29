@@ -25,6 +25,7 @@ export class ConfigurationManager extends TestConfigurationManager {
 		const subDirs = await this.getTestDirs(wkspace.fsPath);
 
 		const testDir = await this.selectTestDir(wkspace.fsPath, subDirs);
+
 		args.push("-s");
 
 		if (typeof testDir === "string" && testDir !== ".") {
@@ -34,6 +35,7 @@ export class ConfigurationManager extends TestConfigurationManager {
 		}
 
 		const testfilePattern = await this.selectTestFilePattern();
+
 		args.push("-p");
 
 		if (typeof testfilePattern === "string") {
@@ -41,6 +43,7 @@ export class ConfigurationManager extends TestConfigurationManager {
 		} else {
 			args.push("test*.py");
 		}
+
 		await this.testConfigSettingsService.updateTestArgs(
 			wkspace.fsPath,
 			Product.unittest,

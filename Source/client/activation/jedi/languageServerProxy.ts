@@ -69,8 +69,11 @@ export class JediLanguageServerProxy implements ILanguageServerProxy {
 				interpreter,
 				options,
 			);
+
 			this.registerHandlers(client);
+
 			await client.start();
+
 			this.languageClient = client;
 		} catch (ex) {
 			traceError("Failed to start language server:", ex);
@@ -85,11 +88,13 @@ export class JediLanguageServerProxy implements ILanguageServerProxy {
 	public async stop(): Promise<void> {
 		while (this.disposables.length > 0) {
 			const d = this.disposables.shift()!;
+
 			d.dispose();
 		}
 
 		if (this.languageClient) {
 			const client = this.languageClient;
+
 			this.languageClient = undefined;
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -105,10 +110,13 @@ export class JediLanguageServerProxy implements ILanguageServerProxy {
 
 			try {
 				await client.stop();
+
 				await client.dispose();
+
 				killServer();
 			} catch (ex) {
 				traceError("Stopping language client failed", ex);
+
 				killServer();
 			}
 		}
@@ -128,6 +136,7 @@ export class JediLanguageServerProxy implements ILanguageServerProxy {
 	)
 	private registerHandlers(client: LanguageClient) {
 		const progressReporting = new ProgressReporting(client);
+
 		this.disposables.push(progressReporting);
 	}
 }

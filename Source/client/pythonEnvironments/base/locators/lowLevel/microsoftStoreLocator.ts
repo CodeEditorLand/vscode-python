@@ -68,6 +68,7 @@ export async function getMicrosoftStorePythonExes(): Promise<string[]> {
 			.map((filename: string) => path.join(windowsAppsRoot, filename))
 			.filter(isMicrosoftStorePythonExePattern);
 	}
+
 	return [];
 }
 
@@ -93,6 +94,7 @@ export class MicrosoftStoreLocator extends FSWatchingLocator {
 	protected doIterEnvs(): IPythonEnvsIterator<BasicEnvInfo> {
 		const iterator = async function* (kind: PythonEnvKind) {
 			const stopWatch = new StopWatch();
+
 			traceInfo("Searching for windows store envs");
 
 			const exes = await getMicrosoftStorePythonExes();
@@ -101,6 +103,7 @@ export class MicrosoftStoreLocator extends FSWatchingLocator {
 				kind,
 				executablePath,
 			}));
+
 			traceInfo(
 				`Finished searching for windows store envs: ${stopWatch.elapsedTime} milliseconds`,
 			);

@@ -16,9 +16,13 @@ export interface EnvironmentDetailsOptions {
 
 export interface EnvironmentDetails {
 	interpreterPath: string;
+
 	envFolderPath?: string;
+
 	version: string[];
+
 	environmentType: PythonEnvKind[];
+
 	metadata: Record<string, unknown>;
 }
 
@@ -29,6 +33,7 @@ export interface EnvironmentsChangedParams {
 	 * whereas other envs can be identified using interpreter path.
 	 */
 	path?: string;
+
 	type: "add" | "remove" | "update" | "clear-all";
 }
 
@@ -39,6 +44,7 @@ export interface ActiveEnvironmentChangedParams {
 	 * whereas other envs can be identified using interpreter path.
 	 */
 	path: string;
+
 	resource?: Uri;
 }
 

@@ -44,6 +44,7 @@ export class BufferedTestConfigSettingsService
 
 	public async apply(cfg: ITestConfigSettingsService): Promise<void> {
 		const { ops } = this;
+
 		this.ops = [];
 		// Note that earlier ops do not get rolled back if a later
 		// one fails.
@@ -68,6 +69,7 @@ export class BufferedTestConfigSettingsService
 					break;
 			}
 		}
+
 		return Promise.resolve();
 	}
 

@@ -103,18 +103,21 @@ export class NodeLanguageServerProxy implements ILanguageServerProxy {
 		options: LanguageClientOptions,
 	): Promise<void> {
 		const extension = await this.getPylanceExtension();
+
 		this.lsVersion = extension?.packageJSON.version || "0";
 
 		const api = extension?.exports;
 
 		if (api && api.client && api.client.isEnabled()) {
 			this.pylanceApi = api;
+
 			await api.client.start();
 
 			return;
 		}
 
 		this.cancellationStrategy = new FileBasedCancellationStrategy();
+
 		options.connectionOptions = {
 			cancellationStrategy: this.cancellationStrategy,
 		};
@@ -124,6 +127,7 @@ export class NodeLanguageServerProxy implements ILanguageServerProxy {
 			interpreter,
 			options,
 		);
+
 		this.registerHandlers(client, resource);
 
 		this.disposables.push(
@@ -143,21 +147,26 @@ export class NodeLanguageServerProxy implements ILanguageServerProxy {
 	public async stop(): Promise<void> {
 		if (this.pylanceApi) {
 			const api = this.pylanceApi;
+
 			this.pylanceApi = undefined;
+
 			await api.client!.stop();
 		}
 
 		while (this.disposables.length > 0) {
 			const d = this.disposables.shift()!;
+
 			d.dispose();
 		}
 
 		if (this.languageClient) {
 			const client = this.languageClient;
+
 			this.languageClient = undefined;
 
 			try {
 				await client.stop();
+
 				await client.dispose();
 			} catch (ex) {
 				traceError("Stopping language client failed", ex);
@@ -166,6 +175,7 @@ export class NodeLanguageServerProxy implements ILanguageServerProxy {
 
 		if (this.cancellationStrategy) {
 			this.cancellationStrategy.dispose();
+
 			this.cancellationStrategy = undefined;
 		}
 	}
@@ -184,6 +194,7 @@ export class NodeLanguageServerProxy implements ILanguageServerProxy {
 	)
 	private registerHandlers(client: LanguageClient, _resource: Resource) {
 		const progressReporting = new ProgressReporting(client);
+
 		this.disposables.push(progressReporting);
 
 		this.disposables.push(
@@ -200,6 +211,7 @@ export class NodeLanguageServerProxy implements ILanguageServerProxy {
 				);
 			}),
 		);
+
 		this.disposables.push(
 			this.environmentService.onDidEnvironmentVariablesChange(() => {
 				client.sendNotification(
@@ -220,6 +232,7 @@ export class NodeLanguageServerProxy implements ILanguageServerProxy {
 				// Replace all slashes in the method name so it doesn't get scrubbed by @vscode/extension-telemetry.
 				method: telemetryEvent.Properties.method?.replace(/\//g, "."),
 			};
+
 			sendTelemetryEvent(
 				eventName,
 				telemetryEvent.Measurements,

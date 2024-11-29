@@ -21,18 +21,23 @@ export async function switchSelectedPython(
 
 		const api: PythonExtension = getExtension(PVSC_EXTENSION_ID)
 			?.exports as PythonExtension;
+
 		dispose = api.environments.onDidChangeActiveEnvironmentPath(
 			async (e) => {
 				if (path.normalize(e.path) === path.normalize(interpreter)) {
 					traceInfo(
 						`Switched to interpreter ${purpose}: ${interpreter}`,
 					);
+
 					deferred.resolve();
 				}
 			},
 		);
+
 		api.environments.updateActiveEnvironmentPath(interpreter, uri);
+
 		traceInfo(`Switching interpreter ${purpose}: ${interpreter}`);
+
 		await deferred.promise;
 	} finally {
 		dispose?.dispose();

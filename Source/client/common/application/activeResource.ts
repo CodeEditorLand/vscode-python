@@ -27,6 +27,7 @@ export class ActiveResourceService implements IActiveResourceService {
 		if (editor && !editor.document.isUntitled) {
 			return editor.document.uri;
 		}
+
 		return Array.isArray(this.workspaceService.workspaceFolders) &&
 			this.workspaceService.workspaceFolders.length > 0
 			? this.workspaceService.workspaceFolders[0].uri

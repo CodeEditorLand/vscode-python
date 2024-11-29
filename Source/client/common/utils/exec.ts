@@ -16,6 +16,7 @@ export function getSearchPathEnvVarNames(
 		// On Windows both are supported now.
 		return ["Path", "PATH"];
 	}
+
 	return ["PATH"];
 }
 
@@ -71,6 +72,7 @@ export async function isValidAndExecutable(
 	} catch (err) {
 		return false;
 	}
+
 	if (getOSType() === OSType.Windows) {
 		// On Windows a file is determined to be executable through
 		// its ACLs.  However, the FS-related functionality provided
@@ -91,5 +93,6 @@ export async function isValidAndExecutable(
 		// in case node makes it smarter later.
 		return undefined;
 	}
+
 	return true;
 }

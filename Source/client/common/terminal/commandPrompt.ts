@@ -30,6 +30,7 @@ export async function useCommandPromptAsDefaultShell(
 	configService: IConfigurationService,
 ) {
 	const cmdPromptLocation = getCommandPromptLocation(currentProcess);
+
 	await configService.updateSectionSetting(
 		"terminal",
 		"integrated.shell.windows",

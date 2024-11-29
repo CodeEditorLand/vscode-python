@@ -57,6 +57,7 @@ async function buildEnvironmentInfo(
 	} else {
 		python.push(...[OUTPUT_MARKER_SCRIPT]);
 	}
+
 	const interpreterInfo = await getInterpreterInfo(
 		buildPythonExecInfo(python, undefined, env.executable.filename),
 	);
@@ -76,11 +77,13 @@ async function buildEnvironmentInfoUsingCondaRun(
 	if (!condaEnv) {
 		return undefined;
 	}
+
 	const python = await conda?.getRunPythonArgs(condaEnv, true, true);
 
 	if (!python) {
 		return undefined;
 	}
+
 	const interpreterInfo = await getInterpreterInfo(
 		buildPythonExecInfo(python, undefined, env.executable.filename),
 		CONDA_ACTIVATION_TIMEOUT,
@@ -110,10 +113,13 @@ class EnvironmentInfoService implements IEnvironmentInfoService {
 	public dispose(): void {
 		if (this.workerPool !== undefined) {
 			this.workerPool.stop();
+
 			this.workerPool = undefined;
 		}
+
 		if (this.condaRunWorkerPool !== undefined) {
 			this.condaRunWorkerPool.stop();
+
 			this.condaRunWorkerPool = undefined;
 		}
 	}
@@ -132,7 +138,9 @@ class EnvironmentInfoService implements IEnvironmentInfoService {
 		}
 
 		const deferred = createDeferred<InterpreterInformation>();
+
 		this.cache.set(normCasePath(interpreterPath), deferred);
+
 		this._getEnvironmentInfo(env, priority)
 			.then((r) => {
 				deferred.resolve(r);
@@ -166,6 +174,7 @@ class EnvironmentInfoService implements IEnvironmentInfoService {
 
 			return emptyInterpreterInfo;
 		}
+
 		if (this.workerPool === undefined) {
 			this.workerPool = createRunningWorkerPool<
 				PythonEnvInfo,
@@ -203,6 +212,7 @@ class EnvironmentInfoService implements IEnvironmentInfoService {
 						InterpreterInformation | undefined
 					>(buildEnvironmentInfoUsingCondaRun);
 				}
+
 				r = await addToQueue(
 					this.condaRunWorkerPool,
 					env,
@@ -226,15 +236,18 @@ class EnvironmentInfoService implements IEnvironmentInfoService {
 							"Support for Python 2.7 has been dropped by the Python extension so certain features may not work, upgrade to using Python 3.",
 						);
 					}
+
 					return buildEnvironmentInfo(env, false).catch((err) => {
 						traceError(err);
 
 						return undefined;
 					});
 				}
+
 				traceError(reason);
 			}
 		}
+
 		if (r === undefined && retryOnce) {
 			// Retry once, in case the environment was not fully populated. Also observed in CI:
 			// https://github.com/microsoft/vscode-python/issues/20147 where running environment the first time
@@ -243,6 +256,7 @@ class EnvironmentInfoService implements IEnvironmentInfoService {
 				this._getEnvironmentInfo(env, priority, false),
 			);
 		}
+
 		return r;
 	}
 
@@ -250,6 +264,7 @@ class EnvironmentInfoService implements IEnvironmentInfoService {
 		const searchLocationPath = searchLocation.fsPath;
 
 		const keys = Array.from(this.cache.keys());
+
 		keys.forEach((key) => {
 			if (key.startsWith(normCasePath(searchLocationPath))) {
 				this.cache.delete(key);
@@ -275,13 +290,17 @@ export function getEnvironmentInfoService(
 ): IEnvironmentInfoService {
 	if (envInfoService === undefined) {
 		const service = new EnvironmentInfoService();
+
 		disposables?.push({
 			dispose: () => {
 				service.dispose();
+
 				envInfoService = undefined;
 			},
 		});
+
 		envInfoService = service;
 	}
+
 	return envInfoService;
 }

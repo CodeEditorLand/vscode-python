@@ -27,6 +27,7 @@ export class ReloadVSCodeCommandHandler
 		private readonly commandManager: ICommandManager,
 		@inject(IApplicationShell) private readonly appShell: IApplicationShell,
 	) {}
+
 	public async activate(): Promise<void> {
 		this.commandManager.registerCommand(
 			"python.reloadVSCode",
@@ -34,6 +35,7 @@ export class ReloadVSCodeCommandHandler
 			this,
 		);
 	}
+
 	private async onReloadVSCode(message: string) {
 		const item = await this.appShell.showInformationMessage(
 			message,

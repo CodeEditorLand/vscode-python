@@ -23,6 +23,8 @@ regKey.values((err: Error, res: RegistryItem[]) => {
 	if (!parentPort) {
 		throw new Error("Not in a worker thread");
 	}
+
 	const messageRes = copyRegistryValues(res);
+
 	parentPort.postMessage({ err, res: messageRes });
 });

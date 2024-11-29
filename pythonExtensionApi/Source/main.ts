@@ -18,6 +18,7 @@ export interface PythonExtension {
 	 * Promise indicating whether all parts of the extension have completed loading or not.
 	 */
 	ready: Promise<void>;
+
 	debug: {
 		/**
 		 * Generate an array of strings for commands to pass to the Python executable to launch the debugger for remote debugging.
@@ -307,20 +308,27 @@ export type PythonReleaseLevel = "alpha" | "beta" | "candidate" | "final";
  */
 export type PythonVersionRelease = {
 	readonly level: PythonReleaseLevel;
+
 	readonly serial: number;
 };
 
 export type VersionInfo = {
 	readonly major: number | undefined;
+
 	readonly minor: number | undefined;
+
 	readonly micro: number | undefined;
+
 	readonly release: PythonVersionRelease | undefined;
 };
 
 export type ResolvedVersionInfo = {
 	readonly major: number;
+
 	readonly minor: number;
+
 	readonly micro: number;
+
 	readonly release: PythonVersionRelease;
 };
 
@@ -355,9 +363,11 @@ export namespace PythonExtension {
 		if (extension === undefined) {
 			throw new Error(`Python extension is not installed or is disabled`);
 		}
+
 		if (!extension.isActive) {
 			await extension.activate();
 		}
+
 		const pythonApi: PythonExtension = extension.exports;
 
 		return pythonApi;

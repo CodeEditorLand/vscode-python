@@ -27,7 +27,9 @@ const STATE_GENERAL_TIMEOUT = 5000;
 
 export type ProjectInfo = {
 	name: string;
+
 	organization: string;
+
 	local_checkouts: string[]; // eslint-disable-line camelcase
 	executables: string[];
 };
@@ -49,6 +51,7 @@ export class ActiveState {
 		if (ActiveState.statePromise === undefined) {
 			ActiveState.statePromise = ActiveState.locate();
 		}
+
 		return ActiveState.statePromise;
 	}
 
@@ -64,6 +67,7 @@ export class ActiveState {
 		if (!home) {
 			return undefined;
 		}
+
 		return getOSType() === OSType.Windows
 			? path.join(home, "AppData", "Local", "ActiveState", "StateTool")
 			: path.join(home, ".local", "ActiveState", "StateTool");
@@ -83,6 +87,7 @@ export class ActiveState {
 		) {
 			return new ActiveState();
 		}
+
 		return undefined;
 	}
 
@@ -110,15 +115,18 @@ export class ActiveState {
 			if (!result) {
 				return undefined;
 			}
+
 			let output = result.stdout.trimEnd();
 
 			if (output[output.length - 1] === "\0") {
 				// '\0' is a record separator.
 				output = output.substring(0, output.length - 1);
 			}
+
 			traceVerbose(`${stateCommand} projects -o editor: ${output}`);
 
 			const projects = JSON.parse(output);
+
 			ActiveState.setCachedProjectInfo(projects);
 
 			return projects;
@@ -163,5 +171,6 @@ export function isActiveStateEnvironmentForWorkspace(
 			}
 		}
 	}
+
 	return false;
 }

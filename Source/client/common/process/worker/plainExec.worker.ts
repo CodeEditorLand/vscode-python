@@ -7,11 +7,13 @@ _workerPlainExecImpl(workerData.file, workerData.args, workerData.options)
 		if (!parentPort) {
 			throw new Error("Not in a worker thread");
 		}
+
 		parentPort.postMessage({ res });
 	})
 	.catch((err) => {
 		if (!parentPort) {
 			throw new Error("Not in a worker thread");
 		}
+
 		parentPort.postMessage({ err });
 	});

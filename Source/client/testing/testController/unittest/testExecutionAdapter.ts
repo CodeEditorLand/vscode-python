@@ -79,6 +79,7 @@ export class UnittestTestExecutionAdapter implements ITestExecutionAdapter {
 		};
 
 		const cSource = new CancellationTokenSource();
+
 		runInstance?.token.onCancellationRequested(() => cSource.cancel());
 
 		const name = await utils.startRunResultNamedPipe(
@@ -86,6 +87,7 @@ export class UnittestTestExecutionAdapter implements ITestExecutionAdapter {
 			deferredTillServerClose, // deferred to resolve when server closes
 			cSource.token, // token to cancel
 		);
+
 		runInstance?.token.onCancellationRequested(() => {
 			console.log(
 				`Test run cancelled, resolving 'till TillAllServerClose' deferred for ${uri.fsPath}.`,
@@ -110,6 +112,7 @@ export class UnittestTestExecutionAdapter implements ITestExecutionAdapter {
 		} finally {
 			await deferredTillServerClose.promise;
 		}
+
 		const executionPayload: ExecutionTestPayload = {
 			cwd: uri.fsPath,
 			status: "success",
@@ -146,13 +149,16 @@ export class UnittestTestExecutionAdapter implements ITestExecutionAdapter {
 		if (mutableEnv === undefined) {
 			mutableEnv = {} as EnvironmentVariables;
 		}
+
 		const pythonPathParts: string[] =
 			mutableEnv.PYTHONPATH?.split(path.delimiter) ?? [];
 
 		const pythonPathCommand = [cwd, ...pythonPathParts].join(
 			path.delimiter,
 		);
+
 		mutableEnv.PYTHONPATH = pythonPathCommand;
+
 		mutableEnv.TEST_RUN_PIPE = resultNamedPipeName;
 
 		if (profileKind && profileKind === TestRunProfileKind.Coverage) {
@@ -168,13 +174,16 @@ export class UnittestTestExecutionAdapter implements ITestExecutionAdapter {
 			outChannel: this.outputChannel,
 			token: runInstance?.token,
 		};
+
 		traceLog(
 			`Running UNITTEST execution for the following test ids: ${testIds}`,
 		);
 
 		// create named pipe server to send test ids
 		const testIdsFileName = await utils.writeTestIdsFile(testIds);
+
 		mutableEnv.RUN_TEST_IDS_PIPE = testIdsFileName;
+
 		traceInfo(
 			`All environment variables set for pytest execution: ${JSON.stringify(mutableEnv)}`,
 		);
@@ -218,6 +227,7 @@ export class UnittestTestExecutionAdapter implements ITestExecutionAdapter {
 				const sessionOptions: DebugSessionOptions = {
 					testRun: runInstance,
 				};
+
 				traceInfo(
 					`Running DEBUG unittest for workspace ${options.cwd} with arguments: ${args}\r\n`,
 				);
@@ -227,6 +237,7 @@ export class UnittestTestExecutionAdapter implements ITestExecutionAdapter {
 
 					throw new Error("Debug launcher is not defined");
 				}
+
 				await debugLauncher.launchDebugger(
 					launchOptions,
 					() => {
@@ -254,11 +265,13 @@ export class UnittestTestExecutionAdapter implements ITestExecutionAdapter {
 						resultProc?.kill();
 					} else {
 						deferredTillExecClose?.resolve();
+
 						serverCancel.cancel();
 					}
 				});
 
 				const result = execService?.execObservable(args, spawnOptions);
+
 				resultProc = result?.proc;
 
 				// Displays output to user and ensure the subprocess doesn't run into buffer overflow.
@@ -267,12 +280,17 @@ export class UnittestTestExecutionAdapter implements ITestExecutionAdapter {
 
 				result?.proc?.stdout?.on("data", (data) => {
 					const out = fixLogLinesNoTrailing(data.toString());
+
 					runInstance?.appendOutput(`${out}`);
+
 					spawnOptions?.outputChannel?.append(out);
 				});
+
 				result?.proc?.stderr?.on("data", (data) => {
 					const out = fixLogLinesNoTrailing(data.toString());
+
 					runInstance?.appendOutput(`${out}`);
+
 					spawnOptions?.outputChannel?.append(out);
 				});
 
@@ -301,9 +319,12 @@ export class UnittestTestExecutionAdapter implements ITestExecutionAdapter {
 							);
 						}
 					}
+
 					deferredTillExecClose.resolve();
+
 					serverCancel.cancel();
 				});
+
 				await deferredTillExecClose.promise;
 			}
 		} catch (ex) {

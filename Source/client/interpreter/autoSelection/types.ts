@@ -24,6 +24,7 @@ export interface IInterpreterAutoSelectionProxyService {
 	getAutoSelectedInterpreter(
 		resource: Resource,
 	): PythonEnvironment | undefined;
+
 	registerInstance?(instance: IInterpreterAutoSelectionProxyService): void;
 
 	setWorkspaceInterpreter(
@@ -39,6 +40,7 @@ export const IInterpreterAutoSelectionService = Symbol(
 export interface IInterpreterAutoSelectionService
 	extends IInterpreterAutoSelectionProxyService {
 	readonly onDidChangeAutoSelectedInterpreter: Event<void>;
+
 	autoSelectInterpreter(resource: Resource): Promise<void>;
 
 	getAutoSelectedInterpreter(

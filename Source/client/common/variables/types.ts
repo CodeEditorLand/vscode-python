@@ -14,19 +14,23 @@ export interface IEnvironmentVariablesService {
 		filePath?: string,
 		baseVars?: EnvironmentVariables,
 	): Promise<EnvironmentVariables | undefined>;
+
 	parseFileSync(
 		filePath?: string,
 		baseVars?: EnvironmentVariables,
 	): EnvironmentVariables | undefined;
+
 	mergeVariables(
 		source: EnvironmentVariables,
 		target: EnvironmentVariables,
 		options?: { overwrite?: boolean; mergeAll?: boolean },
 	): void;
+
 	appendPythonPath(
 		vars: EnvironmentVariables,
 		...pythonPaths: string[]
 	): void;
+
 	appendPath(vars: EnvironmentVariables, ...paths: string[]): void;
 }
 
@@ -40,12 +44,17 @@ export interface IStringDictionary<V> {
 
 export interface ISystemVariables {
 	resolve(value: string): string;
+
 	resolve(value: string[]): string[];
+
 	resolve(value: IStringDictionary<string>): IStringDictionary<string>;
+
 	resolve(value: IStringDictionary<string[]>): IStringDictionary<string[]>;
+
 	resolve(
 		value: IStringDictionary<IStringDictionary<string>>,
 	): IStringDictionary<IStringDictionary<string>>;
+
 	resolveAny<T>(value: T): T;
 
 	[key: string]: any;

@@ -47,6 +47,7 @@ export class AttachProcessProviderFactory
 			() => picker.showQuickPick(),
 			this,
 		);
+
 		this.disposableRegistry.push(disposable);
 	}
 }

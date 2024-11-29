@@ -17,6 +17,7 @@ async function activateExtension() {
 			await extension.activate();
 		}
 	}
+
 	return extension;
 }
 

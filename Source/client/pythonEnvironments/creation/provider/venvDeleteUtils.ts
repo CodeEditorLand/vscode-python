@@ -16,6 +16,7 @@ async function tryDeleteFile(file: string): Promise<boolean> {
 		if (!(await fs.pathExists(file))) {
 			return true;
 		}
+
 		await fs.unlink(file);
 
 		return true;
@@ -31,6 +32,7 @@ async function tryDeleteDir(dir: string): Promise<boolean> {
 		if (!(await fs.pathExists(dir))) {
 			return true;
 		}
+
 		await fs.rmdir(dir, {
 			recursive: true,
 			maxRetries: 10,
@@ -55,6 +57,7 @@ export async function deleteEnvironmentNonWindows(
 
 		return true;
 	}
+
 	showErrorMessageWithLogs(CreateEnv.Venv.errorDeletingEnvironment);
 
 	return false;
@@ -78,15 +81,20 @@ export async function deleteEnvironmentWindows(
 		}
 
 		traceError(`Failed to delete ".venv" dir: ${venvPath}`);
+
 		traceError(
 			"This happens if the virtual environment is still in use, or some binary in the venv is still running.",
 		);
+
 		traceError(`Please delete the ".venv" manually: [${venvPath}]`);
+
 		showErrorMessageWithLogs(CreateEnv.Venv.errorDeletingEnvironment);
 
 		return false;
 	}
+
 	traceError(`Failed to delete python executable: ${venvPythonPath}`);
+
 	traceError("This happens if the virtual environment is still in use.");
 
 	if (interpreter) {
@@ -108,6 +116,7 @@ export async function deleteEnvironmentWindows(
 			traceInfo(
 				`Waiting for ${ms}ms to let processes exit, before a delete attempt.`,
 			);
+
 			await sleep(ms);
 
 			if (await tryDeleteDir(venvPath)) {
@@ -115,6 +124,7 @@ export async function deleteEnvironmentWindows(
 
 				return true;
 			}
+
 			traceError(
 				`Failed to delete ".venv" dir [${venvPath}] (attempt ${i + 1}/5).`,
 			);
@@ -122,6 +132,7 @@ export async function deleteEnvironmentWindows(
 	} else {
 		traceError(`Please delete the ".venv" dir manually: [${venvPath}]`);
 	}
+
 	showErrorMessageWithLogs(CreateEnv.Venv.errorDeletingEnvironment);
 
 	return false;

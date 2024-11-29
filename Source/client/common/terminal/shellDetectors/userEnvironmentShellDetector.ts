@@ -24,14 +24,17 @@ export class UserEnvironmentShellDetector extends BaseShellDetector {
 	) {
 		super(1);
 	}
+
 	public getDefaultPlatformShell(): string {
 		return getDefaultShell(this.platform, this.currentProcess);
 	}
+
 	public identify(
 		telemetryProperties: ShellIdentificationTelemetry,
 		_terminal?: Terminal,
 	): TerminalShellType | undefined {
 		const shellPath = this.getDefaultPlatformShell();
+
 		telemetryProperties.hasShellInEnv = !!shellPath;
 
 		const shell = this.identifyShellFromShellPath(shellPath);
@@ -39,6 +42,7 @@ export class UserEnvironmentShellDetector extends BaseShellDetector {
 		if (shell !== TerminalShellType.other) {
 			telemetryProperties.shellIdentificationSource = "environment";
 		}
+
 		return shell;
 	}
 }

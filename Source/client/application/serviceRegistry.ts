@@ -13,5 +13,6 @@ export function registerTypes(serviceManager: IServiceManager) {
 		ISourceMapSupportService,
 		SourceMapSupportService,
 	);
+
 	diagnosticsRegisterTypes(serviceManager);
 }

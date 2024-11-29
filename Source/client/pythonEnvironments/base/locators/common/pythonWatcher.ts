@@ -21,22 +21,29 @@ import { arePathsSame } from "../../../common/externalDependencies";
 
 export interface PythonWorkspaceEnvEvent {
 	type: FileChangeType;
+
 	workspaceFolder: WorkspaceFolder;
+
 	executable: string;
 }
 
 export interface PythonGlobalEnvEvent {
 	type: FileChangeType;
+
 	uri: Uri;
 }
 
 export interface PythonWatcher extends Disposable {
 	watchWorkspace(wf: WorkspaceFolder): void;
+
 	unwatchWorkspace(wf: WorkspaceFolder): void;
+
 	onDidWorkspaceEnvChanged: Event<PythonWorkspaceEnvEvent>;
 
 	watchPath(uri: Uri, pattern?: string): void;
+
 	unwatchPath(uri: Uri): void;
+
 	onDidGlobalEnvChanged: Event<PythonGlobalEnvEvent>;
 }
 
@@ -82,6 +89,7 @@ class PythonWatcherImpl implements PythonWatcher {
 	watchWorkspace(wf: WorkspaceFolder): void {
 		if (this._disposeMap.has(wf.uri.fsPath)) {
 			const disposer = this._disposeMap.get(wf.uri.fsPath);
+
 			disposer?.dispose();
 		}
 
@@ -90,6 +98,7 @@ class PythonWatcherImpl implements PythonWatcher {
 		const watcher = createFileSystemWatcher(
 			new RelativePattern(wf, WORKSPACE_PATTERN),
 		);
+
 		disposables.push(
 			watcher,
 			watcher.onDidChange((uri) => {
@@ -106,14 +115,17 @@ class PythonWatcherImpl implements PythonWatcher {
 		const disposable = {
 			dispose: () => {
 				disposables.forEach((d) => d.dispose());
+
 				this._disposeMap.delete(wf.uri.fsPath);
 			},
 		};
+
 		this._disposeMap.set(wf.uri.fsPath, disposable);
 	}
 
 	unwatchWorkspace(wf: WorkspaceFolder): void {
 		const disposable = this._disposeMap.get(wf.uri.fsPath);
+
 		disposable?.dispose();
 	}
 
@@ -139,6 +151,7 @@ class PythonWatcherImpl implements PythonWatcher {
 	watchPath(uri: Uri, pattern?: string): void {
 		if (this._disposeMap.has(uri.fsPath)) {
 			const disposer = this._disposeMap.get(uri.fsPath);
+
 			disposer?.dispose();
 		}
 
@@ -149,6 +162,7 @@ class PythonWatcherImpl implements PythonWatcher {
 		const disposables: Disposable[] = [];
 
 		const watcher = createFileSystemWatcher(glob);
+
 		disposables.push(
 			watcher,
 			watcher.onDidChange(() => {
@@ -174,19 +188,23 @@ class PythonWatcherImpl implements PythonWatcher {
 		const disposable = {
 			dispose: () => {
 				disposables.forEach((d) => d.dispose());
+
 				this._disposeMap.delete(uri.fsPath);
 			},
 		};
+
 		this._disposeMap.set(uri.fsPath, disposable);
 	}
 
 	unwatchPath(uri: Uri): void {
 		const disposable = this._disposeMap.get(uri.fsPath);
+
 		disposable?.dispose();
 	}
 
 	dispose() {
 		this.disposables.forEach((d) => d.dispose());
+
 		this._disposeMap.forEach((d) => d.dispose());
 	}
 }

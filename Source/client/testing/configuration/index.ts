@@ -39,8 +39,10 @@ export class UnitTestConfigurationService implements ITestConfigurationService {
 		this.configurationService = serviceContainer.get<IConfigurationService>(
 			IConfigurationService,
 		);
+
 		this.appShell =
 			serviceContainer.get<IApplicationShell>(IApplicationShell);
+
 		this.workspaceService =
 			serviceContainer.get<IWorkspaceService>(IWorkspaceService);
 	}
@@ -59,6 +61,7 @@ export class UnitTestConfigurationService implements ITestConfigurationService {
 		const settings = this.configurationService.getSettings(wkspace);
 
 		let enabledCount = settings.testing.pytestEnabled ? 1 : 0;
+
 		enabledCount += settings.testing.unittestEnabled ? 1 : 0;
 
 		if (enabledCount > 1) {
@@ -68,6 +71,7 @@ export class UnitTestConfigurationService implements ITestConfigurationService {
 				true,
 			);
 		}
+
 		const option = "Enable and configure a Test Framework";
 
 		const item = await this.appShell.showInformationMessage(
@@ -78,6 +82,7 @@ export class UnitTestConfigurationService implements ITestConfigurationService {
 		if (item !== option) {
 			throw NONE_SELECTED;
 		}
+
 		return this._promptToEnableAndConfigureTestFramework(wkspace);
 	}
 
@@ -151,6 +156,7 @@ export class UnitTestConfigurationService implements ITestConfigurationService {
 		if (pythonConfig.get<boolean>("testing.promptToConfigure")) {
 			return configMgr.enable();
 		}
+
 		return pythonConfig.update("testing.promptToConfigure", undefined).then(
 			() => configMgr.enable(),
 			(reason) => configMgr.enable().then(() => Promise.reject(reason)),
@@ -175,8 +181,10 @@ export class UnitTestConfigurationService implements ITestConfigurationService {
 			if (typeof selectedTestRunner !== "number") {
 				throw NONE_SELECTED;
 			}
+
 			const helper =
 				this.serviceContainer.get<ITestsHelper>(ITestsHelper);
+
 			telemetryProps.tool = helper.parseProviderName(selectedTestRunner);
 
 			const delayed = new BufferedTestConfigSettingsService();
@@ -207,6 +215,7 @@ export class UnitTestConfigurationService implements ITestConfigurationService {
 						),
 					);
 			}
+
 			const cfg = this.serviceContainer.get<ITestConfigSettingsService>(
 				ITestConfigSettingsService,
 			);
@@ -218,6 +227,7 @@ export class UnitTestConfigurationService implements ITestConfigurationService {
 					"Python Extension: applying unit test config updates",
 					exc,
 				);
+
 				telemetryProps.failed = true;
 			}
 		} finally {

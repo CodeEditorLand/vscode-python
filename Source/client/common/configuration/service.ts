@@ -86,6 +86,7 @@ export class ConfigurationService implements IConfigurationService {
 				this.workspaceService,
 			);
 		}
+
 		configTarget = configTarget || settingsInfo.target;
 
 		const configSection = this.workspaceService.getConfiguration(
@@ -106,7 +107,9 @@ export class ConfigurationService implements IConfigurationService {
 		) {
 			return;
 		}
+
 		await configSection.update(setting, value, configTarget);
+
 		await this.verifySetting(configSection, configTarget, setting, value);
 	}
 
@@ -145,6 +148,7 @@ export class ConfigurationService implements IConfigurationService {
 				if (!setting && value === undefined) {
 					break; // Both are unset
 				}
+
 				if (setting && value !== undefined) {
 					// Both specified
 					let actual;
@@ -156,12 +160,14 @@ export class ConfigurationService implements IConfigurationService {
 					} else {
 						actual = setting.workspaceFolderValue;
 					}
+
 					if (actual === value) {
 						break;
 					}
 				}
 				// Wait for settings to get refreshed.
 				await new Promise((resolve) => setTimeout(resolve, 250));
+
 				retries += 1;
 			} while (retries < 20);
 		}

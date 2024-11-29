@@ -26,10 +26,12 @@ export function inTerminalEnvVarExperiment(
 
 		return false;
 	}
+
 	if (
 		!experimentService.inExperimentSync(TerminalEnvVarActivation.experiment)
 	) {
 		return false;
 	}
+
 	return true;
 }

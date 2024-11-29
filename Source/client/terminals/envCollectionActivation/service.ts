@@ -114,6 +114,7 @@ export class TerminalEnvVarCollectionService
 		private readonly environmentVariablesProvider: IEnvironmentVariablesProvider,
 	) {
 		this.separator = platform.osType === OSType.Windows ? ";" : ":";
+
 		this.progressService = new ProgressService(this.shell);
 	}
 
@@ -121,6 +122,7 @@ export class TerminalEnvVarCollectionService
 		try {
 			if (!inTerminalEnvVarExperiment(this.experimentService)) {
 				this.context.environmentVariableCollection.clear();
+
 				await this.handleMicroVenv(resource);
 
 				if (!this.registeredOnce) {
@@ -131,10 +133,13 @@ export class TerminalEnvVarCollectionService
 						this,
 						this.disposables,
 					);
+
 					this.registeredOnce = true;
 				}
+
 				return;
 			}
+
 			if (!this.registeredOnce) {
 				this.interpreterService.onDidChangeInterpreter(
 					async (r) => {
@@ -143,16 +148,19 @@ export class TerminalEnvVarCollectionService
 					this,
 					this.disposables,
 				);
+
 				this.shellIntegrationDetectionService.onDidChangeStatus(
 					async () => {
 						traceInfo(
 							"Shell integration status changed, can confirm it's working.",
 						);
+
 						await this._applyCollection(undefined).ignoreErrors();
 					},
 					this,
 					this.disposables,
 				);
+
 				this.environmentVariablesProvider.onDidEnvironmentVariablesChange(
 					async (r: Resource) => {
 						await this._applyCollection(r).ignoreErrors();
@@ -160,6 +168,7 @@ export class TerminalEnvVarCollectionService
 					this,
 					this.disposables,
 				);
+
 				this.applicationEnvironment.onDidChangeShell(
 					async (shell: string) => {
 						this.processEnvVars = undefined;
@@ -189,8 +198,10 @@ export class TerminalEnvVarCollectionService
 						`Shell integration may not be active, environment activated may be overridden by the shell.`,
 					);
 				}
+
 				this.registeredOnce = true;
 			}
+
 			this._applyCollection(resource).ignoreErrors();
 		} catch (ex) {
 			traceError(`Activating terminal env collection failed`, ex);
@@ -205,11 +216,13 @@ export class TerminalEnvVarCollectionService
 			location: ProgressLocation.Window,
 			title: Interpreters.activatingTerminals,
 		});
+
 		await this._applyCollectionImpl(resource, shell).catch((ex) => {
 			traceError(`Failed to apply terminal env vars`, shell, ex);
 
 			return Promise.reject(ex); // Ensures progress indicator does not disappear in case of errors, so we can catch issues faster.
 		});
+
 		this.progressService.hideProgress();
 	}
 
@@ -227,6 +240,7 @@ export class TerminalEnvVarCollectionService
 
 		if (!settings.terminal.activateEnvironment) {
 			envVarCollection.clear();
+
 			traceVerbose(
 				"Activating environments in terminal is disabled for",
 				resource?.fsPath,
@@ -234,6 +248,7 @@ export class TerminalEnvVarCollectionService
 
 			return;
 		}
+
 		const activatedEnv =
 			await this.environmentActivationService.getActivatedEnvironmentVariables(
 				resource,
@@ -243,6 +258,7 @@ export class TerminalEnvVarCollectionService
 			);
 
 		const env = activatedEnv ? normCaseKeys(activatedEnv) : undefined;
+
 		traceVerbose(
 			`Activated environment variables for ${resource?.fsPath}`,
 			env,
@@ -260,12 +276,16 @@ export class TerminalEnvVarCollectionService
 
 				return;
 			}
+
 			await this.trackTerminalPrompt(shell, resource, env);
+
 			envVarCollection.clear();
+
 			this.processEnvVars = undefined;
 
 			return;
 		}
+
 		if (!this.processEnvVars) {
 			this.processEnvVars =
 				await this.environmentActivationService.getProcessEnvironmentVariables(
@@ -273,6 +293,7 @@ export class TerminalEnvVarCollectionService
 					shell,
 				);
 		}
+
 		const processEnv = normCaseKeys(this.processEnvVars);
 
 		// PS1 in some cases is a shell variable (not an env variable) so "env" might not contain it, calculate it in that case.
@@ -288,10 +309,12 @@ export class TerminalEnvVarCollectionService
 				shell,
 				resource,
 			);
+
 		Object.keys(env).forEach((key) => {
 			if (shouldSkip(key)) {
 				return;
 			}
+
 			let value = env[key];
 
 			const prevValue = processEnv[key];
@@ -305,6 +328,7 @@ export class TerminalEnvVarCollectionService
 								defaultPrependOptions,
 							)}`,
 						);
+
 						envVarCollection.prepend(
 							key,
 							value,
@@ -313,6 +337,7 @@ export class TerminalEnvVarCollectionService
 
 						return;
 					}
+
 					if (key === "PATH") {
 						const options = {
 							applyAtShellIntegration: true,
@@ -330,35 +355,44 @@ export class TerminalEnvVarCollectionService
 							if (deactivate) {
 								value = `${deactivate}${this.separator}${value}`;
 							}
+
 							traceLog(
 								`Prepending environment variable ${key} in collection with ${value} ${JSON.stringify(
 									options,
 								)}`,
 							);
+
 							envVarCollection.prepend(key, value, options);
 						} else {
 							if (!value.endsWith(this.separator)) {
 								value = value.concat(this.separator);
 							}
+
 							if (deactivate) {
 								value = `${deactivate}${this.separator}${value}`;
 							}
+
 							traceLog(
 								`Prepending environment variable ${key} in collection to ${value} ${JSON.stringify(
 									options,
 								)}`,
 							);
+
 							envVarCollection.prepend(key, value, options);
 						}
+
 						return;
 					}
+
 					const options = {
 						applyAtShellIntegration: true,
 						applyAtProcessCreation: true,
 					};
+
 					traceLog(
 						`Setting environment variable ${key} in collection to ${value} ${JSON.stringify(options)}`,
 					);
+
 					envVarCollection.replace(key, value, options);
 				}
 			}
@@ -372,9 +406,11 @@ export class TerminalEnvVarCollectionService
 		const description = new MarkdownString(
 			`${Interpreters.activateTerminalDescription} \`${displayPath}\``,
 		);
+
 		envVarCollection.description = description;
 
 		await this.trackTerminalPrompt(shell, resource, env);
+
 		await this.terminalDeactivateService
 			.initializeScriptParams(shell)
 			.catch((ex) => {
@@ -396,11 +432,13 @@ export class TerminalEnvVarCollectionService
 	 */
 	private terminalPromptIsCorrect(resource: Resource) {
 		const key = this.getWorkspaceFolder(resource)?.index;
+
 		this.isPromptSet.set(key, true);
 	}
 
 	private terminalPromptIsUnknown(resource: Resource) {
 		const key = this.getWorkspaceFolder(resource)?.index;
+
 		this.isPromptSet.delete(key);
 	}
 
@@ -419,11 +457,13 @@ export class TerminalEnvVarCollectionService
 
 			return;
 		}
+
 		const customShellType = identifyShellFromShellPath(shell);
 
 		if (this.noPromptVariableShells.includes(customShellType)) {
 			return;
 		}
+
 		if (this.platform.osType !== OSType.Windows) {
 			// These shells are expected to set PS1 variable for terminal prompt for virtual/conda environments.
 			const interpreter =
@@ -435,6 +475,7 @@ export class TerminalEnvVarCollectionService
 				// PS1 should be set but no PS1 was set.
 				return;
 			}
+
 			const config =
 				await this.shellIntegrationDetectionService.isWorking();
 
@@ -446,6 +487,7 @@ export class TerminalEnvVarCollectionService
 				return;
 			}
 		}
+
 		this.terminalPromptIsCorrect(resource);
 	}
 
@@ -461,6 +503,7 @@ export class TerminalEnvVarCollectionService
 		if (this.noPromptVariableShells.includes(customShellType)) {
 			return env.PS1;
 		}
+
 		if (this.platform.osType !== OSType.Windows) {
 			// These shells are expected to set PS1 variable for terminal prompt for virtual/conda environments.
 			const interpreter =
@@ -476,10 +519,12 @@ export class TerminalEnvVarCollectionService
 				}
 			}
 		}
+
 		if (env.PS1) {
 			// Prefer PS1 set by env vars, as env.PS1 may or may not contain the full PS1: #22056.
 			return env.PS1;
 		}
+
 		return undefined;
 	}
 
@@ -493,6 +538,7 @@ export class TerminalEnvVarCollectionService
 				this.getEnvironmentVariableCollection({
 					workspaceFolder,
 				}).clear();
+
 				traceVerbose(
 					"Do not activate microvenv as activating environments in terminal is disabled for",
 					resource?.fsPath,
@@ -500,6 +546,7 @@ export class TerminalEnvVarCollectionService
 
 				return;
 			}
+
 			const interpreter =
 				await this.interpreterService.getActiveInterpreter(resource);
 
@@ -516,6 +563,7 @@ export class TerminalEnvVarCollectionService
 						});
 
 					const pathVarName = getSearchPathEnvVarNames()[0];
+
 					envVarCollection.replace(
 						"PATH",
 						`${path.dirname(interpreter.path)}${path.delimiter}${process.env[pathVarName]}`,
@@ -527,6 +575,7 @@ export class TerminalEnvVarCollectionService
 
 					return;
 				}
+
 				this.getEnvironmentVariableCollection({
 					workspaceFolder,
 				}).clear();
@@ -577,6 +626,7 @@ export class TerminalEnvVarCollectionService
 		) {
 			[workspaceFolder] = this.workspaceService.workspaceFolders;
 		}
+
 		return workspaceFolder;
 	}
 }
@@ -589,6 +639,7 @@ function shouldPS1BeSet(
 		// Activated variables contain PS1, meaning it was supposed to be set.
 		return true;
 	}
+
 	if (type === PythonEnvType.Virtual) {
 		const promptDisabledVar = env.VIRTUAL_ENV_DISABLE_PROMPT;
 
@@ -597,6 +648,7 @@ function shouldPS1BeSet(
 
 		return !isPromptDisabled;
 	}
+
 	if (type === PythonEnvType.Conda) {
 		// Instead of checking config value using `conda config --get changeps1`, simply check
 		// `CONDA_PROMPT_MODIFER` to avoid the cost of launching the conda binary.
@@ -606,6 +658,7 @@ function shouldPS1BeSet(
 
 		return !!isPromptEnabled;
 	}
+
 	return false;
 }
 
@@ -627,27 +680,33 @@ function getPromptForEnv(
 	if (!interpreter) {
 		return undefined;
 	}
+
 	if (interpreter.envName) {
 		if (interpreter.envName === "base") {
 			// If conda base environment is selected, it can lead to "(base)" appearing twice if we return the env name.
 			return undefined;
 		}
+
 		if (
 			interpreter.type === PythonEnvType.Virtual &&
 			env.VIRTUAL_ENV_PROMPT
 		) {
 			return `${env.VIRTUAL_ENV_PROMPT}`;
 		}
+
 		return `(${interpreter.envName}) `;
 	}
+
 	if (interpreter.envPath) {
 		return `(${path.basename(interpreter.envPath)}) `;
 	}
+
 	return undefined;
 }
 
 function normCaseKeys(env: EnvironmentVariables): EnvironmentVariables {
 	const result: EnvironmentVariables = {};
+
 	Object.keys(env).forEach((key) => {
 		result[normCase(key)] = env[key];
 	});

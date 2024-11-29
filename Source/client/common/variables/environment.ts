@@ -31,6 +31,7 @@ export class EnvironmentVariablesService
 		if (!filePath || !(await this.fs.pathExists(filePath))) {
 			return;
 		}
+
 		const contents = await this.fs.readFile(filePath).catch((ex) => {
 			traceError(
 				"Custom .env is likely not pointing to a valid file",
@@ -43,6 +44,7 @@ export class EnvironmentVariablesService
 		if (!contents) {
 			return;
 		}
+
 		return parseEnvFile(contents, baseVars);
 	}
 
@@ -53,6 +55,7 @@ export class EnvironmentVariablesService
 		if (!filePath || !pathExistsSync(filePath)) {
 			return;
 		}
+
 		let contents: string | undefined;
 
 		try {
@@ -63,9 +66,11 @@ export class EnvironmentVariablesService
 				ex,
 			);
 		}
+
 		if (!contents) {
 			return;
 		}
+
 		return parseEnvFile(contents, baseVars);
 	}
 
@@ -77,11 +82,15 @@ export class EnvironmentVariablesService
 		if (!target) {
 			return;
 		}
+
 		const reference = target;
+
 		target = normCaseKeys(target);
+
 		source = normCaseKeys(source);
 
 		const settingsNotToMerge = ["PYTHONPATH", this.pathVariable];
+
 		Object.keys(source).forEach((setting) => {
 			if (
 				!options?.mergeAll &&
@@ -89,11 +98,14 @@ export class EnvironmentVariablesService
 			) {
 				return;
 			}
+
 			if (target[setting] === undefined || options?.overwrite) {
 				target[setting] = source[setting];
 			}
 		});
+
 		restoreKeys(target);
+
 		matchTarget(reference, target);
 	}
 
@@ -112,6 +124,7 @@ export class EnvironmentVariablesService
 		if (!this._pathVariable) {
 			this._pathVariable = this.pathUtils.getPathVariableName();
 		}
+
 		return normCase(this._pathVariable)!;
 	}
 
@@ -127,7 +140,9 @@ export class EnvironmentVariablesService
 		variableName = normCase(variableName);
 
 		vars = this._appendPaths(vars, variableName, ...pathsToAppend);
+
 		restoreKeys(vars);
+
 		matchTarget(reference, vars);
 
 		return vars;
@@ -156,6 +171,7 @@ export class EnvironmentVariablesService
 		} else {
 			vars[variableName] = valueToAppend;
 		}
+
 		return vars;
 	}
 }
@@ -167,6 +183,7 @@ export function parseEnvFile(
 	const globalVars = baseVars ? baseVars : {};
 
 	const vars: EnvironmentVariables = {};
+
 	lines
 		.toString()
 		.split("\n")
@@ -176,6 +193,7 @@ export function parseEnvFile(
 			if (name === "") {
 				return;
 			}
+
 			vars[name] = substituteEnvVars(value, vars, globalVars);
 		});
 
@@ -200,9 +218,11 @@ function parseEnvLine(line: string): [string, string] {
 	if (value && value !== "") {
 		if (value[0] === "'" && value[value.length - 1] === "'") {
 			value = value.substring(1, value.length - 1);
+
 			value = value.replace(/\\n/gm, "\n");
 		} else if (value[0] === '"' && value[value.length - 1] === '"') {
 			value = value.substring(1, value.length - 1);
+
 			value = value.replace(/\\n/gm, "\n");
 		}
 	} else {
@@ -226,23 +246,27 @@ function substituteEnvVars(
 	let invalid = false;
 
 	let replacement = value;
+
 	replacement = replacement.replace(
 		SUBST_REGEX,
 		(match, substName, bogus, offset, orig) => {
 			if (offset > 0 && orig[offset - 1] === "\\") {
 				return match;
 			}
+
 			if ((bogus && bogus !== "") || !substName || substName === "") {
 				invalid = true;
 
 				return match;
 			}
+
 			return localVars[substName] || globalVars[substName] || missing;
 		},
 	);
 
 	if (!invalid && replacement !== value) {
 		value = replacement;
+
 		sendTelemetryEvent(EventName.ENVFILE_VARIABLE_SUBSTITUTION);
 	}
 
@@ -251,8 +275,10 @@ function substituteEnvVars(
 
 export function normCaseKeys(env: EnvironmentVariables): EnvironmentVariables {
 	const normalizedEnv: EnvironmentVariables = {};
+
 	Object.keys(env).forEach((key) => {
 		const normalizedKey = normCase(key);
+
 		normalizedEnv[normalizedKey] = env[key];
 	});
 
@@ -261,11 +287,13 @@ export function normCaseKeys(env: EnvironmentVariables): EnvironmentVariables {
 
 export function restoreKeys(env: EnvironmentVariables) {
 	const processEnvKeys = Object.keys(process.env);
+
 	processEnvKeys.forEach((processEnvKey) => {
 		const originalKey = normCase(processEnvKey);
 
 		if (originalKey !== processEnvKey && env[originalKey] !== undefined) {
 			env[processEnvKey] = env[originalKey];
+
 			delete env[originalKey];
 		}
 	});

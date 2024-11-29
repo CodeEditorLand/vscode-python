@@ -59,10 +59,12 @@ export class PylanceLSExtensionManager
 			outputChannel,
 			workspaceService,
 		);
+
 		this.clientFactory = new NodeLanguageClientFactory(
 			fileSystem,
 			extensions,
 		);
+
 		this.serverProxy = new NodeLanguageServerProxy(
 			this.clientFactory,
 			experimentService,
@@ -71,6 +73,7 @@ export class PylanceLSExtensionManager
 			workspaceService,
 			extensions,
 		);
+
 		this.serverManager = new NodeLanguageServerManager(
 			serviceContainer,
 			this.analysisOptions,
@@ -82,8 +85,11 @@ export class PylanceLSExtensionManager
 
 	dispose(): void {
 		this.serverManager.disconnect();
+
 		this.serverManager.dispose();
+
 		this.serverProxy.dispose();
+
 		this.analysisOptions.dispose();
 	}
 
@@ -92,11 +98,13 @@ export class PylanceLSExtensionManager
 		interpreter?: PythonEnvironment,
 	): Promise<void> {
 		await this.serverManager.start(resource, interpreter);
+
 		this.serverManager.connect();
 	}
 
 	async stopLanguageServer(): Promise<void> {
 		this.serverManager.disconnect();
+
 		await this.serverProxy.stop();
 	}
 

@@ -18,8 +18,11 @@ import { EnvironmentType, PythonEnvironment } from "../pythonEnvironments/info";
 
 export type PythonEnvironmentsChangedEvent = {
 	type?: FileChangeType;
+
 	resource?: Uri;
+
 	old?: PythonEnvironment;
+
 	new?: PythonEnvironment | undefined;
 };
 
@@ -27,6 +30,7 @@ export const IComponentAdapter = Symbol("IComponentAdapter");
 
 export interface IComponentAdapter {
 	readonly onProgress: Event<ProgressNotificationEvent>;
+
 	triggerRefresh(
 		query?: PythonLocatorQuery,
 		options?: TriggerRefreshOptions,
@@ -35,6 +39,7 @@ export interface IComponentAdapter {
 	getRefreshPromise(
 		options?: GetRefreshEnvironmentsOptions,
 	): Promise<void> | undefined;
+
 	readonly onChanged: Event<PythonEnvironmentsChangedEvent>;
 	// VirtualEnvPrompt
 	onDidCreate(resource: Resource, callback: () => void): Disposable;
@@ -85,6 +90,7 @@ export interface ICondaService {
 	getCondaFile(forShellExecution?: boolean): Promise<string>;
 
 	getCondaInfo(): Promise<CondaInfo | undefined>;
+
 	isCondaAvailable(): Promise<boolean>;
 
 	getCondaVersion(): Promise<SemVer | undefined>;
@@ -113,14 +119,19 @@ export interface IInterpreterService {
 		query?: PythonLocatorQuery,
 		options?: TriggerRefreshOptions,
 	): Promise<void>;
+
 	readonly refreshPromise: Promise<void> | undefined;
 
 	getRefreshPromise(
 		options?: GetRefreshEnvironmentsOptions,
 	): Promise<void> | undefined;
+
 	readonly onDidChangeInterpreters: Event<PythonEnvironmentsChangedEvent>;
+
 	onDidChangeInterpreterConfiguration: Event<Uri | undefined>;
+
 	onDidChangeInterpreter: Event<Uri | undefined>;
+
 	onDidChangeInterpreterInformation: Event<PythonEnvironment>;
 	/**
 	 * Note this API does not trigger the refresh but only works with the current refresh if any. Information
@@ -144,7 +155,9 @@ export interface IInterpreterService {
 		pythonPath: string,
 		resoure?: Uri,
 	): Promise<undefined | PythonEnvironment>;
+
 	refresh(resource: Resource): Promise<void>;
+
 	initialize(): void;
 }
 
@@ -152,6 +165,7 @@ export const IInterpreterDisplay = Symbol("IInterpreterDisplay");
 
 export interface IInterpreterDisplay {
 	refresh(resource?: Uri): Promise<void>;
+
 	registerVisibilityFilter(
 		filter: IInterpreterStatusbarVisibilityFilter,
 	): void;
@@ -165,6 +179,7 @@ export interface IInterpreterHelper {
 	getInterpreterInformation(
 		pythonPath: string,
 	): Promise<undefined | Partial<PythonEnvironment>>;
+
 	isMacDefaultPythonPath(pythonPath: string): Promise<boolean>;
 
 	getInterpreterTypeDisplayName(
@@ -184,11 +199,13 @@ export const IInterpreterStatusbarVisibilityFilter = Symbol(
  */
 export interface IInterpreterStatusbarVisibilityFilter {
 	readonly changed?: Event<void>;
+
 	readonly hidden: boolean;
 }
 
 export type WorkspacePythonPath = {
 	folderUri: Uri;
+
 	configTarget:
 		| ConfigurationTarget.Workspace
 		| ConfigurationTarget.WorkspaceFolder;

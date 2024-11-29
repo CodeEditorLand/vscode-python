@@ -72,6 +72,7 @@ export interface IEnvsCollectionCache {
 
 interface IPersistentStorage {
 	get(): PythonEnvInfo[];
+
 	store(envs: PythonEnvInfo[]): Promise<void>;
 }
 
@@ -127,9 +128,11 @@ export class PythonEnvInfoCache
 						if (cachedEnv.searchLocation) {
 							return true;
 						}
+
 						if (envs.some((env) => cachedEnv.id === env.id)) {
 							return true;
 						}
+
 						if (
 							Array.from(this.validatedEnvs.keys()).some(
 								(envId) => cachedEnv.id === envId,
@@ -142,6 +145,7 @@ export class PythonEnvInfoCache
 						return true;
 					}
 				}
+
 				return false;
 			}),
 		);
@@ -152,7 +156,9 @@ export class PythonEnvInfoCache
 			.reverse(); // Reversed so indexes do not change when deleting
 		invalidIndexes.forEach((index) => {
 			const env = this.envs.splice(index, 1)[0];
+
 			traceVerbose(`Removing invalid env from cache ${env.id}`);
+
 			this.fire({ old: env, new: undefined });
 		});
 
@@ -177,14 +183,18 @@ export class PythonEnvInfoCache
 
 		if (!found) {
 			this.envs.push(env);
+
 			this.fire({ new: env });
 		} else if (hasLatestInfo && !this.validatedEnvs.has(env.id!)) {
 			// Update cache if we have latest info and the env is not already validated.
 			this.updateEnv(found, env, true);
 		}
+
 		if (hasLatestInfo) {
 			traceVerbose(`Flushing env to cache ${env.id}`);
+
 			this.validatedEnvs.add(env.id!);
+
 			this.flush(env).ignoreErrors(); // If we have latest info, flush it so it can be saved.
 		}
 	}
@@ -199,6 +209,7 @@ export class PythonEnvInfoCache
 			// If we have latest info, then we do not need to update the cache.
 			return;
 		}
+
 		const index = this.envs.findIndex((e) => areSameEnv(e, oldValue));
 
 		if (index !== -1) {
@@ -207,6 +218,7 @@ export class PythonEnvInfoCache
 			} else {
 				this.envs[index] = newValue;
 			}
+
 			this.fire({ old: oldValue, new: newValue });
 		}
 	}
@@ -236,19 +248,23 @@ export class PythonEnvInfoCache
 
 			return env;
 		}
+
 		if (env) {
 			if (this.validatedEnvs.has(env.id!)) {
 				traceVerbose(`Found cached env for ${path}`);
 
 				return env;
 			}
+
 			if (await this.validateInfo(env)) {
 				traceVerbose(`Needed to validate ${path} with latest info`);
+
 				this.validatedEnvs.add(env.id!);
 
 				return env;
 			}
 		}
+
 		traceVerbose(`No cached env found for ${path}`);
 
 		return undefined;
@@ -256,6 +272,7 @@ export class PythonEnvInfoCache
 
 	public clearAndReloadFromStorage(): void {
 		this.envs = this.persistentStorage.get();
+
 		this.markAllEnvsAsFlushed();
 	}
 
@@ -265,14 +282,20 @@ export class PythonEnvInfoCache
 			const envs = this.persistentStorage.get();
 
 			const index = envs.findIndex((e) => e.id === env.id);
+
 			envs[index] = env;
+
 			this.flushedEnvs.add(env.id!);
+
 			await this.persistentStorage.store(envs);
 
 			return;
 		}
+
 		traceVerbose("Environments added to cache", JSON.stringify(this.envs));
+
 		this.markAllEnvsAsFlushed();
+
 		await this.persistentStorage.store(this.envs);
 	}
 
@@ -291,6 +314,7 @@ export class PythonEnvInfoCache
 			// Any environment with complete information is flushed, so this env does not contain complete info.
 			return false;
 		}
+
 		if (
 			env.version.micro === -1 ||
 			env.version.major === -1 ||
@@ -299,6 +323,7 @@ export class PythonEnvInfoCache
 			// Env should not contain incomplete versions.
 			return false;
 		}
+
 		const { ctime, mtime } = await getFileInfo(env.executable.filename);
 
 		if (
@@ -309,7 +334,9 @@ export class PythonEnvInfoCache
 		) {
 			return true;
 		}
+
 		env.executable.ctime = ctime;
+
 		env.executable.mtime = mtime;
 
 		return false;
@@ -323,7 +350,9 @@ export async function createCollectionCache(
 	storage: IPersistentStorage,
 ): Promise<PythonEnvInfoCache> {
 	const cache = new PythonEnvInfoCache(storage);
+
 	cache.clearAndReloadFromStorage();
+
 	await validateCache(cache);
 
 	return cache;

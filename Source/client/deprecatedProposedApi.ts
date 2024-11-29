@@ -61,6 +61,7 @@ function getVersionString(env: PythonEnvInfo): string[] {
 			ver.push(`${env.version.release}`);
 		}
 	}
+
 	return ver;
 }
 
@@ -102,6 +103,7 @@ export function buildDeprecatedProposedApi(
 						extensionId: info.extensionId,
 					},
 				);
+
 				traceVerbose(
 					`Extension ${info.extensionId} accessed ${apiName}`,
 				);
@@ -110,6 +112,7 @@ export function buildDeprecatedProposedApi(
 					console.warn(
 						`${info.extensionId} extension is using deprecated python APIs which will be removed soon.`,
 					);
+
 					warningLogged.add(info.extensionId);
 				}
 			})
@@ -137,6 +140,7 @@ export function buildDeprecatedProposedApi(
 				if (!env) {
 					return undefined;
 				}
+
 				return getEnvPath(env.path, env.envPath);
 			},
 			async getEnvironmentDetails(
@@ -152,6 +156,7 @@ export function buildDeprecatedProposedApi(
 						.getEnvs()
 						.find((v) => isEnvSame(path, v));
 				}
+
 				if (!env) {
 					env = await discoveryApi.resolveEnv(path);
 
@@ -159,6 +164,7 @@ export function buildDeprecatedProposedApi(
 						return undefined;
 					}
 				}
+
 				return {
 					interpreterPath: env.executable.filename,
 					envFolderPath: env.location.length
@@ -196,6 +202,7 @@ export function buildDeprecatedProposedApi(
 			},
 			async refreshEnvironment() {
 				sendApiTelemetry("deprecated.refreshEnvironment");
+
 				await discoveryApi.triggerRefresh();
 
 				const paths = discoveryApi

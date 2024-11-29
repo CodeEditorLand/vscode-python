@@ -61,7 +61,9 @@ export interface IPersistentState<T> {
 	 * factory to access any type of storage as all storages are tracked there.
 	 */
 	readonly storage: Memento;
+
 	readonly value: T;
+
 	updateValue(value: T): Promise<void>;
 }
 
@@ -77,6 +79,7 @@ export interface IPersistentStateFactory {
 		defaultValue?: T,
 		expiryDurationMs?: number,
 	): IPersistentState<T>;
+
 	createWorkspacePersistentState<T>(
 		key: string,
 		defaultValue?: T,
@@ -86,9 +89,13 @@ export interface IPersistentStateFactory {
 
 export type ExecutionInfo = {
 	execPath?: string;
+
 	moduleName?: string;
+
 	args: string[];
+
 	product?: Product;
+
 	useShell?: boolean;
 };
 
@@ -130,6 +137,7 @@ export interface IInstaller {
 		cancel?: CancellationToken,
 		flags?: ModuleInstallFlags,
 	): Promise<InstallerResponse>;
+
 	install(
 		product: Product,
 		resource?: InterpreterUri,
@@ -137,12 +145,15 @@ export interface IInstaller {
 		flags?: ModuleInstallFlags,
 		options?: InstallOptions,
 	): Promise<InstallerResponse>;
+
 	isInstalled(product: Product, resource?: InterpreterUri): Promise<boolean>;
+
 	isProductVersionCompatible(
 		product: Product,
 		semVerRequirement: string,
 		resource?: InterpreterUri,
 	): Promise<ProductInstallStatus>;
+
 	translateProductToModuleName(product: Product): string;
 }
 
@@ -152,6 +163,7 @@ export const IPathUtils = Symbol("IPathUtils");
 
 export interface IPathUtils {
 	readonly delimiter: string;
+
 	readonly home: string;
 	/**
 	 * The platform-specific file separator. '\\' or '/'.
@@ -161,6 +173,7 @@ export interface IPathUtils {
 	readonly separator: string;
 
 	getPathVariableName(): "Path" | "PATH";
+
 	basename(pathValue: string, ext?: string): string;
 
 	getDisplayName(pathValue: string, cwd?: string): string;
@@ -176,9 +189,13 @@ export const ICurrentProcess = Symbol("ICurrentProcess");
 
 export interface ICurrentProcess {
 	readonly env: EnvironmentVariables;
+
 	readonly argv: string[];
+
 	readonly stdout: NodeJS.WriteStream;
+
 	readonly stdin: NodeJS.ReadStream;
+
 	readonly execPath: string;
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	on(event: string | symbol, listener: Function): this;
@@ -186,26 +203,47 @@ export interface ICurrentProcess {
 
 export interface IPythonSettings {
 	readonly interpreter: IInterpreterSettings;
+
 	readonly pythonPath: string;
+
 	readonly venvPath: string;
+
 	readonly venvFolders: string[];
+
 	readonly activeStateToolPath: string;
+
 	readonly condaPath: string;
+
 	readonly pipenvPath: string;
+
 	readonly poetryPath: string;
+
 	readonly pixiToolPath: string;
+
 	readonly devOptions: string[];
+
 	readonly testing: ITestingSettings;
+
 	readonly autoComplete: IAutoCompleteSettings;
+
 	readonly terminal: ITerminalSettings;
+
 	readonly envFile: string;
+
 	readonly globalModuleInstallation: boolean;
+
 	readonly experiments: IExperiments;
+
 	readonly languageServer: LanguageServerType;
+
 	readonly languageServerIsDefault: boolean;
+
 	readonly defaultInterpreterPath: string;
+
 	readonly tensorBoard: ITensorBoardSettings | undefined;
+
 	readonly REPL: IREPLSettings;
+
 	register(): void;
 }
 
@@ -219,15 +257,21 @@ export interface IInterpreterSettings {
 
 export interface ITerminalSettings {
 	readonly executeInFileDir: boolean;
+
 	readonly focusAfterLaunch: boolean;
+
 	readonly launchArgs: string[];
+
 	readonly activateEnvironment: boolean;
+
 	readonly activateEnvInCurrentTerminal: boolean;
+
 	readonly enableShellIntegration: boolean;
 }
 
 export interface IREPLSettings {
 	readonly enableREPLSmartSend: boolean;
+
 	readonly sendToNativeREPL: boolean;
 }
 
@@ -256,13 +300,16 @@ export interface IConfigurationService {
 	readonly onDidChange: Event<ConfigurationChangeEvent | undefined>;
 
 	getSettings(resource?: Uri): IPythonSettings;
+
 	isTestExecution(): boolean;
+
 	updateSetting(
 		setting: string,
 		value?: unknown,
 		resource?: Uri,
 		configTarget?: ConfigurationTarget,
 	): Promise<void>;
+
 	updateSectionSetting(
 		section: string,
 		setting: string,
@@ -291,6 +338,7 @@ export const ISocketServer = Symbol("ISocketServer");
 
 export interface ISocketServer extends Disposable {
 	readonly client: Promise<Socket>;
+
 	Start(options?: { port?: number; host?: string }): Promise<number>;
 }
 
@@ -350,6 +398,7 @@ export interface IExtensions {
 	 */
 	determineExtensionFromCallStack(): Promise<{
 		extensionId: string;
+
 		displayName: string;
 	}>;
 }
@@ -375,7 +424,9 @@ export const IExperimentService = Symbol("IExperimentService");
 
 export interface IExperimentService {
 	activate(): Promise<void>;
+
 	inExperiment(experimentName: string): Promise<boolean>;
+
 	inExperimentSync(experimentName: string): boolean;
 
 	getExperimentValue<T extends boolean | number | string>(
@@ -385,12 +436,15 @@ export interface IExperimentService {
 
 export type InterpreterConfigurationScope = {
 	uri: Resource;
+
 	configTarget: ConfigurationTarget;
 };
 
 export type InspectInterpreterSettingType = {
 	globalValue?: string;
+
 	workspaceValue?: string;
+
 	workspaceFolderValue?: string;
 };
 
@@ -403,12 +457,15 @@ export interface IInterpreterPathService {
 	onDidChange: Event<InterpreterConfigurationScope>;
 
 	get(resource: Resource): string;
+
 	inspect(resource: Resource): InspectInterpreterSettingType;
+
 	update(
 		resource: Resource,
 		configTarget: ConfigurationTarget,
 		value: string | undefined,
 	): Promise<void>;
+
 	copyOldInterpreterStorageValuesToNew(resource: Resource): Promise<void>;
 }
 

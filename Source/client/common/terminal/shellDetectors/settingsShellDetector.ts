@@ -24,6 +24,7 @@ export class SettingsShellDetector extends BaseShellDetector {
 	) {
 		super(2);
 	}
+
 	public getTerminalShellPath(): string | undefined {
 		const shellConfig = this.workspace.getConfiguration(
 			"terminal.integrated.shell",
@@ -37,27 +38,33 @@ export class SettingsShellDetector extends BaseShellDetector {
 
 				break;
 			}
+
 			case OSType.OSX: {
 				osSection = "osx";
 
 				break;
 			}
+
 			case OSType.Linux: {
 				osSection = "linux";
 
 				break;
 			}
+
 			default: {
 				return "";
 			}
 		}
+
 		return shellConfig.get<string>(osSection)!;
 	}
+
 	public identify(
 		telemetryProperties: ShellIdentificationTelemetry,
 		_terminal?: Terminal,
 	): TerminalShellType | undefined {
 		const shellPath = this.getTerminalShellPath();
+
 		telemetryProperties.hasCustomShell = !!shellPath;
 
 		const shell = shellPath
@@ -69,6 +76,7 @@ export class SettingsShellDetector extends BaseShellDetector {
 		} else {
 			telemetryProperties.shellIdentificationSource = "settings";
 		}
+
 		return shell;
 	}
 }

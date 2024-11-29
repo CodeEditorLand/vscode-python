@@ -67,6 +67,7 @@ export class PytestTestExecutionAdapter implements ITestExecutionAdapter {
 		};
 
 		const cSource = new CancellationTokenSource();
+
 		runInstance?.token.onCancellationRequested(() => cSource.cancel());
 
 		const name = await utils.startRunResultNamedPipe(
@@ -74,6 +75,7 @@ export class PytestTestExecutionAdapter implements ITestExecutionAdapter {
 			deferredTillServerClose, // deferred to resolve when server closes
 			cSource.token, // token to cancel
 		);
+
 		runInstance?.token.onCancellationRequested(() => {
 			traceInfo(
 				`Test run cancelled, resolving 'TillServerClose' deferred for ${uri.fsPath}.`,
@@ -152,12 +154,15 @@ export class PytestTestExecutionAdapter implements ITestExecutionAdapter {
 		const pythonPathCommand = [fullPluginPath, ...pythonPathParts].join(
 			path.delimiter,
 		);
+
 		mutableEnv.PYTHONPATH = pythonPathCommand;
+
 		mutableEnv.TEST_RUN_PIPE = resultNamedPipeName;
 
 		if (profileKind && profileKind === TestRunProfileKind.Coverage) {
 			mutableEnv.COVERAGE_ENABLED = "True";
 		}
+
 		const debugBool =
 			profileKind && profileKind === TestRunProfileKind.Debug;
 
@@ -191,7 +196,9 @@ export class PytestTestExecutionAdapter implements ITestExecutionAdapter {
 
 			// create a file with the test ids and set the environment variable to the file name
 			const testIdsFileName = await utils.writeTestIdsFile(testIds);
+
 			mutableEnv.RUN_TEST_IDS_PIPE = testIdsFileName;
+
 			traceInfo(
 				`All environment variables set for pytest execution: ${JSON.stringify(mutableEnv)}`,
 			);
@@ -218,9 +225,11 @@ export class PytestTestExecutionAdapter implements ITestExecutionAdapter {
 				const sessionOptions: DebugSessionOptions = {
 					testRun: runInstance,
 				};
+
 				traceInfo(
 					`Running DEBUG pytest with arguments: ${testArgs} for workspace ${uri.fsPath} \r\n`,
 				);
+
 				await debugLauncher!.launchDebugger(
 					launchOptions,
 					() => {
@@ -240,6 +249,7 @@ export class PytestTestExecutionAdapter implements ITestExecutionAdapter {
 				);
 
 				const runArgs = [scriptPath, ...testArgs];
+
 				traceInfo(
 					`Running pytest with arguments: ${runArgs.join(" ")} for workspace ${uri.fsPath} \r\n`,
 				);
@@ -255,6 +265,7 @@ export class PytestTestExecutionAdapter implements ITestExecutionAdapter {
 						resultProc?.kill();
 					} else {
 						deferredTillExecClose.resolve();
+
 						serverCancel.cancel();
 					}
 				});
@@ -263,6 +274,7 @@ export class PytestTestExecutionAdapter implements ITestExecutionAdapter {
 					runArgs,
 					spawnOptions,
 				);
+
 				resultProc = result?.proc;
 
 				// Take all output from the subprocess and add it to the test output channel. This will be the pytest output.
@@ -270,14 +282,20 @@ export class PytestTestExecutionAdapter implements ITestExecutionAdapter {
 				// TODO: after a release, remove run output from the "Python Test Log" channel and send it to the "Test Result" channel instead.
 				result?.proc?.stdout?.on("data", (data) => {
 					const out = utils.fixLogLinesNoTrailing(data.toString());
+
 					runInstance?.appendOutput(out);
+
 					this.outputChannel?.append(out);
 				});
+
 				result?.proc?.stderr?.on("data", (data) => {
 					const out = utils.fixLogLinesNoTrailing(data.toString());
+
 					runInstance?.appendOutput(out);
+
 					this.outputChannel?.append(out);
 				});
+
 				result?.proc?.on("exit", (code, signal) => {
 					this.outputChannel?.append(
 						utils.MESSAGE_ON_TESTING_OUTPUT_MOVE,
@@ -318,8 +336,10 @@ export class PytestTestExecutionAdapter implements ITestExecutionAdapter {
 					// deferredTillEOT is resolved when all data sent on stdout and stderr is received, close event is only called when this occurs
 					// due to the sync reading of the output.
 					deferredTillExecClose.resolve();
+
 					serverCancel.cancel();
 				});
+
 				await deferredTillExecClose.promise;
 			}
 		} catch (ex) {

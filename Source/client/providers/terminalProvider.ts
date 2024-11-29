@@ -26,6 +26,7 @@ export class TerminalProvider implements Disposable {
 
 	constructor(private serviceContainer: IServiceContainer) {
 		this.registerCommands();
+
 		this.activeResourceService =
 			this.serviceContainer.get<IActiveResourceService>(
 				IActiveResourceService,
@@ -61,11 +62,13 @@ export class TerminalProvider implements Disposable {
 					this.serviceContainer.get<ITerminalActivator>(
 						ITerminalActivator,
 					);
+
 				await terminalActivator.activateEnvironmentInTerminal(
 					currentTerminal,
 					{ preserveFocus: true },
 				);
 			}
+
 			sendTelemetryEvent(
 				EventName.ACTIVATE_ENV_IN_CURRENT_TERMINAL,
 				undefined,
@@ -103,6 +106,7 @@ export class TerminalProvider implements Disposable {
 			);
 
 		const activeResource = this.activeResourceService.getActiveResource();
+
 		await terminalService
 			.createTerminalService(activeResource, "Python")
 			.show(false);

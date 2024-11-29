@@ -70,6 +70,7 @@ export class SwitchToDefaultLanguageServerDiagnosticService extends BaseDiagnost
 				"Default",
 				ConfigurationTarget.Workspace,
 			);
+
 			changed = true;
 		}
 
@@ -79,6 +80,7 @@ export class SwitchToDefaultLanguageServerDiagnosticService extends BaseDiagnost
 				"Default",
 				ConfigurationTarget.Global,
 			);
+
 			changed = true;
 		}
 
@@ -98,6 +100,7 @@ export class SwitchToDefaultLanguageServerDiagnosticService extends BaseDiagnost
 		if (diagnostics.length === 0 || !this.canHandle(diagnostics[0])) {
 			return;
 		}
+
 		const diagnostic = diagnostics[0];
 
 		if (await this.filterService.shouldIgnoreDiagnostic(diagnostic.code)) {

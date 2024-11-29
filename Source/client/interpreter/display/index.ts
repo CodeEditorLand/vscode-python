@@ -46,23 +46,37 @@ export class InterpreterDisplay
 {
 	public supportedWorkspaceTypes: {
 		untrustedWorkspace: boolean;
+
 		virtualWorkspace: boolean;
 	} = {
 		untrustedWorkspace: false,
 		virtualWorkspace: true,
 	};
+
 	private statusBar: StatusBarItem | undefined;
+
 	private useLanguageStatus = false;
+
 	private languageStatus: LanguageStatusItem | undefined;
+
 	private readonly helper: IInterpreterHelper;
+
 	private readonly workspaceService: IWorkspaceService;
+
 	private readonly pathUtils: IPathUtils;
+
 	private readonly interpreterService: IInterpreterService;
+
 	private currentlySelectedInterpreterDisplay?: string;
+
 	private currentlySelectedInterpreterPath?: string;
+
 	private currentlySelectedWorkspaceFolder: Resource;
+
 	private statusBarCanBeDisplayed?: boolean;
+
 	private visibilityFilters: IInterpreterStatusbarVisibilityFilter[] = [];
+
 	private disposableRegistry: Disposable[];
 
 	constructor(
@@ -71,9 +85,12 @@ export class InterpreterDisplay
 	) {
 		this.helper =
 			serviceContainer.get<IInterpreterHelper>(IInterpreterHelper);
+
 		this.workspaceService =
 			serviceContainer.get<IWorkspaceService>(IWorkspaceService);
+
 		this.pathUtils = serviceContainer.get<IPathUtils>(IPathUtils);
+
 		this.interpreterService =
 			serviceContainer.get<IInterpreterService>(IInterpreterService);
 
@@ -98,24 +115,31 @@ export class InterpreterDisplay
 					language: PYTHON_LANGUAGE,
 				},
 			);
+
 			this.languageStatus.severity = LanguageStatusSeverity.Information;
+
 			this.languageStatus.command = {
 				title: InterpreterQuickPickList.browsePath.openButtonLabel,
 				command: Commands.Set_Interpreter,
 			};
+
 			this.disposableRegistry.push(this.languageStatus);
 		} else {
 			const [alignment, priority] = [
 				StatusBarAlignment.Right,
 				STATUS_BAR_ITEM_PRIORITY,
 			];
+
 			this.statusBar = application.createStatusBarItem(
 				alignment,
 				priority,
 				"python.selectedInterpreterDisplay",
 			);
+
 			this.statusBar.command = Commands.Set_Interpreter;
+
 			this.disposableRegistry.push(this.statusBar);
+
 			this.statusBar.name = Interpreters.selectedPythonInterpreter;
 		}
 	}
@@ -125,23 +149,29 @@ export class InterpreterDisplay
 		if (resource && this.workspaceService.getWorkspaceFolder(resource)) {
 			resource = this.workspaceService.getWorkspaceFolder(resource)!.uri;
 		}
+
 		if (!resource) {
 			const wkspc = this.helper.getActiveWorkspaceUri(resource);
+
 			resource = wkspc ? wkspc.folderUri : undefined;
 		}
+
 		await this.updateDisplay(resource);
 	}
+
 	public registerVisibilityFilter(
 		filter: IInterpreterStatusbarVisibilityFilter,
 	) {
 		const disposableRegistry =
 			this.serviceContainer.get<Disposable[]>(IDisposableRegistry);
+
 		this.visibilityFilters.push(filter);
 
 		if (filter.changed) {
 			filter.changed(this.updateVisibility, this, disposableRegistry);
 		}
 	}
+
 	private onDidChangeInterpreterInformation(info: PythonEnvironment) {
 		if (this.currentlySelectedInterpreterPath === info.path) {
 			this.updateDisplay(
@@ -149,6 +179,7 @@ export class InterpreterDisplay
 			).ignoreErrors();
 		}
 	}
+
 	private async updateDisplay(workspaceFolder?: Uri) {
 		const interpreter =
 			await this.interpreterService.getActiveInterpreter(workspaceFolder);
@@ -161,11 +192,13 @@ export class InterpreterDisplay
 		) {
 			return;
 		}
+
 		this.currentlySelectedWorkspaceFolder = workspaceFolder;
 
 		if (this.statusBar) {
 			if (interpreter) {
 				this.statusBar.color = "";
+
 				this.statusBar.tooltip = this.pathUtils.getDisplayName(
 					interpreter.path,
 					workspaceFolder?.fsPath,
@@ -183,23 +216,33 @@ export class InterpreterDisplay
 							),
 						),
 					);
+
 					this.currentlySelectedInterpreterPath = interpreter.path;
 				}
+
 				let text = interpreter.detailedDisplayName;
+
 				text = text?.startsWith("Python")
 					? text?.substring("Python".length)?.trim()
 					: text;
+
 				this.statusBar.text = text ?? "";
+
 				this.statusBar.backgroundColor = undefined;
+
 				this.currentlySelectedInterpreterDisplay =
 					interpreter.detailedDisplayName;
 			} else {
 				this.statusBar.tooltip = "";
+
 				this.statusBar.color = "";
+
 				this.statusBar.backgroundColor = new ThemeColor(
 					"statusBarItem.warningBackground",
 				);
+
 				this.statusBar.text = `$(alert) ${InterpreterQuickPickList.browsePath.openButtonLabel}`;
+
 				this.currentlySelectedInterpreterDisplay = undefined;
 			}
 		} else if (this.languageStatus) {
@@ -221,31 +264,44 @@ export class InterpreterDisplay
 							),
 						),
 					);
+
 					this.currentlySelectedInterpreterPath = interpreter.path;
 				}
+
 				let text = interpreter.detailedDisplayName!;
+
 				text = text.startsWith("Python")
 					? text.substring("Python".length).trim()
 					: text;
+
 				this.languageStatus.text = text;
+
 				this.currentlySelectedInterpreterDisplay =
 					interpreter.detailedDisplayName;
+
 				this.languageStatus.severity =
 					LanguageStatusSeverity.Information;
 			} else {
 				this.languageStatus.severity = LanguageStatusSeverity.Warning;
+
 				this.languageStatus.text = `$(alert) ${InterpreterQuickPickList.browsePath.openButtonLabel}`;
+
 				this.languageStatus.detail = undefined;
+
 				this.currentlySelectedInterpreterDisplay = undefined;
 			}
 		}
+
 		this.statusBarCanBeDisplayed = true;
+
 		this.updateVisibility();
 	}
+
 	private updateVisibility() {
 		if (!this.statusBar || !this.statusBarCanBeDisplayed) {
 			return;
 		}
+
 		if (
 			this.visibilityFilters.length === 0 ||
 			this.visibilityFilters.every((filter) => !filter.hidden)

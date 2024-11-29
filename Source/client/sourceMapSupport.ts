@@ -25,17 +25,21 @@ export class SourceMapSupport {
 			null,
 		);
 	}
+
 	public async initialize(): Promise<void> {
 		if (!this.enabled) {
 			return;
 		}
+
 		await this.enableSourceMaps(true);
+
 		require("source-map-support").install();
 
 		const localize =
 			require("./common/utils/localize") as typeof import("./common/utils/localize");
 
 		const disable = localize.Diagnostics.disableSourceMaps;
+
 		this.vscode.window
 			.showWarningMessage(localize.Diagnostics.warnSourceMaps, disable)
 			.then((selection) => {
@@ -44,9 +48,11 @@ export class SourceMapSupport {
 				}
 			});
 	}
+
 	public get enabled(): boolean {
 		return this.config.get<boolean>(setting, false);
 	}
+
 	public async disable(): Promise<void> {
 		if (this.enabled) {
 			await this.config.update(
@@ -55,8 +61,10 @@ export class SourceMapSupport {
 				this.vscode.ConfigurationTarget.Global,
 			);
 		}
+
 		await this.enableSourceMaps(false);
 	}
+
 	protected async enableSourceMaps(enable: boolean) {
 		const extensionSourceFile = path.join(
 			EXTENSION_ROOT_DIR,
@@ -73,11 +81,13 @@ export class SourceMapSupport {
 			"debugAdapter",
 			"main.js",
 		);
+
 		await Promise.all([
 			this.enableSourceMap(enable, extensionSourceFile),
 			this.enableSourceMap(enable, debuggerSourceFile),
 		]);
 	}
+
 	protected async enableSourceMap(enable: boolean, sourceFile: string) {
 		const sourceMapFile = `${sourceFile}.map`;
 
@@ -89,12 +99,14 @@ export class SourceMapSupport {
 			await this.rename(sourceMapFile, disabledSourceMapFile);
 		}
 	}
+
 	protected async rename(sourceFile: string, targetFile: string) {
 		const fs = new FileSystem();
 
 		if (await fs.fileExists(targetFile)) {
 			return;
 		}
+
 		await fs.move(sourceFile, targetFile);
 	}
 }
@@ -108,6 +120,7 @@ export function initialize(vscode: VSCode = require("vscode")) {
 
 		return;
 	}
+
 	new SourceMapSupport(vscode).initialize().catch((_ex) => {
 		traceError("Failed to initialize source map support in extension");
 	});

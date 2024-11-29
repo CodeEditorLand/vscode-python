@@ -72,9 +72,11 @@ export class TerminalHelper implements ITerminalHelper {
 	) {
 		this.shellDetector = new ShellDetector(this.platform, shellDetectors);
 	}
+
 	public createTerminal(title?: string): Terminal {
 		return this.terminalManager.createTerminal({ name: title });
 	}
+
 	public identifyTerminalShell(terminal?: Terminal): TerminalShellType {
 		return this.shellDetector.identifyTerminalShell(terminal);
 	}
@@ -96,6 +98,7 @@ export class TerminalHelper implements ITerminalHelper {
 
 		return `${commandPrefix}${command.fileToCommandArgumentForPythonExt()} ${formattedArgs.join(" ")}`.trim();
 	}
+
 	public async getEnvironmentActivationCommands(
 		terminalShellType: TerminalShellType,
 		resource?: Uri,
@@ -116,6 +119,7 @@ export class TerminalHelper implements ITerminalHelper {
 			terminalShellType,
 			providers,
 		);
+
 		this.sendTelemetry(
 			terminalShellType,
 			EventName.PYTHON_INTERPRETER_ACTIVATION_FOR_TERMINAL,
@@ -125,6 +129,7 @@ export class TerminalHelper implements ITerminalHelper {
 
 		return promise;
 	}
+
 	public async getEnvironmentActivationShellCommands(
 		resource: Resource,
 		shell: TerminalShellType,
@@ -133,6 +138,7 @@ export class TerminalHelper implements ITerminalHelper {
 		if (this.platform.osType === OSType.Unknown) {
 			return;
 		}
+
 		const providers = [
 			this.pixi,
 			this.bashCShellFish,
@@ -146,6 +152,7 @@ export class TerminalHelper implements ITerminalHelper {
 			shell,
 			providers,
 		);
+
 		this.sendTelemetry(
 			shell,
 			EventName.PYTHON_INTERPRETER_ACTIVATION_FOR_RUNNING_CODE,
@@ -168,9 +175,11 @@ export class TerminalHelper implements ITerminalHelper {
 
 		try {
 			const cmds = await promise;
+
 			hasCommands = Array.isArray(cmds) && cmds.length > 0;
 		} catch (ex) {
 			failed = true;
+
 			traceError("Failed to get activation commands", ex);
 		}
 
@@ -190,8 +199,10 @@ export class TerminalHelper implements ITerminalHelper {
 			terminal: terminalShellType,
 			pythonVersion,
 		};
+
 		sendTelemetryEvent(eventName, undefined, data);
 	}
+
 	protected async getActivationCommands(
 		resource: Resource,
 		interpreter: PythonEnvironment | undefined,

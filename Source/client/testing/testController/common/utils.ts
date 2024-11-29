@@ -57,17 +57,21 @@ export function fixLogLinesNoTrailing(content: string): string {
 }
 export interface IJSONRPCData {
 	extractedJSON: string;
+
 	remainingRawData: string;
 }
 
 export interface ParsedRPCHeadersAndData {
 	headers: Map<string, string>;
+
 	remainingRawData: string;
 }
 
 export interface ExtractOutput {
 	uuid: string | undefined;
+
 	cleanedJsonData: string | undefined;
+
 	remainingRawData: string;
 }
 
@@ -103,6 +107,7 @@ export function extractJsonPayload(
 
 	// verify the RPC has a UUID and that it is recognized
 	let uuid = rpcHeaders.headers.get(JSONRPC_UUID_HEADER);
+
 	uuid = checkUuid(uuid, uuids);
 
 	const payloadLength = rpcHeaders.headers.get("Content-Length");
@@ -139,12 +144,14 @@ export function checkUuid(
 		// no UUID found, this could occurred if the payload is full yet so send back without erroring
 		return undefined;
 	}
+
 	if (!uuids.includes(uuid)) {
 		// no UUID found, this could occurred if the payload is full yet so send back without erroring
 		throw new Error(
 			"On data received: Error occurred because the payload UUID is not recognized",
 		);
 	}
+
 	return uuid;
 }
 
@@ -178,6 +185,7 @@ export function parseJsonRPCHeadersAndData(
 
 			break;
 		}
+
 		const [key, value] = line.split(":");
 
 		if (value && value.trim()) {
@@ -260,6 +268,7 @@ export async function writeTestIdsFile(testIds: string[]): Promise<string> {
 			"Attempting to use temp directory for test ids file, file name:",
 			tempName,
 		);
+
 		tempFileName = path.join(os.tmpdir(), tempName);
 	} catch (error) {
 		// Handle the error when accessing the temp directory
@@ -270,8 +279,11 @@ export async function writeTestIdsFile(testIds: string[]): Promise<string> {
 		);
 		// Make new temp directory in extension root dir
 		const tempDir = path.join(EXTENSION_ROOT_DIR, ".temp");
+
 		await fs.promises.mkdir(tempDir, { recursive: true });
+
 		tempFileName = path.join(EXTENSION_ROOT_DIR, ".temp", tempName);
+
 		traceLog("New temp file:", tempFileName);
 	}
 	// write test ids to file
@@ -290,14 +302,18 @@ export async function startRunResultNamedPipe(
 	const pipeName: string = generateRandomPipeName("python-test-results");
 
 	const reader = await createReaderPipe(pipeName, cancellationToken);
+
 	traceVerbose(`Test Results named pipe ${pipeName} connected`);
 
 	let disposables: Disposable[] = [];
 
 	const disposable = new Disposable(() => {
 		traceVerbose(`Test Results named pipe ${pipeName} disposed`);
+
 		disposables.forEach((d) => d.dispose());
+
 		disposables = [];
+
 		deferredTillServerClose.resolve();
 	});
 
@@ -305,10 +321,12 @@ export async function startRunResultNamedPipe(
 		disposables.push(
 			cancellationToken?.onCancellationRequested(() => {
 				console.log(`Test Result named pipe ${pipeName}  cancelled`);
+
 				disposable.dispose();
 			}),
 		);
 	}
+
 	disposables.push(
 		reader,
 		reader.listen((data: Message) => {
@@ -355,7 +373,9 @@ export async function startDiscoveryNamedPipe(
 
 	const disposable = new Disposable(() => {
 		traceVerbose(`Test Discovery named pipe ${pipeName} disposed`);
+
 		disposables.forEach((d) => d.dispose());
+
 		disposables = [];
 	});
 
@@ -365,6 +385,7 @@ export async function startDiscoveryNamedPipe(
 				traceVerbose(
 					`Test Discovery named pipe ${pipeName}  cancelled`,
 				);
+
 				disposable.dispose();
 			}),
 		);
@@ -374,6 +395,7 @@ export async function startDiscoveryNamedPipe(
 		reader,
 		reader.listen((data: Message) => {
 			traceVerbose(`Test Discovery named pipe ${pipeName} received data`);
+
 			callback(
 				(data as DiscoveryResultMessage)
 					.params as DiscoveredTestPayload,
@@ -381,6 +403,7 @@ export async function startDiscoveryNamedPipe(
 		}),
 		reader.onClose(() => {
 			traceVerbose(`Test Discovery named pipe ${pipeName} closed`);
+
 			disposable.dispose();
 		}),
 		reader.onError((error) => {
@@ -422,7 +445,9 @@ export async function startTestIdServer(testIds: string[]): Promise<number> {
 
 			server.listen(0, () => {
 				const { port } = server.address() as net.AddressInfo;
+
 				traceLog(`Server listening on port ${port}`);
+
 				resolve(port);
 			});
 
@@ -496,6 +521,7 @@ export function populateTestTree(
 		);
 
 		testRoot.canResolveChildren = true;
+
 		testRoot.tags = [RunTestTag, DebugTestTag];
 
 		testController.items.add(testRoot);
@@ -510,20 +536,26 @@ export function populateTestTree(
 					child.name,
 					Uri.file(child.path),
 				);
+
 				testItem.tags = [RunTestTag, DebugTestTag];
 
 				const range = new Range(
 					new Position(Number(child.lineno) - 1, 0),
 					new Position(Number(child.lineno), 0),
 				);
+
 				testItem.canResolveChildren = false;
+
 				testItem.range = range;
+
 				testItem.tags = [RunTestTag, DebugTestTag];
 
 				testRoot!.children.add(testItem);
 				// add to our map
 				resultResolver.runIdToTestItem.set(child.runID, testItem);
+
 				resultResolver.runIdToVSid.set(child.runID, child.id_);
+
 				resultResolver.vsIdToRunId.set(child.id_, child.runID);
 			} else {
 				let node = testController.items.get(child.path);
@@ -536,9 +568,12 @@ export function populateTestTree(
 					);
 
 					node.canResolveChildren = true;
+
 					node.tags = [RunTestTag, DebugTestTag];
+
 					testRoot!.children.add(node);
 				}
+
 				populateTestTree(
 					testController,
 					child,
@@ -572,12 +607,14 @@ export function createExecutionErrorPayload(
 	// add error result for each attempted test.
 	for (let i = 0; i < testIds.length; i = i + 1) {
 		const test = testIds[i];
+
 		etp.result![test] = {
 			test,
 			outcome: "error",
 			message: ` \n The python test process was terminated before it could exit on its own, the process errored with: Code: ${code}, Signal: ${signal}`,
 		};
 	}
+
 	return etp;
 }
 
@@ -611,6 +648,7 @@ export function splitTestNameWithRegex(testName: string): [string, string] {
 	if (match) {
 		return [match[1].trim(), match[2] || match[3] || testName];
 	}
+
 	return [testName, testName];
 }
 
@@ -633,11 +671,13 @@ export function addValueIfKeyNotExist(
 			return args;
 		}
 	}
+
 	if (value) {
 		args.push(`${key}=${value}`);
 	} else {
 		args.push(`${key}`);
 	}
+
 	return args;
 }
 
@@ -654,6 +694,7 @@ export function argKeyExists(args: string[], key: string): boolean {
 			return true;
 		}
 	}
+
 	return false;
 }
 

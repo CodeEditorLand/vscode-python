@@ -86,7 +86,9 @@ export class PytestController implements ITestFrameworkController {
 				// Refresh each node with new data
 				if (rawTestData.length === 0) {
 					const items: TestItem[] = [];
+
 					testController.items.forEach((i) => items.push(i));
+
 					items.forEach((i) => testController.items.delete(i.id));
 
 					return Promise.resolve();
@@ -111,6 +113,7 @@ export class PytestController implements ITestFrameworkController {
 							);
 						} else {
 							this.idToRawData.delete(item.id);
+
 							testController.items.delete(item.id);
 
 							return Promise.resolve();
@@ -120,6 +123,7 @@ export class PytestController implements ITestFrameworkController {
 						// existing nodes. Then if they have data we keep those nodes, Nodes without
 						// data will be removed after we check the raw data.
 						let subRootWithNoData: string[] = [];
+
 						item.children.forEach((c) =>
 							subRootWithNoData.push(c.id),
 						);
@@ -135,10 +139,12 @@ export class PytestController implements ITestFrameworkController {
 										p.parentid === "." ||
 										p.parentid === root,
 								);
+
 								subRootId = path.join(
 									data.root,
 									subRoot.length > 0 ? subRoot[0].id : "",
 								);
+
 								rawId =
 									subRoot.length > 0
 										? subRoot[0].id
@@ -161,6 +167,7 @@ export class PytestController implements ITestFrameworkController {
 											rawId,
 										},
 									);
+
 									item.children.add(subRootItem);
 								}
 
@@ -168,6 +175,7 @@ export class PytestController implements ITestFrameworkController {
 								subRootWithNoData = subRootWithNoData.filter(
 									(s) => s !== subRootId,
 								);
+
 								await updateTestItemFromRawData(
 									subRootItem,
 									testController,
@@ -218,6 +226,7 @@ export class PytestController implements ITestFrameworkController {
 				}
 			}
 		}
+
 		return Promise.resolve();
 	}
 
@@ -288,6 +297,7 @@ export class PytestController implements ITestFrameworkController {
 			}
 
 			const deferred = createDeferred<void>();
+
 			this.discovering.set(workspace.uri.fsPath, deferred);
 
 			let rawTestData: RawDiscoveredTests[] = [];
@@ -301,6 +311,7 @@ export class PytestController implements ITestFrameworkController {
 						),
 					),
 				);
+
 				this.testData.set(workspace.uri.fsPath, rawTestData);
 
 				// Remove error node
@@ -319,6 +330,7 @@ export class PytestController implements ITestFrameworkController {
 				const cancel = options.token?.isCancellationRequested
 					? "Cancelled"
 					: "Error";
+
 				traceError(`${cancel} discovering pytest tests:\r\n`, ex);
 
 				const message = getTestDiscoveryExceptions(
@@ -343,6 +355,7 @@ export class PytestController implements ITestFrameworkController {
 				// Discovery has finished running we have the raw test data at this point.
 				this.discovering.delete(workspace.uri.fsPath);
 			}
+
 			const root =
 				rawTestData.length === 1
 					? rawTestData[0].root
@@ -391,11 +404,13 @@ export class PytestController implements ITestFrameworkController {
 						runId: root,
 					},
 				);
+
 				testController.items.add(newItem);
 
 				await this.resolveChildren(testController, newItem, token);
 			}
 		}
+
 		sendTelemetryEvent(EventName.UNITTEST_DISCOVERY_DONE, undefined, {
 			tool: "pytest",
 			failed: false,
@@ -447,5 +462,6 @@ function getTestDiscoveryExceptions(content: string): string {
 			start = true;
 		}
 	}
+
 	return exceptions;
 }

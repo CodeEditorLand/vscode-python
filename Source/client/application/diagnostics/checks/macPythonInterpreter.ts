@@ -74,12 +74,14 @@ export class InvalidMacPythonInterpreterService extends BaseDiagnosticsService {
 			disposableRegistry,
 			true,
 		);
+
 		this.addPythonPathChangedHandler();
 	}
 
 	public dispose(): void {
 		if (this.timeOut && typeof this.timeOut !== "number") {
 			clearTimeout(this.timeOut);
+
 			this.timeOut = undefined;
 		}
 	}
@@ -88,6 +90,7 @@ export class InvalidMacPythonInterpreterService extends BaseDiagnosticsService {
 		if (!this.platform.isMac) {
 			return [];
 		}
+
 		const configurationService =
 			this.serviceContainer.get<IConfigurationService>(
 				IConfigurationService,
@@ -98,6 +101,7 @@ export class InvalidMacPythonInterpreterService extends BaseDiagnosticsService {
 		if (!(await this.helper.isMacDefaultPythonPath(settings.pythonPath))) {
 			return [];
 		}
+
 		return [
 			new InvalidMacPythonInterpreterDiagnostic(
 				DiagnosticCodes.MacInterpreterSelected,
@@ -110,9 +114,11 @@ export class InvalidMacPythonInterpreterService extends BaseDiagnosticsService {
 		if (diagnostics.length === 0) {
 			return;
 		}
+
 		const messageService = this.serviceContainer.get<
 			IDiagnosticHandlerService<MessageCommandPrompt>
 		>(IDiagnosticHandlerService, DiagnosticCommandPromptHandlerServiceId);
+
 		await Promise.all(
 			diagnostics.map(async (diagnostic) => {
 				const canHandle = await this.canHandle(diagnostic);
@@ -125,7 +131,9 @@ export class InvalidMacPythonInterpreterService extends BaseDiagnosticsService {
 				if (!canHandle || shouldIgnore) {
 					return;
 				}
+
 				const commandPrompts = this.getCommandPrompts(diagnostic);
+
 				await messageService.handle(diagnostic, {
 					commandPrompts,
 					message: diagnostic.message,
@@ -142,6 +150,7 @@ export class InvalidMacPythonInterpreterService extends BaseDiagnosticsService {
 			this.serviceContainer.get<IInterpreterPathService>(
 				IInterpreterPathService,
 			);
+
 		disposables.push(
 			interpreterPathService.onDidChange((i) =>
 				this.onDidChangeConfiguration(i),
@@ -156,10 +165,13 @@ export class InvalidMacPythonInterpreterService extends BaseDiagnosticsService {
 		// Lets wait, for more changes, dirty simple throttling.
 		if (this.timeOut && typeof this.timeOut !== "number") {
 			clearTimeout(this.timeOut);
+
 			this.timeOut = undefined;
 		}
+
 		this.timeOut = setTimeout(() => {
 			this.timeOut = undefined;
+
 			this.diagnose(workspaceUri)
 				.then((diagnostics) => this.handle(diagnostics))
 				.ignoreErrors();
@@ -193,6 +205,7 @@ export class InvalidMacPythonInterpreterService extends BaseDiagnosticsService {
 					},
 				];
 			}
+
 			default: {
 				throw new Error(
 					"Invalid diagnostic for 'InvalidMacPythonInterpreterService'",

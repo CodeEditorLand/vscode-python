@@ -33,6 +33,7 @@ export class PosixKnownPathsLocator extends Locator<BasicEnvInfo> {
 
 		const iterator = async function* (kind: PythonEnvKind) {
 			const stopWatch = new StopWatch();
+
 			traceInfo("Searching for interpreters in posix paths locator");
 
 			try {
@@ -45,6 +46,7 @@ export class PosixKnownPathsLocator extends Locator<BasicEnvInfo> {
 
 				let pythonBinaries =
 					await getPythonBinFromPosixPaths(knownDirs);
+
 				traceVerbose(
 					`Found ${pythonBinaries.length} python binaries in posix paths`,
 				);
@@ -70,6 +72,7 @@ export class PosixKnownPathsLocator extends Locator<BasicEnvInfo> {
 			} catch (ex) {
 				traceError("Failed to process posix paths", ex);
 			}
+
 			traceInfo(
 				`Finished searching for interpreters in posix paths locator: ${stopWatch.elapsedTime} milliseconds`,
 			);

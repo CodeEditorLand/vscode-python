@@ -77,13 +77,17 @@ abstract class BaseInstaller implements IBaseInstaller {
 	constructor(protected serviceContainer: IServiceContainer) {
 		this.appShell =
 			serviceContainer.get<IApplicationShell>(IApplicationShell);
+
 		this.configService = serviceContainer.get<IConfigurationService>(
 			IConfigurationService,
 		);
+
 		this.workspaceService =
 			serviceContainer.get<IWorkspaceService>(IWorkspaceService);
+
 		this.productService =
 			serviceContainer.get<IProductService>(IProductService);
+
 		this.persistentStateFactory =
 			serviceContainer.get<IPersistentStateFactory>(
 				IPersistentStateFactory,
@@ -109,16 +113,20 @@ abstract class BaseInstaller implements IBaseInstaller {
 		if (BaseInstaller.PromptPromises.has(key)) {
 			return BaseInstaller.PromptPromises.get(key)!;
 		}
+
 		const promise = this.promptToInstallImplementation(
 			product,
 			resource,
 			cancel,
 			flags,
 		);
+
 		BaseInstaller.PromptPromises.set(key, promise);
+
 		promise
 			.then(() => BaseInstaller.PromptPromises.delete(key))
 			.ignoreErrors();
+
 		promise
 			.catch(() => BaseInstaller.PromptPromises.delete(key))
 			.ignoreErrors();
@@ -192,9 +200,11 @@ abstract class BaseInstaller implements IBaseInstaller {
 		if (!version) {
 			return ProductInstallStatus.NotInstalled;
 		}
+
 		if (semver.satisfies(version, semVerRequirement)) {
 			return ProductInstallStatus.Installed;
 		}
+
 		return ProductInstallStatus.NeedsUpgrade;
 	}
 
@@ -225,6 +235,7 @@ abstract class BaseInstaller implements IBaseInstaller {
 					interpreter,
 					allowEnvironmentFetchExceptions: true,
 				});
+
 			version = await pythonProcess.getModuleVersion(executableName);
 		} else {
 			const process = await this.serviceContainer
@@ -234,11 +245,14 @@ abstract class BaseInstaller implements IBaseInstaller {
 			const result = await process.exec(executableName, ["--version"], {
 				mergeStdOutErr: true,
 			});
+
 			version = result.stdout.trim();
 		}
+
 		if (!version) {
 			return null;
 		}
+
 		try {
 			return semver.coerce(version);
 		} catch (e) {
@@ -278,6 +292,7 @@ abstract class BaseInstaller implements IBaseInstaller {
 
 			return pythonProcess.isModuleInstalled(executableName);
 		}
+
 		const process = await this.serviceContainer
 			.get<IProcessServiceFactory>(IProcessServiceFactory)
 			.create(uri);
@@ -349,6 +364,7 @@ export class TestFrameworkInstaller extends BaseInstaller {
 				product,
 				resource,
 			);
+
 			message = l10n.t(
 				"Path to the {0} test framework is invalid ({1})",
 				productName,
@@ -417,6 +433,7 @@ export class DataScienceInstaller extends BaseInstaller {
 				traceInfo(
 					`Installing pip as its not available to install ${moduleName}.`,
 				);
+
 				await pipInstaller
 					.installModule(Product.pip, interpreter, cancel)
 					.catch((ex) =>
@@ -460,6 +477,7 @@ export class DataScienceInstaller extends BaseInstaller {
 						envType: interpreter.envType,
 					},
 				);
+
 				traceError(`Unable to install pip when its required.`);
 			}
 		}
@@ -483,6 +501,7 @@ export class DataScienceInstaller extends BaseInstaller {
 			traceInfo(
 				`Interpreter type is conda but package ${moduleName} is not available through conda, using pip instead.`,
 			);
+
 			requiredInstaller = ModuleInstallerType.Pip;
 		} else {
 			switch (interpreter.envType) {
@@ -500,6 +519,7 @@ export class DataScienceInstaller extends BaseInstaller {
 					requiredInstaller = ModuleInstallerType.Pip;
 			}
 		}
+
 		const installerModule: IModuleInstaller | undefined = channels.find(
 			(v) => v.type === requiredInstaller,
 		);
@@ -513,6 +533,7 @@ export class DataScienceInstaller extends BaseInstaller {
 					),
 				)
 				.then(noop, noop);
+
 			sendTelemetryEvent(EventName.PYTHON_INSTALL_PACKAGE, undefined, {
 				installer: "unavailable",
 				requiredInstaller,
@@ -572,6 +593,7 @@ export class DataScienceInstaller extends BaseInstaller {
 		if (item === Common.bannerLabelYes) {
 			return this.install(product, resource, cancel);
 		}
+
 		return InstallerResponse.Ignore;
 	}
 }
@@ -590,6 +612,7 @@ export class PythonInstaller implements IBaseInstaller {
 				`${product} cannot be installed via conda python installer`,
 			);
 		}
+
 		const interpreterService =
 			this.serviceContainer.get<IInterpreterService>(IInterpreterService);
 
@@ -600,6 +623,7 @@ export class PythonInstaller implements IBaseInstaller {
 		if (!environment) {
 			return true;
 		}
+
 		if (
 			environment.envPath?.length &&
 			environment.envType === EnvironmentType.Conda &&
@@ -607,6 +631,7 @@ export class PythonInstaller implements IBaseInstaller {
 		) {
 			return false;
 		}
+
 		return true;
 	}
 
@@ -636,7 +661,9 @@ export class PythonInstaller implements IBaseInstaller {
 
 			return InstallerResponse.Ignore;
 		}
+
 		const moduleName = translateProductToModule(product);
+
 		await condaInstaller
 			.installModule(Product.python, resource, undefined, undefined, {
 				installAsProcess: true,
@@ -686,6 +713,7 @@ export class ProductInstaller implements IInstaller {
 	) {
 		this.productService =
 			serviceContainer.get<IProductService>(IProductService);
+
 		this.interpreterService =
 			this.serviceContainer.get<IInterpreterService>(IInterpreterService);
 	}
@@ -707,6 +735,7 @@ export class ProductInstaller implements IInstaller {
 		if (!currentInterpreter) {
 			return InstallerResponse.Ignore;
 		}
+
 		return this.createInstaller(product).promptToInstall(
 			product,
 			resource,
@@ -771,6 +800,7 @@ export class ProductInstaller implements IInstaller {
 			default:
 				break;
 		}
+
 		throw new Error(`Unknown product ${product}`);
 	}
 }

@@ -40,7 +40,9 @@ export class LaunchJsonCodeActionProvider implements CodeActionProvider {
 			`Convert to ${finalText}`,
 			CodeActionKind.QuickFix,
 		);
+
 		fix.edit = new WorkspaceEdit();
+
 		fix.edit.replace(document.uri, diagnostic.range, finalText);
 
 		return fix;

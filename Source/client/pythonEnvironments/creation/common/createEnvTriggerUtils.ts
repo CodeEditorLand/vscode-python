@@ -36,6 +36,7 @@ export async function hasRequirementFiles(
 	if (found) {
 		traceVerbose(`Found requirement files: ${workspace.uri.fsPath}`);
 	}
+
 	return found;
 }
 
@@ -59,6 +60,7 @@ export async function hasKnownFiles(
 	if (found) {
 		traceVerbose(`Found known files: ${workspace.uri.fsPath}`);
 	}
+
 	return found;
 }
 
@@ -70,6 +72,7 @@ export async function isGlobalPythonSelected(
 	if (!extension) {
 		return false;
 	}
+
 	const extensionApi: PythonExtension = extension.exports as PythonExtension;
 
 	const interpreter = extensionApi.environments.getActiveEnvironmentPath(
@@ -86,6 +89,7 @@ export async function isGlobalPythonSelected(
 			`Selected python for [${workspace.uri.fsPath}] is [global] type: ${interpreter.path}`,
 		);
 	}
+
 	return isGlobal;
 }
 
@@ -136,6 +140,7 @@ export function isCreateEnvWorkspaceCheckNotRun(): boolean {
 	if (_alreadyCreateEnvCriteriaCheck) {
 		return false;
 	}
+
 	_alreadyCreateEnvCriteriaCheck = true;
 
 	return true;

@@ -49,6 +49,7 @@ export async function getCondaBaseEnv(): Promise<string | undefined> {
 				Uri.parse("https://docs.anaconda.com/anaconda/install/"),
 			);
 		}
+
 		return undefined;
 	}
 
@@ -57,6 +58,7 @@ export async function getCondaBaseEnv(): Promise<string | undefined> {
 	if (envs.length === 1) {
 		return envs[0].prefix;
 	}
+
 	if (envs.length > 1) {
 		traceLog(
 			"Multiple conda base envs detected: ",
@@ -129,6 +131,7 @@ export function getPathEnvVariableForConda(
 
 		return `${libPath}${path.delimiter}${pathEnv}`;
 	}
+
 	return pathEnv;
 }
 

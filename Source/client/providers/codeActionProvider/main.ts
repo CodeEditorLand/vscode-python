@@ -31,6 +31,7 @@ export class CodeActionProviderService
 			language: "jsonc",
 			pattern: "**/launch.json",
 		};
+
 		this.disposableRegistry.push(
 			vscode.languages.registerCodeActionsProvider(
 				documentSelector,

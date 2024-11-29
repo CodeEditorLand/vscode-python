@@ -41,7 +41,9 @@ export function initializeFileLogging(disposables: Disposable[]): void {
 		const fileLogger = new FileLogger(
 			createWriteStream(process.env.VSC_PYTHON_LOG_FILE),
 		);
+
 		disposables.push(fileLogger);
+
 		disposables.push(registerLogger(fileLogger));
 	}
 }
@@ -110,12 +112,15 @@ type TraceInfo = {
 	// Either returnValue or err will be set.
 
 	returnValue?: any;
+
 	err?: Error;
 };
 
 type LogInfo = {
 	opts: TraceOptions;
+
 	message: string;
+
 	level?: LogLevel;
 };
 
@@ -176,6 +181,7 @@ function tracing<T>(log: (t: TraceInfo) => void, run: () => T): T {
 		} else {
 			log({ elapsed: timer.elapsedTime, returnValue: result });
 		}
+
 		return result;
 	} catch (ex) {
 		log({ elapsed: timer.elapsedTime, err: ex as Error | undefined });
@@ -194,12 +200,15 @@ function normalizeCall(call: CallInfo): CallInfo {
 	if (!kind || kind === "") {
 		kind = "Function";
 	}
+
 	if (!name || name === "") {
 		name = "<anon>";
 	}
+
 	if (!args) {
 		args = [];
 	}
+
 	return { kind, name, args };
 }
 
@@ -211,6 +220,7 @@ function formatMessages(
 	call = normalizeCall(call!);
 
 	const messages = [logInfo.message];
+
 	messages.push(
 		`${call.kind} name = ${call.name}`.trim(),
 		`completed in ${traced.elapsed}ms`,
@@ -220,12 +230,14 @@ function formatMessages(
 	if ((logInfo.opts & TraceOptions.Arguments) === TraceOptions.Arguments) {
 		messages.push(argsToLogString(call.args));
 	}
+
 	if (
 		(logInfo.opts & TraceOptions.ReturnValue) ===
 		TraceOptions.ReturnValue
 	) {
 		messages.push(returnValueToLogString(traced.returnValue));
 	}
+
 	return messages.join(", ");
 }
 
@@ -239,6 +251,7 @@ function logResult(logInfo: LogInfo, traced: TraceInfo, call?: CallInfo) {
 		}
 	} else {
 		logTo(LogLevel.Error, [formatted, traced.err]);
+
 		sendTelemetryEvent(
 			"ERROR" as unknown as EventName,
 			undefined,

@@ -39,23 +39,36 @@ import {
  */
 export function buildEnvInfo(init?: {
 	kind?: PythonEnvKind;
+
 	executable?: string;
+
 	name?: string;
+
 	location?: string;
+
 	version?: PythonVersion;
+
 	org?: string;
+
 	arch?: Architecture;
+
 	fileInfo?: { ctime: number; mtime: number };
+
 	source?: PythonEnvSource[];
+
 	display?: string;
+
 	sysPrefix?: string;
+
 	searchLocation?: Uri;
+
 	type?: PythonEnvType;
 	/**
 	 * Command used to run Python in this environment.
 	 * E.g. `conda run -n envName python` or `python.exe`
 	 */
 	pythonRunCommand?: string[];
+
 	identifiedUsingNativeLocator?: boolean;
 }): PythonEnvInfo {
 	const env: PythonEnvInfo = {
@@ -91,6 +104,7 @@ export function buildEnvInfo(init?: {
 	if (init !== undefined) {
 		updateEnv(env, init);
 	}
+
 	env.id = getEnvID(env.executable.filename, env.location);
 
 	return env;
@@ -105,8 +119,11 @@ export function areEnvsDeepEqual(
 	const env2Clone = cloneDeep(env2);
 	// Cannot compare searchLocation as they are Uri objects.
 	delete env1Clone.searchLocation;
+
 	delete env2Clone.searchLocation;
+
 	env1Clone.source = env1Clone.source.sort();
+
 	env2Clone.source = env2Clone.source.sort();
 
 	const searchLocation1 = env1.searchLocation?.fsPath ?? "";
@@ -142,6 +159,7 @@ export function copyEnvInfo(
 	if (updates !== undefined) {
 		updateEnv(copied, updates);
 	}
+
 	return copied;
 }
 
@@ -149,28 +167,38 @@ function updateEnv(
 	env: PythonEnvInfo,
 	updates: {
 		kind?: PythonEnvKind;
+
 		executable?: string;
+
 		location?: string;
+
 		version?: PythonVersion;
+
 		searchLocation?: Uri;
+
 		type?: PythonEnvType;
 	},
 ): void {
 	if (updates.kind !== undefined) {
 		env.kind = updates.kind;
 	}
+
 	if (updates.executable !== undefined) {
 		env.executable.filename = updates.executable;
 	}
+
 	if (updates.location !== undefined) {
 		env.location = updates.location;
 	}
+
 	if (updates.version !== undefined) {
 		env.version = updates.version;
 	}
+
 	if (updates.searchLocation !== undefined) {
 		env.searchLocation = updates.searchLocation;
 	}
+
 	if (updates.type !== undefined) {
 		env.type = updates.type;
 	}
@@ -184,6 +212,7 @@ function updateEnv(
  */
 export function setEnvDisplayString(env: PythonEnvInfo): void {
 	env.display = buildEnvDisplayString(env);
+
 	env.detailedDisplayName = buildEnvDisplayString(env, true);
 }
 
@@ -202,6 +231,7 @@ function buildEnvDisplayString(
 	if (env.version && !isVersionEmpty(env.version)) {
 		displayNameParts.push(getVersionDisplayString(env.version));
 	}
+
 	if (shouldDisplayArch) {
 		const archName = getArchitectureDisplayName(env.arch);
 
@@ -220,9 +250,11 @@ function buildEnvDisplayString(
 	} else if (env.location && env.location !== "") {
 		if (env.kind === PythonEnvKind.Conda) {
 			const condaEnvName = path.basename(env.location);
+
 			envSuffixParts.push(`'${condaEnvName}'`);
 		}
 	}
+
 	if (shouldDisplayKind) {
 		const kindName = getKindDisplayName(env.kind);
 
@@ -230,6 +262,7 @@ function buildEnvDisplayString(
 			envSuffixParts.push(kindName);
 		}
 	}
+
 	const envSuffix =
 		envSuffixParts.length === 0 ? "" : `(${envSuffixParts.join(": ")})`;
 
@@ -250,6 +283,7 @@ function getMinimalPartialInfo(
 		if (env === "") {
 			return undefined;
 		}
+
 		return {
 			id: "",
 			executable: {
@@ -260,6 +294,7 @@ function getMinimalPartialInfo(
 			},
 		};
 	}
+
 	if ("executablePath" in env) {
 		return {
 			id: "",
@@ -274,6 +309,7 @@ function getMinimalPartialInfo(
 			source: env.source,
 		};
 	}
+
 	return env;
 }
 
@@ -293,6 +329,7 @@ export function getEnvPath(
 		// Executable is not inside the environment folder, env folder is the ID.
 		envPath = { path: envFolderPath, pathType: "envFolderPath" };
 	}
+
 	return envPath;
 }
 
@@ -330,12 +367,14 @@ export function areSameEnv(
 	if (leftInfo === undefined || rightInfo === undefined) {
 		return undefined;
 	}
+
 	if (
 		(leftInfo.executable?.filename && !rightInfo.executable?.filename) ||
 		(!leftInfo.executable?.filename && rightInfo.executable?.filename)
 	) {
 		return false;
 	}
+
 	if (leftInfo.id && leftInfo.id === rightInfo.id) {
 		// In case IDs are available, use it.
 		return true;
@@ -381,6 +420,7 @@ export function areSameEnv(
 			}
 		}
 	}
+
 	return false;
 }
 

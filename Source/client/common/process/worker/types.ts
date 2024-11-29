@@ -25,14 +25,17 @@ export type SpawnOptions = ChildProcessSpawnOptions & {
 	//  * Can't use `CancellationToken` here as it comes from vscode which is not available in worker threads.
 	//  */
 	// token?: CancellationToken;
+
 	mergeStdOutErr?: boolean;
 
 	throwOnStdErr?: boolean;
+
 	extraVariables?: NodeJS.ProcessEnv;
 	// /**
 	//  * Can't use `OutputChannel` here as it comes from vscode which is not available in worker threads.
 	//  */
 	// outputChannel?: OutputChannel;
+
 	stdinStr?: string;
 };
 
@@ -40,5 +43,6 @@ export type ShellOptions = ExecOptions & { throwOnStdErr?: boolean };
 
 export type ExecutionResult<T extends string | Buffer> = {
 	stdout: T;
+
 	stderr?: T;
 };

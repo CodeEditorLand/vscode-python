@@ -17,6 +17,7 @@ export class DiagnosticsCommandFactory implements IDiagnosticsCommandFactory {
 	constructor(
 		@inject(IServiceContainer) private serviceContainer: IServiceContainer,
 	) {}
+
 	public createCommand(
 		diagnostic: IDiagnostic,
 		options: CommandOptions,
@@ -31,6 +32,7 @@ export class DiagnosticsCommandFactory implements IDiagnosticsCommandFactory {
 					options.options,
 				);
 			}
+
 			case "launch": {
 				return new LaunchBrowserCommand(
 					diagnostic,
@@ -38,6 +40,7 @@ export class DiagnosticsCommandFactory implements IDiagnosticsCommandFactory {
 					options.options,
 				);
 			}
+
 			case "executeVSCCommand": {
 				return new ExecuteVSCCommand(
 					diagnostic,
@@ -45,6 +48,7 @@ export class DiagnosticsCommandFactory implements IDiagnosticsCommandFactory {
 					options.options,
 				);
 			}
+
 			default: {
 				throw new Error(
 					`Unknown Diagnostic command commandType '${commandType}'`,

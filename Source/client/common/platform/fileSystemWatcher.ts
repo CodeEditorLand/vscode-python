@@ -24,17 +24,21 @@ export function watchLocationForPattern(
 	const globPattern = new RelativePattern(baseDir, pattern);
 
 	const disposables = new Disposables();
+
 	traceVerbose(
 		`Start watching: ${baseDir} with pattern ${pattern} using VSCode API`,
 	);
 
 	const watcher = workspace.createFileSystemWatcher(globPattern);
+
 	disposables.push(
 		watcher.onDidCreate((e) => callback(FileChangeType.Created, e.fsPath)),
 	);
+
 	disposables.push(
 		watcher.onDidChange((e) => callback(FileChangeType.Changed, e.fsPath)),
 	);
+
 	disposables.push(
 		watcher.onDidDelete((e) => callback(FileChangeType.Deleted, e.fsPath)),
 	);

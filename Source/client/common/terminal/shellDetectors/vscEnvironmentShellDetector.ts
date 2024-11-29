@@ -21,6 +21,7 @@ export class VSCEnvironmentShellDetector extends BaseShellDetector {
 	) {
 		super(3);
 	}
+
 	public identify(
 		telemetryProperties: ShellIdentificationTelemetry,
 		terminal?: Terminal,
@@ -35,14 +36,18 @@ export class VSCEnvironmentShellDetector extends BaseShellDetector {
 		if (!shellPath) {
 			return;
 		}
+
 		const shell = this.identifyShellFromShellPath(shellPath);
+
 		traceVerbose(
 			`Terminal shell path '${shellPath}' identified as shell '${shell}'`,
 		);
+
 		telemetryProperties.shellIdentificationSource =
 			shell === TerminalShellType.other
 				? telemetryProperties.shellIdentificationSource
 				: "vscode";
+
 		telemetryProperties.failed =
 			shell === TerminalShellType.other ? false : true;
 

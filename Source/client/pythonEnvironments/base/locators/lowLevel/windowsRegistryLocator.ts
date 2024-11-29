@@ -38,8 +38,10 @@ export class WindowsRegistryLocator extends Locator<BasicEnvInfo> {
 				// Query via change event, so iterate all envs.
 				return iterateEnvs();
 			}
+
 			return iterateEnvsLazily(this.emitter);
 		}
+
 		return iterateEnvs();
 	}
 }
@@ -52,8 +54,11 @@ async function* iterateEnvsLazily(
 
 async function loadAllEnvs(changed: IEmitter<PythonEnvsChangedEvent>) {
 	const stopWatch = new StopWatch();
+
 	traceInfo("Searching for windows registry interpreters");
+
 	changed.fire({ providerId: WINDOWS_REG_PROVIDER_ID });
+
 	traceInfo(
 		`Finished searching for windows registry interpreters: ${stopWatch.elapsedTime} milliseconds`,
 	);
@@ -61,6 +66,7 @@ async function loadAllEnvs(changed: IEmitter<PythonEnvsChangedEvent>) {
 
 async function* iterateEnvs(): IPythonEnvsIterator<BasicEnvInfo> {
 	const stopWatch = new StopWatch();
+
 	traceInfo("Searching for windows registry interpreters");
 
 	const interpreters = await getRegistryInterpreters(); // Value should already be loaded at this point, so this returns immediately.
@@ -72,6 +78,7 @@ async function* iterateEnvs(): IPythonEnvsIterator<BasicEnvInfo> {
 			if (isMicrosoftStoreDir(interpreter.interpreterPath)) {
 				continue;
 			}
+
 			const env: BasicEnvInfo = {
 				kind: PythonEnvKind.OtherGlobal,
 				executablePath: interpreter.interpreterPath,
@@ -83,6 +90,7 @@ async function* iterateEnvs(): IPythonEnvsIterator<BasicEnvInfo> {
 			traceError(`Failed to process environment: ${interpreter}`, ex);
 		}
 	}
+
 	traceInfo(
 		`Finished searching for windows registry interpreters: ${stopWatch.elapsedTime} milliseconds`,
 	);

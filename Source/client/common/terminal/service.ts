@@ -34,14 +34,23 @@ import {
 @injectable()
 export class TerminalService implements ITerminalService, Disposable {
 	private terminal?: Terminal;
+
 	private terminalShellType!: TerminalShellType;
+
 	private terminalClosed = new EventEmitter<void>();
+
 	private terminalManager: ITerminalManager;
+
 	private terminalHelper: ITerminalHelper;
+
 	private terminalActivator: ITerminalActivator;
+
 	private terminalAutoActivator: ITerminalAutoActivation;
+
 	private readonly executeCommandListeners: Set<Disposable> = new Set();
+
 	private _terminalFirstLaunched: boolean = true;
+
 	public get onDidCloseTerminal(): Event<void> {
 		return this.terminalClosed.event.bind(this.terminalClosed);
 	}
@@ -52,23 +61,30 @@ export class TerminalService implements ITerminalService, Disposable {
 	) {
 		const disposableRegistry =
 			this.serviceContainer.get<Disposable[]>(IDisposableRegistry);
+
 		disposableRegistry.push(this);
+
 		this.terminalHelper =
 			this.serviceContainer.get<ITerminalHelper>(ITerminalHelper);
+
 		this.terminalManager =
 			this.serviceContainer.get<ITerminalManager>(ITerminalManager);
+
 		this.terminalAutoActivator =
 			this.serviceContainer.get<ITerminalAutoActivation>(
 				ITerminalAutoActivation,
 			);
+
 		this.terminalManager.onDidCloseTerminal(
 			this.terminalCloseHandler,
 			this,
 			disposableRegistry,
 		);
+
 		this.terminalActivator =
 			this.serviceContainer.get<ITerminalActivator>(ITerminalActivator);
 	}
+
 	public dispose() {
 		this.terminal?.dispose();
 
@@ -81,6 +97,7 @@ export class TerminalService implements ITerminalService, Disposable {
 			});
 		}
 	}
+
 	public async sendCommand(
 		command: string,
 		args: string[],
@@ -107,8 +124,10 @@ export class TerminalService implements ITerminalService, Disposable {
 		if (!this.options?.hideFromUser) {
 			this.terminal!.show(true);
 		}
+
 		this.terminal!.sendText(text);
 	}
+
 	public async executeCommand(
 		commandLine: string,
 		isPythonShell: boolean,
@@ -128,7 +147,9 @@ export class TerminalService implements ITerminalService, Disposable {
 					this.terminalManager.onDidChangeTerminalShellIntegration(
 						() => {
 							clearTimeout(timer);
+
 							disposable.dispose();
+
 							resolve(true);
 						},
 					);
@@ -137,9 +158,11 @@ export class TerminalService implements ITerminalService, Disposable {
 
 				const timer = setTimeout(() => {
 					disposable.dispose();
+
 					resolve(true);
 				}, TIMEOUT_DURATION);
 			});
+
 			await promise;
 		}
 
@@ -157,6 +180,7 @@ export class TerminalService implements ITerminalService, Disposable {
 		} else if (terminal.shellIntegration) {
 			const execution =
 				terminal.shellIntegration.executeCommand(commandLine);
+
 			traceVerbose(
 				`Shell Integration is enabled, executeCommand: ${commandLine}`,
 			);
@@ -164,6 +188,7 @@ export class TerminalService implements ITerminalService, Disposable {
 			return execution;
 		} else {
 			terminal.sendText(commandLine);
+
 			traceVerbose(
 				`Shell Integration is disabled, sendText: ${commandLine}`,
 			);
@@ -184,13 +209,16 @@ export class TerminalService implements ITerminalService, Disposable {
 		if (this.terminal) {
 			return;
 		}
+
 		this.terminalShellType = this.terminalHelper.identifyTerminalShell(
 			this.terminal,
 		);
+
 		this.terminal = this.terminalManager.createTerminal({
 			name: this.options?.title || "Python",
 			hideFromUser: this.options?.hideFromUser,
 		});
+
 		this.terminalAutoActivator.disableAutoActivation(this.terminal);
 
 		// Sometimes the terminal takes some time to start up before it can start accepting input.
@@ -214,9 +242,11 @@ export class TerminalService implements ITerminalService, Disposable {
 
 		return;
 	}
+
 	private terminalCloseHandler(terminal: Terminal) {
 		if (terminal === this.terminal) {
 			this.terminalClosed.fire();
+
 			this.terminal = undefined;
 		}
 	}
@@ -240,6 +270,7 @@ export class TerminalService implements ITerminalService, Disposable {
 		const interpreterType = interpreterInfo
 			? interpreterInfo.envType
 			: undefined;
+
 		captureTelemetry(EventName.TERMINAL_CREATE, {
 			terminal: this.terminalShellType,
 			pythonVersion,

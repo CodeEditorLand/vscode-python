@@ -42,6 +42,7 @@ export interface EnvPathType {
 	 * whereas other envs can be identified using interpreter path.
 	 */
 	path: string;
+
 	pathType: "envFolderPath" | "interpreterPath";
 }
 
@@ -69,7 +70,9 @@ export const globallyInstalledEnvKinds = [
  */
 export type FileInfo = {
 	filename: string;
+
 	ctime: number;
+
 	mtime: number;
 };
 
@@ -115,11 +118,15 @@ export enum PythonEnvSource {
  */
 type PythonEnvBaseInfo = {
 	id?: string;
+
 	kind: PythonEnvKind;
+
 	type?: PythonEnvType;
+
 	executable: PythonExecutableInfo;
 	// One of (name, location) must be non-empty.
 	name: string;
+
 	location: string;
 	// Other possible fields:
 	// * managed: boolean (if the env is "managed")
@@ -144,6 +151,7 @@ export enum PythonReleaseLevel {
  */
 export type PythonVersionRelease = {
 	level: PythonReleaseLevel;
+
 	serial: number;
 };
 
@@ -154,6 +162,7 @@ export type PythonVersionRelease = {
  */
 export type PythonVersion = BasicVersionInfo & {
 	release?: PythonVersionRelease;
+
 	sysVersion?: string;
 };
 
@@ -185,6 +194,7 @@ type PythonDistroMetaInfo = {
  */
 export type PythonDistroInfo = PythonDistroMetaInfo & {
 	version?: VersionInfo;
+
 	binDir?: string;
 };
 
@@ -204,14 +214,18 @@ type _PythonEnvInfo = PythonEnvBaseInfo & PythonBuildInfo;
  */
 export type PythonEnvInfo = _PythonEnvInfo & {
 	distro: PythonDistroInfo;
+
 	display?: string;
+
 	detailedDisplayName?: string;
+
 	searchLocation?: Uri;
 	/**
 	 * Command used to run Python in this environment.
 	 * E.g. `conda run -n envName python` or `python.exe`
 	 */
 	pythonRunCommand?: string[];
+
 	identifiedUsingNativeLocator?: boolean;
 };
 

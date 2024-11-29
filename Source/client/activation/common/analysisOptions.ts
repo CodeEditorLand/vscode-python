@@ -23,6 +23,7 @@ export abstract class LanguageServerAnalysisOptionsBase
 	implements ILanguageServerAnalysisOptions
 {
 	protected readonly didChange = new EventEmitter<void>();
+
 	private readonly output: ILogOutputChannel;
 
 	protected constructor(
@@ -86,6 +87,7 @@ export abstract class LanguageServerAnalysisOptionsBase
 
 export abstract class LanguageServerAnalysisOptionsWithEnv extends LanguageServerAnalysisOptionsBase {
 	protected disposables: Disposable[] = [];
+
 	private envPythonPath: string = "";
 
 	protected constructor(
@@ -104,16 +106,19 @@ export abstract class LanguageServerAnalysisOptionsWithEnv extends LanguageServe
 			this.onEnvVarChange,
 			this,
 		);
+
 		this.disposables.push(disposable);
 	}
 
 	public dispose(): void {
 		super.dispose();
+
 		this.disposables.forEach((d) => d.dispose());
 	}
 
 	protected async getEnvPythonPath(): Promise<string> {
 		const vars = await this.envVarsProvider.getEnvironmentVariables();
+
 		this.envPythonPath = vars.PYTHONPATH || "";
 
 		return this.envPythonPath;

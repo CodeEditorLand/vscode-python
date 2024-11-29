@@ -471,6 +471,7 @@ export namespace DebugConfigStrings {
 			description: l10n.t("Debug the currently active Python file"),
 		};
 	}
+
 	export namespace module {
 		export const snippet = {
 			name: l10n.t("Python: Module"),
@@ -491,6 +492,7 @@ export namespace DebugConfigStrings {
 			invalid: l10n.t("Enter a valid module name"),
 		};
 	}
+
 	export namespace attach {
 		export const snippet = {
 			name: l10n.t("Python: Remote Attach"),
@@ -515,6 +517,7 @@ export namespace DebugConfigStrings {
 			invalid: l10n.t("Enter a valid port number"),
 		};
 	}
+
 	export namespace attachPid {
 		export const snippet = {
 			name: l10n.t("Python: Attach using Process Id"),
@@ -525,6 +528,7 @@ export namespace DebugConfigStrings {
 			description: l10n.t("Attach to a local process"),
 		};
 	}
+
 	export namespace django {
 		export const snippet = {
 			name: l10n.t("Python: Django"),
@@ -543,6 +547,7 @@ export namespace DebugConfigStrings {
 			invalid: l10n.t("Enter a valid Python file path"),
 		};
 	}
+
 	export namespace fastapi {
 		export const snippet = {
 			name: l10n.t("Python: FastAPI"),
@@ -561,6 +566,7 @@ export namespace DebugConfigStrings {
 			invalid: l10n.t("Enter a valid name"),
 		};
 	}
+
 	export namespace flask {
 		export const snippet = {
 			name: l10n.t("Python: Flask"),
@@ -577,6 +583,7 @@ export namespace DebugConfigStrings {
 			invalid: l10n.t("Enter a valid name"),
 		};
 	}
+
 	export namespace pyramid {
 		export const snippet = {
 			name: l10n.t("Python: Pyramid Application"),

@@ -86,6 +86,7 @@ export async function isStorePythonInstalled(
 
 		return results.includes(true);
 	}
+
 	return false;
 }
 /**
@@ -147,5 +148,6 @@ export async function isMicrosoftStoreEnvironment(
 			return true;
 		}
 	}
+
 	return false;
 }

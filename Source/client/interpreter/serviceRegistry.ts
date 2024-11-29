@@ -60,18 +60,22 @@ export function registerInterpreterTypes(
 		IExtensionSingleActivationService,
 		InstallPythonCommand,
 	);
+
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
 		InstallPythonViaTerminal,
 	);
+
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
 		SetInterpreterCommand,
 	);
+
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
 		ResetInterpreterCommand,
 	);
+
 	serviceManager.addSingleton(IInterpreterQuickPick, SetInterpreterCommand);
 
 	serviceManager.addSingleton<IExtensionActivationService>(
@@ -83,10 +87,12 @@ export function registerInterpreterTypes(
 		IInterpreterService,
 		InterpreterService,
 	);
+
 	serviceManager.addSingleton<IInterpreterDisplay>(
 		IInterpreterDisplay,
 		InterpreterDisplay,
 	);
+
 	serviceManager.addBinding(
 		IInterpreterDisplay,
 		IExtensionSingleActivationService,
@@ -96,6 +102,7 @@ export function registerInterpreterTypes(
 		IPythonPathUpdaterServiceFactory,
 		PythonPathUpdaterServiceFactory,
 	);
+
 	serviceManager.addSingleton<IPythonPathUpdaterServiceManager>(
 		IPythonPathUpdaterServiceManager,
 		PythonPathUpdaterService,
@@ -105,6 +112,7 @@ export function registerInterpreterTypes(
 		IInterpreterSelector,
 		InterpreterSelector,
 	);
+
 	serviceManager.addSingleton<IInterpreterHelper>(
 		IInterpreterHelper,
 		InterpreterHelper,
@@ -129,6 +137,7 @@ export function registerInterpreterTypes(
 		IExtensionActivationService,
 		CondaInheritEnvPrompt,
 	);
+
 	serviceManager.addSingleton<IActivatedEnvironmentLaunch>(
 		IActivatedEnvironmentLaunch,
 		ActivatedEnvironmentLaunch,
@@ -137,18 +146,22 @@ export function registerInterpreterTypes(
 
 export function registerTypes(serviceManager: IServiceManager): void {
 	registerInterpreterTypes(serviceManager);
+
 	serviceManager.addSingleton<IInterpreterAutoSelectionProxyService>(
 		IInterpreterAutoSelectionProxyService,
 		InterpreterAutoSelectionProxyService,
 	);
+
 	serviceManager.addSingleton<IEnvironmentActivationService>(
 		EnvironmentActivationService,
 		EnvironmentActivationService,
 	);
+
 	serviceManager.addSingleton<IEnvironmentActivationService>(
 		IEnvironmentActivationService,
 		EnvironmentActivationService,
 	);
+
 	serviceManager.addSingleton<IExtensionSingleActivationService>(
 		IExtensionSingleActivationService,
 		InterpreterPathCommand,

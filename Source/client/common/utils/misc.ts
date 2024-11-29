@@ -38,6 +38,7 @@ export function isResource(resource?: InterpreterUri): resource is Resource {
 	if (!resource) {
 		return true;
 	}
+
 	const uri = resource as Uri;
 
 	return typeof uri.path === "string" && typeof uri.scheme === "string";
@@ -53,6 +54,7 @@ function isUri(resource?: Uri | any): resource is Uri {
 	if (!resource) {
 		return false;
 	}
+
 	const uri = resource as Uri;
 
 	return typeof uri.path === "string" && typeof uri.scheme === "string";
@@ -72,6 +74,7 @@ export function getURIFilter(
 	uri: Uri,
 	opts: {
 		checkParent?: boolean;
+
 		checkChild?: boolean;
 	} = { checkParent: true },
 ): (u: Uri) => boolean {
@@ -80,6 +83,7 @@ export function getURIFilter(
 	while (uriPath.endsWith("/")) {
 		uriPath = uriPath.slice(0, -1);
 	}
+
 	const uriRoot = `${uriPath}/`;
 
 	function filter(candidate: Uri): boolean {
@@ -90,9 +94,11 @@ export function getURIFilter(
 		while (candidatePath.endsWith("/")) {
 			candidatePath = candidatePath.slice(0, -1);
 		}
+
 		if (opts.checkParent && isParentPath(candidatePath, uriRoot)) {
 			return true;
 		}
+
 		if (opts.checkChild) {
 			const candidateRoot = `${candidatePath}/`;
 
@@ -100,8 +106,10 @@ export function getURIFilter(
 				return true;
 			}
 		}
+
 		return false;
 	}
+
 	return filter;
 }
 

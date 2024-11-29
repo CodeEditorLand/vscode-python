@@ -36,6 +36,7 @@ export function getAllScripts(): string[] {
 			}
 		}
 	}
+
 	return scripts;
 }
 
@@ -52,6 +53,7 @@ export class Bash extends VenvBaseActivationCommandProvider {
 		if (!scriptFile) {
 			return undefined;
 		}
+
 		return [`source ${scriptFile.fileToCommandArgumentForPythonExt()}`];
 	}
 }

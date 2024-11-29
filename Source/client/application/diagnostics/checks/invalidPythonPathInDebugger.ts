@@ -123,6 +123,7 @@ export class InvalidPythonPathInDebuggerService
 		if (pythonPath === "${command:python.interpreterPath}" || !pythonPath) {
 			pythonPath = this.configService.getSettings(resource).pythonPath;
 		}
+
 		if (
 			await this.interpreterHelper
 				.getInterpreterInformation(pythonPath)
@@ -130,6 +131,7 @@ export class InvalidPythonPathInDebuggerService
 		) {
 			return true;
 		}
+
 		traceError(`Invalid Python Path '${pythonPath}'`);
 
 		if (pythonPathSource === PythonPathSource.launchJson) {
@@ -161,6 +163,7 @@ export class InvalidPythonPathInDebuggerService
 				)
 				.ignoreErrors();
 		}
+
 		return false;
 	}
 
@@ -169,6 +172,7 @@ export class InvalidPythonPathInDebuggerService
 		if (diagnostics.length === 0 || !this.canHandle(diagnostics[0])) {
 			return;
 		}
+
 		const diagnostic = diagnostics[0];
 
 		const commandPrompts = this.getCommandPrompts(diagnostic);
@@ -204,6 +208,7 @@ export class InvalidPythonPathInDebuggerService
 					},
 				];
 			}
+
 			case DiagnosticCodes.InvalidPythonPathInDebuggerLaunchDiagnostic: {
 				return [
 					{
@@ -219,6 +224,7 @@ export class InvalidPythonPathInDebuggerService
 									await this.documentManager.openTextDocument(
 										launchJson,
 									);
+
 								await this.documentManager.showTextDocument(
 									doc,
 								);
@@ -227,6 +233,7 @@ export class InvalidPythonPathInDebuggerService
 					},
 				];
 			}
+
 			default: {
 				throw new Error(
 					"Invalid diagnostic for 'InvalidPythonPathInDebuggerService'",

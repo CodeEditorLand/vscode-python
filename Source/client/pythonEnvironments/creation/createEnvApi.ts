@@ -49,6 +49,7 @@ class CreateEnvironmentProviders {
 				`Create Environment provider with id ${provider.id} already registered`,
 			);
 		}
+
 		this._createEnvProviders.push(provider);
 	}
 
@@ -108,6 +109,7 @@ export function registerCreateEnvironmentFeatures(
 					undefined,
 					undefined,
 				);
+
 				await executeCommand(Commands.Create_Environment);
 			},
 		),
@@ -122,6 +124,7 @@ export function registerCreateEnvironmentFeatures(
 					ConfigurationTarget.WorkspaceFolder,
 					e.path,
 				);
+
 				showInformationMessage(
 					`${CreateEnv.informEnvCreation} ${pathUtils.getDisplayName(e.path)}`,
 				);

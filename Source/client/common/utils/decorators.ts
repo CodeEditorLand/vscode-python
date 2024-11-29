@@ -29,6 +29,7 @@ export function debounceSync(wait?: number) {
 		// Same as `setTimeout(()=> {}, 0);` with a value of `0`.
 		wait = undefined;
 	}
+
 	return makeDebounceDecorator(wait);
 }
 
@@ -49,6 +50,7 @@ export function debounceAsync(wait?: number) {
 		// Same as `setTimeout(()=> {}, 0);` with a value of `0`.
 		wait = undefined;
 	}
+
 	return makeDebounceAsyncDecorator(wait);
 }
 
@@ -92,7 +94,9 @@ export function makeDebounceAsyncDecorator(wait?: number) {
 	) {
 		type StateInformation = {
 			started: boolean;
+
 			deferred: Deferred<any> | undefined;
+
 			timer: NodeJS.Timer | number | undefined;
 		};
 
@@ -127,14 +131,17 @@ export function makeDebounceAsyncDecorator(wait?: number) {
 
 			state.timer = setTimeout(async () => {
 				state.started = true;
+
 				originalMethod
 					.apply(this)
 					.then((r) => {
 						state.started = false;
+
 						deferred.resolve(r);
 					})
 					.catch((ex) => {
 						state.started = false;
+
 						deferred.reject(ex);
 					});
 			}, wait || 0);
@@ -183,10 +190,12 @@ export function cache(
 				: "";
 
 		const keyPrefix = `Cache_Method_Output_${className}.${propertyName}`;
+
 		descriptor.value = async function (...args: any) {
 			if (isTestExecution()) {
 				return originalMethod.apply(this, args) as Promise<any>;
 			}
+
 			let key: string;
 
 			try {
@@ -200,6 +209,7 @@ export function cache(
 
 				return originalMethod.apply(this, args) as Promise<any>;
 			}
+
 			const cachedItem = cacheStoreForMethods.get(key);
 
 			if (
@@ -208,6 +218,7 @@ export function cache(
 			) {
 				return Promise.resolve(cachedItem.data);
 			}
+
 			const expiryMs =
 				expiryDurationAfterStartUpMs &&
 				moduleLoadWatch.elapsedTime > extensionStartUpTime
@@ -231,6 +242,7 @@ export function cache(
 					)
 					.ignoreErrors();
 			}
+
 			return promise;
 		};
 	};
@@ -267,6 +279,7 @@ export function swallowExceptions(scopeName?: string) {
 						if (isTestExecution()) {
 							return;
 						}
+
 						traceError(errorMessage, error);
 					});
 				}
@@ -274,6 +287,7 @@ export function swallowExceptions(scopeName?: string) {
 				if (isTestExecution()) {
 					return;
 				}
+
 				traceError(errorMessage, error);
 			}
 		};

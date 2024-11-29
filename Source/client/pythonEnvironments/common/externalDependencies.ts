@@ -41,6 +41,7 @@ export async function shellExecute(
 	const service = await internalServiceContainer
 		.get<IProcessServiceFactory>(IProcessServiceFactory)
 		.create();
+
 	options = { ...options, useWorker };
 
 	return service.shellExec(command, options);
@@ -55,6 +56,7 @@ export async function exec(
 	const service = await internalServiceContainer
 		.get<IProcessServiceFactory>(IProcessServiceFactory)
 		.create();
+
 	options = { ...options, useWorker };
 
 	return service.exec(file, args, options);
@@ -103,9 +105,11 @@ export function isParentPath(filePath: string, parentPath: string): boolean {
 	if (!parentPath.endsWith(path.sep)) {
 		parentPath += path.sep;
 	}
+
 	if (!filePath.endsWith(path.sep)) {
 		filePath += path.sep;
 	}
+
 	return normCasePath(filePath).startsWith(normCasePath(parentPath));
 }
 
@@ -148,6 +152,7 @@ export async function resolveSymbolicLink(
 
 			return absPath;
 		}
+
 		const link = await fsapi.readlink(absPath);
 		// Result from readlink is not guaranteed to be an absolute path. For eg. on Mac it resolves
 		// /usr/local/bin/python3.9 -> ../../../Library/Frameworks/Python.framework/Versions/3.9/bin/python3.9
@@ -156,10 +161,12 @@ export async function resolveSymbolicLink(
 		const absLinkPath = path.isAbsolute(link)
 			? link
 			: path.resolve(path.dirname(absPath), link);
+
 		count = count ? count + 1 : 1;
 
 		return resolveSymbolicLink(absLinkPath, undefined, count);
 	}
+
 	return absPath;
 }
 
@@ -192,6 +199,7 @@ export async function isFile(filePath: string): Promise<boolean> {
 
 		return resolvedStats.isFile();
 	}
+
 	return stats.isFile();
 }
 

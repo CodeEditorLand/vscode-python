@@ -72,6 +72,7 @@ export class WorkspaceTestAdapter {
 		}
 
 		const deferred = createDeferred<void>();
+
 		this.executing = deferred;
 
 		const testCaseNodes: TestItem[] = [];
@@ -82,6 +83,7 @@ export class WorkspaceTestAdapter {
 			// first fetch all the individual test Items that we necessarily want
 			includes.forEach((t) => {
 				const nodes = getTestCaseNodes(t);
+
 				testCaseNodes.push(...nodes);
 			});
 			// iterate through testItems nodes and fetch their unittest runID to pass in as argument
@@ -113,6 +115,7 @@ export class WorkspaceTestAdapter {
 					profileKind,
 				);
 			}
+
 			deferred.resolve();
 		} catch (ex) {
 			// handle token and telemetry here
@@ -127,6 +130,7 @@ export class WorkspaceTestAdapter {
 					? Testing.cancelPytestExecution
 					: Testing.errorPytestExecution;
 			}
+
 			traceError(`${cancel}\r\n`, ex);
 
 			// Also report on the test view
@@ -142,6 +146,7 @@ export class WorkspaceTestAdapter {
 			);
 
 			const errorNode = createErrorTestItem(testController, options);
+
 			testController.items.add(errorNode);
 
 			deferred.reject(ex as Error);
@@ -172,6 +177,7 @@ export class WorkspaceTestAdapter {
 		}
 
 		const deferred = createDeferred<void>();
+
 		this.discovering = deferred;
 
 		try {
@@ -185,6 +191,7 @@ export class WorkspaceTestAdapter {
 			} else {
 				await this.discoveryAdapter.discoverTests(this.workspaceUri);
 			}
+
 			deferred.resolve();
 		} catch (ex) {
 			sendTelemetryEvent(EventName.UNITTEST_DISCOVERY_DONE, undefined, {
@@ -220,6 +227,7 @@ export class WorkspaceTestAdapter {
 			);
 
 			const errorNode = createErrorTestItem(testController, options);
+
 			testController.items.add(errorNode);
 
 			return deferred.reject(ex as Error);

@@ -19,6 +19,7 @@ export class BaseTerminalActivator implements ITerminalActivator {
 		new Map<Terminal, Promise<boolean>>();
 
 	constructor(private readonly helper: ITerminalHelper) {}
+
 	public async activateEnvironmentInTerminal(
 		terminal: Terminal,
 		options?: TerminalActivationOptions,
@@ -26,7 +27,9 @@ export class BaseTerminalActivator implements ITerminalActivator {
 		if (this.activatedTerminals.has(terminal)) {
 			return this.activatedTerminals.get(terminal)!;
 		}
+
 		const deferred = createDeferred<boolean>();
+
 		this.activatedTerminals.set(terminal, deferred.promise);
 
 		const terminalShellType = this.helper.identifyTerminalShell(terminal);
@@ -43,16 +46,22 @@ export class BaseTerminalActivator implements ITerminalActivator {
 		if (activationCommands) {
 			for (const command of activationCommands) {
 				terminal.show(options?.preserveFocus);
+
 				traceVerbose(`Command sent to terminal: ${command}`);
+
 				terminal.sendText(command);
+
 				await this.waitForCommandToProcess(terminalShellType);
+
 				activated = true;
 			}
 		}
+
 		deferred.resolve(activated);
 
 		return activated;
 	}
+
 	protected async waitForCommandToProcess(_shell: TerminalShellType) {
 		// Give the command some time to complete.
 		// Its been observed that sending commands too early will strip some text off in VS Code Terminal.

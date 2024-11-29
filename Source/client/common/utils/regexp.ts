@@ -22,6 +22,7 @@
  */
 export function verboseRegExp(pattern: string, flags?: string): RegExp {
 	pattern = pattern.replace(/(^| {2})# .*$/gm, "");
+
 	pattern = pattern.replace(/\s+?/g, "");
 
 	return RegExp(pattern, flags);

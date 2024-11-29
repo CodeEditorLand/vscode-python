@@ -67,6 +67,7 @@ function filterByFileType(
 				ft === (FileType.SymbolicLink & FileType.Unknown),
 		);
 	}
+
 	return files.filter(([_file, ft]) => (ft & fileType) > 0);
 }
 
@@ -81,39 +82,54 @@ interface IVSCodeFileSystemAPI {
 		target: vscode.Uri,
 		options?: { overwrite: boolean },
 	): Thenable<void>;
+
 	createDirectory(uri: vscode.Uri): Thenable<void>;
+
 	delete(
 		uri: vscode.Uri,
 		options?: { recursive: boolean; useTrash: boolean },
 	): Thenable<void>;
+
 	readDirectory(uri: vscode.Uri): Thenable<[string, FileType][]>;
+
 	readFile(uri: vscode.Uri): Thenable<Uint8Array>;
+
 	rename(
 		source: vscode.Uri,
 		target: vscode.Uri,
 		options?: { overwrite: boolean },
 	): Thenable<void>;
+
 	stat(uri: vscode.Uri): Thenable<FileStat>;
+
 	writeFile(uri: vscode.Uri, content: Uint8Array): Thenable<void>;
 }
 
 // This is the parts of the 'fs-extra' module that we use in RawFileSystem.
 interface IRawFSExtra {
 	lstat(filename: string): Promise<fs.Stats>;
+
 	chmod(filePath: string, mode: string | number): Promise<void>;
+
 	appendFile(filename: string, data: unknown): Promise<void>;
 
 	// non-async
 	lstatSync(filename: string): fs.Stats;
+
 	statSync(filename: string): fs.Stats;
+
 	readFileSync(path: string, encoding: string): string;
+
 	createReadStream(filename: string): ReadStream;
+
 	createWriteStream(filename: string): WriteStream;
+
 	pathExists(filename: string): Promise<boolean>;
 }
 
 interface IRawPath {
 	dirname(path: string): string;
+
 	join(...paths: string[]): string;
 }
 
@@ -197,12 +213,15 @@ export class RawFileSystem implements IRawFileSystem {
 			if (!isFileExistsError(err)) {
 				throw err; // re-throw
 			}
+
 			const stat = await this.vscfs.stat(tgtUri);
 
 			if (stat.type === FileType.Directory) {
 				throw err; // re-throw
 			}
+
 			options.overwrite = true;
+
 			await this.vscfs.rename(srcUri, tgtUri, options);
 		}
 	}
@@ -229,6 +248,7 @@ export class RawFileSystem implements IRawFileSystem {
 		const uri = vscode.Uri.file(filename);
 
 		const data = Buffer.from(text);
+
 		await this.vscfs.writeFile(uri, data);
 	}
 
@@ -248,6 +268,7 @@ export class RawFileSystem implements IRawFileSystem {
 		// Note that this behavior was reported, but won't be changing.
 		// See: https://github.com/microsoft/vscode/issues/84177
 		await this.vscfs.stat(vscode.Uri.file(this.paths.dirname(dest)));
+
 		await this.vscfs.copy(srcURI, destURI, {
 			overwrite: true,
 		});
@@ -271,6 +292,7 @@ export class RawFileSystem implements IRawFileSystem {
 		if (files && files.length > 0) {
 			throw createDirNotEmptyError(dirname);
 		}
+
 		return this.vscfs.delete(uri, {
 			recursive: true,
 			useTrash: false,
@@ -293,6 +315,7 @@ export class RawFileSystem implements IRawFileSystem {
 
 	public async mkdirp(dirname: string): Promise<void> {
 		const uri = vscode.Uri.file(dirname);
+
 		await this.vscfs.createDirectory(uri);
 	}
 
@@ -323,8 +346,10 @@ export class RawFileSystem implements IRawFileSystem {
 
 		if (stat.isSymbolicLink()) {
 			filetype = FileType.SymbolicLink;
+
 			stat = this.fsExtra.statSync(filename);
 		}
+
 		filetype |= convertFileType(stat);
 
 		return convertStat(stat, filetype);
@@ -413,6 +438,7 @@ export class FileSystemUtils implements IFileSystemUtils {
 			// Do not need to run stat if not asking for file type.
 			return this.raw.pathExists(filename);
 		}
+
 		let stat: FileStat;
 
 		try {
@@ -423,6 +449,7 @@ export class FileSystemUtils implements IFileSystemUtils {
 			if (isFileNotFoundError(err)) {
 				return false;
 			}
+
 			traceError(`stat() failed for "${filename}"`, err);
 
 			return false;
@@ -432,6 +459,7 @@ export class FileSystemUtils implements IFileSystemUtils {
 			// FileType.Unknown == 0, hence do not use bitwise operations.
 			return stat.type === FileType.Unknown;
 		}
+
 		return (stat.type & fileType) === fileType;
 	}
 
@@ -451,6 +479,7 @@ export class FileSystemUtils implements IFileSystemUtils {
 			if (!(await this.pathExists(dirname))) {
 				return [];
 			}
+
 			throw err; // re-throw
 		}
 	}
@@ -477,13 +506,16 @@ export class FileSystemUtils implements IFileSystemUtils {
 
 		try {
 			await this.raw.stat(dirname);
+
 			await this.raw.writeText(filePath, "");
 		} catch (err) {
 			if (isNoPermissionsError(err)) {
 				return true;
 			}
+
 			throw err; // re-throw
 		}
+
 		this.raw
 			.rmfile(filePath)
 			// Clean resources in the background.
@@ -512,6 +544,7 @@ export class FileSystemUtils implements IFileSystemUtils {
 		if (cwd) {
 			options = { ...options, cwd };
 		}
+
 		if (dot) {
 			options = { ...options, dot };
 		}
@@ -530,14 +563,17 @@ export class FileSystemUtils implements IFileSystemUtils {
 			if (isFileNotFoundError(err)) {
 				return false;
 			}
+
 			throw err; // re-throw
 		}
+
 		return true;
 	}
 }
 
 export function getHashString(data: string): string {
 	const hash = createHash("sha512");
+
 	hash.update(data);
 
 	return hash.digest("hex");

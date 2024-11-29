@@ -54,12 +54,14 @@ export class EnvironmentVariablesProvider
 		private cacheDuration: number = CACHE_DURATION,
 	) {
 		disposableRegistry.push(this);
+
 		this.changeEventEmitter = new EventEmitter();
 
 		const disposable = this.workspaceService.onDidChangeConfiguration(
 			this.configurationChanged,
 			this,
 		);
+
 		this.disposables.push(disposable);
 	}
 
@@ -69,6 +71,7 @@ export class EnvironmentVariablesProvider
 
 	public dispose(): void {
 		this.changeEventEmitter.dispose();
+
 		this.fileWatchers.forEach((watcher) => {
 			if (watcher) {
 				watcher.dispose();
@@ -84,8 +87,11 @@ export class EnvironmentVariablesProvider
 		if (cached) {
 			return cached;
 		}
+
 		const vars = await this._getEnvironmentVariables(resource);
+
 		this.setCachedEnvironmentVariables(resource, vars);
+
 		traceVerbose(
 			"Dump environment variables",
 			JSON.stringify(vars, null, 4),
@@ -100,7 +106,9 @@ export class EnvironmentVariablesProvider
 		if (cached) {
 			return cached;
 		}
+
 		const vars = this._getEnvironmentVariablesSync(resource);
+
 		this.setCachedEnvironmentVariables(resource, vars);
 
 		return vars;
@@ -120,6 +128,7 @@ export class EnvironmentVariablesProvider
 				return { ...cachedData };
 			}
 		}
+
 		return undefined;
 	}
 
@@ -132,7 +141,9 @@ export class EnvironmentVariablesProvider
 		const cache = new InMemoryCache<EnvironmentVariables>(
 			this.cacheDuration,
 		);
+
 		this.envVarCaches.set(cacheKey, cache);
+
 		cache.data = { ...vars };
 	}
 
@@ -156,6 +167,7 @@ export class EnvironmentVariablesProvider
 		if (!mergedVars) {
 			mergedVars = {};
 		}
+
 		this.envVarsService.mergeVariables(this.process.env, mergedVars!);
 
 		const pathVariable = this.platformService.pathVariableName;
@@ -165,12 +177,14 @@ export class EnvironmentVariablesProvider
 		if (pathValue) {
 			this.envVarsService.appendPath(mergedVars!, pathValue);
 		}
+
 		if (this.process.env.PYTHONPATH) {
 			this.envVarsService.appendPythonPath(
 				mergedVars!,
 				this.process.env.PYTHONPATH,
 			);
 		}
+
 		return mergedVars;
 	}
 
@@ -220,9 +234,11 @@ export class EnvironmentVariablesProvider
 				? path.join(workspaceFolderUri?.fsPath, ".env")
 				: "";
 		}
+
 		this.trackedWorkspaceFolders.add(
 			workspaceFolderUri ? workspaceFolderUri.fsPath : "",
 		);
+
 		this.createFileWatcher(envFile, workspaceFolderUri);
 
 		return envFile;
@@ -242,8 +258,10 @@ export class EnvironmentVariablesProvider
 		if (this.fileWatchers.has(envFile)) {
 			return;
 		}
+
 		const envFileWatcher =
 			this.workspaceService.createFileSystemWatcher(envFile);
+
 		this.fileWatchers.set(envFile, envFileWatcher);
 
 		if (envFileWatcher) {
@@ -252,11 +270,13 @@ export class EnvironmentVariablesProvider
 					this.onEnvironmentFileChanged(workspaceFolderUri),
 				),
 			);
+
 			this.disposables.push(
 				envFileWatcher.onDidCreate(() =>
 					this.onEnvironmentFileCreated(workspaceFolderUri),
 				),
 			);
+
 			this.disposables.push(
 				envFileWatcher.onDidDelete(() =>
 					this.onEnvironmentFileChanged(workspaceFolderUri),
@@ -269,6 +289,7 @@ export class EnvironmentVariablesProvider
 		if (!resource) {
 			return undefined;
 		}
+
 		const workspaceFolder = this.workspaceService.getWorkspaceFolder(
 			resource!,
 		);
@@ -278,12 +299,14 @@ export class EnvironmentVariablesProvider
 
 	private onEnvironmentFileCreated(workspaceFolderUri?: Uri) {
 		this.onEnvironmentFileChanged(workspaceFolderUri);
+
 		sendFileCreationTelemetry();
 	}
 
 	private onEnvironmentFileChanged(workspaceFolderUri?: Uri) {
 		// An environment file changing can affect multiple workspaces; clear everything and reparse later.
 		this.envVarCaches.clear();
+
 		this.changeEventEmitter.fire(workspaceFolderUri);
 	}
 }

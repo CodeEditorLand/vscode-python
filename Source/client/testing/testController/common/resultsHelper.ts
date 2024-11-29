@@ -11,31 +11,45 @@ import { fixLogLines } from "./utils";
 type TestSuiteResult = {
 	$: {
 		errors: string;
+
 		failures: string;
+
 		name: string;
+
 		skips: string;
+
 		skip: string;
+
 		tests: string;
+
 		time: string;
 	};
+
 	testcase: TestCaseResult[];
 };
 type TestCaseResult = {
 	$: {
 		classname: string;
+
 		file: string;
+
 		line: string;
+
 		name: string;
+
 		time: string;
 	};
+
 	failure: {
 		_: string;
 		$: { message: string; type: string };
 	}[];
+
 	error: {
 		_: string;
 		$: { message: string; type: string };
 	}[];
+
 	skipped: {
 		_: string;
 		$: { message: string; type: string };
@@ -50,6 +64,7 @@ async function parseXML(data: string): Promise<unknown> {
 			if (error) {
 				return reject(error);
 			}
+
 			return resolve(result);
 		});
 	});
@@ -70,12 +85,15 @@ function getJunitResults(parserResult: unknown): TestSuiteResult | undefined {
 	if (!Array.isArray(junitSuites)) {
 		throw Error("bad JUnit XML data");
 	}
+
 	if (junitSuites.length === 0) {
 		return undefined;
 	}
+
 	if (junitSuites.length > 1) {
 		throw Error("got multiple XML results");
 	}
+
 	return junitSuites[0];
 }
 
@@ -138,6 +156,7 @@ export async function updateResultFromJunitXml(
 					}
 
 					runInstance.errored(node, message);
+
 					runInstance.appendOutput(fixLogLines(text));
 				} else if (result.failure) {
 					failures += 1;
@@ -153,6 +172,7 @@ export async function updateResultFromJunitXml(
 					}
 
 					runInstance.failed(node, message);
+
 					runInstance.appendOutput(fixLogLines(text));
 				} else if (result.skipped) {
 					const skip = result.skipped[0];
@@ -163,22 +183,29 @@ export async function updateResultFromJunitXml(
 						passed += 1;
 						// pytest.xfail ==> expected failure via @unittest.expectedFailure
 						text = `${rawTestCaseNode.rawId} Passed: [${skip.$.type}]${skip.$.message}\r\n`;
+
 						runInstance.passed(node);
 					} else {
 						skipped += 1;
+
 						text = `${rawTestCaseNode.rawId} Skipped: [${skip.$.type}]${skip.$.message}\r\n`;
+
 						runInstance.skipped(node);
 					}
+
 					runInstance.appendOutput(fixLogLines(text));
 				} else {
 					passed += 1;
 
 					const text = `${rawTestCaseNode.rawId} Passed\r\n`;
+
 					runInstance.passed(node);
+
 					runInstance.appendOutput(fixLogLines(text));
 				}
 			} else {
 				const text = `Test result not found for: ${rawTestCaseNode.rawId}\r\n`;
+
 				runInstance.appendOutput(fixLogLines(text));
 
 				const message = new TestMessage(text);
@@ -186,6 +213,7 @@ export async function updateResultFromJunitXml(
 				if (node.uri && node.range) {
 					message.location = new Location(node.uri, node.range);
 				}
+
 				runInstance.errored(node, message);
 			}
 		});
@@ -193,19 +221,25 @@ export async function updateResultFromJunitXml(
 		runInstance.appendOutput(
 			`Total number of tests expected to run: ${testCaseNodes.length}\r\n`,
 		);
+
 		runInstance.appendOutput(
 			`Total number of tests run: ${passed + failures + errors + skipped}\r\n`,
 		);
+
 		runInstance.appendOutput(`Total number of tests passed: ${passed}\r\n`);
+
 		runInstance.appendOutput(
 			`Total number of tests failed: ${failures}\r\n`,
 		);
+
 		runInstance.appendOutput(
 			`Total number of tests failed with errors: ${errors}\r\n`,
 		);
+
 		runInstance.appendOutput(
 			`Total number of tests skipped: ${skipped}\r\n`,
 		);
+
 		runInstance.appendOutput(
 			`Total number of tests with no result data: ${
 				testCaseNodes.length - passed - failures - errors - skipped

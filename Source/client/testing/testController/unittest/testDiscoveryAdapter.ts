@@ -72,6 +72,7 @@ export class UnittestTestDiscoveryAdapter implements ITestDiscoveryAdapter {
 		if (env === undefined) {
 			env = {} as EnvironmentVariables;
 		}
+
 		env.TEST_RUN_PIPE = name;
 
 		const command = buildDiscoveryCommand(unittestArgs);
@@ -109,6 +110,7 @@ export class UnittestTestDiscoveryAdapter implements ITestDiscoveryAdapter {
 		const mutableEnv = {
 			...(await this.envVarsService?.getEnvironmentVariables(uri)),
 		};
+
 		mutableEnv.TEST_RUN_PIPE = testRunPipeName;
 
 		const spawnOptions: SpawnOptions = {
@@ -148,12 +150,17 @@ export class UnittestTestDiscoveryAdapter implements ITestDiscoveryAdapter {
 			// TODO: after a release, remove run output from the "Python Test Log" channel and send it to the "Test Result" channel instead.
 			result?.proc?.stdout?.on("data", (data) => {
 				const out = fixLogLinesNoTrailing(data.toString());
+
 				spawnOptions?.outputChannel?.append(`${out}`);
+
 				traceInfo(out);
 			});
+
 			result?.proc?.stderr?.on("data", (data) => {
 				const out = fixLogLinesNoTrailing(data.toString());
+
 				spawnOptions?.outputChannel?.append(`${out}`);
+
 				traceError(out);
 			});
 
@@ -168,15 +175,19 @@ export class UnittestTestDiscoveryAdapter implements ITestDiscoveryAdapter {
 					traceError(
 						`Subprocess exited unsuccessfully with exit code ${code} and signal ${signal} on workspace ${options.cwd}. Creating and sending error discovery payload \n`,
 					);
+
 					traceError(
 						`Subprocess exited unsuccessfully with exit code ${code} and signal ${signal} on workspace ${uri.fsPath}. Creating and sending error discovery payload`,
 					);
+
 					this.resultResolver?.resolveDiscovery(
 						createDiscoveryErrorPayload(code, signal, cwd),
 					);
 				}
+
 				deferredTillExecClose.resolve();
 			});
+
 			await deferredTillExecClose.promise;
 		} catch (ex) {
 			traceError(

@@ -67,8 +67,10 @@ export class EnvironmentPathVariableDiagnosticsService extends BaseDiagnosticsSe
 			true,
 			true,
 		);
+
 		this.platform =
 			this.serviceContainer.get<IPlatformService>(IPlatformService);
+
 		this.messageService = serviceContainer.get<
 			IDiagnosticHandlerService<MessageCommandPrompt>
 		>(IDiagnosticHandlerService, DiagnosticCommandPromptHandlerServiceId);
@@ -92,6 +94,7 @@ export class EnvironmentPathVariableDiagnosticsService extends BaseDiagnosticsSe
 				new InvalidEnvironmentPathVariableDiagnostic(message, resource),
 			];
 		}
+
 		return [];
 	}
 
@@ -100,11 +103,13 @@ export class EnvironmentPathVariableDiagnosticsService extends BaseDiagnosticsSe
 		if (diagnostics.length === 0 || !this.canHandle(diagnostics[0])) {
 			return;
 		}
+
 		const diagnostic = diagnostics[0];
 
 		if (await this.filterService.shouldIgnoreDiagnostic(diagnostic.code)) {
 			return;
 		}
+
 		const commandFactory =
 			this.serviceContainer.get<IDiagnosticsCommandFactory>(
 				IDiagnosticsCommandFactory,

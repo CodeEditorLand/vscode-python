@@ -54,6 +54,7 @@ import {
 
 interface IVenvCommandArgs {
 	argv: string[];
+
 	stdin: string | undefined;
 }
 
@@ -74,14 +75,17 @@ function generateCommandArgs(
 			const source = installInfo.find(
 				(i) => i.installType === "toml",
 			)?.source;
+
 			command.push(
 				"--toml",
 				source?.fileToCommandArgumentForPythonExt() || "pyproject.toml",
 			);
 		}
+
 		const extras = installInfo
 			.filter((i) => i.installType === "toml")
 			.map((i) => i.installItem);
+
 		extras.forEach((r) => {
 			if (r) {
 				command.push("--extras", r);
@@ -122,6 +126,7 @@ function getVenvFromOutput(output: string): string | undefined {
 		if (envPath.includes(VENV_CREATED_MARKER)) {
 			return envPath.substring(VENV_CREATED_MARKER.length);
 		}
+
 		return envPath.substring(VENV_EXISTING_MARKER.length);
 	} catch (ex) {
 		traceError("Parsing out environment path failed.");
@@ -140,17 +145,20 @@ async function createVenv(
 	progress.report({
 		message: CreateEnv.Venv.creating,
 	});
+
 	sendTelemetryEvent(EventName.ENVIRONMENT_CREATING, undefined, {
 		environmentType: "venv",
 		pythonVersion: undefined,
 	});
 
 	const deferred = createDeferred<string | undefined>();
+
 	traceLog("Running Env creation script: ", [command, ...args.argv]);
 
 	if (args.stdin) {
 		traceLog("Requirements passed in via stdin: ", args.stdin);
 	}
+
 	const { proc, out, dispose } = execObservable(command, args.argv, {
 		mergeStdOutErr: true,
 		token,
@@ -161,9 +169,11 @@ async function createVenv(
 	const progressAndTelemetry = new VenvProgressAndTelemetry(progress);
 
 	let venvPath: string | undefined;
+
 	out.subscribe(
 		(value) => {
 			const output = value.out.split(/\r?\n/g).join(os.EOL);
+
 			traceLog(output.trimEnd());
 
 			if (
@@ -172,10 +182,12 @@ async function createVenv(
 			) {
 				venvPath = getVenvFromOutput(output);
 			}
+
 			progressAndTelemetry.process(output);
 		},
 		(error) => {
 			traceError("Error while running venv creation script: ", error);
+
 			deferred.reject(error);
 		},
 		() => {
@@ -186,6 +198,7 @@ async function createVenv(
 					"Error while running venv creation script: ",
 					progressAndTelemetry.getLastError(),
 				);
+
 				deferred.reject(
 					progressAndTelemetry.getLastError() ||
 						`Failed to create virtual environment with exitCode: ${proc?.exitCode}`,
@@ -222,6 +235,7 @@ export class VenvCreationProvider implements CreateEnvironmentProvider {
 					) {
 						return ex;
 					}
+
 					throw ex;
 				}
 
@@ -232,6 +246,7 @@ export class VenvCreationProvider implements CreateEnvironmentProvider {
 
 					return MultiStepAction.Cancel;
 				}
+
 				traceInfo(
 					`Selected workspace ${workspace.uri.fsPath} for creating virtual environment.`,
 				);
@@ -259,15 +274,18 @@ export class VenvCreationProvider implements CreateEnvironmentProvider {
 						) {
 							return ex;
 						}
+
 						throw ex;
 					}
 				} else if (context === MultiStepAction.Back) {
 					return MultiStepAction.Back;
 				}
+
 				return MultiStepAction.Continue;
 			},
 			undefined,
 		);
+
 		workspaceStep.next = existingEnvStep;
 
 		let interpreter: string | undefined;
@@ -305,6 +323,7 @@ export class VenvCreationProvider implements CreateEnvironmentProvider {
 							if (ex === InputFlowAction.back) {
 								return MultiStepAction.Back;
 							}
+
 							interpreter = undefined;
 						}
 					} else if (
@@ -313,6 +332,7 @@ export class VenvCreationProvider implements CreateEnvironmentProvider {
 						if (context === MultiStepAction.Back) {
 							return MultiStepAction.Back;
 						}
+
 						interpreter = getVenvExecutable(workspace);
 					}
 				}
@@ -322,6 +342,7 @@ export class VenvCreationProvider implements CreateEnvironmentProvider {
 
 					return MultiStepAction.Cancel;
 				}
+
 				traceInfo(
 					`Selected interpreter ${interpreter} for creating virtual environment.`,
 				);
@@ -330,6 +351,7 @@ export class VenvCreationProvider implements CreateEnvironmentProvider {
 			},
 			undefined,
 		);
+
 		existingEnvStep.next = interpreterStep;
 
 		let addGitIgnore = true;
@@ -341,11 +363,13 @@ export class VenvCreationProvider implements CreateEnvironmentProvider {
 				options?.ignoreSourceControl !== undefined
 					? options.ignoreSourceControl
 					: true;
+
 			installPackages =
 				options?.installPackages !== undefined
 					? options.installPackages
 					: true;
 		}
+
 		let installInfo: IPackageInstallSelection[] | undefined;
 
 		const packagesStep = new MultiStepNode(
@@ -363,8 +387,10 @@ export class VenvCreationProvider implements CreateEnvironmentProvider {
 							) {
 								return ex;
 							}
+
 							throw ex;
 						}
+
 						if (!installInfo) {
 							traceVerbose(
 								"Virtual env creation exited during dependencies selection.",
@@ -381,6 +407,7 @@ export class VenvCreationProvider implements CreateEnvironmentProvider {
 			},
 			undefined,
 		);
+
 		interpreterStep.next = packagesStep;
 
 		const action = await MultiStepNode.run(workspaceStep);
@@ -466,15 +493,18 @@ export class VenvCreationProvider implements CreateEnvironmentProvider {
 								workspaceFolder: workspace,
 							};
 						}
+
 						throw new Error(
 							"Failed to create virtual environment. See Output > Python for more info.",
 						);
 					}
+
 					throw new Error(
 						"Failed to create virtual environment. Either interpreter or workspace is undefined.",
 					);
 				} catch (ex) {
 					traceError(ex);
+
 					showErrorMessageWithLogs(
 						CreateEnv.Venv.errorCreatingEnvironment,
 					);

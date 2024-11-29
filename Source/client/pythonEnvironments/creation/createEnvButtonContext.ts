@@ -14,6 +14,7 @@ async function setShowCreateEnvButtonContextKey(): Promise<void> {
 	const showCreateEnvButton =
 		config.get<string>("createEnvironment.contentButton", "show") ===
 		"show";
+
 	await executeCommand(
 		"setContext",
 		"showCreateEnvButton",

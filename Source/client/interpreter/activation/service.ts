@@ -111,6 +111,7 @@ export class EnvironmentActivationServiceCache {
 		if (EnvironmentActivationServiceCache.useStatic) {
 			return EnvironmentActivationServiceCache.staticMap.get(key);
 		}
+
 		return this.normalMap.get(key);
 	}
 
@@ -187,6 +188,7 @@ export class EnvironmentActivationService
 		// Cache key = resource + interpreter.
 		const workspaceKey =
 			this.workspace.getWorkspaceFolderIdentifier(resource);
+
 		interpreter =
 			interpreter ??
 			(await this.interpreterService.getActiveInterpreter(resource));
@@ -214,7 +216,9 @@ export class EnvironmentActivationService
 		)
 			.then((vars) => {
 				memCache.data = vars;
+
 				this.activatedEnvVariablesCache.set(cacheKey, memCache);
+
 				sendTelemetryEvent(
 					EventName.PYTHON_INTERPRETER_ACTIVATION_ENVIRONMENT_VARIABLES,
 					stopWatch.elapsedTime,
@@ -252,6 +256,7 @@ export class EnvironmentActivationService
 
 		try {
 			const [args, parse] = internalScripts.printEnvVariables();
+
 			args.forEach((arg, i) => {
 				args[i] = arg.toCommandArgumentForPythonExt();
 			});
@@ -290,6 +295,7 @@ export class EnvironmentActivationService
 		if (!shellInfo) {
 			return [];
 		}
+
 		return this.helper.getEnvironmentActivationShellCommands(
 			resource,
 			shellInfo.shellType,
@@ -308,10 +314,13 @@ export class EnvironmentActivationService
 		if (!shellInfo) {
 			return undefined;
 		}
+
 		if (shell) {
 			const customShellType = identifyShellFromShellPath(shell);
+
 			shellInfo = { shellType: customShellType, shell };
 		}
+
 		try {
 			const processService =
 				await this.processServiceFactory.create(resource);
@@ -329,6 +338,7 @@ export class EnvironmentActivationService
 			let command: string | undefined;
 
 			const [args, parse] = internalScripts.printEnvVariables();
+
 			args.forEach((arg, i) => {
 				args[i] = arg.toCommandArgumentForPythonExt();
 			});
@@ -358,6 +368,7 @@ export class EnvironmentActivationService
 						.join(" ");
 				}
 			}
+
 			if (!command) {
 				const activationCommands =
 					await this.helper.getEnvironmentActivationShellCommands(
@@ -365,6 +376,7 @@ export class EnvironmentActivationService
 						shellInfo.shellType,
 						interpreter,
 					);
+
 				traceVerbose(
 					`Activation Commands received ${activationCommands} for shell ${shellInfo.shell}, resource ${resource?.fsPath} and interpreter ${interpreter?.path}`,
 				);
@@ -391,8 +403,10 @@ export class EnvironmentActivationService
 
 						return env;
 					}
+
 					return undefined;
 				}
+
 				const commandSeparator = [
 					TerminalShellType.powershell,
 					TerminalShellType.powershellCore,
@@ -413,6 +427,7 @@ export class EnvironmentActivationService
 			// Make sure python warnings don't interfere with getting the environment. However
 			// respect the warning in the returned values
 			const oldWarnings = env[PYTHON_WARNINGS];
+
 			env[PYTHON_WARNINGS] = "ignore";
 
 			traceVerbose(
@@ -457,6 +472,7 @@ export class EnvironmentActivationService
 							throw ex;
 						}
 					}
+
 					if (result.stderr) {
 						if (returnedEnv) {
 							traceWarn(
@@ -493,9 +509,11 @@ export class EnvironmentActivationService
 						tryCount < 10
 					) {
 						traceInfo(`Conda is busy, attempting to retry ...`);
+
 						result = undefined;
 
 						tryCount += 1;
+
 						await sleep(500);
 					} else {
 						throw exc;
@@ -509,9 +527,11 @@ export class EnvironmentActivationService
 			} else if (returnedEnv) {
 				delete returnedEnv[PYTHON_WARNINGS];
 			}
+
 			return returnedEnv;
 		} catch (e) {
 			traceError("getActivatedEnvironmentVariables", e);
+
 			sendTelemetryEvent(
 				EventName.ACTIVATE_ENV_TO_GET_ENV_VARS_FAILED,
 				undefined,
@@ -527,6 +547,7 @@ export class EnvironmentActivationService
 				throw e;
 			}
 		}
+
 		return undefined;
 	}
 
@@ -540,6 +561,7 @@ export class EnvironmentActivationService
 		if (output.indexOf(ENVIRONMENT_PREFIX) === -1) {
 			return parse(output);
 		}
+
 		output = output.substring(
 			output.indexOf(ENVIRONMENT_PREFIX) + ENVIRONMENT_PREFIX.length,
 		);

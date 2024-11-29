@@ -17,9 +17,13 @@ export enum LogLevel {
 
 export interface ILogging {
 	traceLog(...data: Arguments): void;
+
 	traceError(...data: Arguments): void;
+
 	traceWarn(...data: Arguments): void;
+
 	traceInfo(...data: Arguments): void;
+
 	traceVerbose(...data: Arguments): void;
 }
 

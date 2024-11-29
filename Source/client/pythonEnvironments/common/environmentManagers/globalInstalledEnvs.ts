@@ -25,6 +25,7 @@ export async function isGloballyInstalledEnv(
 	//         return true;
 	//     }
 	// }
+
 	return isFoundInPathEnvVar(executablePath);
 }
 
@@ -48,5 +49,6 @@ async function isFoundInPathEnvVar(executablePath: string): Promise<boolean> {
 			return true;
 		}
 	}
+
 	return false;
 }

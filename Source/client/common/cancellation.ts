@@ -20,7 +20,9 @@ export class CancellationError extends Error {
  */
 export function createPromiseFromCancellation<T>(options: {
 	defaultValue: T;
+
 	token?: CancellationToken;
+
 	cancelAction: "reject" | "resolve";
 }): Promise<T> {
 	return new Promise<T>((resolve, reject) => {
@@ -28,12 +30,14 @@ export function createPromiseFromCancellation<T>(options: {
 		if (!options.token) {
 			return;
 		}
+
 		const complete = () => {
 			const optionsToken = options.token!; // NOSONAR
 			if (optionsToken.isCancellationRequested) {
 				if (options.cancelAction === "resolve") {
 					return resolve(options.defaultValue);
 				}
+
 				if (options.cancelAction === "reject") {
 					return reject(new CancellationError());
 				}
@@ -56,9 +60,11 @@ export function wrapCancellationTokens(
 		if (!token) {
 			continue;
 		}
+
 		if (token.isCancellationRequested) {
 			return token;
 		}
+
 		token.onCancellationRequested(() => wrappedCancellantionToken.cancel());
 	}
 

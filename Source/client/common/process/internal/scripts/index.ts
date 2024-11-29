@@ -35,8 +35,11 @@ type PythonVersionInfo = [number, number, number, ReleaseLevel, number];
 
 export type InterpreterInfoJson = {
 	versionInfo: PythonVersionInfo;
+
 	sysPrefix: string;
+
 	sysVersion: string;
+
 	is64Bit: boolean;
 };
 

@@ -77,6 +77,7 @@ async function createEnvironmentCheckForWorkspace(uri: Uri): Promise<void> {
 		sendTelemetryEvent(EventName.ENVIRONMENT_CHECK_RESULT, undefined, {
 			result: "criteria-not-met",
 		});
+
 		traceInfo(`CreateEnv Trigger - Skipping for ${uri.fsPath}`);
 
 		return;
@@ -113,9 +114,11 @@ function runOnceWorkspaceCheck(
 	if (isCreateEnvWorkspaceCheckNotRun() || options?.force) {
 		return createEnvironmentCheckForWorkspace(uri);
 	}
+
 	sendTelemetryEvent(EventName.ENVIRONMENT_CHECK_RESULT, undefined, {
 		result: "already-ran",
 	});
+
 	traceVerbose(
 		"CreateEnv Trigger - skipping this because it was already run",
 	);
@@ -149,6 +152,7 @@ export async function triggerCreateEnvironmentCheck(
 		sendTelemetryEvent(EventName.ENVIRONMENT_CHECK_RESULT, undefined, {
 			result: "no-uri",
 		});
+
 		traceVerbose("CreateEnv Trigger - Skipping No URI provided");
 
 		return;
@@ -164,6 +168,7 @@ export async function triggerCreateEnvironmentCheck(
 		sendTelemetryEvent(EventName.ENVIRONMENT_CHECK_RESULT, undefined, {
 			result: "turned-off",
 		});
+
 		traceVerbose("CreateEnv Trigger - turned off in settings");
 	}
 }
@@ -189,6 +194,7 @@ export function registerCreateEnvironmentTriggers(
 			sendTelemetryEvent(EventName.ENVIRONMENT_CHECK_TRIGGER, undefined, {
 				trigger: "as-command",
 			});
+
 			triggerCreateEnvironmentCheckNonBlocking(
 				CreateEnvironmentCheckKind.File,
 				file,

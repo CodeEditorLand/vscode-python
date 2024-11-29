@@ -30,6 +30,7 @@ export function registerTypes(serviceManager: IServiceManager) {
 	);
 
 	serviceManager.add<ITestsHelper>(ITestsHelper, TestsHelper);
+
 	serviceManager.add<IUnitTestSocketServer>(
 		IUnitTestSocketServer,
 		UnitTestSocketServer,
@@ -41,6 +42,7 @@ export function registerTypes(serviceManager: IServiceManager) {
 		ITestConfigurationService,
 		UnitTestConfigurationService,
 	);
+
 	serviceManager.addSingleton<ITestingService>(
 		ITestingService,
 		TestingService,
@@ -50,10 +52,12 @@ export function registerTypes(serviceManager: IServiceManager) {
 		ITestConfigSettingsService,
 		TestConfigSettingsService,
 	);
+
 	serviceManager.addSingleton<ITestConfigurationManagerFactory>(
 		ITestConfigurationManagerFactory,
 		TestConfigurationManagerFactory,
 	);
+
 	serviceManager.addSingleton<IExtensionActivationService>(
 		IExtensionActivationService,
 		UnitTestManagementService,

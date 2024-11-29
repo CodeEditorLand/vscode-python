@@ -44,6 +44,7 @@ export class TestsHelper implements ITestsHelper {
 			}
 		}
 	}
+
 	public parseProduct(provider: TestProvider): UnitTestProduct {
 		switch (provider) {
 			case "pytest":
@@ -57,6 +58,7 @@ export class TestsHelper implements ITestsHelper {
 			}
 		}
 	}
+
 	public getSettingsPropertyNames(
 		product: UnitTestProduct,
 	): TestSettingsPropertyNames {
@@ -70,12 +72,14 @@ export class TestsHelper implements ITestsHelper {
 					enabledName: "pytestEnabled" as keyof ITestingSettings,
 				};
 			}
+
 			case "unittest": {
 				return {
 					argsName: "unittestArgs" as keyof ITestingSettings,
 					enabledName: "unittestEnabled" as keyof ITestingSettings,
 				};
 			}
+
 			default: {
 				throw new Error(`Unknown Test Provider '${product}'`);
 			}

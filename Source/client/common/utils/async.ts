@@ -25,10 +25,15 @@ export function isPromise<T>(v: any): v is Promise<T> {
 
 export interface Deferred<T> {
 	readonly promise: Promise<T>;
+
 	readonly resolved: boolean;
+
 	readonly rejected: boolean;
+
 	readonly completed: boolean;
+
 	resolve(value?: T | PromiseLike<T>): void;
+
 	reject(reason?: string | Error | Record<string, unknown> | unknown): void;
 }
 
@@ -49,6 +54,7 @@ class DeferredImpl<T> implements Deferred<T> {
 	constructor(private scope: any = null) {
 		this._promise = new Promise<T>((res, rej) => {
 			this._resolve = res;
+
 			this._reject = rej;
 		});
 	}
@@ -57,7 +63,9 @@ class DeferredImpl<T> implements Deferred<T> {
 		if (this.completed) {
 			return;
 		}
+
 		this._resolve.apply(this.scope ? this.scope : this, [_value]);
+
 		this._resolved = true;
 	}
 
@@ -65,7 +73,9 @@ class DeferredImpl<T> implements Deferred<T> {
 		if (this.completed) {
 			return;
 		}
+
 		this._reject.apply(this.scope ? this.scope : this, [_reason]);
+
 		this._rejected = true;
 	}
 
@@ -93,6 +103,7 @@ export function createDeferred<T = void>(scope: any = null): Deferred<T> {
 
 export function createDeferredFrom<T>(...promises: Promise<T>[]): Deferred<T> {
 	const deferred = createDeferred<T>();
+
 	Promise.all<T>(promises)
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		.then(deferred.resolve.bind(deferred) as any)
@@ -103,6 +114,7 @@ export function createDeferredFrom<T>(...promises: Promise<T>[]): Deferred<T> {
 }
 export function createDeferredFromPromise<T>(promise: Promise<T>): Deferred<T> {
 	const deferred = createDeferred<T>();
+
 	promise
 		.then(deferred.resolve.bind(deferred))
 		.catch(deferred.reject.bind(deferred));
@@ -176,6 +188,7 @@ export async function* chain<T>(
 
 		if (err !== null) {
 			promises[index] = NEVER as Promise<NextResult<T>>;
+
 			numRunning -= 1;
 
 			if (onError !== undefined) {
@@ -184,6 +197,7 @@ export async function* chain<T>(
 			// XXX Log the error.
 		} else if (result!.done) {
 			promises[index] = NEVER as Promise<NextResult<T>>;
+
 			numRunning -= 1;
 			// If R is void then result.value will be undefined.
 			if (result!.value !== undefined) {
@@ -216,6 +230,7 @@ export async function* mapToIterator<T, R = T>(
 			async function* generator() {
 				yield func(item);
 			}
+
 			return generator();
 		});
 
@@ -236,6 +251,7 @@ export function iterable<T>(
 	if (it[Symbol.asyncIterator] === undefined) {
 		it[Symbol.asyncIterator] = () => it;
 	}
+
 	return it;
 }
 
@@ -250,6 +266,7 @@ export async function flattenIterator<T>(
 	for await (const item of iterable(iterator)) {
 		results.push(item);
 	}
+
 	return results;
 }
 
@@ -264,6 +281,7 @@ export async function flattenIterable<T>(
 	for await (const item of iterableItem) {
 		results.push(item);
 	}
+
 	return results;
 }
 
@@ -280,6 +298,7 @@ export async function waitForCondition(
 			clearTimeout(timeout);
 
 			clearTimeout(timer);
+
 			reject(new Error(errorMessage));
 		}, timeoutMs);
 
@@ -287,8 +306,11 @@ export async function waitForCondition(
 			if (!(await condition().catch(() => false))) {
 				return;
 			}
+
 			clearTimeout(timeout);
+
 			clearTimeout(timer);
+
 			resolve();
 		}, 10);
 	});

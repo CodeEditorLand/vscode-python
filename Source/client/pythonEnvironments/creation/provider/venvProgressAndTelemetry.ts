@@ -68,6 +68,7 @@ export class VenvProgressAndTelemetry {
 			VENV_CREATED_MARKER,
 			(progress: CreateEnvironmentProgress) => {
 				progress.report({ message: CreateEnv.Venv.created });
+
 				sendTelemetryEvent(EventName.ENVIRONMENT_CREATED, undefined, {
 					environmentType: "venv",
 					reason: "created",
@@ -80,6 +81,7 @@ export class VenvProgressAndTelemetry {
 			VENV_EXISTING_MARKER,
 			(progress: CreateEnvironmentProgress) => {
 				progress.report({ message: CreateEnv.Venv.existing });
+
 				sendTelemetryEvent(EventName.ENVIRONMENT_CREATED, undefined, {
 					environmentType: "venv",
 					reason: "existing",
@@ -92,6 +94,7 @@ export class VenvProgressAndTelemetry {
 			INSTALLING_REQUIREMENTS,
 			(progress: CreateEnvironmentProgress) => {
 				progress.report({ message: CreateEnv.Venv.installingPackages });
+
 				sendTelemetryEvent(
 					EventName.ENVIRONMENT_INSTALLING_PACKAGES,
 					undefined,
@@ -108,6 +111,7 @@ export class VenvProgressAndTelemetry {
 			INSTALLING_PYPROJECT,
 			(progress: CreateEnvironmentProgress) => {
 				progress.report({ message: CreateEnv.Venv.installingPackages });
+
 				sendTelemetryEvent(
 					EventName.ENVIRONMENT_INSTALLING_PACKAGES,
 					undefined,
@@ -269,6 +273,7 @@ export class VenvProgressAndTelemetry {
 			DOWNLOADING_PIP_MARKER,
 			(progress: CreateEnvironmentProgress) => {
 				progress.report({ message: CreateEnv.Venv.downloadingPip });
+
 				sendTelemetryEvent(
 					EventName.ENVIRONMENT_INSTALLING_PACKAGES,
 					undefined,
@@ -300,6 +305,7 @@ export class VenvProgressAndTelemetry {
 			INSTALLING_PIP_MARKER,
 			(progress: CreateEnvironmentProgress) => {
 				progress.report({ message: CreateEnv.Venv.installingPip });
+
 				sendTelemetryEvent(
 					EventName.ENVIRONMENT_INSTALLING_PACKAGES,
 					undefined,
@@ -331,6 +337,7 @@ export class VenvProgressAndTelemetry {
 			CREATING_MICROVENV_MARKER,
 			(progress: CreateEnvironmentProgress) => {
 				progress.report({ message: CreateEnv.Venv.creatingMicrovenv });
+
 				sendTelemetryEvent(EventName.ENVIRONMENT_CREATING, undefined, {
 					environmentType: "microvenv",
 					pythonVersion: undefined,
@@ -376,6 +383,7 @@ export class VenvProgressAndTelemetry {
 			UPGRADING_PIP_MARKER,
 			(progress: CreateEnvironmentProgress) => {
 				progress.report({ message: CreateEnv.Venv.upgradingPip });
+
 				sendTelemetryEvent(
 					EventName.ENVIRONMENT_INSTALLING_PACKAGES,
 					undefined,
@@ -412,6 +420,7 @@ export class VenvProgressAndTelemetry {
 						this.lastError = err;
 					}
 				}
+
 				this.processed.add(key);
 			}
 		}

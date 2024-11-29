@@ -82,6 +82,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 
 							return;
 						}
+
 						sendTelemetryEvent(
 							EventName.ENVIRONMENT_CHECK_TRIGGER,
 							undefined,
@@ -89,6 +90,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 								trigger: "run-in-terminal",
 							},
 						);
+
 						triggerCreateEnvironmentCheckNonBlocking(
 							CreateEnvironmentCheckKind.File,
 							file,
@@ -98,6 +100,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 							cmd === Commands.Exec_In_Terminal
 								? "command"
 								: "icon";
+
 						await this.executeFileInTerminal(file, trigger, {
 							newTerminalPerFile:
 								cmd === Commands.Exec_In_Separate_Terminal,
@@ -118,6 +121,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 				),
 			);
 		});
+
 		this.disposableRegistry.push(
 			this.commandManager.registerCommand(
 				Commands.Exec_Selection_In_Terminal as any,
@@ -140,15 +144,18 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 
 						return;
 					}
+
 					sendTelemetryEvent(
 						EventName.ENVIRONMENT_CHECK_TRIGGER,
 						undefined,
 						{ trigger: "run-selection" },
 					);
+
 					triggerCreateEnvironmentCheckNonBlocking(
 						CreateEnvironmentCheckKind.File,
 						file,
 					);
+
 					await this.executeSelectionInTerminal().then(() => {
 						if (this.shouldTerminalFocusOnStart(file))
 							this.commandManager.executeCommand(
@@ -158,6 +165,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 				},
 			),
 		);
+
 		this.disposableRegistry.push(
 			this.commandManager.registerCommand(
 				Commands.Exec_Selection_In_Django_Shell as any,
@@ -180,15 +188,18 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 
 						return;
 					}
+
 					sendTelemetryEvent(
 						EventName.ENVIRONMENT_CHECK_TRIGGER,
 						undefined,
 						{ trigger: "run-selection" },
 					);
+
 					triggerCreateEnvironmentCheckNonBlocking(
 						CreateEnvironmentCheckKind.File,
 						file,
 					);
+
 					await this.executeSelectionInDjangoShell().then(() => {
 						if (this.shouldTerminalFocusOnStart(file))
 							this.commandManager.executeCommand(
@@ -199,6 +210,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 			),
 		);
 	}
+
 	private async executeFileInTerminal(
 		file: Resource,
 		trigger: "command" | "icon",
@@ -214,6 +226,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 			this.serviceContainer.get<ICodeExecutionHelper>(
 				ICodeExecutionHelper,
 			);
+
 		file = file instanceof Uri ? file : undefined;
 
 		let fileToExecute = file
@@ -223,6 +236,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 		if (!fileToExecute) {
 			return;
 		}
+
 		const fileAfterSave =
 			await codeExecutionHelper.saveFileIfDirty(fileToExecute);
 
@@ -235,6 +249,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 				ICodeExecutionService,
 				"standard",
 			);
+
 		await executionService.executeFile(fileToExecute, options);
 	}
 
@@ -256,6 +271,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 				ICodeExecutionService,
 				"djangoShell",
 			);
+
 		await this.executeSelection(executionService);
 	}
 
@@ -267,6 +283,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 		if (!activeEditor) {
 			return;
 		}
+
 		const codeExecutionHelper =
 			this.serviceContainer.get<ICodeExecutionHelper>(
 				ICodeExecutionHelper,
@@ -280,6 +297,7 @@ export class CodeExecutionManager implements ICodeExecutionManager {
 		if (activeEditor && activeEditor.document) {
 			wholeFileContent = activeEditor.document.getText();
 		}
+
 		const normalizedCode = await codeExecutionHelper.normalizeLines(
 			codeToExecute!,
 			ReplType.terminal,

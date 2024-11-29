@@ -28,6 +28,7 @@ export class InterpreterAutoSelectionProxyService
 		instance: IInterpreterAutoSelectionProxyService,
 	): void {
 		this.instance = instance;
+
 		this.disposables.push(
 			this.instance.onDidChangeAutoSelectedInterpreter(() =>
 				this.didAutoSelectedInterpreterEmitter.fire(),

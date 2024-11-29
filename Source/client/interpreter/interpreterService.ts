@@ -124,16 +124,19 @@ export class InterpreterService implements Disposable, IInterpreterService {
 		this.configService = this.serviceContainer.get<IConfigurationService>(
 			IConfigurationService,
 		);
+
 		this.interpreterPathService =
 			this.serviceContainer.get<IInterpreterPathService>(
 				IInterpreterPathService,
 			);
+
 		this.onDidChangeInterpreters = pyenvs.onChanged;
 	}
 
 	public async refresh(resource?: Uri): Promise<void> {
 		const interpreterDisplay =
 			this.serviceContainer.get<IInterpreterDisplay>(IInterpreterDisplay);
+
 		await interpreterDisplay.refresh(resource);
 
 		const workspaceFolder = this.serviceContainer
@@ -145,10 +148,12 @@ export class InterpreterService implements Disposable, IInterpreterService {
 		const workspaceKey = this.serviceContainer
 			.get<IWorkspaceService>(IWorkspaceService)
 			.getWorkspaceFolderIdentifier(resource);
+
 		this.activeInterpreterPaths.set(workspaceKey, {
 			path,
 			workspaceFolder,
 		});
+
 		this.ensureEnvironmentContainsPython(
 			path,
 			workspaceFolder,
@@ -200,9 +205,11 @@ export class InterpreterService implements Disposable, IInterpreterService {
 				if (visibility === "never") {
 					return true;
 				}
+
 				if (visibility === "always") {
 					return false;
 				}
+
 				const document = this.docManager.activeTextEditor?.document;
 				// Output channel for MS Python related extensions. These contain "ms-python" in their ID.
 				const pythonOutputChannelPattern =
@@ -214,10 +221,13 @@ export class InterpreterService implements Disposable, IInterpreterService {
 				) {
 					return false;
 				}
+
 				return document?.languageId !== PYTHON_LANGUAGE;
 			}
 		})(documentManager, this.configService, disposables);
+
 		interpreterDisplay.registerVisibilityFilter(filter);
+
 		disposables.push(
 			this.onDidChangeInterpreters((e): void => {
 				const interpreter = e.old ?? e.new;
@@ -234,6 +244,7 @@ export class InterpreterService implements Disposable, IInterpreterService {
 							this.didChangeInterpreterEmitter.fire(
 								workspaceFolder?.uri,
 							);
+
 							reportActiveInterpreterChanged({
 								path,
 								resource: workspaceFolder,
@@ -243,6 +254,7 @@ export class InterpreterService implements Disposable, IInterpreterService {
 				}
 			}),
 		);
+
 		disposables.push(
 			documentManager.onDidOpenTextDocument(() => {
 				// To handle scenario when language mode is set to "python"
@@ -256,6 +268,7 @@ export class InterpreterService implements Disposable, IInterpreterService {
 				}
 			}),
 		);
+
 		disposables.push(
 			this.interpreterPathService.onDidChange((i) =>
 				this._onConfigChanged(i.uri),
@@ -276,6 +289,7 @@ export class InterpreterService implements Disposable, IInterpreterService {
 		this.triggerRefresh(undefined, {
 			ifNotTriggerredAlready: true,
 		}).ignoreErrors();
+
 		await this.refreshPromise;
 
 		return this.getInterpreters(resource);
@@ -283,6 +297,7 @@ export class InterpreterService implements Disposable, IInterpreterService {
 
 	public dispose(): void {
 		this.didChangeInterpreterEmitter.dispose();
+
 		this.didChangeInterpreterInformation.dispose();
 	}
 
@@ -326,9 +341,11 @@ export class InterpreterService implements Disposable, IInterpreterService {
 				if (!fullyQualifiedPath) {
 					return undefined;
 				}
+
 				path = fullyQualifiedPath;
 			}
 		}
+
 		return this.getInterpreterDetails(path);
 	}
 
@@ -346,6 +363,7 @@ export class InterpreterService implements Disposable, IInterpreterService {
 		await sleep(1);
 
 		const pySettings = this.configService.getSettings(resource);
+
 		this.didChangeInterpreterConfigurationEmitter.fire(resource);
 
 		if (
@@ -353,11 +371,13 @@ export class InterpreterService implements Disposable, IInterpreterService {
 			this._pythonPathSetting !== pySettings.pythonPath
 		) {
 			this._pythonPathSetting = pySettings.pythonPath;
+
 			this.didChangeInterpreterEmitter.fire(resource);
 
 			const workspaceFolder = this.serviceContainer
 				.get<IWorkspaceService>(IWorkspaceService)
 				.getWorkspaceFolder(resource);
+
 			reportActiveInterpreterChanged({
 				path: pySettings.pythonPath,
 				resource: workspaceFolder,
@@ -366,6 +386,7 @@ export class InterpreterService implements Disposable, IInterpreterService {
 			const workspaceKey = this.serviceContainer
 				.get<IWorkspaceService>(IWorkspaceService)
 				.getWorkspaceFolderIdentifier(resource);
+
 			this.activeInterpreterPaths.set(workspaceKey, {
 				path: pySettings.pythonPath,
 				workspaceFolder,
@@ -375,11 +396,13 @@ export class InterpreterService implements Disposable, IInterpreterService {
 				this.serviceContainer.get<IInterpreterDisplay>(
 					IInterpreterDisplay,
 				);
+
 			interpreterDisplay
 				.refresh()
 				.catch((ex) =>
 					traceError("Python Extension: display.refresh", ex),
 				);
+
 			await this.ensureEnvironmentContainsPython(
 				this._pythonPathSetting,
 				workspaceFolder,
@@ -405,6 +428,7 @@ export class InterpreterService implements Disposable, IInterpreterService {
 				location: ProgressLocation.Window,
 				title: `[${Interpreters.installingPython}](command:${Commands.ViewOutput})`,
 			};
+
 			traceLog(
 				"Conda envs without Python are known to not work well; fixing conda environment...",
 			);
@@ -413,13 +437,16 @@ export class InterpreterService implements Disposable, IInterpreterService {
 				Product.python,
 				await this.getInterpreterDetails(pythonPath),
 			);
+
 			shell.withProgress(progressOptions, () => promise);
+
 			promise
 				.then(async () => {
 					// Fetch interpreter details so the cache is updated to include the newly installed Python.
 					await this.getInterpreterDetails(pythonPath);
 					// Fire an event as the executable for the environment has changed.
 					this.didChangeInterpreterEmitter.fire(workspaceFolder?.uri);
+
 					reportActiveInterpreterChanged({
 						path: pythonPath,
 						resource: workspaceFolder,

@@ -72,6 +72,7 @@ function tomlParse(content: string): tomljs.JsonMap {
 	} catch (err) {
 		traceError("Failed to parse `pyproject.toml`:", err);
 	}
+
 	return {};
 }
 
@@ -96,6 +97,7 @@ function getTomlOptionalDeps(toml: tomljs.JsonMap): string[] {
 			extras.push(key);
 		}
 	}
+
 	return extras;
 }
 
@@ -138,8 +140,10 @@ async function pickRequirementsFiles(
 				if (a.length === b.length) {
 					return a.localeCompare(b);
 				}
+
 				return a.length - b.length;
 			}
+
 			return al - bl;
 		})
 		.map((e) => ({
@@ -177,7 +181,9 @@ export function isPipInstallableToml(tomlContent: string): boolean {
 
 export interface IPackageInstallSelection {
 	installType: "toml" | "requirements" | "none";
+
 	installItem?: string;
+
 	source?: string;
 }
 
@@ -204,8 +210,11 @@ export async function pickPackagesToInstall(
 
 			if (await fs.pathExists(tomlPath)) {
 				const toml = tomlParse(await fs.readFile(tomlPath, "utf-8"));
+
 				extras = getTomlOptionalDeps(toml);
+
 				hasBuildSystem = tomlHasBuildSystem(toml);
+
 				hasProject = tomlHasProject(toml);
 
 				if (!hasProject) {
@@ -213,11 +222,13 @@ export async function pickPackagesToInstall(
 						"Create env: Found toml without project. So we will not use editable install.",
 					);
 				}
+
 				if (!hasBuildSystem) {
 					traceVerbose(
 						"Create env: Found toml without build system. So we will not use editable install.",
 					);
 				}
+
 				if (extras.length === 0) {
 					traceVerbose(
 						"Create env: Found toml without optional dependencies.",
@@ -247,6 +258,7 @@ export async function pickPackagesToInstall(
 									});
 								});
 							}
+
 							packages.push({
 								installType: "toml",
 								source: tomlPath,
@@ -261,6 +273,7 @@ export async function pickPackagesToInstall(
 						) {
 							return ex;
 						}
+
 						throw ex;
 					}
 				} else if (context === MultiStepAction.Back) {
@@ -321,6 +334,7 @@ export async function pickPackagesToInstall(
 					) {
 						return ex;
 					}
+
 					throw ex;
 				}
 			} else if (context === MultiStepAction.Back) {
@@ -332,6 +346,7 @@ export async function pickPackagesToInstall(
 		},
 		undefined,
 	);
+
 	tomlStep.next = requirementsStep;
 
 	const action = await MultiStepNode.run(tomlStep);
@@ -359,6 +374,7 @@ export async function deleteEnvironment(
 			if (isWindows()) {
 				return deleteEnvironmentWindows(workspaceFolder, interpreter);
 			}
+
 			return deleteEnvironmentNonWindows(workspaceFolder);
 		},
 	);

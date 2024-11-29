@@ -26,6 +26,7 @@ export class RegistryImplementation implements IRegistry {
 			return [];
 		});
 	}
+
 	public async getValue(
 		key: string,
 		hive: RegistryHive,
@@ -71,6 +72,7 @@ async function getRegistryValue(options: Options, name: string = "") {
 			if (error || !result || typeof result.value !== "string") {
 				return resolve(undefined);
 			}
+
 			resolve(result.value);
 		});
 	});
@@ -84,6 +86,7 @@ async function getRegistryKeys(options: Options): Promise<string[]> {
 			if (error || !Array.isArray(result)) {
 				return resolve([]);
 			}
+
 			resolve(
 				result
 					.filter((item) => typeof item.key === "string")

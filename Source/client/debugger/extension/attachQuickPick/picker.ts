@@ -36,12 +36,19 @@ export class AttachPicker implements IAttachPicker {
 
 			const quickPick =
 				this.applicationShell.createQuickPick<IAttachItem>();
+
 			quickPick.title = AttachProcess.attachTitle;
+
 			quickPick.placeholder = AttachProcess.selectProcessPlaceholder;
+
 			quickPick.canSelectMany = false;
+
 			quickPick.matchOnDescription = true;
+
 			quickPick.matchOnDetail = true;
+
 			quickPick.items = processEntries;
+
 			quickPick.buttons = [refreshButton];
 
 			const disposables: Disposable[] = [];
@@ -52,7 +59,9 @@ export class AttachPicker implements IAttachPicker {
 
 					const attachItems =
 						await this.attachItemsProvider.getAttachItems();
+
 					quickPick.items = attachItems;
+
 					quickPick.busy = false;
 				},
 				this,
@@ -68,6 +77,7 @@ export class AttachPicker implements IAttachPicker {
 					const selectedId = quickPick.selectedItems[0].id;
 
 					disposables.forEach((item) => item.dispose());
+
 					quickPick.dispose();
 
 					resolve(selectedId);
@@ -79,6 +89,7 @@ export class AttachPicker implements IAttachPicker {
 			quickPick.onDidHide(
 				() => {
 					disposables.forEach((item) => item.dispose());
+
 					quickPick.dispose();
 
 					reject(new Error(AttachProcess.noProcessSelected));

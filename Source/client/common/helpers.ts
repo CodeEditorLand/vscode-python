@@ -15,6 +15,7 @@ export function isNotInstalledError(error: Error): boolean {
 	if (!isError) {
 		return false;
 	}
+
 	if (error instanceof ModuleNotInstalledError) {
 		return true;
 	}

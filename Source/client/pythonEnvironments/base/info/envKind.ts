@@ -31,6 +31,7 @@ export function getKindDisplayName(kind: PythonEnvKind): string {
 			return value;
 		}
 	}
+
 	return "";
 }
 

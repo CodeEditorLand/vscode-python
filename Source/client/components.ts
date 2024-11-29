@@ -10,11 +10,13 @@ import { IServiceContainer, IServiceManager } from "./ioc/types";
  */
 export type ExtensionState = {
 	context: IExtensionContext;
+
 	disposables: IDisposableRegistry;
 	// For now we include the objects dealing with inversify (IOC)
 	// registration.  These will be removed later.
 	legacyIOC: {
 		serviceManager: IServiceManager;
+
 		serviceContainer: IServiceContainer;
 	};
 };

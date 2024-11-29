@@ -76,6 +76,7 @@ export async function isVenvEnvironment(
 			return true;
 		}
 	}
+
 	return false;
 }
 
@@ -116,6 +117,7 @@ async function getDefaultVirtualenvwrapperDir(): Promise<string> {
 			return envs;
 		}
 	}
+
 	return path.join(homeDir, ".virtualenvs");
 }
 
@@ -127,6 +129,7 @@ function getWorkOnHome(): Promise<string> {
 	if (workOnHome) {
 		return Promise.resolve(workOnHome);
 	}
+
 	return getDefaultVirtualenvwrapperDir();
 }
 
@@ -195,6 +198,7 @@ export async function getPythonVersionFromPyvenvCfg(
 								}
 							}
 						}
+
 						return undefined;
 					})
 					.filter((v) => v !== undefined)
@@ -243,8 +247,10 @@ function parseVersionInfo(versionInfoStr: string): PythonVersion {
 		// XXX Use getEmptyVersion().
 		return UNKNOWN_PYTHON_VERSION;
 	}
+
 	if (version.micro !== -1 && after.startsWith(".")) {
 		[version.release] = parseRelease(after);
 	}
+
 	return version;
 }

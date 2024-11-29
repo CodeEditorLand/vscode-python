@@ -54,6 +54,7 @@ export class CondaInheritEnvPrompt implements IExtensionActivationService {
 		if (!show) {
 			return;
 		}
+
 		await this.promptAndUpdate();
 	}
 
@@ -68,6 +69,7 @@ export class CondaInheritEnvPrompt implements IExtensionActivationService {
 		if (!notificationPromptEnabled.value) {
 			return;
 		}
+
 		const prompts = [Common.allow, Common.close];
 
 		const telemetrySelections: ["Allow", "Close"] = ["Allow", "Close"];
@@ -76,6 +78,7 @@ export class CondaInheritEnvPrompt implements IExtensionActivationService {
 			Interpreters.condaInheritEnvMessage,
 			...prompts,
 		);
+
 		sendTelemetryEvent(EventName.CONDA_INHERIT_ENV_PROMPT, undefined, {
 			selection: selection
 				? telemetrySelections[prompts.indexOf(selection)]
@@ -85,6 +88,7 @@ export class CondaInheritEnvPrompt implements IExtensionActivationService {
 		if (!selection) {
 			return;
 		}
+
 		if (selection === prompts[0]) {
 			await this.workspaceService
 				.getConfiguration("terminal")
@@ -105,20 +109,24 @@ export class CondaInheritEnvPrompt implements IExtensionActivationService {
 		if (this.hasPromptBeenShownInCurrentSession) {
 			return false;
 		}
+
 		if (this.appEnvironment.remoteName) {
 			// `terminal.integrated.inheritEnv` is only applicable user scope, so won't apply
 			// in remote scenarios: https://github.com/microsoft/vscode/issues/147421
 			return false;
 		}
+
 		if (this.platformService.isWindows) {
 			return false;
 		}
+
 		const interpreter =
 			await this.interpreterService.getActiveInterpreter(resource);
 
 		if (!interpreter || interpreter.envType !== EnvironmentType.Conda) {
 			return false;
 		}
+
 		const setting = this.workspaceService
 			.getConfiguration("terminal", resource)
 			.inspect<boolean>("integrated.inheritEnv");
@@ -130,6 +138,7 @@ export class CondaInheritEnvPrompt implements IExtensionActivationService {
 
 			return false;
 		}
+
 		if (
 			setting.globalValue !== undefined ||
 			setting.workspaceValue !== undefined ||
@@ -137,6 +146,7 @@ export class CondaInheritEnvPrompt implements IExtensionActivationService {
 		) {
 			return false;
 		}
+
 		this.hasPromptBeenShownInCurrentSession = true;
 
 		return true;

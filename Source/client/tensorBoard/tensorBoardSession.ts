@@ -115,6 +115,7 @@ export class TensorBoardSession {
 		private readonly configurationService: IConfigurationService,
 	) {
 		this.disposables.push(this.onDidChangeViewStateEventEmitter);
+
 		this.disposables.push(this.onDidDisposeEventEmitter);
 	}
 
@@ -134,7 +135,9 @@ export class TensorBoardSession {
 		if (!this.webviewPanel) {
 			return;
 		}
+
 		this.webviewPanel.webview.html = "";
+
 		this.webviewPanel.webview.html = await this.getHtml();
 	}
 
@@ -147,11 +150,13 @@ export class TensorBoardSession {
 		if (!tensorBoardWasInstalled) {
 			return;
 		}
+
 		const logDir = await this.getLogDirectory();
 
 		if (!logDir) {
 			return;
 		}
+
 		const startedSuccessfully = await this.startTensorboardSession(logDir);
 
 		if (startedSuccessfully) {
@@ -163,6 +168,7 @@ export class TensorBoardSession {
 				e2eStartupDurationStopwatch.elapsedTime,
 			);
 		}
+
 		this.sessionDurationStopwatch = new StopWatch();
 	}
 
@@ -199,6 +205,7 @@ export class TensorBoardSession {
 			// Not a PyTorch user and needs install, again don't need to mention profiler plugin
 			message = TensorBoard.installPrompt;
 		}
+
 		const selection = await this.applicationShell.showErrorMessage(
 			message,
 			...[yes, no],
@@ -211,6 +218,7 @@ export class TensorBoardSession {
 		} else if (selection === no) {
 			telemetrySelection = TensorBoardPromptSelection.No;
 		}
+
 		sendTelemetryEvent(
 			EventName.TENSORBOARD_INSTALL_PROMPT_SELECTION,
 			undefined,
@@ -289,6 +297,7 @@ export class TensorBoardSession {
 		if (selection !== Common.bannerLabelYes && !needsTensorBoardInstall) {
 			return true;
 		}
+
 		if (selection !== Common.bannerLabelYes) {
 			return false;
 		}
@@ -319,6 +328,7 @@ export class TensorBoardSession {
 				),
 			);
 		}
+
 		if (isTorchUser && needsProfilerPluginInstall) {
 			installPromises.push(
 				this.installer.install(
@@ -332,6 +342,7 @@ export class TensorBoardSession {
 				),
 			);
 		}
+
 		await Promise.race([...installPromises, cancellationPromise]);
 
 		// Check install status again after installing
@@ -372,6 +383,7 @@ export class TensorBoardSession {
 				`Failed to install torch-tb-plugin. Profiler plugin will not appear in TensorBoard session.`,
 			);
 		}
+
 		return tensorboardInstallStatus === ProductInstallStatus.Installed;
 	}
 
@@ -386,6 +398,7 @@ export class TensorBoardSession {
 		if (selection) {
 			return selection[0].fsPath;
 		}
+
 		return undefined;
 	}
 
@@ -403,12 +416,14 @@ export class TensorBoardSession {
 				label: TensorBoard.selectAnotherFolder,
 				detail: TensorBoard.selectAnotherFolderDetail,
 			};
+
 			items.push(useCwd, selectAnotherFolder);
 		} else {
 			const selectAFolder = {
 				label: TensorBoard.selectAFolder,
 				detail: TensorBoard.selectAFolderDetail,
 			};
+
 			items.push(selectAFolder);
 		}
 
@@ -535,6 +550,7 @@ export class TensorBoardSession {
 		switch (result) {
 			case "canceled":
 				traceVerbose("Canceled starting TensorBoard session.");
+
 				sendTelemetryEvent(
 					EventName.TENSORBOARD_SESSION_DAEMON_STARTUP_DURATION,
 					sessionStartStopwatch.elapsedTime,
@@ -542,12 +558,14 @@ export class TensorBoardSession {
 						result: TensorBoardSessionStartResult.cancel,
 					},
 				);
+
 				observable.dispose();
 
 				return false;
 
 			case "success":
 				this.process = observable.proc;
+
 				sendTelemetryEvent(
 					EventName.TENSORBOARD_SESSION_DAEMON_STARTUP_DURATION,
 					sessionStartStopwatch.elapsedTime,
@@ -594,8 +612,10 @@ export class TensorBoardSession {
 					if (match && match[1]) {
 						// eslint-disable-next-line prefer-destructuring
 						this.url = match[1];
+
 						urlThatTensorBoardIsRunningAt.resolve("success");
 					}
+
 					traceVerbose(output.out);
 				} else if (output.source === "stderr") {
 					traceError(output.out);
@@ -613,8 +633,11 @@ export class TensorBoardSession {
 		traceVerbose("Showing TensorBoard panel");
 
 		const panel = this.webviewPanel || (await this.createPanel());
+
 		panel.reveal();
+
 		this._active = true;
+
 		this.onDidChangeViewStateEventEmitter.fire();
 	}
 
@@ -628,22 +651,30 @@ export class TensorBoardSession {
 				retainContextWhenHidden: true,
 			},
 		);
+
 		webviewPanel.webview.html = await this.getHtml();
+
 		this.webviewPanel = webviewPanel;
+
 		this.disposables.push(
 			webviewPanel.onDidDispose(() => {
 				this.webviewPanel = undefined;
 				// Kill the running TensorBoard session
 				this.process?.kill();
+
 				sendTelemetryEvent(
 					EventName.TENSORBOARD_SESSION_DURATION,
 					this.sessionDurationStopwatch?.elapsedTime,
 				);
+
 				this.process = undefined;
+
 				this._active = false;
+
 				this.onDidDisposeEventEmitter.fire(this);
 			}),
 		);
+
 		this.disposables.push(
 			webviewPanel.onDidChangeViewState(
 				async (args: WebviewPanelOnDidChangeViewStateEvent) => {
@@ -653,11 +684,14 @@ export class TensorBoardSession {
 							webviewPanel.viewColumn ?? ViewColumn.Active,
 						);
 					}
+
 					this._active = args.webviewPanel.active;
+
 					this.onDidChangeViewStateEventEmitter.fire();
 				},
 			),
 		);
+
 		this.disposables.push(
 			webviewPanel.webview.onDidReceiveMessage((message) => {
 				// Handle messages posted from the webview
@@ -683,11 +717,13 @@ export class TensorBoardSession {
 		if (this.workspaceService.rootPath) {
 			return this.workspaceService.rootPath;
 		}
+
 		const { activeTextEditor } = window;
 
 		if (activeTextEditor) {
 			return path.dirname(activeTextEditor.document.uri.fsPath);
 		}
+
 		return undefined;
 	}
 
@@ -702,6 +738,7 @@ export class TensorBoardSession {
 			sendTelemetryEvent(
 				EventName.TENSORBOARD_JUMP_TO_SOURCE_FILE_NOT_FOUND,
 			);
+
 			traceError(
 				`Requested jump to source filepath ${fsPath} does not exist. Prompting user to select source file...`,
 			);
@@ -714,6 +751,7 @@ export class TensorBoardSession {
 			];
 			// Using a multistep so that we can add a title to the quickpick
 			const multiStep = this.multiStepFactory.create<unknown>();
+
 			await multiStep.run(async (input) => {
 				const selection = await input.showQuickPick({
 					items,
@@ -733,16 +771,20 @@ export class TensorBoardSession {
 						if (filePickerSelection !== undefined) {
 							[uri] = filePickerSelection;
 						}
+
 						break;
 					}
+
 					default:
 						break;
 				}
 			}, {});
 		}
+
 		if (uri === undefined) {
 			return;
 		}
+
 		const document = await workspace.openTextDocument(uri);
 
 		const editor = await window.showTextDocument(
@@ -757,7 +799,9 @@ export class TensorBoardSession {
 				position,
 				editor.document.lineAt(line).range.end,
 			);
+
 			editor.selection = selection;
+
 			editor.revealRange(
 				selection,
 				TextEditorRevealType.InCenterIfOutsideViewport,
@@ -791,18 +835,24 @@ export class TensorBoardSession {
 
                             if (f) {
                                 f.style.height = window.innerHeight / 0.8 + "px";
+
                                 f.style.width = window.innerWidth / 0.8 + "px";
                             }
                         }
+
                         window.onload = function() {
                             resizeFrame();
                         }
+
                         window.addEventListener('resize', resizeFrame);
+
                         window.addEventListener('message', (event) => {
                             if (!"${fullWebServerUri}".startsWith(event.origin) || !event.data || !event.data.filename || !event.data.line) {
                                 return;
                             }
+
                             const args = { filename: event.data.filename, line: event.data.line };
+
                             vscode.postMessage({ command: '${Messages.JumpToSource}', args: args });
                         });
                     }())
@@ -819,13 +869,21 @@ export class TensorBoardSession {
                 <style>
                     .responsive-iframe {
                         transform: scale(0.8);
+
                         transform-origin: 0 0;
+
                         position: absolute;
+
                         top: 0;
+
                         left: 0;
+
                         overflow: hidden;
+
                         display: block;
+
                         width: 100%;
+
                         height: 100%;
                     }
                 </style>

@@ -52,6 +52,7 @@ export function dispose<T extends IDisposable>(
 
 		return Array.isArray(arg) ? [] : arg;
 	}
+
 	if (arg) {
 		arg.dispose();
 
@@ -70,6 +71,7 @@ export async function disposeAll(disposables: IDisposable[]): Promise<void> {
 			} catch (err) {
 				// do nothing
 			}
+
 			return Promise.resolve();
 		}),
 	);
@@ -91,7 +93,9 @@ export class Disposables implements IDisposables {
 
 	public async dispose(): Promise<void> {
 		const { disposables } = this;
+
 		this.disposables = [];
+
 		await disposeAll(disposables);
 	}
 }
@@ -125,6 +129,7 @@ export class DisposableStore implements IDisposable {
 		}
 
 		this._isDisposed = true;
+
 		this.clear();
 	}
 
@@ -157,6 +162,7 @@ export class DisposableStore implements IDisposable {
 		if (!o) {
 			return o;
 		}
+
 		if ((o as unknown as DisposableStore) === this) {
 			throw new Error("Cannot register a disposable on itself!");
 		}
@@ -197,6 +203,7 @@ export abstract class DisposableBase implements IDisposable {
 
 	public dispose(): void {
 		this._store.dispose();
+
 		this._isDisposed = true;
 	}
 
@@ -207,6 +214,7 @@ export abstract class DisposableBase implements IDisposable {
 		if ((o as unknown as DisposableBase) === this) {
 			throw new Error("Cannot register a disposable on itself!");
 		}
+
 		return this._store.add(o);
 	}
 }

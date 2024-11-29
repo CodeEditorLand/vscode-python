@@ -34,8 +34,10 @@ export function getQueryFilter(
 		if (kinds === undefined) {
 			return true;
 		}
+
 		return kinds.includes(env.kind);
 	}
+
 	function checkSearchLocation(env: PythonEnvInfo): boolean {
 		if (env.searchLocation === undefined) {
 			// It is not a "rooted" env.
@@ -48,15 +50,19 @@ export function getQueryFilter(
 			// Check against the requested roots.  (There may be none.)
 			return locationFilters.some((filter) => filter(loc));
 		}
+
 		return true;
 	}
+
 	return (env) => {
 		if (!checkKind(env)) {
 			return false;
 		}
+
 		if (!checkSearchLocation(env)) {
 			return false;
 		}
+
 		return true;
 	};
 }
@@ -67,9 +73,11 @@ function getSearchLocationFilters(
 	if (query.searchLocations === undefined) {
 		return undefined;
 	}
+
 	if (query.searchLocations.roots.length === 0) {
 		return [];
 	}
+
 	return query.searchLocations.roots.map((loc) =>
 		getURIFilter(loc, {
 			checkParent: true,
@@ -98,13 +106,16 @@ export async function getEnvs<I = PythonEnvInfo>(
 					if (event.stage !== ProgressReportStage.discoveryFinished) {
 						return;
 					}
+
 					updatesDone.resolve();
+
 					listener.dispose();
 				} else if (event.index !== undefined) {
 					const { index, update } = event;
 
 					if (envs[index] === undefined) {
 						const json = JSON.stringify(update);
+
 						traceVerbose(
 							`Updates sent for an env which was classified as invalid earlier, currently not expected, ${json}`,
 						);
@@ -123,8 +134,10 @@ export async function getEnvs<I = PythonEnvInfo>(
 		if (envs[itemIndex] === undefined) {
 			envs[itemIndex] = env;
 		}
+
 		itemIndex += 1;
 	}
+
 	await updatesDone.promise;
 
 	// Do not return invalid environments

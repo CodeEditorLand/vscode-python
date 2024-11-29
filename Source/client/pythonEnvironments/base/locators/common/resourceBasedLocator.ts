@@ -84,6 +84,7 @@ export abstract class LazyResourceBasedLocator
 
 					break;
 				}
+
 				result = await iterator.next();
 			}
 		} else {
@@ -141,11 +142,15 @@ export abstract class LazyResourceBasedLocator
 
 			return;
 		}
+
 		this.resourcesReady = createDeferred<void>();
+
 		await this.initResources().catch((ex) => {
 			traceError(ex);
+
 			this.resourcesReady?.reject(ex);
 		});
+
 		this.resourcesReady.resolve();
 	}
 
@@ -155,15 +160,18 @@ export abstract class LazyResourceBasedLocator
 
 			return;
 		}
+
 		this.watchersReady = createDeferred<void>();
 
 		// Don't create any file watchers in a virtual workspace.
 		if (!isVirtualWorkspace()) {
 			await this.initWatchers().catch((ex) => {
 				traceError(ex);
+
 				this.watchersReady?.reject(ex);
 			});
 		}
+
 		this.watchersReady.resolve();
 	}
 }

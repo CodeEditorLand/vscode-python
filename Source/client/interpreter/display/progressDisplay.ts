@@ -69,6 +69,7 @@ export class InterpreterLocatorProgressStatusBarHandler
 	private hideProgress(): void {
 		if (this.deferred) {
 			this.deferred.resolve();
+
 			this.deferred = undefined;
 		}
 	}
@@ -82,7 +83,9 @@ export class InterpreterLocatorProgressStatusBarHandler
 					: Interpreters.refreshing
 			}](command:${Commands.Set_Interpreter})`,
 		};
+
 		this.isFirstTimeLoadingInterpreters = false;
+
 		this.shell.withProgress(progressOptions, () => {
 			this.deferred = createDeferred();
 

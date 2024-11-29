@@ -29,69 +29,99 @@ export enum DebugPurpose {
 
 export type PathMapping = {
 	localRoot: string;
+
 	remoteRoot: string;
 };
 type Connection = {
 	host?: string;
+
 	port?: number;
 };
 
 export interface IAutomaticCodeReload {
 	enable?: boolean;
+
 	exclude?: string[];
+
 	include?: string[];
+
 	pollingInterval?: number;
 }
 
 interface ICommonDebugArguments {
 	redirectOutput?: boolean;
+
 	django?: boolean;
+
 	gevent?: boolean;
+
 	jinja?: boolean;
+
 	debugStdLib?: boolean;
+
 	justMyCode?: boolean;
+
 	logToFile?: boolean;
+
 	debugOptions?: DebugOptions[];
+
 	port?: number;
+
 	host?: string;
 	// Show return values of functions while stepping.
 	showReturnValue?: boolean;
+
 	subProcess?: boolean;
 	// An absolute path to local directory with source.
 	pathMappings?: PathMapping[];
+
 	clientOS?: "windows" | "unix";
 }
 
 interface IKnownAttachDebugArguments extends ICommonDebugArguments {
 	workspaceFolder?: string;
+
 	customDebugger?: boolean;
 	// localRoot and remoteRoot are deprecated (replaced by pathMappings).
 	localRoot?: string;
+
 	remoteRoot?: string;
 
 	// Internal field used to attach to subprocess using python debug adapter
 	subProcessId?: number;
 
 	processId?: number | string;
+
 	connect?: Connection;
+
 	listen?: Connection;
 }
 
 interface IKnownLaunchRequestArguments extends ICommonDebugArguments {
 	sudo?: boolean;
+
 	pyramid?: boolean;
+
 	workspaceFolder?: string;
 	// An absolute path to the program to debug.
 	module?: string;
+
 	program?: string;
+
 	python?: string;
 	// Automatically stop target after launch. If not specified, target does not stop.
 	stopOnEntry?: boolean;
+
 	args?: string[];
+
 	cwd?: string;
+
 	debugOptions?: DebugOptions[];
+
 	env?: Record<string, string | undefined>;
+
 	envFile?: string;
+
 	console?: ConsoleType;
 
 	// The following are all internal properties that are not publicly documented or

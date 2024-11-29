@@ -45,11 +45,13 @@ export function resolveVariables(
 			if (isString(newValue)) {
 				return newValue;
 			}
+
 			return match &&
 				(match.indexOf("env.") > 0 || match.indexOf("env:") > 0)
 				? ""
 				: match;
 		});
 	}
+
 	return value;
 }

@@ -61,6 +61,7 @@ import { EventName } from "./telemetry/constants";
 
 type ActiveEnvironmentChangeEvent = {
 	resource: WorkspaceFolder | undefined;
+
 	path: string;
 };
 
@@ -75,6 +76,7 @@ export function reportActiveInterpreterChanged(
 		path: e.path,
 		resource: e.resource,
 	});
+
 	reportActiveInterpreterChangedDeprecated({
 		path: e.path,
 		resource: e.resource?.uri,
@@ -135,6 +137,7 @@ function getEnvReference(e: Environment) {
 	} else {
 		envClass.updateEnv(e);
 	}
+
 	environmentsReference.set(e.id, envClass);
 
 	return envClass;
@@ -152,8 +155,10 @@ function filterUsingVSCodeContext(e: PythonEnvInfo) {
 				isParentPath(envFolderUri.fsPath, folder.uri.fsPath),
 			);
 		}
+
 		return false;
 	}
+
 	return true;
 }
 
@@ -187,6 +192,7 @@ export function buildEnvironmentApi(
 
 		return new EnvironmentKnownCache(knownEnvs);
 	}
+
 	function sendApiTelemetry(apiName: string, args?: unknown) {
 		extensions
 			.determineExtensionFromCallStack()
@@ -204,12 +210,14 @@ export function buildEnvironmentApi(
 						},
 					);
 				}
+
 				traceVerbose(
 					`Extension ${info.extensionId} accessed ${apiName} with args: ${JSON.stringify(args)}`,
 				);
 			})
 			.ignoreErrors();
 	}
+
 	disposables.push(
 		discoveryApi.onProgress((e) => {
 			if (e.stage === ProgressReportStage.discoveryFinished) {
@@ -223,19 +231,25 @@ export function buildEnvironmentApi(
 				// Filter out environments that are not in the current workspace.
 				return;
 			}
+
 			if (!knownCache) {
 				knownCache = initKnownCache();
 			}
+
 			if (e.old) {
 				if (e.new) {
 					const newEnv = updateReference(e.new);
+
 					knownCache.updateEnv(convertEnvInfo(e.old), newEnv);
+
 					traceVerbose(
 						"Python API env change detected",
 						env.id,
 						"update",
 					);
+
 					onEnvironmentsChanged.fire({ type: "update", env: newEnv });
+
 					reportInterpretersChanged([
 						{
 							path: getEnvPath(
@@ -247,13 +261,17 @@ export function buildEnvironmentApi(
 					]);
 				} else {
 					const oldEnv = updateReference(e.old);
+
 					knownCache.updateEnv(oldEnv, undefined);
+
 					traceVerbose(
 						"Python API env change detected",
 						env.id,
 						"remove",
 					);
+
 					onEnvironmentsChanged.fire({ type: "remove", env: oldEnv });
+
 					reportInterpretersChanged([
 						{
 							path: getEnvPath(
@@ -266,9 +284,13 @@ export function buildEnvironmentApi(
 				}
 			} else if (e.new) {
 				const newEnv = updateReference(e.new);
+
 				knownCache.addEnv(newEnv);
+
 				traceVerbose("Python API env change detected", env.id, "add");
+
 				onEnvironmentsChanged.fire({ type: "add", env: newEnv });
+
 				reportInterpretersChanged([
 					{
 						path: getEnvPath(
@@ -297,6 +319,7 @@ export function buildEnvironmentApi(
 	const environmentApi: PythonExtension["environments"] = {
 		getEnvironmentVariables: (resource?: Resource) => {
 			sendApiTelemetry("getEnvironmentVariables");
+
 			resource = resource && "uri" in resource ? resource.uri : resource;
 
 			return envVarsProvider.getEnvironmentVariablesSync(resource);
@@ -308,6 +331,7 @@ export function buildEnvironmentApi(
 		},
 		getActiveEnvironmentPath(resource?: Resource) {
 			sendApiTelemetry("getActiveEnvironmentPath");
+
 			resource = resource && "uri" in resource ? resource.uri : resource;
 
 			const path = configService.getSettings(resource).pythonPath;
@@ -326,6 +350,7 @@ export function buildEnvironmentApi(
 			sendApiTelemetry("updateActiveEnvironmentPath");
 
 			const path = typeof env !== "string" ? env.path : env;
+
 			resource = resource && "uri" in resource ? resource.uri : resource;
 
 			return interpreterPathService.update(
@@ -347,6 +372,7 @@ export function buildEnvironmentApi(
 					"Not allowed to resolve environment in an untrusted workspace",
 				);
 			}
+
 			let path = typeof env !== "string" ? env.path : env;
 
 			if (pathUtils.basename(path) === path) {
@@ -371,8 +397,10 @@ export function buildEnvironmentApi(
 				if (!fullyQualifiedPath) {
 					return undefined;
 				}
+
 				path = fullyQualifiedPath;
 			}
+
 			sendApiTelemetry("resolveEnvironment", env);
 
 			return resolveEnvironment(path, discoveryApi);
@@ -391,9 +419,11 @@ export function buildEnvironmentApi(
 
 				return;
 			}
+
 			await discoveryApi.triggerRefresh(undefined, {
 				ifNotTriggerredAlready: !options?.forceRefresh,
 			});
+
 			sendApiTelemetry("refreshEnvironments");
 		},
 		get onDidChangeEnvironments() {
@@ -416,6 +446,7 @@ async function resolveEnvironment(
 	if (!env) {
 		return undefined;
 	}
+
 	const resolvedEnv = getEnvReference(
 		convertCompleteEnvInfo(env),
 	) as ResolvedEnvironment;
@@ -427,6 +458,7 @@ async function resolveEnvironment(
 	) {
 		traceError(`Invalid version for ${path}: ${JSON.stringify(env)}`);
 	}
+
 	return resolvedEnv;
 }
 
@@ -440,6 +472,7 @@ export function convertCompleteEnvInfo(
 	if (env.type && !tool) {
 		tool = "Unknown";
 	}
+
 	const { path } = getEnvPath(env.executable.filename, env.location);
 
 	const resolvedEnv: ResolvedEnvironment = {
@@ -475,9 +508,11 @@ function convertEnvType(envType: PythonEnvType): EnvironmentType {
 	if (envType === PythonEnvType.Conda) {
 		return "Conda";
 	}
+
 	if (envType === PythonEnvType.Virtual) {
 		return "VirtualEnvironment";
 	}
+
 	return "Unknown";
 }
 
@@ -518,18 +553,23 @@ export function convertEnvInfo(env: PythonEnvInfo): Environment {
 	if (convertedEnv.executable.sysPrefix === "") {
 		convertedEnv.executable.sysPrefix = undefined;
 	}
+
 	if (convertedEnv.version?.sysVersion === "") {
 		convertedEnv.version.sysVersion = undefined;
 	}
+
 	if (convertedEnv.version?.major === -1) {
 		convertedEnv.version.major = undefined;
 	}
+
 	if (convertedEnv.version?.micro === -1) {
 		convertedEnv.version.micro = undefined;
 	}
+
 	if (convertedEnv.version?.minor === -1) {
 		convertedEnv.version.minor = undefined;
 	}
+
 	return convertedEnv as Environment;
 }
 

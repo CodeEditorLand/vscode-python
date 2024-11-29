@@ -10,6 +10,7 @@ export class WorkspacePythonPathUpdaterService
 		private workspace: Uri,
 		private readonly interpreterPathService: IInterpreterPathService,
 	) {}
+
 	public async updatePythonPath(
 		pythonPath: string | undefined,
 	): Promise<void> {
@@ -20,6 +21,7 @@ export class WorkspacePythonPathUpdaterService
 		if (pythonPathValue && pythonPathValue.workspaceValue === pythonPath) {
 			return;
 		}
+
 		await this.interpreterPathService.update(
 			this.workspace,
 			ConfigurationTarget.Workspace,

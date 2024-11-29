@@ -36,6 +36,7 @@ export class PartialModeStatusItem
 		if (isTrusted && !isVirtualWorkspace) {
 			return;
 		}
+
 		const statusItem = this.createStatusItem();
 
 		if (statusItem) {
@@ -54,12 +55,17 @@ export class PartialModeStatusItem
 					language: "python",
 				},
 			);
+
 			statusItem.name = LanguageService.statusItem.name;
+
 			statusItem.severity = vscode.LanguageStatusSeverity.Warning;
+
 			statusItem.text = LanguageService.statusItem.text;
+
 			statusItem.detail = !this.workspace.isTrusted
 				? LanguageService.statusItem.detail
 				: LanguageService.virtualWorkspaceStatusItem.detail;
+
 			statusItem.command = {
 				title: Common.learnMore,
 				command: "vscode.open",
@@ -68,6 +74,7 @@ export class PartialModeStatusItem
 
 			return statusItem;
 		}
+
 		return undefined;
 	}
 }

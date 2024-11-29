@@ -35,6 +35,7 @@ export const CONDAPATH_SETTING_KEY = "condaPath";
 
 export type CondaEnvironmentInfo = {
 	name: string;
+
 	path: string;
 };
 
@@ -42,9 +43,11 @@ export type CondaEnvironmentInfo = {
 // names must be spelled exactly as they are in order to match the schema.
 export type CondaInfo = {
 	envs?: string[];
+
 	envs_dirs?: string[]; // eslint-disable-line camelcase
 	"sys.version"?: string;
 	"sys.prefix"?: string;
+
 	python_version?: string; // eslint-disable-line camelcase
 	default_prefix?: string; // eslint-disable-line camelcase
 	root_prefix?: string; // eslint-disable-line camelcase
@@ -58,6 +61,7 @@ export type CondaInfo = {
 
 type CondaEnvInfo = {
 	prefix: string;
+
 	name?: string;
 };
 
@@ -87,6 +91,7 @@ export async function parseCondaInfo(
 		if (!(await fileExists(pythonPath))) {
 			return undefined;
 		}
+
 		const details = await getPythonInfo(pythonPath);
 
 		if (!details) {
@@ -185,6 +190,7 @@ export async function isCondaEnvironment(
 			return true;
 		}
 	}
+
 	return false;
 }
 
@@ -197,6 +203,7 @@ export async function getCondaEnvironmentsTxt(): Promise<string[]> {
 	if (!homeDir) {
 		return [];
 	}
+
 	const environmentsTxt = path.join(homeDir, ".conda", "environments.txt");
 
 	return [environmentsTxt];
@@ -324,7 +331,9 @@ export class Conda {
 		if (this.useWorkerThreads === undefined) {
 			this.useWorkerThreads = false;
 		}
+
 		this.shellCommand = shellCommand ?? command;
+
 		onDidChangePythonSetting(CONDAPATH_SETTING_KEY, () => {
 			Conda.condaPromise = new Map<
 				string | undefined,
@@ -342,6 +351,7 @@ export class Conda {
 		) {
 			Conda.condaPromise.set(shellPath, Conda.locate(shellPath));
 		}
+
 		return Conda.condaPromise.get(shellPath);
 	}
 
@@ -372,6 +382,7 @@ export class Conda {
 		} catch (ex) {
 			traceError(`Failed to get conda path setting, ${ex}`);
 		}
+
 		const suffix =
 			getOSType() === OSType.Windows ? "Scripts\\conda.exe" : "bin/conda";
 
@@ -387,6 +398,7 @@ export class Conda {
 			if (getOSType() === OSType.Windows) {
 				yield* getCandidatesFromRegistry();
 			}
+
 			yield* getCandidatesFromKnownPaths();
 
 			yield* getCandidatesFromEnvironmentsTxt();
@@ -422,12 +434,14 @@ export class Conda {
 			if (getOSType() === OSType.Windows) {
 				const programData =
 					getEnvironmentVariable("PROGRAMDATA") || "C:\\ProgramData";
+
 				prefixes.push(programData);
 
 				if (home) {
 					const localAppData =
 						getEnvironmentVariable("LOCALAPPDATA") ||
 						path.join(home, "AppData", "Local");
+
 					prefixes.push(home, path.join(localAppData, "Continuum"));
 				}
 			} else {
@@ -452,6 +466,7 @@ export class Conda {
 					// Directory doesn't exist or is not readable - not an error.
 					items = undefined;
 				}
+
 				if (items !== undefined) {
 					yield* items
 						.filter((fileName) =>
@@ -501,6 +516,7 @@ export class Conda {
 			if (await pathExists(possibleBatch)) {
 				return possibleBatch;
 			}
+
 			return undefined;
 		}
 
@@ -528,7 +544,9 @@ export class Conda {
 								undefined,
 								shellPath,
 							);
+
 							await condaBat.getInfo();
+
 							conda = new Conda(
 								condaPath,
 								condaBatFile,
@@ -543,6 +561,7 @@ export class Conda {
 						);
 					}
 				}
+
 				traceVerbose(
 					`Found conda via filesystem probing: ${condaPath}`,
 				);
@@ -571,8 +590,10 @@ export class Conda {
 
 		if (!useCache || !condaInfoCached) {
 			condaInfoCached = this.getInfoImpl(this.command, this.shellPath);
+
 			this.condaInfoCached.set(this.shellPath, condaInfoCached);
 		}
+
 		return condaInfoCached;
 	}
 
@@ -590,6 +611,7 @@ export class Conda {
 		if (shellPath) {
 			options.shell = shellPath;
 		}
+
 		const resultPromise = exec(
 			command,
 			["info", "--json"],
@@ -605,10 +627,12 @@ export class Conda {
 
 		if (success) {
 			const result = await resultPromise;
+
 			traceVerbose(`${command} info --json: ${result.stdout}`);
 
 			return JSON.parse(result.stdout);
 		}
+
 		throw new Error(`Launching '${command} info --json' timed out`);
 	}
 
@@ -625,6 +649,7 @@ export class Conda {
 		if (envs === undefined) {
 			return [];
 		}
+
 		return Promise.all(
 			envs.map(async (prefix) => ({
 				prefix,
@@ -642,6 +667,7 @@ export class Conda {
 		if (info.root_prefix && arePathsSame(prefix, info.root_prefix)) {
 			return "base";
 		}
+
 		const parentDir = path.dirname(prefix);
 
 		if (info.envs_dirs !== undefined) {
@@ -651,6 +677,7 @@ export class Conda {
 				}
 			}
 		}
+
 		return undefined;
 	}
 
@@ -691,6 +718,7 @@ export class Conda {
 
 			return executablePath;
 		}
+
 		traceVerbose(
 			"Executable does not exist within conda env, assume the executable to be `python`",
 			JSON.stringify(condaEnv),
@@ -714,6 +742,7 @@ export class Conda {
 
 			return undefined;
 		}
+
 		const args = [];
 
 		if (env.name) {
@@ -721,6 +750,7 @@ export class Conda {
 		} else {
 			args.push("-p", env.prefix);
 		}
+
 		const python = [
 			forShellExecution ? this.shellCommand : this.command,
 			"run",
@@ -732,6 +762,7 @@ export class Conda {
 		if (isolatedFlag) {
 			python.push("-I");
 		}
+
 		return [...python, OUTPUT_MARKER_SCRIPT];
 	}
 
@@ -760,9 +791,11 @@ export class Conda {
 					? stdOut.substring("conda ".length).trim()
 					: stdOut;
 		}
+
 		if (!versionString) {
 			return undefined;
 		}
+
 		const pattern = /(?<major>\d+)\.(?<minor>\d+)\.(?<micro>\d+)(?:.*)?/;
 
 		const match = versionString.match(pattern);
@@ -794,6 +827,7 @@ export class Conda {
 		if (condaVersion && lt(condaVersion, CONDA_RUN_VERSION)) {
 			return false;
 		}
+
 		return true;
 	}
 }

@@ -44,6 +44,7 @@ async function setContextForActiveEditor(
 			traceVerbose(
 				`Setting context for python dependencies not installed: ${doc.uri.fsPath}`,
 			);
+
 			await executeCommand("setContext", DEPS_NOT_INSTALLED_KEY, true);
 
 			return;
@@ -71,6 +72,7 @@ export function registerInstalledPackagesDiagnosticsProvider(
 	};
 
 	disposables.push(diagnosticCollection);
+
 	disposables.push(
 		onDidOpenTextDocument(async (doc: TextDocument) => {
 			if (
@@ -81,6 +83,7 @@ export function registerInstalledPackagesDiagnosticsProvider(
 					interpreterService,
 					doc,
 				);
+
 				updateDiagnostics(doc.uri, diagnostics);
 			}
 		}),
@@ -93,6 +96,7 @@ export function registerInstalledPackagesDiagnosticsProvider(
 					interpreterService,
 					doc,
 				);
+
 				updateDiagnostics(doc.uri, diagnostics);
 			}
 		}),
@@ -115,6 +119,7 @@ export function registerInstalledPackagesDiagnosticsProvider(
 						interpreterService,
 						doc,
 					);
+
 					updateDiagnostics(doc.uri, diagnostics);
 				}
 			});
@@ -130,6 +135,7 @@ export function registerInstalledPackagesDiagnosticsProvider(
 				interpreterService,
 				doc,
 			);
+
 			updateDiagnostics(doc.uri, diagnostics);
 		}
 	});

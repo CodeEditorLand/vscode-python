@@ -40,6 +40,7 @@ function checkDirWatchable(dirname: string): DirUnwatchableReason {
 		names = fs.readdirSync(dirname);
 	} catch (err) {
 		const exception = err as NodeJS.ErrnoException;
+
 		traceVerbose("Reading directory failed", exception);
 
 		if (exception.code === "ENOENT") {
@@ -47,12 +48,14 @@ function checkDirWatchable(dirname: string): DirUnwatchableReason {
 			// https://github.com/microsoft/vscode-python/issues/18459
 			return "directory does not exist";
 		}
+
 		return undefined;
 	}
 	// The limit here is an educated guess.
 	if (names.length > 200) {
 		return "too many files";
 	}
+
 	return undefined;
 }
 
@@ -107,6 +110,7 @@ export abstract class FSWatchingLocator extends LazyResourceBasedLocator {
 		private readonly watcherKind: FSWatcherKind = FSWatcherKind.Global,
 	) {
 		super();
+
 		this.activate().ignoreErrors();
 	}
 
@@ -126,6 +130,7 @@ export abstract class FSWatchingLocator extends LazyResourceBasedLocator {
 		if (typeof roots === "string") {
 			roots = [roots];
 		}
+
 		const promises = roots.map(async (root) => {
 			if (isWatchingAFile(this.creationOptions)) {
 				return root;
@@ -139,12 +144,14 @@ export abstract class FSWatchingLocator extends LazyResourceBasedLocator {
 
 				return undefined;
 			}
+
 			return root;
 		});
 
 		const watchableRoots = (await Promise.all(promises)).filter(
 			(root) => !!root,
 		) as string[];
+
 		watchableRoots.forEach((root) => this.startWatchers(root));
 	}
 
@@ -157,6 +164,7 @@ export abstract class FSWatchingLocator extends LazyResourceBasedLocator {
 
 		if (isWatchingAFile(opts)) {
 			traceVerbose("Start watching file for changes", root);
+
 			this.disposables.push(
 				watchLocationForPattern(
 					path.dirname(root),
@@ -167,6 +175,7 @@ export abstract class FSWatchingLocator extends LazyResourceBasedLocator {
 							root,
 							"initiating a refresh",
 						);
+
 						this.emitter.fire({ providerId: this.providerId });
 					},
 				),
@@ -174,6 +183,7 @@ export abstract class FSWatchingLocator extends LazyResourceBasedLocator {
 
 			return;
 		}
+
 		const callback = async (type: FileChangeType, executable: string) => {
 			if (type === FileChangeType.Created) {
 				if (opts.delayOnCreated !== undefined) {
@@ -197,11 +207,13 @@ export abstract class FSWatchingLocator extends LazyResourceBasedLocator {
 				opts.searchLocation ??
 					path.dirname(getEnvironmentDirFromPath(executable)),
 			);
+
 			traceVerbose(
 				"Fired event ",
 				JSON.stringify({ type, kind, searchLocation }),
 				"from locator",
 			);
+
 			this.emitter.fire({
 				type,
 				kind,
@@ -216,6 +228,7 @@ export abstract class FSWatchingLocator extends LazyResourceBasedLocator {
 			// The structure determines which globs are returned.
 			opts.envStructure,
 		);
+
 		traceVerbose(
 			"Start watching root",
 			root,
@@ -226,6 +239,7 @@ export abstract class FSWatchingLocator extends LazyResourceBasedLocator {
 		const watchers = globs.map((g) =>
 			watchLocationForPythonBinaries(root, callback, g),
 		);
+
 		this.disposables.push(...watchers);
 	}
 }

@@ -4,6 +4,7 @@ export class ContextKey {
 	public get value(): boolean | undefined {
 		return this.lastValue;
 	}
+
 	private lastValue?: boolean;
 
 	constructor(
@@ -15,7 +16,9 @@ export class ContextKey {
 		if (this.lastValue === value) {
 			return;
 		}
+
 		this.lastValue = value;
+
 		await this.commandManager.executeCommand(
 			"setContext",
 			this.name,

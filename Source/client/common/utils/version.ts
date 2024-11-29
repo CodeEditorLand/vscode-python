@@ -24,7 +24,9 @@ import { verboseRegExp } from "./regexp";
  */
 export type BasicVersionInfo = {
 	major: number;
+
 	minor: number;
+
 	micro: number;
 	// There is also a hidden `unnormalized` property.
 };
@@ -37,33 +39,42 @@ function normalizeVersionPart(part: unknown): [number, ErrorMsg] {
 		if (Number.isNaN(part)) {
 			return [-1, "missing"];
 		}
+
 		if (part < 0) {
 			// We leave this as a marker.
 			return [-1, ""];
 		}
+
 		return [part, ""];
 	}
+
 	if (typeof part === "string") {
 		const parsed = parseInt(part, 10);
 
 		if (Number.isNaN(parsed)) {
 			return [-1, "string not numeric"];
 		}
+
 		if (parsed < 0) {
 			return [-1, ""];
 		}
+
 		return [parsed, ""];
 	}
+
 	if (part === undefined || part === null) {
 		return [-1, "missing"];
 	}
+
 	return [-1, "unsupported type"];
 }
 
 type RawBasicVersionInfo = BasicVersionInfo & {
 	unnormalized?: {
 		major?: ErrorMsg;
+
 		minor?: ErrorMsg;
+
 		micro?: ErrorMsg;
 	};
 };
@@ -107,6 +118,7 @@ function normalizeBasicVersionInfo<T extends BasicVersionInfo>(
 	if (!info) {
 		return EMPTY_VERSION as T;
 	}
+
 	const norm = copyStrict(info);
 	// Do not normalize if it has already been normalized.
 	if (norm.unnormalized === undefined) {
@@ -121,6 +133,7 @@ function normalizeBasicVersionInfo<T extends BasicVersionInfo>(
 			norm.micro,
 		);
 	}
+
 	return norm as T;
 }
 
@@ -134,9 +147,11 @@ function validateVersionPart(
 	if (part === 0 || part > 0) {
 		return;
 	}
+
 	if (!unnormalized || unnormalized === "") {
 		return;
 	}
+
 	throw Error(
 		`invalid ${prop} version (failed to normalize; ${unnormalized})`,
 	);
@@ -152,13 +167,17 @@ function validateVersionPart(
  */
 function validateBasicVersionInfo<T extends BasicVersionInfo>(info: T): void {
 	const raw = info as unknown as RawBasicVersionInfo;
+
 	validateVersionPart("major", info.major, raw.unnormalized?.major);
+
 	validateVersionPart("minor", info.minor, raw.unnormalized?.minor);
+
 	validateVersionPart("micro", info.micro, raw.unnormalized?.micro);
 
 	if (info.major < 0) {
 		throw Error("missing major version");
 	}
+
 	if (info.minor < 0) {
 		if (info.micro === 0 || info.micro > 0) {
 			throw Error("missing minor version");
@@ -177,18 +196,23 @@ export function getVersionString<T extends BasicVersionInfo>(info: T): string {
 	if (info.major < 0) {
 		return "";
 	}
+
 	if (info.minor < 0) {
 		return `${info.major}`;
 	}
+
 	if (info.micro < 0) {
 		return `${info.major}.${info.minor}`;
 	}
+
 	return `${info.major}.${info.minor}.${info.micro}`;
 }
 
 export type ParseResult<T extends BasicVersionInfo = BasicVersionInfo> = {
 	version: T;
+
 	before: string;
+
 	after: string;
 };
 
@@ -242,6 +266,7 @@ export function parseBasicVersionInfo<T extends BasicVersionInfo>(
 			}
 		}
 	}
+
 	const major = parseInt(majorStr, 10);
 
 	const minor = minorStr ? parseInt(minorStr, 10) : -1;
@@ -267,6 +292,7 @@ export function isVersionInfoEmpty<T extends BasicVersionInfo>(
 	if (!info) {
 		return false;
 	}
+
 	if (
 		typeof info.major !== "number" ||
 		typeof info.minor !== "number" ||
@@ -274,6 +300,7 @@ export function isVersionInfoEmpty<T extends BasicVersionInfo>(
 	) {
 		return false;
 	}
+
 	return info.major < 0 && info.minor < 0 && info.micro < 0;
 }
 
@@ -301,9 +328,11 @@ export function compareVersions<
 	if (left.major < right.major) {
 		return [1, "major"];
 	}
+
 	if (left.major > right.major) {
 		return [-1, "major"];
 	}
+
 	if (left.major === -1) {
 		// Don't bother checking minor or micro.
 		return [0, ""];
@@ -312,9 +341,11 @@ export function compareVersions<
 	if (left.minor < right.minor) {
 		return [1, "minor"];
 	}
+
 	if (left.minor > right.minor) {
 		return [-1, "minor"];
 	}
+
 	if (left.minor === -1) {
 		// Don't bother checking micro.
 		return [0, ""];
@@ -323,6 +354,7 @@ export function compareVersions<
 	if (left.micro < right.micro) {
 		return [1, "micro"];
 	}
+
 	if (left.micro > right.micro) {
 		return [-1, "micro"];
 	}
@@ -350,6 +382,7 @@ export type VersionInfo = BasicVersionInfo & {
  */
 export function normalizeVersionInfo<T extends VersionInfo>(info: T): T {
 	const norm = normalizeBasicVersionInfo(info);
+
 	norm.raw = info.raw;
 
 	if (!norm.raw) {
@@ -385,6 +418,7 @@ export function parseVersionInfo<T extends VersionInfo>(
 	if (result === undefined) {
 		return undefined;
 	}
+
 	result.version.raw = verStr;
 
 	return result;
@@ -453,5 +487,6 @@ export function parseSemVerSafe(raw: string): semver.SemVer {
 		// TODO: Raise an exception instead?
 		return new semver.SemVer("0.0.0");
 	}
+
 	return ver;
 }

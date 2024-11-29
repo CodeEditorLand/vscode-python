@@ -38,7 +38,9 @@ async function getPytestJunitXmlTempFile(
 	if (argValues.length === 1) {
 		return argValues[0];
 	}
+
 	const tempFile = await createTemporaryFile(".xml");
+
 	disposables.push(tempFile);
 
 	return tempFile.filePath;
@@ -94,6 +96,7 @@ export class PytestRunner implements ITestsRunner {
 		// VS Code API requires that we set the run state on the leaf nodes. The state of the
 		// parent nodes are computed based on the state of child nodes.
 		const testCaseNodes = getTestCaseNodes(testNode);
+
 		testCaseNodes.forEach((node) => runInstance.started(node));
 
 		// For pytest we currently use JUnit XML to get the results. We create a temporary file here
@@ -111,6 +114,7 @@ export class PytestRunner implements ITestsRunner {
 
 			// Remove the '--junitxml' or '--junit-xml' if it exists, and add it with our path.
 			testArgs = filterArguments(testArgs, [JunitXmlArg, JunitXmlArgOld]);
+
 			testArgs.splice(0, 0, `${JunitXmlArg}=${junitFilePath}`);
 
 			// Ensure that we use the xunit1 format.
@@ -137,6 +141,7 @@ export class PytestRunner implements ITestsRunner {
 			if (!rawData) {
 				throw new Error(`Trying to run unknown node: ${testNode.id}`);
 			}
+
 			if (testNode.id !== options.cwd) {
 				testArgs.push(rawData.rawId);
 			}
@@ -144,9 +149,11 @@ export class PytestRunner implements ITestsRunner {
 			runInstance.appendOutput(
 				`Running test with arguments: ${testArgs.join(" ")}\r\n`,
 			);
+
 			runInstance.appendOutput(
 				`Current working directory: ${options.cwd}\r\n`,
 			);
+
 			runInstance.appendOutput(
 				`Workspace directory: ${options.workspaceFolder.fsPath}\r\n`,
 			);
@@ -161,6 +168,7 @@ export class PytestRunner implements ITestsRunner {
 					outChannel: this.outputChannel,
 					testProvider: PYTEST_PROVIDER,
 				};
+
 				await this.debugLauncher.launchDebugger(launchOptions);
 			} else {
 				const runOptions: Options = {
@@ -170,11 +178,13 @@ export class PytestRunner implements ITestsRunner {
 					token: options.token,
 					workspaceFolder: options.workspaceFolder,
 				};
+
 				await this.runner.run(PYTEST_PROVIDER, runOptions);
 			}
 
 			// At this point pytest has finished running, we now have to parse the output
 			runInstance.appendOutput(`Run completed, parsing output\r\n`);
+
 			await updateResultFromJunitXml(
 				junitFilePath,
 				testNode,
@@ -190,6 +200,7 @@ export class PytestRunner implements ITestsRunner {
 		} finally {
 			disposables.forEach((d) => d.dispose());
 		}
+
 		return Promise.resolve();
 	}
 }

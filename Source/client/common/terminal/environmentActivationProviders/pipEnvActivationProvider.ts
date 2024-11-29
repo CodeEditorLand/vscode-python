@@ -58,6 +58,7 @@ export class PipEnvActivationCommandProvider
 				return undefined;
 			}
 		}
+
 		const execName = this.pipEnvExecution.executable;
 
 		return [`${execName.fileToCommandArgumentForPythonExt()} shell`];

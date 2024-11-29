@@ -46,6 +46,7 @@ export class NodeLanguageServerManager implements ILanguageServerManager {
 		if (NodeLanguageServerManager.commandDispose) {
 			NodeLanguageServerManager.commandDispose.dispose();
 		}
+
 		NodeLanguageServerManager.commandDispose =
 			commandManager.registerCommand(Commands.RestartLS, () => {
 				sendTelemetryEvent(
@@ -53,6 +54,7 @@ export class NodeLanguageServerManager implements ILanguageServerManager {
 					undefined,
 					{ reason: "command" },
 				);
+
 				this.restartLanguageServer().ignoreErrors();
 			});
 	}
@@ -65,7 +67,9 @@ export class NodeLanguageServerManager implements ILanguageServerManager {
 
 	public dispose(): void {
 		this.stopLanguageServer().ignoreErrors();
+
 		NodeLanguageServerManager.commandDispose.dispose();
+
 		this.disposables.forEach((d) => d.dispose());
 	}
 
@@ -77,8 +81,11 @@ export class NodeLanguageServerManager implements ILanguageServerManager {
 		if (this.started) {
 			throw new Error("Language server already started");
 		}
+
 		this.resource = resource;
+
 		this.interpreter = interpreter;
+
 		this.analysisOptions.onDidChange(
 			this.restartLanguageServerDebounced,
 			this,
@@ -86,9 +93,11 @@ export class NodeLanguageServerManager implements ILanguageServerManager {
 		);
 
 		const extension = this.extensions.getExtension(PYLANCE_EXTENSION_ID);
+
 		this.lsVersion = extension?.packageJSON.version || "0";
 
 		await this.analysisOptions.initialize(resource, interpreter);
+
 		await this.startLanguageServer();
 
 		this.started = true;
@@ -97,6 +106,7 @@ export class NodeLanguageServerManager implements ILanguageServerManager {
 	public connect(): void {
 		if (!this.connected) {
 			this.connected = true;
+
 			this.middleware?.connect();
 		}
 	}
@@ -104,6 +114,7 @@ export class NodeLanguageServerManager implements ILanguageServerManager {
 	public disconnect(): void {
 		if (this.connected) {
 			this.connected = false;
+
 			this.middleware?.disconnect();
 		}
 	}
@@ -113,6 +124,7 @@ export class NodeLanguageServerManager implements ILanguageServerManager {
 		sendTelemetryEvent(EventName.LANGUAGE_SERVER_RESTART, undefined, {
 			reason: "settings",
 		});
+
 		this.restartLanguageServer().ignoreErrors();
 	}
 
@@ -120,6 +132,7 @@ export class NodeLanguageServerManager implements ILanguageServerManager {
 	@traceDecoratorVerbose("Restarting language server")
 	protected async restartLanguageServer(): Promise<void> {
 		await this.stopLanguageServer();
+
 		await this.startLanguageServer();
 	}
 
@@ -133,10 +146,12 @@ export class NodeLanguageServerManager implements ILanguageServerManager {
 	@traceDecoratorVerbose("Starting language server")
 	protected async startLanguageServer(): Promise<void> {
 		const options = await this.analysisOptions.getAnalysisOptions();
+
 		this.middleware = new NodeLanguageClientMiddleware(
 			this.serviceContainer,
 			this.lsVersion,
 		);
+
 		options.middleware = this.middleware;
 
 		// Make sure the middleware is connected if we restart and we we're already connected.

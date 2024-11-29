@@ -35,6 +35,7 @@ String.prototype.toCommandArgumentForPythonExt = function (
 	if (!this) {
 		return this;
 	}
+
 	return (this.indexOf(" ") >= 0 ||
 		this.indexOf("&") >= 0 ||
 		this.indexOf("(") >= 0 ||
@@ -55,6 +56,7 @@ String.prototype.fileToCommandArgumentForPythonExt = function (
 	if (!this) {
 		return this;
 	}
+
 	return this.toCommandArgumentForPythonExt().replace(/\\/g, "/");
 };
 
@@ -66,6 +68,7 @@ String.prototype.trimQuotes = function (this: string): string {
 	if (!this) {
 		return this;
 	}
+
 	return this.replace(/(^['"])|(['"]$)/g, "");
 };
 

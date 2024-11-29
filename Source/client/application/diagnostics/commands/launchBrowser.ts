@@ -18,6 +18,7 @@ export class LaunchBrowserCommand extends BaseDiagnosticCommand {
 	) {
 		super(diagnostic);
 	}
+
 	public async invoke(): Promise<void> {
 		sendTelemetryEvent(EventName.DIAGNOSTICS_ACTION, undefined, {
 			url: this.url,

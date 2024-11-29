@@ -87,9 +87,11 @@ export async function activate(
 			context.globalState.get(GLOBAL_PERSISTENT_KEYS, []).length === 0;
 
 		const workspaceService = new WorkspaceService();
+
 		context.subscriptions.push(
 			workspaceService.onDidGrantWorkspaceTrust(async () => {
 				await deactivate();
+
 				await activate(context);
 			}),
 		);
@@ -127,6 +129,7 @@ export async function deactivate(): Promise<void> {
 			activatedServiceContainer.get<IDisposableRegistry>(
 				IDisposableRegistry,
 			);
+
 		await disposeAll(disposables);
 		// Remove everything that is already disposed.
 		while (disposables.pop());
@@ -147,7 +150,9 @@ async function activateUnsafe(
 	context.subscriptions.push(...logDispose);
 
 	const activationDeferred = createDeferred<void>();
+
 	displayProgress(activationDeferred.promise);
+
 	startupDurations.startActivateTime = startupStopWatch.elapsedTime;
 
 	const activationStopWatch = new StopWatch();
@@ -157,6 +162,7 @@ async function activateUnsafe(
 
 	// First we initialize.
 	const ext = initializeGlobals(context);
+
 	activatedServiceContainer = ext.legacyIOC.serviceContainer;
 	// Note standard utils especially experiment and platform code are fundamental to the extension
 	// and should be available before we activate anything else.Hence register them first.
@@ -175,6 +181,7 @@ async function activateUnsafe(
 		components,
 		activationStopWatch,
 	);
+
 	activateFeatures(ext, components);
 
 	const nonBlocking = componentsActivated.map((r) => r.fullyReady);
@@ -188,6 +195,7 @@ async function activateUnsafe(
 
 	startupDurations.totalActivateTime =
 		startupStopWatch.elapsedTime - startupDurations.startActivateTime;
+
 	activationDeferred.resolve();
 
 	setTimeout(async () => {
@@ -204,6 +212,7 @@ async function activateUnsafe(
 					);
 
 				const workspaces = workspaceService.workspaceFolders ?? [];
+
 				await interpreterManager
 					.refresh(
 						workspaces.length > 0 ? workspaces[0].uri : undefined,
@@ -244,6 +253,7 @@ function displayProgress(promise: Promise<any>) {
 		location: ProgressLocation.Window,
 		title: Common.loadingExtension,
 	};
+
 	window.withProgress(progressOptions, () => promise);
 }
 
@@ -254,6 +264,7 @@ async function handleError(ex: Error, startupDurations: IStartupDurations) {
 	notifyUser(
 		"Extension activation failed, run the 'Developer: Toggle Developer Tools' command for more information.",
 	);
+
 	traceError("extension activation failed", ex);
 
 	await sendErrorTelemetry(ex, startupDurations, activatedServiceContainer);
@@ -272,6 +283,7 @@ function notifyUser(msg: string) {
 				IApplicationShell,
 			) as any as IAppShell;
 		}
+
 		appShell.showErrorMessage(msg).ignoreErrors();
 	} catch (ex) {
 		traceError("Failed to Notify User", ex);

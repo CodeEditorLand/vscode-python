@@ -44,7 +44,9 @@ export class CreatePythonFileCommandHandler
 		const newFile = await this.workspaceService.openTextDocument({
 			language: "python",
 		});
+
 		this.appShell.showTextDocument(newFile);
+
 		sendTelemetryEvent(EventName.CREATE_NEW_FILE_COMMAND);
 	}
 }

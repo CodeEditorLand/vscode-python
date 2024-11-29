@@ -106,7 +106,9 @@ export class LanguageServerWatcher
 		@inject(IDisposableRegistry) readonly disposables: IDisposableRegistry,
 	) {
 		this.workspaceInterpreters = new Map();
+
 		this.workspaceLanguageServers = new Map();
+
 		this.languageServerType =
 			this.configurationService.getSettings().languageServer;
 	}
@@ -118,6 +120,7 @@ export class LanguageServerWatcher
 		startupStopWatch?: StopWatch,
 	): Promise<void> {
 		this.register();
+
 		await this.startLanguageServer(
 			this.languageServerType,
 			resource,
@@ -141,6 +144,7 @@ export class LanguageServerWatcher
 	public register(): void {
 		if (!this.registered) {
 			this.registered = true;
+
 			this.disposables.push(
 				this.workspaceService.onDidChangeConfiguration(
 					this.onDidChangeConfiguration.bind(this),
@@ -224,6 +228,7 @@ export class LanguageServerWatcher
 			serverType !== LanguageServerType.None
 		) {
 			traceLog(LanguageService.untrustedWorkspaceMessage);
+
 			serverType = LanguageServerType.None;
 		}
 
@@ -247,6 +252,7 @@ export class LanguageServerWatcher
 		// Instantiate the language server extension manager.
 		const languageServerExtensionManager =
 			this.createLanguageServer(serverType);
+
 		this.workspaceLanguageServers.set(key, languageServerExtensionManager);
 
 		if (
@@ -263,13 +269,16 @@ export class LanguageServerWatcher
 					},
 				);
 			}
+
 			await languageServerExtensionManager.startLanguageServer(
 				lsResource,
 				interpreter,
 			);
 
 			logStartup(languageServerType, lsResource);
+
 			this.languageServerType = languageServerType;
+
 			this.workspaceInterpreters.set(lsResource.fsPath, interpreter);
 		} else {
 			await languageServerExtensionManager.languageServerNotAvailable();
@@ -285,7 +294,9 @@ export class LanguageServerWatcher
 			});
 
 			const resource = Uri.parse(resourceString);
+
 			await this.stopLanguageServer(resource);
+
 			await this.startLanguageServer(this.languageServerType, resource);
 		});
 	}
@@ -319,7 +330,9 @@ export class LanguageServerWatcher
 
 		if (languageServerExtensionManager) {
 			await languageServerExtensionManager.stopLanguageServer();
+
 			languageServerExtensionManager.dispose();
+
 			this.workspaceLanguageServers.delete(key);
 		}
 	}
@@ -373,6 +386,7 @@ export class LanguageServerWatcher
 		this.disposables.push({
 			dispose: async () => {
 				await lsManager.stopLanguageServer();
+
 				lsManager.dispose();
 			},
 		});
@@ -391,6 +405,7 @@ export class LanguageServerWatcher
 
 		if (languageServerType !== this.languageServerType || forced) {
 			await this.stopLanguageServer(resource);
+
 			await this.startLanguageServer(languageServerType, lsResource);
 		}
 	}
@@ -566,5 +581,6 @@ function logStartup(
 				`Unknown language server type: ${languageServerType}`,
 			);
 	}
+
 	traceLog(outputLine);
 }

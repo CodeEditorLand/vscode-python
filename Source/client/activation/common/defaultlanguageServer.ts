@@ -26,6 +26,7 @@ export async function setDefaultLanguageServer(
 	serviceManager: IServiceManager,
 ): Promise<void> {
 	const lsType = await getDefaultLanguageServer(extensions);
+
 	serviceManager.addSingletonInstance<IDefaultLanguageServer>(
 		IDefaultLanguageServer,
 		new DefaultLanguageServer(lsType),

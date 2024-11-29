@@ -39,9 +39,11 @@ export class CondaProgressAndTelemetry {
 			output.includes(CONDA_ENV_CREATED_MARKER)
 		) {
 			this.condaCreatedReported = true;
+
 			this.progress.report({
 				message: CreateEnv.Conda.created,
 			});
+
 			sendTelemetryEvent(EventName.ENVIRONMENT_CREATED, undefined, {
 				environmentType: "conda",
 				reason: "created",
@@ -51,9 +53,11 @@ export class CondaProgressAndTelemetry {
 			output.includes(CONDA_ENV_EXISTING_MARKER)
 		) {
 			this.condaCreatedReported = true;
+
 			this.progress.report({
 				message: CreateEnv.Conda.created,
 			});
+
 			sendTelemetryEvent(EventName.ENVIRONMENT_CREATED, undefined, {
 				environmentType: "conda",
 				reason: "existing",
@@ -63,19 +67,23 @@ export class CondaProgressAndTelemetry {
 			output.includes(CREATE_CONDA_FAILED_MARKER)
 		) {
 			this.condaFailedReported = true;
+
 			sendTelemetryEvent(EventName.ENVIRONMENT_FAILED, undefined, {
 				environmentType: "conda",
 				reason: "other",
 			});
+
 			this.lastError = CREATE_CONDA_FAILED_MARKER;
 		} else if (
 			!this.condaInstallingPackagesReported &&
 			output.includes(CONDA_INSTALLING_YML)
 		) {
 			this.condaInstallingPackagesReported = true;
+
 			this.progress.report({
 				message: CreateEnv.Conda.installingPackages,
 			});
+
 			sendTelemetryEvent(
 				EventName.ENVIRONMENT_INSTALLING_PACKAGES,
 				undefined,
@@ -89,6 +97,7 @@ export class CondaProgressAndTelemetry {
 			output.includes(CREATE_FAILED_INSTALL_YML)
 		) {
 			this.condaInstallingPackagesFailedReported = true;
+
 			sendTelemetryEvent(
 				EventName.ENVIRONMENT_INSTALLING_PACKAGES_FAILED,
 				undefined,
@@ -97,12 +106,14 @@ export class CondaProgressAndTelemetry {
 					using: "environment.yml",
 				},
 			);
+
 			this.lastError = CREATE_FAILED_INSTALL_YML;
 		} else if (
 			!this.condaInstalledPackagesReported &&
 			output.includes(CREATE_CONDA_INSTALLED_YML)
 		) {
 			this.condaInstalledPackagesReported = true;
+
 			sendTelemetryEvent(
 				EventName.ENVIRONMENT_INSTALLED_PACKAGES,
 				undefined,

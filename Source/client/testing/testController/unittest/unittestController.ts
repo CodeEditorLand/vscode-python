@@ -99,6 +99,7 @@ export class UnittestController implements ITestFrameworkController {
 						);
 					} else {
 						this.idToRawData.delete(item.id);
+
 						testController.items.delete(item.id);
 					}
 				} else {
@@ -126,6 +127,7 @@ export class UnittestController implements ITestFrameworkController {
 				}
 			}
 		}
+
 		return Promise.resolve();
 	}
 
@@ -172,6 +174,7 @@ export class UnittestController implements ITestFrameworkController {
 
 			if (path.isAbsolute(startDir)) {
 				const relative = path.relative(options.cwd, startDir);
+
 				testDir = relative.length > 0 ? relative : ".";
 			}
 
@@ -191,6 +194,7 @@ export class UnittestController implements ITestFrameworkController {
 			};
 
 			const deferred = createDeferred<void>();
+
 			this.discovering.set(workspace.uri.fsPath, deferred);
 
 			let rawTestData: RawDiscoveredTests | undefined;
@@ -200,12 +204,14 @@ export class UnittestController implements ITestFrameworkController {
 					UNITTEST_PROVIDER,
 					runOptions,
 				);
+
 				rawTestData = await testDiscoveryParser(
 					options.cwd,
 					testDir,
 					getTestIds(content),
 					options.token,
 				);
+
 				this.testData.set(workspace.uri.fsPath, rawTestData);
 
 				const exceptions = getTestDiscoveryExceptions(content);
@@ -236,9 +242,12 @@ export class UnittestController implements ITestFrameworkController {
 							label: `Unittest Discovery Error [${path.basename(workspace.uri.fsPath)}]`,
 							error: message,
 						});
+
 						errorNode.canResolveChildren = false;
+
 						testController.items.add(errorNode);
 					}
+
 					errorNode.error = message;
 				}
 
@@ -253,6 +262,7 @@ export class UnittestController implements ITestFrameworkController {
 				const cancel = options.token?.isCancellationRequested
 					? "Cancelled"
 					: "Error";
+
 				traceError(`${cancel} discovering unittest tests:\r\n`, ex);
 
 				// Report also on the test view.
@@ -325,11 +335,13 @@ export class UnittestController implements ITestFrameworkController {
 						rawId: rawTestData.rootid,
 					},
 				);
+
 				testController.items.add(newItem);
 
 				await this.resolveChildren(testController, newItem, token);
 			}
 		}
+
 		sendTelemetryEvent(EventName.UNITTEST_DISCOVERY_DONE, undefined, {
 			tool: "unittest",
 			failed: false,
@@ -382,15 +394,18 @@ function getTestDiscoveryExceptions(content: string): string[] {
 		if (start) {
 			if (line.startsWith("=== exception end ===")) {
 				exceptions.push(data);
+
 				start = false;
 			} else {
 				data += `${line}\r\n`;
 			}
 		} else if (line.startsWith("=== exception start ===")) {
 			start = true;
+
 			data = "";
 		}
 	}
+
 	return exceptions;
 }
 
@@ -406,12 +421,15 @@ function getTestIds(content: string): string[] {
 			if (line === "start") {
 				startedCollecting = true;
 			}
+
 			if (line.startsWith("===")) {
 				break;
 			}
 		}
+
 		ids.push(line.trim());
 	}
+
 	return ids.filter((id) => id.length > 0);
 }
 
@@ -455,6 +473,7 @@ function testDiscoveryParser(
 				const collectionId = `${relPath}::${className}`;
 
 				const fileId = relPath;
+
 				tests.push({
 					id: `${relPath}::${className}::${functionName}`,
 					name: functionName,
@@ -497,6 +516,7 @@ function testDiscoveryParser(
 						folderParts.length === 0
 							? "."
 							: `./${folderParts.join("/")}`;
+
 					folderParts.push(folder);
 
 					const pathId = `./${folderParts.join("/")}`;

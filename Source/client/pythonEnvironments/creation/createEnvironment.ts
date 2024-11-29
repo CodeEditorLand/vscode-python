@@ -34,6 +34,7 @@ function isBusyCreatingEnvironment(): boolean {
 
 function fireStartedEvent(options?: CreateEnvironmentOptions): void {
 	onCreateEnvironmentStartedEvent.fire({ options });
+
 	startedEventCount += 1;
 }
 
@@ -53,7 +54,9 @@ function fireExitedEvent(
 
 export function getCreationEvents(): {
 	onCreateEnvironmentStarted: Event<EnvironmentWillCreateEvent>;
+
 	onCreateEnvironmentExited: Event<EnvironmentDidCreateEvent>;
+
 	isCreatingEnvironment: () => boolean;
 } {
 	return {
@@ -73,6 +76,7 @@ async function createEnvironment(
 
 	try {
 		fireStartedEvent(options);
+
 		result = await provider.createEnvironment(options);
 	} catch (ex) {
 		if (ex === QuickInputButtons.Back) {
@@ -84,12 +88,14 @@ async function createEnvironment(
 				return undefined;
 			}
 		}
+
 		err = ex as Error;
 
 		throw err;
 	} finally {
 		fireExitedEvent(result, options, err);
 	}
+
 	return result;
 }
 
@@ -149,6 +155,7 @@ async function showCreateEnvironmentQuickPick(
 			}
 		}
 	}
+
 	return undefined;
 }
 
@@ -188,8 +195,10 @@ export async function handleCreateEnvironmentCommand(
 					) {
 						return ex;
 					}
+
 					throw ex;
 				}
+
 				if (!selectedProvider) {
 					return MultiStepAction.Cancel;
 				}
@@ -203,6 +212,7 @@ export async function handleCreateEnvironmentCommand(
 					return MultiStepAction.Back;
 				}
 			}
+
 			return MultiStepAction.Continue;
 		},
 		undefined,
@@ -217,6 +227,7 @@ export async function handleCreateEnvironmentCommand(
 				// This step is to trigger creation, which can go into other extension.
 				return MultiStepAction.Back;
 			}
+
 			if (selectedProvider) {
 				try {
 					result = await createEnvironment(
@@ -230,13 +241,16 @@ export async function handleCreateEnvironmentCommand(
 					) {
 						return ex;
 					}
+
 					throw ex;
 				}
 			}
+
 			return MultiStepAction.Continue;
 		},
 		undefined,
 	);
+
 	envTypeStep.next = createStep;
 
 	const action = await MultiStepNode.run(envTypeStep);
@@ -258,5 +272,6 @@ export async function handleCreateEnvironmentCommand(
 	if (result) {
 		return Object.freeze(result);
 	}
+
 	return undefined;
 }

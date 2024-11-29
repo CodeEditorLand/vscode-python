@@ -30,6 +30,7 @@ export class TerminalServiceFactory implements ITerminalServiceFactory {
 	) {
 		this.terminalServices = new Map<string, TerminalService>();
 	}
+
 	public getTerminalService(
 		options: TerminalCreationOptions & { newTerminalPerFile?: boolean },
 	): ITerminalService {
@@ -55,12 +56,14 @@ export class TerminalServiceFactory implements ITerminalServiceFactory {
 			if (resource && options.newTerminalPerFile) {
 				terminalTitle = `${terminalTitle}: ${path.basename(resource.fsPath).replace(".py", "")}`;
 			}
+
 			options.title = terminalTitle;
 
 			const terminalService = new TerminalService(
 				this.serviceContainer,
 				options,
 			);
+
 			this.terminalServices.set(id, terminalService);
 		}
 
@@ -72,6 +75,7 @@ export class TerminalServiceFactory implements ITerminalServiceFactory {
 			interpreter,
 		);
 	}
+
 	public createTerminalService(
 		resource?: Uri,
 		title?: string,
@@ -83,6 +87,7 @@ export class TerminalServiceFactory implements ITerminalServiceFactory {
 
 		return new TerminalService(this.serviceContainer, { resource, title });
 	}
+
 	private getTerminalId(
 		title: string,
 		resource?: Uri,
@@ -92,6 +97,7 @@ export class TerminalServiceFactory implements ITerminalServiceFactory {
 		if (!resource && !interpreter) {
 			return title;
 		}
+
 		const workspaceFolder = this.serviceContainer
 			.get<IWorkspaceService>(IWorkspaceService)
 			.getWorkspaceFolder(resource || undefined);

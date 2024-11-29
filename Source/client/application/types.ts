@@ -13,5 +13,6 @@ export interface IApplicationDiagnostics {
 	 * E.g. validate user environment, etc.
 	 */
 	performPreStartupHealthCheck(resource: Resource): Promise<void>;
+
 	register(): void;
 }

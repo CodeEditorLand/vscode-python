@@ -23,6 +23,7 @@ export function getPythonVersionFromPath(exe: string): PythonVersion {
 	} catch (ex) {
 		traceError(`Failed to parse version from path: ${exe}`, ex);
 	}
+
 	return version;
 }
 
@@ -45,7 +46,9 @@ export function parseVersion(versionStr: string): PythonVersion {
 	if (version.micro === -1) {
 		return version;
 	}
+
 	const [release] = parseRelease(after);
+
 	version.release = release;
 
 	return version;
@@ -70,7 +73,9 @@ export function parseRelease(
 
 	if (match) {
 		[, after] = match;
+
 		fin = "final";
+
 		serialStr = "0";
 	} else {
 		for (const regex of [
@@ -102,6 +107,7 @@ export function parseRelease(
 		// We didn't find release info.
 		return [undefined, text];
 	}
+
 	const serial = parseInt(serialStr!, 10);
 
 	return [{ level, serial }, after!];
@@ -121,10 +127,12 @@ export function parseBasicVersion(versionStr: string): [PythonVersion, string] {
 		if (versionStr === "") {
 			return [getEmptyVersion(), ""];
 		}
+
 		throw Error(`invalid version ${versionStr}`);
 	}
 	// We ignore any "before" text.
 	const { version, after } = parsed;
+
 	version.release = undefined;
 
 	if (version.minor === -1) {
@@ -133,7 +141,9 @@ export function parseBasicVersion(versionStr: string): [PythonVersion, string] {
 			const numdigits = version.major.toString().length - 1;
 
 			const factor = 10 ** numdigits;
+
 			version.minor = version.major % factor;
+
 			version.major = Math.floor(version.major / factor);
 		}
 	}
@@ -163,9 +173,11 @@ export function getVersionDisplayString(ver: PythonVersion): string {
 	if (isVersionEmpty(ver)) {
 		return "";
 	}
+
 	if (ver.micro !== -1) {
 		return getShortVersionString(ver);
 	}
+
 	return `${getShortVersionString(ver)}.x`;
 }
 
@@ -178,9 +190,11 @@ export function getShortVersionString(ver: PythonVersion): string {
 	if (ver.release === undefined) {
 		return verStr;
 	}
+
 	if (ver.release.level === PythonReleaseLevel.Final) {
 		return verStr;
 	}
+
 	if (ver.release.level === PythonReleaseLevel.Candidate) {
 		verStr = `${verStr}rc${ver.release.serial}`;
 	} else if (ver.release.level === PythonReleaseLevel.Beta) {
@@ -190,6 +204,7 @@ export function getShortVersionString(ver: PythonVersion): string {
 	} else {
 		throw Error(`unsupported release level ${ver.release.level}`);
 	}
+
 	return verStr;
 }
 
@@ -219,9 +234,11 @@ export function areSimilarVersions(
 	if (!basic.areSimilarVersions(left, right, compareVersionRelease)) {
 		return false;
 	}
+
 	if (left.major === 2) {
 		return true;
 	}
+
 	return left.minor > -1 && right.minor > -1;
 }
 
@@ -233,8 +250,10 @@ function compareVersionRelease(
 		if (right.release === undefined) {
 			return [0, ""];
 		}
+
 		return [1, "level"];
 	}
+
 	if (right.release === undefined) {
 		return [-1, "level"];
 	}
@@ -243,9 +262,11 @@ function compareVersionRelease(
 	if (left.release.level < right.release.level) {
 		return [1, "level"];
 	}
+
 	if (left.release.level > right.release.level) {
 		return [-1, "level"];
 	}
+
 	if (left.release.level === PythonReleaseLevel.Final) {
 		// We ignore "serial".
 		return [0, ""];
@@ -255,6 +276,7 @@ function compareVersionRelease(
 	if (left.release.serial < right.release.serial) {
 		return [1, "serial"];
 	}
+
 	if (left.release.serial > right.release.serial) {
 		return [-1, "serial"];
 	}
@@ -270,10 +292,15 @@ function compareVersionRelease(
  */
 export function toSemverLikeVersion(version: PythonVersion): {
 	raw: string;
+
 	major: number;
+
 	minor: number;
+
 	patch: number;
+
 	build: string[];
+
 	prerelease: string[];
 } {
 	const versionPrefix = basic.getVersionString(version);
@@ -286,6 +313,7 @@ export function toSemverLikeVersion(version: PythonVersion): {
 				? [`${version.release.level}`]
 				: [`${version.release.level}`, `${version.release.serial}`];
 	}
+
 	return {
 		raw: versionPrefix,
 		major: version.major,
@@ -315,9 +343,12 @@ export function compareSemVerLikeVersions(
 			if (v1.patch === v2.patch) {
 				return 0;
 			}
+
 			return v1.patch > v2.patch ? 1 : -1;
 		}
+
 		return v1.minor > v2.minor ? 1 : -1;
 	}
+
 	return v1.major > v2.major ? 1 : -1;
 }

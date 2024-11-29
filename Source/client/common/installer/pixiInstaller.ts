@@ -62,6 +62,7 @@ export class PixiInstaller extends ModuleInstaller {
 
 			return pixiEnv !== undefined;
 		}
+
 		return resource.envType === EnvironmentType.Pixi;
 	}
 

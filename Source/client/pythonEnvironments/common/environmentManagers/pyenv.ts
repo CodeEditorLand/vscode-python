@@ -26,6 +26,7 @@ export function getPyenvDir(): string {
 
 	if (!pyenvDir) {
 		const homeDir = getUserHomeDir() || "";
+
 		pyenvDir =
 			getOSType() === OSType.Windows
 				? path.join(homeDir, ".pyenv", "pyenv-win")
@@ -53,6 +54,7 @@ async function getPyenvBinary(): Promise<string> {
 	if (await pathExists(pyenvBin)) {
 		return pyenvBin;
 	}
+
 	return "pyenv";
 }
 
@@ -116,7 +118,9 @@ export async function isPyenvEnvironment(
 
 export interface IPyenvVersionStrings {
 	pythonVer?: string;
+
 	distro?: string;
+
 	distroVer?: string;
 }
 /**
@@ -268,18 +272,31 @@ function getKnownPyenvVersionParsers(): Map<
 		string,
 		(path: string) => IPyenvVersionStrings | undefined
 	> = new Map();
+
 	parsers.set("activepython", distroOnly);
+
 	parsers.set("anaconda", distroOnly);
+
 	parsers.set("graalpython", distroOnly);
+
 	parsers.set("ironpython", distroOnly);
+
 	parsers.set("jython", distroOnly);
+
 	parsers.set("micropython", distroOnly);
+
 	parsers.set("miniconda", distroOnly);
+
 	parsers.set("miniforge", distroOnly);
+
 	parsers.set("pypy", pypyParser);
+
 	parsers.set("pyston", distroOnly);
+
 	parsers.set("stackless", distroOnly);
+
 	parsers.set("3", pythonOnly);
+
 	parsers.set("2", pythonOnly);
 
 	return parsers;

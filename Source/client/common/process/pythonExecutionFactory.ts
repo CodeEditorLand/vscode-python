@@ -67,7 +67,9 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 		// Acquire other objects here so that if we are called during dispose they are available.
 		this.disposables =
 			this.serviceContainer.get<IDisposableRegistry>(IDisposableRegistry);
+
 		this.logger = this.serviceContainer.get<IProcessLogger>(IProcessLogger);
+
 		this.fileSystem = this.serviceContainer.get<IFileSystem>(IFileSystem);
 	}
 
@@ -81,6 +83,7 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 				this.serviceContainer.get<IActivatedEnvironmentLaunch>(
 					IActivatedEnvironmentLaunch,
 				);
+
 			await activatedEnvLaunch.selectIfLaunchedViaActivatedEnv();
 			// If python path wasn't passed in, we need to auto select it and then read it
 			// from the configuration.
@@ -107,10 +110,12 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 					);
 				}
 			}
+
 			pythonPath = this.configService.getSettings(
 				options.resource,
 			).pythonPath;
 		}
+
 		const processService: IProcessService =
 			await this.processServiceFactory.create(options.resource);
 
@@ -155,6 +160,7 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 			);
 
 		const hasEnvVars = envVars && Object.keys(envVars).length > 0;
+
 		sendTelemetryEvent(
 			EventName.PYTHON_INTERPRETER_ACTIVATION_ENVIRONMENT_VARIABLES,
 			undefined,
@@ -169,6 +175,7 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 					: undefined,
 			});
 		}
+
 		const pythonPath = options.interpreter
 			? options.interpreter.path
 			: this.configService.getSettings(options.resource).pythonPath;
@@ -176,7 +183,9 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 		const processService: IProcessService = new ProcessService({
 			...envVars,
 		});
+
 		processService.on("exec", this.logger.logProcess.bind(this.logger));
+
 		this.disposables.push(processService);
 
 		if (await getPixi()) {
@@ -222,6 +231,7 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 		if (!condaEnvironment) {
 			return undefined;
 		}
+
 		const env = await createCondaEnv(
 			condaEnvironment,
 			processService,
@@ -231,6 +241,7 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
 		if (!env) {
 			return undefined;
 		}
+
 		return createPythonService(processService, env);
 	}
 

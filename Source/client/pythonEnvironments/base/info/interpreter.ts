@@ -15,7 +15,9 @@ import { parseVersion } from "./pythonVersion";
 
 export type InterpreterInformation = {
 	arch: Architecture;
+
 	executable: PythonExecutableInfo;
+
 	version: PythonVersion;
 };
 
@@ -51,9 +53,11 @@ function extractInterpreterInfo(
 			} catch (ex) {
 				serial = -1;
 			}
+
 			rawVersion = serial >= 0 ? `${rawVersion}${serial}` : rawVersion;
 		}
 	}
+
 	return {
 		arch: raw.is64Bit ? Architecture.x64 : Architecture.x86,
 		executable: {
@@ -103,6 +107,7 @@ export async function getInterpreterInfo(
 			process.env.VSC_PYTHON_INTERPRETER_INFO_TIMEOUT,
 			10,
 		);
+
 		traceInfo(`Custom interpreter discovery timeout: ${standardTimeout}`);
 	}
 
@@ -121,6 +126,7 @@ export async function getInterpreterInfo(
 			`Stderr when executing script with >> ${quoted} << stderr: ${result.stderr}, still attempting to parse output`,
 		);
 	}
+
 	let json: InterpreterInfoJson;
 
 	try {
@@ -132,6 +138,7 @@ export async function getInterpreterInfo(
 
 		return undefined;
 	}
+
 	traceVerbose(
 		`Found interpreter for >> ${quoted} <<: ${JSON.stringify(json)}`,
 	);

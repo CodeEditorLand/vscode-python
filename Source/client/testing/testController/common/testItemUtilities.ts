@@ -35,6 +35,7 @@ export const DebugTestTag = { id: "python-debug" };
 
 function testItemCollectionToArray(collection: TestItemCollection): TestItem[] {
 	const items: TestItem[] = [];
+
 	collection.forEach((c) => {
 		items.push(c);
 	});
@@ -49,6 +50,7 @@ export function removeItemByIdFromChildren(
 ): void {
 	childNodeIdsToRemove.forEach((id) => {
 		item.children.delete(id);
+
 		idToRawData.delete(id);
 	});
 }
@@ -60,8 +62,11 @@ export function createErrorTestItem(
 	options: ErrorTestItemOptions,
 ): TestItem {
 	const testItem = testController.createTestItem(options.id, options.label);
+
 	testItem.canResolveChildren = false;
+
 	testItem.error = options.error;
+
 	testItem.tags = [RunTestTag, DebugTestTag];
 
 	return testItem;
@@ -72,10 +77,15 @@ export function createWorkspaceRootTestItem(
 	idToRawData: Map<string, TestData>,
 	options: {
 		id: string;
+
 		label: string;
+
 		uri: Uri;
+
 		runId: string;
+
 		parentId?: string;
+
 		rawId?: string;
 	},
 ): TestItem {
@@ -84,12 +94,15 @@ export function createWorkspaceRootTestItem(
 		options.label,
 		options.uri,
 	);
+
 	testItem.canResolveChildren = true;
+
 	idToRawData.set(options.id, {
 		...options,
 		rawId: options.rawId ?? options.id,
 		kind: TestDataKinds.Workspace,
 	});
+
 	testItem.tags = [RunTestTag, DebugTestTag];
 
 	return testItem;
@@ -107,6 +120,7 @@ function getParentIdFromRawParentId(
 	if (parent) {
 		parentId = parent.id === "." ? testRoot : parent.id;
 	}
+
 	return parentId;
 }
 
@@ -122,6 +136,7 @@ function getRangeFromRawSource(raw: { source: string }): Range | undefined {
 	} catch (ex) {
 		// ignore
 	}
+
 	return undefined;
 }
 
@@ -165,6 +180,7 @@ function createFolderOrFileTestItem(
 		kind: TestDataKinds.FolderOrFile,
 		parentId,
 	});
+
 	testItem.tags = [RunTestTag, DebugTestTag];
 
 	return testItem;
@@ -194,6 +210,7 @@ function updateFolderOrFileTestItem(
 		kind: TestDataKinds.FolderOrFile,
 		parentId,
 	});
+
 	item.tags = [RunTestTag, DebugTestTag];
 }
 
@@ -233,6 +250,7 @@ function createCollectionTestItem(
 		kind: TestDataKinds.Collection,
 		parentId,
 	});
+
 	testItem.tags = [RunTestTag, DebugTestTag];
 
 	return testItem;
@@ -269,6 +287,7 @@ function updateCollectionTestItem(
 		kind: TestDataKinds.Collection,
 		parentId,
 	});
+
 	item.tags = [RunTestTag, DebugTestTag];
 }
 
@@ -301,6 +320,7 @@ function createTestCaseItem(
 	const testItem = testController.createTestItem(id, label, uri);
 
 	testItem.canResolveChildren = false;
+
 	testItem.range = getRangeFromRawSource(rawData);
 
 	idToRawData.set(testItem.id, {
@@ -311,6 +331,7 @@ function createTestCaseItem(
 		kind: TestDataKinds.Case,
 		parentId,
 	});
+
 	testItem.tags = [RunTestTag, DebugTestTag];
 
 	return testItem;
@@ -338,6 +359,7 @@ function updateTestCaseItem(
 	const runId = getRunIdFromRawData(rawData.id);
 
 	item.canResolveChildren = false;
+
 	item.range = getRangeFromRawSource(rawData);
 
 	idToRawData.set(item.id, {
@@ -348,6 +370,7 @@ function updateTestCaseItem(
 		kind: TestDataKinds.Case,
 		parentId,
 	});
+
 	item.tags = [RunTestTag, DebugTestTag];
 }
 
@@ -381,6 +404,7 @@ async function updateTestItemFromRawDataInternal(
 
 	if (nodeRawData.length === 0 && item.parent) {
 		removeItemByIdFromChildren(idToRawData, item.parent, [item.id]);
+
 		traceVerbose(
 			`Following test item was removed Reason: No-Raw-Data ${item.id}`,
 		);
@@ -422,6 +446,7 @@ async function updateTestItemFromRawDataInternal(
 		);
 
 		const existingNodes: string[] = [];
+
 		item.children.forEach((c) =>
 			existingNodes.push(idToRawData.get(c.id)?.rawId ?? ""),
 		);
@@ -443,7 +468,9 @@ async function updateTestItemFromRawDataInternal(
 								testRoot,
 								r as RawTestFolder,
 							);
+
 				item.children.add(childItem);
+
 				await updateTestItemFromRawData(
 					childItem,
 					testController,
@@ -528,6 +555,7 @@ async function updateTestItemFromRawDataInternal(
 		// Create child nodes that are new.
 		// Get the existing child node ids so we can skip them
 		const existingNodes: string[] = [];
+
 		item.children.forEach((c) =>
 			existingNodes.push(idToRawData.get(c.id)?.rawId ?? ""),
 		);
@@ -538,6 +566,7 @@ async function updateTestItemFromRawDataInternal(
 		const rawChildNodes = nodeRawData[0].parents.filter(
 			(p) => p.parentid === rawId,
 		);
+
 		await asyncForEach(
 			rawChildNodes.filter((r) => !existingNodes.includes(r.id)),
 			async (r) => {
@@ -587,6 +616,7 @@ async function updateTestItemFromRawDataInternal(
 					default:
 						break;
 				}
+
 				if (childItem) {
 					item.children.add(childItem);
 					// This node can potentially have children. So treat it like a new node and update it.
@@ -606,6 +636,7 @@ async function updateTestItemFromRawDataInternal(
 		const rawTestCaseNodes = nodeRawData[0].tests.filter(
 			(p) => p.parentid === rawId,
 		);
+
 		rawTestCaseNodes
 			.filter((r) => !existingNodes.includes(r.id))
 			.forEach((r) => {
@@ -615,6 +646,7 @@ async function updateTestItemFromRawDataInternal(
 					testRoot,
 					r,
 				);
+
 				item.children.add(childItem);
 			});
 
@@ -658,6 +690,7 @@ export async function updateTestItemFromRawData(
 	token?: CancellationToken,
 ): Promise<void> {
 	item.busy = true;
+
 	await updateTestItemFromRawDataInternal(
 		item,
 		testController,
@@ -666,6 +699,7 @@ export async function updateTestItemFromRawData(
 		rawDataSet,
 		token,
 	);
+
 	item.busy = false;
 }
 
@@ -673,6 +707,7 @@ export function getUri(node: TestItem): Uri | undefined {
 	if (!node.uri && node.parent) {
 		return getUri(node.parent);
 	}
+
 	return node.uri;
 }
 
@@ -705,10 +740,12 @@ export function getWorkspaceNode(
 		if (raw.kind === TestDataKinds.Workspace) {
 			return testNode;
 		}
+
 		if (testNode.parent) {
 			return getWorkspaceNode(testNode.parent, idToRawData);
 		}
 	}
+
 	return undefined;
 }
 
@@ -718,6 +755,7 @@ export function getNodeByUri(root: TestItem, uri: Uri): TestItem | undefined {
 	}
 
 	const nodes: TestItem[] = [];
+
 	root.children.forEach((c) => nodes.push(c));
 
 	// Search at the current level
@@ -735,6 +773,7 @@ export function getNodeByUri(root: TestItem, uri: Uri): TestItem | undefined {
 			return found;
 		}
 	}
+
 	return undefined;
 }
 
@@ -745,6 +784,7 @@ function updateTestResultMapForSnapshot(
 	for (const taskState of snapshot.taskStates) {
 		resultMap.set(snapshot.id, taskState.state);
 	}
+
 	snapshot.children.forEach((child) =>
 		updateTestResultMapForSnapshot(resultMap, child),
 	);
@@ -757,6 +797,7 @@ export function updateTestResultMap(
 	const ordered = new Array(...testResults).sort(
 		(a, b) => a.completedAt - b.completedAt,
 	);
+
 	ordered.forEach((testResult) => {
 		testResult.results.forEach((snapshot) =>
 			updateTestResultMapForSnapshot(resultMap, snapshot),
@@ -778,6 +819,8 @@ export function checkForFailedTests(
 
 export function clearAllChildren(testNode: TestItem): void {
 	const ids: string[] = [];
+
 	testNode.children.forEach((c) => ids.push(c.id));
+
 	ids.forEach(testNode.children.delete);
 }

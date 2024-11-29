@@ -11,13 +11,16 @@ function valueToLogString(value: unknown, kind: string): string {
 	if (value === undefined) {
 		return "undefined";
 	}
+
 	if (value === null) {
 		return "null";
 	}
+
 	try {
 		if (value && (value as Uri).fsPath) {
 			return `<Uri:${(value as Uri).fsPath}>`;
 		}
+
 		return JSON.stringify(value);
 	} catch {
 		return `<${kind} cannot be serialized for logging>`;
@@ -30,6 +33,7 @@ export function argsToLogString(args: Arguments): string {
 	if (!args) {
 		return "";
 	}
+
 	try {
 		const argStrings = args.map((item, index) => {
 			const valueString = valueToLogString(item, "argument");

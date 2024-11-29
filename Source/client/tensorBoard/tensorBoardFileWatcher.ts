@@ -53,7 +53,9 @@ export class TensorBoardFileWatcher
 		if (TensorboardExperiment.isTensorboardExtensionInstalled) {
 			return;
 		}
+
 		this.experiment.disposeOnInstallingTensorboard(this);
+
 		this.activateInternal().ignoreErrors();
 	}
 
@@ -81,6 +83,7 @@ export class TensorBoardFileWatcher
 		for (const added of event.added) {
 			this.createFileSystemWatcher(added);
 		}
+
 		for (const removed of event.removed) {
 			const fileSystemWatchers = this.fileSystemWatchers.get(removed);
 
@@ -88,6 +91,7 @@ export class TensorBoardFileWatcher
 				fileSystemWatchers.forEach((fileWatcher) =>
 					fileWatcher.dispose(),
 				);
+
 				this.fileSystemWatchers.delete(removed);
 			}
 		}
@@ -110,6 +114,7 @@ export class TensorBoardFileWatcher
 					),
 				),
 			);
+
 			this.disposables.push(
 				fileSystemWatcher.onDidChange(() =>
 					this.tensorBoardPrompt.showNativeTensorBoardPrompt(
@@ -117,9 +122,12 @@ export class TensorBoardFileWatcher
 					),
 				),
 			);
+
 			this.disposables.push(fileSystemWatcher);
+
 			fileWatchers.push(fileSystemWatcher);
 		}
+
 		this.fileSystemWatchers.set(folder, fileWatchers);
 	}
 }

@@ -51,6 +51,7 @@ export class JediLanguageServerManager implements ILanguageServerManager {
 		if (JediLanguageServerManager.commandDispose) {
 			JediLanguageServerManager.commandDispose.dispose();
 		}
+
 		JediLanguageServerManager.commandDispose =
 			commandManager.registerCommand(Commands.RestartLS, () => {
 				this.restartLanguageServer().ignoreErrors();
@@ -65,7 +66,9 @@ export class JediLanguageServerManager implements ILanguageServerManager {
 
 	public dispose(): void {
 		this.stopLanguageServer().ignoreErrors();
+
 		JediLanguageServerManager.commandDispose.dispose();
+
 		this.disposables.forEach((d) => d.dispose());
 	}
 
@@ -75,7 +78,9 @@ export class JediLanguageServerManager implements ILanguageServerManager {
 		interpreter: PythonEnvironment | undefined,
 	): Promise<void> {
 		this.resource = resource;
+
 		this.interpreter = interpreter;
+
 		this.analysisOptions.onDidChange(
 			this.restartLanguageServerDebounced,
 			this,
@@ -109,12 +114,14 @@ export class JediLanguageServerManager implements ILanguageServerManager {
 		}
 
 		await this.analysisOptions.initialize(resource, interpreter);
+
 		await this.startLanguageServer();
 	}
 
 	public connect(): void {
 		if (!this.connected) {
 			this.connected = true;
+
 			this.middleware?.connect();
 		}
 	}
@@ -122,6 +129,7 @@ export class JediLanguageServerManager implements ILanguageServerManager {
 	public disconnect(): void {
 		if (this.connected) {
 			this.connected = false;
+
 			this.middleware?.disconnect();
 		}
 	}
@@ -135,6 +143,7 @@ export class JediLanguageServerManager implements ILanguageServerManager {
 	@traceDecoratorVerbose("Restarting language server")
 	protected async restartLanguageServer(): Promise<void> {
 		await this.stopLanguageServer();
+
 		await this.startLanguageServer();
 	}
 
@@ -148,10 +157,12 @@ export class JediLanguageServerManager implements ILanguageServerManager {
 	@traceDecoratorVerbose("Starting language server")
 	protected async startLanguageServer(): Promise<void> {
 		const options = await this.analysisOptions.getAnalysisOptions();
+
 		this.middleware = new JediLanguageClientMiddleware(
 			this.serviceContainer,
 			this.lsVersion,
 		);
+
 		options.middleware = this.middleware;
 
 		// Make sure the middleware is connected if we restart and we we're already connected.

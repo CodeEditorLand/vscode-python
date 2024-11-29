@@ -29,8 +29,10 @@ export const PIXITOOLPATH_SETTING_KEY = "pixiToolPath";
 // names must be spelled exactly as they are in order to match the schema.
 export type PixiInfo = {
 	platform: string;
+
 	virtual_packages: string[]; // eslint-disable-line camelcase
 	version: string;
+
 	cache_dir: string; // eslint-disable-line camelcase
 	cache_size?: number; // eslint-disable-line camelcase
 	auth_dir: string; // eslint-disable-line camelcase
@@ -39,12 +41,17 @@ export type PixiInfo = {
 
 	environments_info: /* eslint-disable-line camelcase */ {
 		name: string;
+
 		features: string[];
+
 		solve_group: string; // eslint-disable-line camelcase
 		environment_size: number; // eslint-disable-line camelcase
 		dependencies: string[];
+
 		tasks: string[];
+
 		channels: string[];
+
 		prefix: string;
 	}[];
 };
@@ -85,6 +92,7 @@ export function getPrefixFromInterpreterPath(interpreterPath: string): string {
 	) {
 		return interpreterDir;
 	}
+
 	return path.dirname(interpreterDir);
 }
 
@@ -94,6 +102,7 @@ async function findPixiOnPath(): Promise<readonly string[]> {
 	} catch {
 		// Ignore errors
 	}
+
 	return [];
 }
 
@@ -168,6 +177,7 @@ export class Pixi {
 		if (isolatedFlag) {
 			python.push("-I");
 		}
+
 		return [...python, OUTPUT_MARKER_SCRIPT];
 	}
 
@@ -195,6 +205,7 @@ export class Pixi {
 				e,
 			);
 		}
+
 		return undefined;
 	}
 }
@@ -254,14 +265,19 @@ export function getPixi(): Promise<Pixi | undefined> {
 	if (_pixi === undefined || isTestExecution()) {
 		_pixi = getPixiTool();
 	}
+
 	return _pixi;
 }
 
 export type PixiEnvironmentInfo = {
 	interpreterPath: string;
+
 	pixi: Pixi;
+
 	pixiVersion: string;
+
 	manifestPath: string;
+
 	envName?: string;
 };
 
@@ -328,9 +344,11 @@ export async function getPixiEnvironmentFromInterpreter(
 
 	try {
 		envName = path.basename(prefix);
+
 		envsDir = path.dirname(prefix);
 
 		dotPixiDir = path.dirname(envsDir);
+
 		pixiProjectDir = path.dirname(dotPixiDir);
 
 		if (!isPixiProjectDir(pixiProjectDir)) {
@@ -404,6 +422,7 @@ export async function getRunPixiPythonCommand(
 
 	if (isNonDefaultPixiEnvironmentName(pixiEnv.envName)) {
 		args.push("--environment");
+
 		args.push(pixiEnv.envName.toCommandArgumentForPythonExt());
 	}
 
@@ -431,6 +450,7 @@ export async function getPixiActivationCommands(
 
 	if (isNonDefaultPixiEnvironmentName(pixiEnv.envName)) {
 		args.push("--environment");
+
 		args.push(pixiEnv.envName.toCommandArgumentForPythonExt());
 	}
 

@@ -29,6 +29,7 @@ export function getWindowsLineEndingCount(
 
 		if (offsetDiff >= readBlock) {
 			endAt = document.positionAt(pos + readBlock);
+
 			offsetDiff = offsetDiff - readBlock;
 		} else {
 			endAt = document.positionAt(pos + offsetDiff);
@@ -40,6 +41,7 @@ export function getWindowsLineEndingCount(
 
 		count += cr ? cr.length : 0;
 	}
+
 	return count;
 }
 
@@ -64,6 +66,7 @@ export function parseRange(raw: string | number): Range {
 	if (isNumber(raw)) {
 		return new Range(raw, 0, raw, 0);
 	}
+
 	if (raw === "") {
 		return new Range(0, 0, 0, 0);
 	}
@@ -81,6 +84,7 @@ export function parseRange(raw: string | number): Range {
 	if (parts.length === 2) {
 		end = parsePosition(parts[1]);
 	}
+
 	return new Range(start, end);
 }
 
@@ -99,6 +103,7 @@ export function parsePosition(raw: string | number): Position {
 	if (isNumber(raw)) {
 		return new Position(raw, 0);
 	}
+
 	if (raw === "") {
 		return new Position(0, 0);
 	}
@@ -115,16 +120,20 @@ export function parsePosition(raw: string | number): Position {
 		if (!/^\d+$/.test(parts[0])) {
 			throw new Error(`invalid position ${raw}`);
 		}
+
 		line = +parts[0];
 	}
+
 	let col = 0;
 
 	if (parts.length === 2 && parts[1] !== "") {
 		if (!/^\d+$/.test(parts[1])) {
 			throw new Error(`invalid position ${raw}`);
 		}
+
 		col = +parts[1];
 	}
+
 	return new Position(line, col);
 }
 
@@ -157,6 +166,7 @@ export function getDedentedLines(text: string): string[] {
 	if (lines[0] !== "") {
 		throw Error("expected actual first line to be blank");
 	}
+
 	lines.shift();
 
 	if (lines.length === 0) {
@@ -166,6 +176,7 @@ export function getDedentedLines(text: string): string[] {
 	if (lines[0] === "") {
 		throw Error('expected "first" line to not be blank');
 	}
+
 	const leading = getIndent(lines[0]).length;
 
 	for (let i = 0; i < lines.length; i += 1) {
@@ -174,6 +185,7 @@ export function getDedentedLines(text: string): string[] {
 		if (getIndent(line).length < leading) {
 			throw Error(`line ${i} has less indent than the "first" line`);
 		}
+
 		lines[i] = line.substring(leading);
 	}
 
@@ -245,6 +257,7 @@ export function parseTree(text: string): [string, number][] {
 	const lines = getDedentedLines(text)
 		.map((l) => l.split("  #")[0].split(" //")[0].trimEnd())
 		.filter((l) => l.trim() !== "");
+
 	lines.forEach((line) => {
 		const indent = getIndent(line);
 
@@ -254,6 +267,7 @@ export function parseTree(text: string): [string, number][] {
 
 		if (indent === "") {
 			parentIndex = -1;
+
 			parents.push([indent, parsed.length]);
 		} else if (parsed.length === 0) {
 			throw Error(`expected non-indented line, got ${line}`);
@@ -265,10 +279,12 @@ export function parseTree(text: string): [string, number][] {
 				parents.pop();
 				[parentIndent, parentIndex] = parents[parents.length - 1];
 			}
+
 			if (parentIndent.length < indent.length) {
 				parents.push([indent, parsed.length]);
 			}
 		}
+
 		parsed.push([entry, parentIndex!]);
 	});
 

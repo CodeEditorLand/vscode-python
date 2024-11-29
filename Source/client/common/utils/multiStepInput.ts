@@ -57,36 +57,57 @@ export type QuickInputButtonSetup = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface IQuickPickParameters<T extends QuickPickItem, E = any> {
 	title?: string;
+
 	step?: number;
+
 	totalSteps?: number;
+
 	canGoBack?: boolean;
+
 	items: T[];
+
 	activeItem?: T | ((quickPick: QuickPick<T>) => Promise<T>);
+
 	placeholder: string | undefined;
+
 	customButtonSetups?: QuickInputButtonSetup[];
+
 	matchOnDescription?: boolean;
+
 	matchOnDetail?: boolean;
+
 	keepScrollPosition?: boolean;
+
 	sortByLabel?: boolean;
+
 	acceptFilterBoxTextAsSelection?: boolean;
 	/**
 	 * A method called only after quickpick has been created and all handlers are registered.
 	 */
 	initialize?: (quickPick: QuickPick<T>) => void;
+
 	onChangeItem?: {
 		callback: (event: E, quickPick: QuickPick<T>) => void;
+
 		event: Event<E>;
 	};
 }
 
 interface InputBoxParameters {
 	title: string;
+
 	password?: boolean;
+
 	step?: number;
+
 	totalSteps?: number;
+
 	value: string;
+
 	prompt: string;
+
 	buttons?: QuickInputButton[];
+
 	validate(value: string): Promise<string | undefined>;
 }
 
@@ -101,6 +122,7 @@ type MultiStepInputInputBoxResponseType<P> =
 
 export interface IMultiStepInput<S> {
 	run(start: InputStep<S>, state: S): Promise<void>;
+
 	showQuickPick<T extends QuickPickItem, P extends IQuickPickParameters<T>>({
 		title,
 		step,
@@ -110,6 +132,7 @@ export interface IMultiStepInput<S> {
 		placeholder,
 		customButtonSetups,
 	}: P): Promise<MultiStepInputQuickPickResponseType<T, P>>;
+
 	showInputBox<P extends InputBoxParameters>({
 		title,
 		step,
@@ -154,15 +177,25 @@ export class MultiStepInput<S> implements IMultiStepInput<S> {
 		const disposables: Disposable[] = [];
 
 		const input = this.shell.createQuickPick<T>();
+
 		input.title = title;
+
 		input.step = step;
+
 		input.sortByLabel = sortByLabel || false;
+
 		input.totalSteps = totalSteps;
+
 		input.placeholder = placeholder;
+
 		input.ignoreFocusOut = true;
+
 		input.items = items;
+
 		input.matchOnDescription = matchOnDescription || false;
+
 		input.matchOnDetail = matchOnDetail || false;
+
 		input.buttons = this.steps.length > 1 ? [QuickInputButtons.Back] : [];
 
 		if (customButtonSetups) {
@@ -170,9 +203,11 @@ export class MultiStepInput<S> implements IMultiStepInput<S> {
 				input.buttons = [...input.buttons, customButtonSetup.button];
 			}
 		}
+
 		if (this.current) {
 			this.current.dispose();
 		}
+
 		this.current = input;
 
 		if (onChangeItem) {
@@ -184,6 +219,7 @@ export class MultiStepInput<S> implements IMultiStepInput<S> {
 		if (initialize) {
 			initialize(input);
 		}
+
 		if (activeItem) {
 			if (typeof activeItem === "function") {
 				activeItem(input).then((item) => {
@@ -195,6 +231,7 @@ export class MultiStepInput<S> implements IMultiStepInput<S> {
 		} else {
 			input.activeItems = [];
 		}
+
 		this.current.show();
 		// Keep scroll position is only meant to keep scroll position when updating items,
 		// so do it after initialization. This ensures quickpick starts with the active
@@ -207,8 +244,10 @@ export class MultiStepInput<S> implements IMultiStepInput<S> {
 			input.onDidTriggerButton(async (item) => {
 				if (item === QuickInputButtons.Back) {
 					deferred.reject(InputFlowAction.back);
+
 					input.hide();
 				}
+
 				if (customButtonSetups) {
 					for (const customButtonSetup of customButtonSetups) {
 						if (
@@ -262,13 +301,21 @@ export class MultiStepInput<S> implements IMultiStepInput<S> {
 			return await new Promise<MultiStepInputInputBoxResponseType<P>>(
 				(resolve, reject) => {
 					const input = this.shell.createInputBox();
+
 					input.title = title;
+
 					input.step = step;
+
 					input.totalSteps = totalSteps;
+
 					input.password = !!password;
+
 					input.value = value || "";
+
 					input.prompt = prompt;
+
 					input.ignoreFocusOut = true;
+
 					input.buttons = [
 						...(this.steps.length > 1
 							? [QuickInputButtons.Back]
@@ -277,6 +324,7 @@ export class MultiStepInput<S> implements IMultiStepInput<S> {
 					];
 
 					let validating = validate("");
+
 					disposables.push(
 						input.onDidTriggerButton((item) => {
 							if (item === QuickInputButtons.Back) {
@@ -288,17 +336,22 @@ export class MultiStepInput<S> implements IMultiStepInput<S> {
 						}),
 						input.onDidAccept(async () => {
 							const inputValue = input.value;
+
 							input.enabled = false;
+
 							input.busy = true;
 
 							if (!(await validate(inputValue))) {
 								resolve(inputValue);
 							}
+
 							input.enabled = true;
+
 							input.busy = false;
 						}),
 						input.onDidChangeValue(async (text) => {
 							const current = validate(text);
+
 							validating = current;
 
 							const validationMessage = await current;
@@ -315,7 +368,9 @@ export class MultiStepInput<S> implements IMultiStepInput<S> {
 					if (this.current) {
 						this.current.dispose();
 					}
+
 					this.current = input;
+
 					this.current.show();
 				},
 			);
@@ -332,13 +387,16 @@ export class MultiStepInput<S> implements IMultiStepInput<S> {
 
 			if (this.current) {
 				this.current.enabled = false;
+
 				this.current.busy = true;
 			}
+
 			try {
 				step = await step(this, state);
 			} catch (err) {
 				if (err === InputFlowAction.back) {
 					this.steps.pop();
+
 					step = this.steps.pop();
 
 					if (step === undefined) {
@@ -353,6 +411,7 @@ export class MultiStepInput<S> implements IMultiStepInput<S> {
 				}
 			}
 		}
+
 		if (this.current) {
 			this.current.dispose();
 		}

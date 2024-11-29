@@ -39,10 +39,12 @@ export class Extensions implements IExtensions {
 	private get cachedExtensions() {
 		if (!this._cachedExtensions) {
 			this._cachedExtensions = extensions.all;
+
 			extensions.onDidChange(() => {
 				this._cachedExtensions = extensions.all;
 			});
 		}
+
 		return this._cachedExtensions;
 	}
 
@@ -52,6 +54,7 @@ export class Extensions implements IExtensions {
 	 */
 	public async determineExtensionFromCallStack(): Promise<{
 		extensionId: string;
+
 		displayName: string;
 	}> {
 		const { stack } = new Error();
@@ -70,6 +73,7 @@ export class Extensions implements IExtensions {
 					if (result) {
 						return result[1];
 					}
+
 					return undefined;
 				})
 				.filter(
@@ -84,6 +88,7 @@ export class Extensions implements IExtensions {
 							item!.includes(ext.extensionUri.fsPath),
 					),
 				) as string[];
+
 			stacktrace.parse(new Error("Ex")).forEach((item) => {
 				const fileName = item.getFileName();
 
@@ -122,11 +127,14 @@ export class Extensions implements IExtensions {
 							// If parse fails, then not an extension.
 						}
 					}
+
 					last = dirName;
+
 					dirName = path.dirname(dirName);
 				}
 			}
 		}
+
 		return { extensionId: "unknown", displayName: "unknown" };
 	}
 }

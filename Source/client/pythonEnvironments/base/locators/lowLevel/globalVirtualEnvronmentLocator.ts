@@ -72,6 +72,7 @@ async function getGlobalVirtualEnvDirs(): Promise<string[]> {
 			subDirs.map((d) => path.join(homeDir, d)),
 			pathExists,
 		);
+
 		filtered.forEach((d) => venvDirs.push(d));
 	}
 
@@ -92,6 +93,7 @@ async function getSearchLocation(env: BasicEnvInfo): Promise<Uri | undefined> {
 			return Uri.file(project);
 		}
 	}
+
 	return undefined;
 }
 
@@ -146,6 +148,7 @@ export class GlobalVirtualEnvironmentLocator extends FSWatchingLocator {
 
 		async function* iterator() {
 			const stopWatch = new StopWatch();
+
 			traceInfo("Searching for global virtual environments");
 
 			const envRootDirs = await getGlobalVirtualEnvDirs();
@@ -184,6 +187,7 @@ export class GlobalVirtualEnvironmentLocator extends FSWatchingLocator {
 									executablePath: filename,
 									searchLocation,
 								};
+
 								traceVerbose(
 									`Global Virtual Environment: [added] ${filename}`,
 								);
@@ -200,10 +204,12 @@ export class GlobalVirtualEnvironmentLocator extends FSWatchingLocator {
 						}
 					}
 				}
+
 				return generator();
 			});
 
 			yield* iterable(chain(envGenerators));
+
 			traceInfo(
 				`Finished searching for global virtual envs: ${stopWatch.elapsedTime} milliseconds`,
 			);

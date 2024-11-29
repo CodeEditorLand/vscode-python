@@ -26,6 +26,7 @@ export class CondaEnvironmentLocator extends FSWatchingLocator {
 	// eslint-disable-next-line class-methods-use-this
 	public async *doIterEnvs(_: unknown): IPythonEnvsIterator<BasicEnvInfo> {
 		const stopWatch = new StopWatch();
+
 		traceInfo("Searching for conda environments");
 
 		const conda = await Conda.getConda();
@@ -35,6 +36,7 @@ export class CondaEnvironmentLocator extends FSWatchingLocator {
 
 			return;
 		}
+
 		traceVerbose(`Searching for conda environments using ${conda.command}`);
 
 		const envs = await conda.getEnvList();
@@ -47,6 +49,7 @@ export class CondaEnvironmentLocator extends FSWatchingLocator {
 
 				const executablePath =
 					await conda.getInterpreterPathForEnvironment(env);
+
 				traceVerbose(`Found conda executable: ${executablePath}`);
 
 				yield {
@@ -61,6 +64,7 @@ export class CondaEnvironmentLocator extends FSWatchingLocator {
 				);
 			}
 		}
+
 		traceInfo(
 			`Finished searching for conda environments: ${stopWatch.elapsedTime} milliseconds`,
 		);

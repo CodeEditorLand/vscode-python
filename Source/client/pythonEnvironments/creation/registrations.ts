@@ -27,11 +27,15 @@ export function registerAllCreateEnvironmentFeatures(
 		interpreterPathService,
 		pathUtils,
 	);
+
 	registerCreateEnvironmentButtonFeatures(disposables);
+
 	registerPyProjectTomlFeatures(disposables);
+
 	registerInstalledPackagesDiagnosticsProvider(
 		disposables,
 		interpreterService,
 	);
+
 	registerTriggerForPipInTerminal(disposables);
 }

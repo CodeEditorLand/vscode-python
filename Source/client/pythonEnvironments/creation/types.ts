@@ -8,5 +8,6 @@ export interface CreateEnvironmentProgress
 
 export interface CreateEnvironmentOptionsInternal {
 	workspaceFolder?: WorkspaceFolder;
+
 	providerId?: string;
 }

@@ -11,11 +11,13 @@ _workerShellExecImpl(
 		if (!parentPort) {
 			throw new Error("Not in a worker thread");
 		}
+
 		parentPort.postMessage({ res });
 	})
 	.catch((ex) => {
 		if (!parentPort) {
 			throw new Error("Not in a worker thread");
 		}
+
 		parentPort.postMessage({ ex });
 	});

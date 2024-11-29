@@ -59,11 +59,13 @@ export class DebugCommands implements IExtensionSingleActivationService {
 
 						return;
 					}
+
 					sendTelemetryEvent(
 						EventName.ENVIRONMENT_CHECK_TRIGGER,
 						undefined,
 						{ trigger: "debug-in-terminal" },
 					);
+
 					triggerCreateEnvironmentCheckNonBlocking(
 						CreateEnvironmentCheckKind.File,
 						file,
@@ -71,6 +73,7 @@ export class DebugCommands implements IExtensionSingleActivationService {
 
 					const config =
 						await DebugCommands.getDebugConfiguration(file);
+
 					this.debugService.startDebugging(undefined, config);
 				},
 			),
@@ -103,6 +106,7 @@ export class DebugCommands implements IExtensionSingleActivationService {
 				return config;
 			}
 		}
+
 		return {
 			name: `Debug ${uri ? path.basename(uri.fsPath) : "File"}`,
 			type: "python",

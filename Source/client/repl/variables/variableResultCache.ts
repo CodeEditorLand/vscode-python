@@ -11,6 +11,7 @@ export class VariableResultCache {
 	): VariablesResult[] | undefined {
 		if (this.executionCount !== executionCount) {
 			this.cache.clear();
+
 			this.executionCount = executionCount;
 		}
 
@@ -24,6 +25,7 @@ export class VariableResultCache {
 	): void {
 		if (this.executionCount < executionCount) {
 			this.cache.clear();
+
 			this.executionCount = executionCount;
 		} else if (this.executionCount > executionCount) {
 			// old results, don't cache

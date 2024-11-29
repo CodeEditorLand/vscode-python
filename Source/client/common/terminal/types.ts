@@ -61,10 +61,12 @@ export interface ITerminalService extends IDisposable {
 	): Promise<void>;
 	/** @deprecated */
 	sendText(text: string): Promise<void>;
+
 	executeCommand(
 		commandLine: string,
 		isPythonShell: boolean,
 	): Promise<TerminalShellExecution | undefined>;
+
 	show(preserveFocus?: boolean): Promise<void>;
 }
 
@@ -109,6 +111,7 @@ export interface ITerminalServiceFactory {
 	getTerminalService(
 		options: TerminalCreationOptions & { newTerminalPerFile?: boolean },
 	): ITerminalService;
+
 	createTerminalService(resource?: Uri, title?: string): ITerminalService;
 }
 
@@ -116,7 +119,9 @@ export const ITerminalHelper = Symbol("ITerminalHelper");
 
 export interface ITerminalHelper {
 	createTerminal(title?: string): Terminal;
+
 	identifyTerminalShell(terminal?: Terminal): TerminalShellType;
+
 	buildCommandForTerminal(
 		terminalShellType: TerminalShellType,
 		command: string,
@@ -140,7 +145,9 @@ export const ITerminalActivator = Symbol("ITerminalActivator");
 
 export type TerminalActivationOptions = {
 	resource?: Resource;
+
 	preserveFocus?: boolean;
+
 	interpreter?: PythonEnvironment;
 	// When sending commands to the terminal, do not display the terminal.
 	hideFromUser?: boolean;
@@ -195,6 +202,7 @@ export interface IShellDetector {
 	 * Classes with higher priorities will be used first when identifying the shell.
 	 */
 	readonly priority: number;
+
 	identify(
 		telemetryProperties: ShellIdentificationTelemetry,
 		terminal?: Terminal,

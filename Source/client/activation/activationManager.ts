@@ -68,16 +68,19 @@ export class ExtensionActivationManager implements IExtensionActivationManager {
 			this.activationServices = this.activationServices.filter(
 				(service) => service.supportedWorkspaceTypes.untrustedWorkspace,
 			);
+
 			this.singleActivationServices =
 				this.singleActivationServices.filter(
 					(service) =>
 						service.supportedWorkspaceTypes.untrustedWorkspace,
 				);
 		}
+
 		if (this.workspaceService.isVirtualWorkspace) {
 			this.activationServices = this.activationServices.filter(
 				(service) => service.supportedWorkspaceTypes.virtualWorkspace,
 			);
+
 			this.singleActivationServices =
 				this.singleActivationServices.filter(
 					(service) =>
@@ -89,16 +92,20 @@ export class ExtensionActivationManager implements IExtensionActivationManager {
 	public dispose(): void {
 		while (this.disposables.length > 0) {
 			const disposable = this.disposables.shift()!;
+
 			disposable.dispose();
 		}
+
 		if (this.docOpenedHandler) {
 			this.docOpenedHandler.dispose();
+
 			this.docOpenedHandler = undefined;
 		}
 	}
 
 	public async activate(startupStopWatch: StopWatch): Promise<void> {
 		this.filterServices();
+
 		await this.initialize();
 
 		// Activate all activation services together.
@@ -118,6 +125,7 @@ export class ExtensionActivationManager implements IExtensionActivationManager {
 		startupStopWatch?: StopWatch,
 	): Promise<void> {
 		const folder = this.workspaceService.getWorkspaceFolder(resource);
+
 		resource = folder ? folder.uri : undefined;
 
 		const key = this.getWorkspaceKey(resource);
@@ -125,30 +133,36 @@ export class ExtensionActivationManager implements IExtensionActivationManager {
 		if (this.activatedWorkspaces.has(key)) {
 			return;
 		}
+
 		this.activatedWorkspaces.add(key);
 
 		if (this.workspaceService.isTrusted) {
 			// Do not interact with interpreters in a untrusted workspace.
 			await this.autoSelection.autoSelectInterpreter(resource);
+
 			await this.interpreterPathService.copyOldInterpreterStorageValuesToNew(
 				resource,
 			);
 		}
+
 		await sendActivationTelemetry(
 			this.fileSystem,
 			this.workspaceService,
 			resource,
 		);
+
 		await Promise.all(
 			this.activationServices.map((item) =>
 				item.activate(resource, startupStopWatch),
 			),
 		);
+
 		await this.appDiagnostics.performPreStartupHealthCheck(resource);
 	}
 
 	public async initialize(): Promise<void> {
 		this.addHandlers();
+
 		this.addRemoveDocOpenedHandlers();
 	}
 
@@ -156,6 +170,7 @@ export class ExtensionActivationManager implements IExtensionActivationManager {
 		if (doc.languageId !== PYTHON_LANGUAGE) {
 			return;
 		}
+
 		const key = this.getWorkspaceKey(doc.uri);
 
 		const hasWorkspaceFolders =
@@ -164,9 +179,11 @@ export class ExtensionActivationManager implements IExtensionActivationManager {
 		if (key === "" && hasWorkspaceFolders) {
 			return;
 		}
+
 		if (this.activatedWorkspaces.has(key)) {
 			return;
 		}
+
 		this.activateWorkspace(doc.uri).ignoreErrors();
 	}
 
@@ -188,10 +205,13 @@ export class ExtensionActivationManager implements IExtensionActivationManager {
 						this,
 					);
 			}
+
 			return;
 		}
+
 		if (this.docOpenedHandler) {
 			this.docOpenedHandler.dispose();
+
 			this.docOpenedHandler = undefined;
 		}
 	}
@@ -213,6 +233,7 @@ export class ExtensionActivationManager implements IExtensionActivationManager {
 				this.activatedWorkspaces.delete(folder);
 			}
 		}
+
 		this.addRemoveDocOpenedHandlers();
 	}
 

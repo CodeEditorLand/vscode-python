@@ -42,9 +42,11 @@ export function generateRandomPipeName(prefix: string): string {
 async function mkfifo(fifoPath: string): Promise<void> {
 	return new Promise((resolve, reject) => {
 		const proc = cp.spawn("mkfifo", [fifoPath]);
+
 		proc.on("error", (err) => {
 			reject(err);
 		});
+
 		proc.on("exit", (code) => {
 			if (code === 0) {
 				resolve();
@@ -63,11 +65,14 @@ export async function createWriterPipe(
 
 		const server = net.createServer((socket) => {
 			traceVerbose(`Pipe connected: ${pipeName}`);
+
 			server.close();
+
 			deferred.resolve(new rpc.SocketMessageWriter(socket, "utf-8"));
 		});
 
 		server.on("error", deferred.reject);
+
 		server.listen(pipeName);
 
 		if (token) {
@@ -75,9 +80,11 @@ export async function createWriterPipe(
 				if (server.listening) {
 					server.close();
 				}
+
 				deferred.reject(new CancellationError());
 			});
 		}
+
 		return deferred.promise;
 	}
 	// linux implementation of FIFO
@@ -88,6 +95,7 @@ export async function createWriterPipe(
 	} catch {
 		// Intentionally ignored
 	}
+
 	const writer = fs.createWriteStream(pipeName, {
 		encoding: "utf-8",
 	});
@@ -132,10 +140,13 @@ class CombinedReader implements rpc.MessageReader {
 
 	add(reader: rpc.MessageReader): void {
 		this._readers.push(reader);
+
 		reader.listen((msg) => {
 			this._callback(msg as rpc.NotificationMessage);
 		});
+
 		this._disposables.push(reader);
+
 		reader.onClose(() => {
 			this.remove(reader);
 
@@ -143,8 +154,10 @@ class CombinedReader implements rpc.MessageReader {
 				this._onClose.fire();
 			}
 		});
+
 		reader.onError((e) => {
 			this.remove(reader);
+
 			this._onError.fire(e);
 		});
 	}
@@ -154,14 +167,18 @@ class CombinedReader implements rpc.MessageReader {
 
 		if (found) {
 			this._readers = this._readers.filter((r) => r !== reader);
+
 			reader.dispose();
 		}
 	}
 
 	dispose(): void {
 		this._readers.forEach((r) => r.dispose());
+
 		this._readers = [];
+
 		this._disposables.forEach((disposable) => disposable.dispose());
+
 		this._disposables = [];
 	}
 }
@@ -180,6 +197,7 @@ export async function createReaderPipe(
 
 		const server = net.createServer((socket) => {
 			traceVerbose(`Pipe connected: ${pipeName}`);
+
 			refs += 1;
 
 			socket.on("close", () => {
@@ -189,9 +207,12 @@ export async function createReaderPipe(
 					server.close();
 				}
 			});
+
 			combined.add(new rpc.SocketMessageReader(socket, "utf-8"));
 		});
+
 		server.on("error", deferred.reject);
+
 		server.listen(pipeName);
 
 		if (token) {
@@ -199,9 +220,11 @@ export async function createReaderPipe(
 				if (server.listening) {
 					server.close();
 				}
+
 				deferred.reject(new CancellationError());
 			});
 		}
+
 		deferred.resolve(combined);
 
 		return deferred.promise;
@@ -214,6 +237,7 @@ export async function createReaderPipe(
 	} catch {
 		// Intentionally ignored
 	}
+
 	const reader = fs.createReadStream(pipeName, { encoding: "utf-8" });
 
 	return new rpc.StreamMessageReader(reader, "utf-8");

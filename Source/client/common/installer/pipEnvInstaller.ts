@@ -31,6 +31,7 @@ export class PipEnvInstaller extends ModuleInstaller {
 	public get displayName() {
 		return pipenvName;
 	}
+
 	public get priority(): number {
 		return 10;
 	}
@@ -40,6 +41,7 @@ export class PipEnvInstaller extends ModuleInstaller {
 	) {
 		super(serviceContainer);
 	}
+
 	public async isSupported(resource?: InterpreterUri): Promise<boolean> {
 		if (isResource(resource)) {
 			const interpreter = await this.serviceContainer
@@ -68,6 +70,7 @@ export class PipEnvInstaller extends ModuleInstaller {
 			return resource.envType === EnvironmentType.Pipenv;
 		}
 	}
+
 	protected async getExecutionInfo(
 		moduleName: string,
 		_resource?: InterpreterUri,

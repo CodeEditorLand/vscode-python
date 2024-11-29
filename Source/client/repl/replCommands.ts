@@ -32,16 +32,19 @@ export async function registerStartNativeReplCommand(
 			sendTelemetryEvent(EventName.REPL, undefined, {
 				replType: "Native",
 			});
+
 			const interpreter = await getActiveInterpreter(
 				uri,
 				interpreterService,
 			);
+
 			if (interpreter) {
 				if (interpreter) {
 					const nativeRepl = await getNativeRepl(
 						interpreter,
 						disposables,
 					);
+
 					await nativeRepl.sendToNativeRepl(undefined, false);
 				}
 			}
@@ -66,8 +69,10 @@ export async function registerReplCommands(
 
 				if (!nativeREPLSetting) {
 					await executeInTerminal();
+
 					return;
 				}
+
 				const interpreter = await getActiveInterpreter(
 					uri,
 					interpreterService,
@@ -78,23 +83,29 @@ export async function registerReplCommands(
 						interpreter,
 						disposables,
 					);
+
 					const activeEditor = window.activeTextEditor;
+
 					if (activeEditor) {
 						const code =
 							await getSelectedTextToExecute(activeEditor);
+
 						if (code) {
 							// Smart Send
 							let wholeFileContent = "";
+
 							if (activeEditor && activeEditor.document) {
 								wholeFileContent =
 									activeEditor.document.getText();
 							}
+
 							const normalizedCode =
 								await executionHelper.normalizeLines(
 									code!,
 									ReplType.native,
 									wholeFileContent,
 								);
+
 							await nativeRepl.sendToNativeRepl(normalizedCode);
 						}
 					}
@@ -125,6 +136,7 @@ export async function registerReplExecuteOnEnter(
 			},
 		),
 	);
+
 	disposables.push(
 		commandManager.registerCommand(
 			Commands.Exec_In_IW_Enter,
@@ -147,17 +159,21 @@ async function onInputEnter(
 	disposables: Disposable[],
 ): Promise<void> {
 	const interpreter = await interpreterService.getActiveInterpreter(uri);
+
 	if (!interpreter) {
 		commands
 			.executeCommand(Commands.TriggerEnvironmentSelection, uri)
 			.then(noop, noop);
+
 		return;
 	}
 
 	const nativeRepl = await getNativeRepl(interpreter, disposables);
+
 	const completeCode = await nativeRepl?.checkUserInputCompleteCode(
 		window.activeTextEditor,
 	);
+
 	const editor = window.activeTextEditor;
 
 	if (editor) {

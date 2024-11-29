@@ -90,10 +90,13 @@ export class InterpreterAutoSelectionService
 
 		if (!useCachedInterpreter) {
 			const deferred = createDeferred<void>();
+
 			this.autoSelectedWorkspacePromises.set(key, deferred);
 
 			await this.initializeStore(resource);
+
 			await this.clearWorkspaceStoreIfInvalid(resource);
+
 			await this.autoselectInterpreterWithLocators(resource);
 
 			deferred.resolve();
@@ -187,6 +190,7 @@ export class InterpreterAutoSelectionService
 
 			// Don't pass in manager instance, as we don't want any updates to take place.
 			await this.globallyPreferredInterpreter.updateValue(interpreter);
+
 			this.autoSelectedInterpreterByWorkspace.set(
 				workspaceFolderPath,
 				interpreter,
@@ -197,6 +201,7 @@ export class InterpreterAutoSelectionService
 			if (workspaceState && interpreter) {
 				await workspaceState.updateValue(interpreter);
 			}
+
 			this.autoSelectedInterpreterByWorkspace.set(
 				workspaceFolderPath,
 				interpreter,
@@ -213,6 +218,7 @@ export class InterpreterAutoSelectionService
 		if (this.globallyPreferredInterpreter) {
 			return;
 		}
+
 		await this.clearStoreIfFileIsInvalid();
 	}
 
@@ -253,6 +259,7 @@ export class InterpreterAutoSelectionService
 				undefined,
 			);
 		}
+
 		return undefined;
 	}
 
@@ -327,6 +334,7 @@ export class InterpreterAutoSelectionService
 					stage: ProgressReportStage.allPathsDiscovered,
 				});
 			}
+
 			let interpreters =
 				this.interpreterService.getInterpreters(resource);
 
@@ -345,6 +353,7 @@ export class InterpreterAutoSelectionService
 				await this.interpreterService.refreshPromise; // Interpreter is invalid, wait for all of validation to finish.
 				interpreters =
 					this.interpreterService.getInterpreters(resource);
+
 				recommendedInterpreter = this.envTypeComparer.getRecommended(
 					interpreters,
 					workspaceUri?.folderUri,
@@ -356,6 +365,7 @@ export class InterpreterAutoSelectionService
 				// wait on global interpreter promise refresh.
 				await this.interpreterService.refreshPromise;
 			}
+
 			const interpreters =
 				this.interpreterService.getInterpreters(resource);
 
@@ -364,9 +374,11 @@ export class InterpreterAutoSelectionService
 				workspaceUri?.folderUri,
 			);
 		}
+
 		if (!recommendedInterpreter) {
 			return;
 		}
+
 		if (workspaceUri) {
 			this.setWorkspaceInterpreter(
 				workspaceUri.folderUri,
@@ -377,6 +389,7 @@ export class InterpreterAutoSelectionService
 		}
 
 		queriedState.updateValue(true);
+
 		globalQueriedState.updateValue(true);
 
 		this.didAutoSelectedInterpreterEmitter.fire();

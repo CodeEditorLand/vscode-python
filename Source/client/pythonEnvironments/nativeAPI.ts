@@ -58,6 +58,7 @@ function makeExecutablePath(prefix?: string): string {
 	if (!prefix) {
 		return process.platform === "win32" ? "python.exe" : "python";
 	}
+
 	return process.platform === "win32"
 		? path.join(prefix, "python.exe")
 		: path.join(prefix, "python");
@@ -154,15 +155,18 @@ function getDisplayName(
 				? `Python ${versionStr} 32-bit ('${name}')`
 				: `Python ${versionStr} 32-bit (${kindStr})`;
 		}
+
 		return name
 			? `Python ${versionStr} 32-bit ('${name}')`
 			: `Python ${versionStr} 32-bit`;
 	}
+
 	if (kindStr) {
 		return name
 			? `Python ${versionStr} ('${name}')`
 			: `Python ${versionStr} (${kindStr})`;
 	}
+
 	return name ? `Python ${versionStr} ('${name}')` : `Python ${versionStr}`;
 }
 
@@ -174,6 +178,7 @@ function validEnv(nativeEnv: NativeEnvInfo): boolean {
 
 		return false;
 	}
+
 	return true;
 }
 
@@ -217,6 +222,7 @@ function getName(nativeEnv: NativeEnvInfo, kind: PythonEnvKind): string {
 	) {
 		return path.basename(nativeEnv.prefix);
 	}
+
 	return "";
 }
 
@@ -224,6 +230,7 @@ function toPythonEnvInfo(nativeEnv: NativeEnvInfo): PythonEnvInfo | undefined {
 	if (!validEnv(nativeEnv)) {
 		return undefined;
 	}
+
 	const kind = categoryToKind(nativeEnv.kind);
 
 	const arch = toArch(nativeEnv.arch);
@@ -271,21 +278,27 @@ function hasChanged(old: PythonEnvInfo, newEnv: PythonEnvInfo): boolean {
 	if (old.executable.filename !== newEnv.executable.filename) {
 		return true;
 	}
+
 	if (old.version.major !== newEnv.version.major) {
 		return true;
 	}
+
 	if (old.version.minor !== newEnv.version.minor) {
 		return true;
 	}
+
 	if (old.version.micro !== newEnv.version.micro) {
 		return true;
 	}
+
 	if (old.location !== newEnv.location) {
 		return true;
 	}
+
 	if (old.kind !== newEnv.kind) {
 		return true;
 	}
+
 	if (old.arch !== newEnv.arch) {
 		return true;
 	}
@@ -306,12 +319,15 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
 
 	constructor(private readonly finder: NativePythonFinder) {
 		this._onProgress = new EventEmitter<ProgressNotificationEvent>();
+
 		this._onChanged = new EventEmitter<PythonEnvCollectionChangedEvent>();
 
 		this.onProgress = this._onProgress.event;
+
 		this.onChanged = this._onChanged.event;
 
 		this.refreshState = ProgressReportStage.idle;
+
 		this._disposables.push(this._onProgress, this._onChanged);
 
 		this.initializeWatcher();
@@ -338,6 +354,7 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
 		_options?: TriggerRefreshOptions,
 	): Promise<void> {
 		const stopwatch = new StopWatch();
+
 		traceLog("Native locator: Refresh started");
 
 		if (
@@ -348,7 +365,9 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
 		}
 
 		this.refreshState = ProgressReportStage.discoveryStarted;
+
 		this._onProgress.fire({ stage: this.refreshState });
+
 		this._refreshPromise = createDeferred();
 
 		setImmediate(async () => {
@@ -364,10 +383,13 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
 						after.push(exe);
 					}
 				}
+
 				const envsToRemove = before.filter(
 					(item) => !after.includes(item),
 				);
+
 				envsToRemove.forEach((item) => this.removeEnv(item));
+
 				this._refreshPromise?.resolve();
 			} catch (error) {
 				this._refreshPromise?.reject(error);
@@ -375,8 +397,11 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
 				traceLog(
 					`Native locator: Refresh finished in ${stopwatch.elapsedTime} ms`,
 				);
+
 				this.refreshState = ProgressReportStage.discoveryFinished;
+
 				this._refreshPromise = undefined;
+
 				this._onProgress.fire({ stage: this.refreshState });
 			}
 		});
@@ -390,6 +415,7 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
 		if (isNativeEnvInfo(native)) {
 			return this.processEnv(native);
 		}
+
 		this.processEnvManager(native);
 
 		return undefined;
@@ -413,6 +439,7 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
 				// There is nothing to resolve
 				return this.addEnv(native)?.executable.filename;
 			}
+
 			if (
 				native.executable &&
 				(!version ||
@@ -432,6 +459,7 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
 
 				return native.executable;
 			}
+
 			if (
 				native.executable &&
 				version &&
@@ -441,12 +469,14 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
 			) {
 				return this.addEnv(native)?.executable.filename;
 			}
+
 			traceError(
 				`Failed to process environment: ${JSON.stringify(native)}`,
 			);
 		} catch (err) {
 			traceError(`Failed to process environment: ${err}`);
 		}
+
 		return undefined;
 	}
 
@@ -507,6 +537,7 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
 					(item) =>
 						item.executable.filename !== info.executable.filename,
 				);
+
 				this._envs.push(info);
 
 				if (hasChanged(old, info)) {
@@ -519,6 +550,7 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
 				}
 			} else {
 				this._envs.push(info);
+
 				this._onChanged.fire({
 					type: FileChangeType.Created,
 					new: info,
@@ -535,16 +567,20 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
 			const old = this._envs.find(
 				(item) => item.executable.filename === env,
 			);
+
 			this._envs = this._envs.filter(
 				(item) => item.executable.filename !== env,
 			);
+
 			this._onChanged.fire({ type: FileChangeType.Deleted, old });
 
 			return;
 		}
+
 		this._envs = this._envs.filter(
 			(item) => item.executable.filename !== env.executable.filename,
 		);
+
 		this._onChanged.fire({ type: FileChangeType.Deleted, old: env });
 	}
 
@@ -553,16 +589,19 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
 		if (envPath === undefined) {
 			return undefined;
 		}
+
 		const native = await this.finder.resolve(envPath);
 
 		if (native) {
 			return this.addEnv(native);
 		}
+
 		return undefined;
 	}
 
 	private initializeWatcher(): void {
 		const watcher = createPythonWatcher();
+
 		this._disposables.push(
 			watcher.onDidGlobalEnvChanged((e) => this.pathEventHandler(e)),
 			watcher.onDidWorkspaceEnvChanged(async (e) => {
@@ -570,6 +609,7 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
 			}),
 			onDidChangeWorkspaceFolders((e: WorkspaceFoldersChangeEvent) => {
 				e.removed.forEach((wf) => watcher.unwatchWorkspace(wf));
+
 				e.added.forEach((wf) => watcher.watchWorkspace(wf));
 			}),
 			watcher,
@@ -601,6 +641,7 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
 				)) {
 					this.processNative(native);
 				}
+
 				const after = this._envs
 					.filter((env) => env.kind === PythonEnvKind.Conda)
 					.map((env) => env.executable.filename);
@@ -608,6 +649,7 @@ class NativePythonEnvironments implements IDiscoveryAPI, Disposable {
 				const envsToRemove = before.filter(
 					(item) => !after.includes(item),
 				);
+
 				envsToRemove.forEach((item) => this.removeEnv(item));
 			}
 		}
@@ -635,6 +677,7 @@ export function createNativeEnvironmentsApi(
 	finder: NativePythonFinder,
 ): IDiscoveryAPI & Disposable {
 	const native = new NativePythonEnvironments(finder);
+
 	native.triggerRefresh().ignoreErrors();
 
 	return native;

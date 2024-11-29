@@ -49,6 +49,7 @@ export class VirtualEnvironmentPrompt implements IExtensionActivationService {
 		const disposable = this.pyenvs.onDidCreate(resource, () =>
 			this.handleNewEnvironment(resource),
 		);
+
 		this.disposableRegistry.push(disposable);
 	}
 
@@ -59,6 +60,7 @@ export class VirtualEnvironmentPrompt implements IExtensionActivationService {
 		if (isCreatingEnvironment()) {
 			return;
 		}
+
 		const interpreters =
 			await this.pyenvs.getWorkspaceVirtualEnvInterpreters(resource);
 
@@ -70,6 +72,7 @@ export class VirtualEnvironmentPrompt implements IExtensionActivationService {
 		if (!interpreter) {
 			return;
 		}
+
 		const currentInterpreter =
 			await this.interpreterService.getActiveInterpreter(resource);
 
@@ -78,6 +81,7 @@ export class VirtualEnvironmentPrompt implements IExtensionActivationService {
 
 			return;
 		}
+
 		await this.notifyUser(interpreter, resource);
 	}
 
@@ -94,6 +98,7 @@ export class VirtualEnvironmentPrompt implements IExtensionActivationService {
 		if (!notificationPromptEnabled.value) {
 			return;
 		}
+
 		const prompts = [
 			Common.bannerLabelYes,
 			Common.bannerLabelNo,
@@ -110,6 +115,7 @@ export class VirtualEnvironmentPrompt implements IExtensionActivationService {
 			Interpreters.environmentPromptMessage,
 			...prompts,
 		);
+
 		sendTelemetryEvent(
 			EventName.PYTHON_INTERPRETER_ACTIVATE_ENVIRONMENT_PROMPT,
 			undefined,
@@ -123,6 +129,7 @@ export class VirtualEnvironmentPrompt implements IExtensionActivationService {
 		if (!selection) {
 			return;
 		}
+
 		if (selection === prompts[0]) {
 			await this.pythonPathUpdaterService.updatePythonPath(
 				interpreter.path,

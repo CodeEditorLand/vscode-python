@@ -48,6 +48,7 @@ export class DebugAdapterActivator
 		@inject(IAttachProcessProviderFactory)
 		private readonly attachProcessProviderFactory: IAttachProcessProviderFactory,
 	) {}
+
 	public async activate(): Promise<void> {
 		this.attachProcessProviderFactory.registerCommands();
 
@@ -57,6 +58,7 @@ export class DebugAdapterActivator
 				this.debugSessionLoggingFactory,
 			),
 		);
+
 		this.disposables.push(
 			this.debugService.registerDebugAdapterTrackerFactory(
 				DebuggerTypeName,
@@ -70,6 +72,7 @@ export class DebugAdapterActivator
 				this.descriptorFactory,
 			),
 		);
+
 		this.disposables.push(
 			this.debugService.onDidStartDebugSession((debugSession) => {
 				if (

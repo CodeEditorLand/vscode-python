@@ -25,6 +25,7 @@ export class TestRunner implements ITestRunner {
 	constructor(
 		@inject(IServiceContainer) private serviceContainer: IServiceContainer,
 	) {}
+
 	public run(testProvider: TestProvider, options: Options): Promise<string> {
 		return run(this.serviceContainer, testProvider, options);
 	}
@@ -49,6 +50,7 @@ async function run(
 	let pythonExecutionServicePromise:
 		| Promise<IPythonExecutionService>
 		| undefined;
+
 	spawnOptions.mergeStdOutErr =
 		typeof spawnOptions.mergeStdOutErr === "boolean"
 			? spawnOptions.mergeStdOutErr
@@ -86,6 +88,7 @@ async function run(
 		pythonExecutionServicePromise = serviceContainer
 			.get<IPythonExecutionFactory>(IPythonExecutionFactory)
 			.createActivatedEnvironment({ resource: options.workspaceFolder });
+
 		promise = pythonExecutionServicePromise.then((executionService) =>
 			executionService.execModuleObservable(
 				executionInfo.moduleName!,
@@ -98,6 +101,7 @@ async function run(
 			serviceContainer.get<IPythonToolExecutionService>(
 				IPythonToolExecutionService,
 			);
+
 		promise = pythonToolsExecutionService.execObservable(
 			executionInfo,
 			spawnOptions,
@@ -110,6 +114,7 @@ async function run(
 			let stdOut = "";
 
 			let stdErr = "";
+
 			result.out.subscribe(
 				(output) => {
 					stdOut += output.out;
@@ -118,6 +123,7 @@ async function run(
 					if (output.source === "stderr") {
 						stdErr += output.out;
 					}
+
 					if (options.outChannel) {
 						options.outChannel.append(output.out);
 					}
@@ -147,6 +153,7 @@ async function run(
 							);
 						}
 					}
+
 					resolve(stdOut);
 				},
 			);
@@ -166,10 +173,12 @@ function getExecutablePath(
 
 			break;
 		}
+
 		default: {
 			return undefined;
 		}
 	}
+
 	return path.basename(testRunnerExecutablePath) === testRunnerExecutablePath
 		? undefined
 		: testRunnerExecutablePath;
@@ -179,9 +188,11 @@ function getTestModuleName(testProvider: TestProvider) {
 		case PYTEST_PROVIDER: {
 			return "pytest";
 		}
+
 		case UNITTEST_PROVIDER: {
 			return "unittest";
 		}
+
 		default: {
 			throw new Error(`Test provider '${testProvider}' not supported`);
 		}

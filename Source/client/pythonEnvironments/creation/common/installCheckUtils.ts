@@ -18,11 +18,17 @@ import { traceError, traceInfo, traceVerbose } from "../../../logging";
 
 interface PackageDiagnostic {
 	package: string;
+
 	line: number;
+
 	character: number;
+
 	endLine: number;
+
 	endCharacter: number;
+
 	code: string;
+
 	severity: DiagnosticSeverity;
 }
 
@@ -33,6 +39,7 @@ function parseDiagnostics(data: string): Diagnostic[] {
 
 	try {
 		const raw = JSON.parse(data) as PackageDiagnostic[];
+
 		diagnostics = raw.map((item) => {
 			const d = new Diagnostic(
 				new Range(
@@ -47,10 +54,12 @@ function parseDiagnostics(data: string): Diagnostic[] {
 				),
 				item.severity,
 			);
+
 			d.code = {
 				value: item.code,
 				target: Uri.parse(`https://pypi.org/p/${item.package}`),
 			};
+
 			d.source = INSTALL_CHECKER_SOURCE;
 
 			return d;
@@ -58,6 +67,7 @@ function parseDiagnostics(data: string): Diagnostic[] {
 	} catch {
 		diagnostics = [];
 	}
+
 	return diagnostics;
 }
 
@@ -72,12 +82,15 @@ function getMissingPackageSeverity(doc: TextDocument): number {
 	if (severity === "Error") {
 		return DiagnosticSeverity.Error;
 	}
+
 	if (severity === "Warning") {
 		return DiagnosticSeverity.Warning;
 	}
+
 	if (severity === "Information") {
 		return DiagnosticSeverity.Information;
 	}
+
 	return DiagnosticSeverity.Hint;
 }
 
@@ -90,6 +103,7 @@ export async function getInstalledPackagesDiagnostics(
 	if (!interpreter) {
 		return [];
 	}
+
 	const scriptPath = installedCheckScript();
 
 	try {
@@ -112,11 +126,13 @@ export async function getInstalledPackagesDiagnostics(
 				env: envCopy,
 			},
 		);
+
 		traceVerbose("Installed packages check result:\n", result.stdout);
 
 		if (result.stderr) {
 			traceError("Installed packages check error:\n", result.stderr);
 		}
+
 		return parseDiagnostics(result.stdout);
 	} catch (ex) {
 		traceError(
@@ -124,5 +140,6 @@ export async function getInstalledPackagesDiagnostics(
 			ex,
 		);
 	}
+
 	return [];
 }

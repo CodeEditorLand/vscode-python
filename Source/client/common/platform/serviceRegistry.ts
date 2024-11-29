@@ -13,6 +13,8 @@ export function registerTypes(serviceManager: IServiceManager) {
 		IPlatformService,
 		PlatformService,
 	);
+
 	serviceManager.addSingleton<IFileSystem>(IFileSystem, FileSystem);
+
 	serviceManager.addSingleton<IRegistry>(IRegistry, RegistryImplementation);
 }

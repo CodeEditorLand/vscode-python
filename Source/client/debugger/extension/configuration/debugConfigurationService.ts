@@ -35,6 +35,7 @@ export class PythonDebugConfigurationService
 				token,
 			);
 		}
+
 		if (debugConfiguration.request === "test") {
 			// `"request": "test"` is now deprecated. But some users might have it in their
 			// launch config. We get here if they triggered it using F5 or start with debugger.
@@ -45,6 +46,7 @@ export class PythonDebugConfigurationService
 			if (Object.keys(debugConfiguration).length === 0) {
 				return undefined;
 			}
+
 			return this.launchResolver.resolveDebugConfiguration(
 				folder,
 				debugConfiguration as LaunchRequestArguments,
@@ -67,6 +69,7 @@ export class PythonDebugConfigurationService
 				token,
 			);
 		}
+
 		return debugConfiguration.request === "attach"
 			? resolve(this.attachResolver)
 			: resolve(this.launchResolver);

@@ -57,6 +57,7 @@ function generateCommandArgs(
 			options?.ignoreSourceControl !== undefined
 				? options.ignoreSourceControl
 				: true;
+
 		installPackages =
 			options?.installPackages !== undefined
 				? options.installPackages
@@ -75,6 +76,7 @@ function generateCommandArgs(
 
 	if (version) {
 		command.push("--python");
+
 		command.push(version);
 	}
 
@@ -95,6 +97,7 @@ function getCondaEnvFromOutput(output: string): string | undefined {
 		if (envPath.includes(CONDA_ENV_CREATED_MARKER)) {
 			return envPath.substring(CONDA_ENV_CREATED_MARKER.length);
 		}
+
 		return envPath.substring(CONDA_ENV_EXISTING_MARKER.length);
 	} catch (ex) {
 		traceError("Parsing out environment path failed.");
@@ -117,6 +120,7 @@ async function createCondaEnv(
 	const deferred = createDeferred<string>();
 
 	const pathEnv = getPathEnvVariableForConda(command);
+
 	traceLog("Running Conda Env creation script: ", [command, ...args]);
 
 	const { proc, out, dispose } = execObservable(command, args, {
@@ -131,9 +135,11 @@ async function createCondaEnv(
 	const progressAndTelemetry = new CondaProgressAndTelemetry(progress);
 
 	let condaEnvPath: string | undefined;
+
 	out.subscribe(
 		(value) => {
 			const output = splitLines(value.out).join("\r\n");
+
 			traceLog(output.trimEnd());
 
 			if (
@@ -142,6 +148,7 @@ async function createCondaEnv(
 			) {
 				condaEnvPath = getCondaEnvFromOutput(output);
 			}
+
 			progressAndTelemetry.process(output);
 		},
 		async (error) => {
@@ -149,6 +156,7 @@ async function createCondaEnv(
 				"Error while running conda env creation script: ",
 				error,
 			);
+
 			deferred.reject(error);
 		},
 		() => {
@@ -159,6 +167,7 @@ async function createCondaEnv(
 					"Error while running venv creation script: ",
 					progressAndTelemetry.getLastError(),
 				);
+
 				deferred.reject(
 					progressAndTelemetry.getLastError() ||
 						`Conda env creation failed with exitCode: ${proc?.exitCode}`,
@@ -211,6 +220,7 @@ async function createEnvironment(
 				) {
 					return ex;
 				}
+
 				throw ex;
 			}
 
@@ -221,6 +231,7 @@ async function createEnvironment(
 
 				return MultiStepAction.Cancel;
 			}
+
 			traceInfo(
 				`Selected workspace ${workspace.uri.fsPath} for creating conda environment.`,
 			);
@@ -248,15 +259,18 @@ async function createEnvironment(
 					) {
 						return ex;
 					}
+
 					throw ex;
 				}
 			} else if (context === MultiStepAction.Back) {
 				return MultiStepAction.Back;
 			}
+
 			return MultiStepAction.Continue;
 		},
 		undefined,
 	);
+
 	workspaceStep.next = existingEnvStep;
 
 	let version: string | undefined;
@@ -277,8 +291,10 @@ async function createEnvironment(
 					) {
 						return ex;
 					}
+
 					throw ex;
 				}
+
 				if (version === undefined) {
 					traceError(
 						"Python version was not selected for creating conda environment.",
@@ -286,6 +302,7 @@ async function createEnvironment(
 
 					return MultiStepAction.Cancel;
 				}
+
 				traceInfo(
 					`Selected Python version ${version} for creating conda environment.`,
 				);
@@ -301,6 +318,7 @@ async function createEnvironment(
 		},
 		undefined,
 	);
+
 	existingEnvStep.next = versionStep;
 
 	const action = await MultiStepNode.run(workspaceStep);
@@ -388,6 +406,7 @@ async function createEnvironment(
 				}
 			} catch (ex) {
 				traceError(ex);
+
 				showErrorMessageWithLogs(
 					CreateEnv.Conda.errorCreatingEnvironment,
 				);

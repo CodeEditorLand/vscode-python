@@ -36,6 +36,7 @@ export abstract class TestConfigurationManager
 		cfg?: ITestConfigSettingsService,
 	) {
 		this.installer = serviceContainer.get<IInstaller>(IInstaller);
+
 		this.testConfigSettingsService =
 			cfg ||
 			serviceContainer.get<ITestConfigSettingsService>(
@@ -58,6 +59,7 @@ export abstract class TestConfigurationManager
 					),
 			),
 		);
+
 		await this.testConfigSettingsService.enable(
 			this.workspace,
 			this.product,
@@ -90,6 +92,7 @@ export abstract class TestConfigurationManager
 				if (dirName.indexOf(".") === 0) {
 					return undefined;
 				}
+
 				return {
 					label: dirName,
 					description: "",
@@ -99,6 +102,7 @@ export abstract class TestConfigurationManager
 			.map((item) => item!);
 
 		items = [{ label: ".", description: "Root directory" }, ...items];
+
 		items = customOptions.concat(items);
 
 		return this.showQuickPick(items, options);
@@ -152,6 +156,7 @@ export abstract class TestConfigurationManager
 			const nonTestDirs = subDirs.filter(
 				(dir) => possibleTestDirs.indexOf(dir) === -1,
 			);
+
 			possibleTestDirs.push(...nonTestDirs);
 
 			// The test dirs are now on top.
@@ -167,6 +172,7 @@ export abstract class TestConfigurationManager
 
 		const appShell =
 			this.serviceContainer.get<IApplicationShell>(IApplicationShell);
+
 		appShell.showQuickPick(items, options).then((item) => {
 			if (!item) {
 				this.handleCancelled(); // This will throw an exception.

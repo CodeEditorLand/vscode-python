@@ -35,6 +35,7 @@ export class LoadLanguageServerExtension
 				/** no-op */
 			},
 		);
+
 		this.disposables.push(disposable);
 
 		return Promise.resolve();

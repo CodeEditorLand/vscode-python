@@ -73,6 +73,7 @@ export class TensorboardDependencyChecker {
 
 		const result =
 			await newSession.ensurePrerequisitesAreInstalled(resource);
+
 		disposeAll(disposables);
 
 		return result;

@@ -41,6 +41,7 @@ export class ReplProvider extends TerminalCodeExecutionProvider {
 			commandManager,
 			applicationShell,
 		);
+
 		this.terminalTitle = "REPL";
 	}
 }

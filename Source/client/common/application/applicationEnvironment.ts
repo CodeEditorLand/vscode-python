@@ -61,30 +61,39 @@ export class ApplicationEnvironment implements IApplicationEnvironment {
 				return;
 		}
 	}
+
 	public get appName(): string {
 		return vscode.env.appName;
 	}
+
 	public get vscodeVersion(): string {
 		return vscode.version;
 	}
+
 	public get appRoot(): string {
 		return vscode.env.appRoot;
 	}
+
 	public get uiKind(): vscode.UIKind {
 		return vscode.env.uiKind;
 	}
+
 	public get language(): string {
 		return vscode.env.language;
 	}
+
 	public get sessionId(): string {
 		return vscode.env.sessionId;
 	}
+
 	public get machineId(): string {
 		return vscode.env.machineId;
 	}
+
 	public get remoteName(): string | undefined {
 		return vscode.env.remoteName;
 	}
+
 	public get extensionName(): string {
 		return this.packageJson.displayName;
 	}
@@ -107,9 +116,11 @@ export class ApplicationEnvironment implements IApplicationEnvironment {
 	public get packageJson(): any {
 		return require("../../../../package.json");
 	}
+
 	public get channel(): Channel {
 		return this.appName.indexOf("Insider") > 0 ? "insiders" : "stable";
 	}
+
 	public get extensionChannel(): Channel {
 		const version = parse(this.packageJson.version);
 		// Insiders versions are those that end with '-dev' or whose minor versions are odd (even is for stable)
@@ -119,6 +130,7 @@ export class ApplicationEnvironment implements IApplicationEnvironment {
 			? "insiders"
 			: "stable";
 	}
+
 	public get uriScheme(): string {
 		return vscode.env.uriScheme;
 	}

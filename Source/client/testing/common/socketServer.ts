@@ -37,6 +37,7 @@ export class UnitTestSocketServer
 	public stop() {
 		if (this.server) {
 			this.server.close();
+
 			this.server = undefined;
 		}
 	}
@@ -48,28 +49,38 @@ export class UnitTestSocketServer
 		},
 	): Promise<number> {
 		this.ipcBuffer = "";
+
 		this.startedDef = createDeferred<number>();
+
 		this.server = net.createServer(this.connectionListener.bind(this));
+
 		this.server.maxConnections = MaxConnections;
+
 		this.server.on("error", (err) => {
 			if (this.startedDef) {
 				this.startedDef.reject(err);
+
 				this.startedDef = undefined;
 			}
+
 			this.emit("error", err);
 		});
+
 		this.log("starting server as", "TCP");
 
 		if (host.trim().length === 0) {
 			host = "localhost";
 		}
+
 		this.server.on("connection", (socket: net.Socket) => {
 			this.emit("start", socket);
 		});
+
 		this.server.listen(port, host, () => {
 			this.startedDef?.resolve(
 				(this.server?.address() as net.AddressInfo).port,
 			);
+
 			this.startedDef = undefined;
 		});
 
@@ -78,16 +89,23 @@ export class UnitTestSocketServer
 
 	private connectionListener(socket: net.Socket) {
 		this.sockets.push(socket);
+
 		socket.setEncoding("utf8");
+
 		this.log("## socket connection to server detected ##");
+
 		socket.on("close", () => {
 			this.ipcBuffer = "";
+
 			this.onCloseSocket();
 		});
+
 		socket.on("error", (err) => {
 			this.log("server socket error", err);
+
 			this.emit("error", err);
 		});
+
 		socket.on("data", (data) => {
 			const sock = socket;
 			// Assume we have just one client socket connection
@@ -99,6 +117,7 @@ export class UnitTestSocketServer
 				if (startIndex === -1) {
 					return;
 				}
+
 				const lengthOfMessage = parseInt(
 					dataStr
 						.slice(dataStr.indexOf(":") + 1, dataStr.indexOf("{"))
@@ -124,12 +143,15 @@ export class UnitTestSocketServer
 
 					return;
 				}
+
 				dataStr = this.ipcBuffer = dataStr.substring(
 					startIndex + lengthOfMessage,
 				);
+
 				this.emit(message.event, message.body, sock);
 			}
 		});
+
 		this.emit("connect", socket);
 	}
 
@@ -150,12 +172,15 @@ export class UnitTestSocketServer
 			if ((socket as any).id) {
 				destroyedSocketId = (socket as any).id;
 			}
+
 			this.log("socket disconnected", destroyedSocketId?.toString());
 
 			if (socket && socket.destroy) {
 				socket.destroy();
 			}
+
 			this.sockets.splice(i, 1);
+
 			this.emit("socket.disconnected", socket, destroyedSocketId);
 
 			return;

@@ -35,6 +35,7 @@ export class PlatformService implements IPlatformService {
 		if (this.version) {
 			return this.version;
 		}
+
 		switch (this.osType) {
 			case OSType.Windows:
 			case OSType.OSX:
@@ -49,10 +50,12 @@ export class PlatformService implements IPlatformService {
 
 						return this.version;
 					}
+
 					throw new Error("Unable to parse version");
 				} catch (ex) {
 					return parseSemVerSafe(os.release());
 				}
+
 			default:
 				throw new Error("Not Supported");
 		}

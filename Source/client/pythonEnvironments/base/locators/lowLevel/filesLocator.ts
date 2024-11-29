@@ -48,6 +48,7 @@ abstract class FoundFilesLocator implements ILocator<BasicEnvInfo> {
 				yield { executablePath, kind, source };
 			}
 		}
+
 		const iterator = generator(this.kind, this.source);
 
 		return iterator;
@@ -70,6 +71,7 @@ export class DirFilesLocator extends FoundFilesLocator {
 		source?: PythonEnvSource[],
 	) {
 		super(defaultKind, () => getExecutables(dirname), source);
+
 		this.providerId = `dir-files-${dirname}`;
 	}
 }

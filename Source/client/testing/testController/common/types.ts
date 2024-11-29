@@ -21,6 +21,7 @@ import { ITestDebugLauncher, TestDiscoveryOptions } from "../../common/types";
 
 export type TestRunInstanceOptions = TestRunOptions & {
 	exclude?: readonly TestItem[];
+
 	debug: boolean;
 };
 
@@ -33,10 +34,15 @@ export enum TestDataKinds {
 
 export interface TestData {
 	rawId: string;
+
 	runId: string;
+
 	id: string;
+
 	uri: Uri;
+
 	parentId?: string;
+
 	kind: TestDataKinds;
 }
 
@@ -57,16 +63,23 @@ export interface ITestController {
 		resource?: Uri,
 		options?: TestRefreshOptions,
 	): Promise<void>;
+
 	stopRefreshing(): void;
+
 	onRefreshingCompleted: Event<void>;
+
 	onRefreshingStarted: Event<void>;
+
 	onRunWithoutConfiguration: Event<WorkspaceFolder[]>;
 }
 
 export interface ITestRun {
 	includes: readonly TestItem[];
+
 	excludes: readonly TestItem[];
+
 	runKind: TestRunProfileKind;
+
 	runInstance: TestRun;
 }
 
@@ -78,11 +91,13 @@ export interface ITestFrameworkController {
 		item: TestItem,
 		token?: CancellationToken,
 	): Promise<void>;
+
 	refreshTestData(
 		testController: TestController,
 		resource?: Uri,
 		token?: CancellationToken,
 	): Promise<void>;
+
 	runTests(
 		testRun: ITestRun,
 		workspace: WorkspaceFolder,
@@ -104,8 +119,11 @@ export interface ITestsRunner {
 
 export type TestRunOptions = {
 	workspaceFolder: Uri;
+
 	cwd: string;
+
 	args: string[];
+
 	token: CancellationToken;
 };
 
@@ -113,7 +131,9 @@ export type TestRunOptions = {
 // elsewhere in the code.
 type RawTestNode = {
 	id: string;
+
 	name: string;
+
 	parentid: string;
 };
 
@@ -122,6 +142,7 @@ export type RawTestParent = RawTestNode & {
 };
 type RawTestFSNode = RawTestParent & {
 	kind: "folder" | "file";
+
 	relpath: string;
 };
 
@@ -147,8 +168,11 @@ export type RawTest = RawTestNode & {
 
 export type RawDiscoveredTests = {
 	rootid: string;
+
 	root: string;
+
 	parents: RawTestParent[];
+
 	tests: RawTest[];
 };
 
@@ -156,37 +180,53 @@ export type RawDiscoveredTests = {
 
 export type DataReceivedEvent = {
 	uuid: string;
+
 	data: string;
 };
 
 export type TestDiscoveryCommand = {
 	script: string;
+
 	args: string[];
 };
 
 export type TestExecutionCommand = {
 	script: string;
+
 	args: string[];
 };
 
 export type TestCommandOptions = {
 	workspaceFolder: Uri;
+
 	cwd: string;
+
 	command: TestDiscoveryCommand | TestExecutionCommand;
+
 	token?: CancellationToken;
+
 	outChannel?: OutputChannel;
+
 	profileKind?: TestRunProfileKind;
+
 	testIds?: string[];
 };
 
 export type TestCommandOptionsPytest = {
 	workspaceFolder: Uri;
+
 	cwd: string;
+
 	commandStr: string;
+
 	token?: CancellationToken;
+
 	outChannel?: OutputChannel;
+
 	debugBool?: boolean;
+
 	testIds?: string[];
+
 	env: { [key: string]: string | undefined };
 };
 
@@ -198,8 +238,11 @@ export type TestCommandOptionsPytest = {
  */
 export interface ITestServer {
 	readonly onDataReceived: Event<DataReceivedEvent>;
+
 	readonly onRunDataReceived: Event<DataReceivedEvent>;
+
 	readonly onDiscoveryDataReceived: Event<DataReceivedEvent>;
+
 	sendCommand(
 		options: TestCommandOptions,
 		env: EnvironmentVariables,
@@ -209,41 +252,54 @@ export interface ITestServer {
 		callback?: () => void,
 		executionFactory?: IPythonExecutionFactory,
 	): Promise<void>;
+
 	serverReady(): Promise<void>;
 
 	getPort(): number;
+
 	createUUID(cwd: string): string;
+
 	deleteUUID(uuid: string): void;
+
 	triggerRunDataReceivedEvent(data: DataReceivedEvent): void;
+
 	triggerDiscoveryDataReceivedEvent(data: DataReceivedEvent): void;
 }
 export interface ITestResultResolver {
 	runIdToVSid: Map<string, string>;
+
 	runIdToTestItem: Map<string, TestItem>;
+
 	vsIdToRunId: Map<string, string>;
+
 	detailedCoverageMap: Map<string, FileCoverageDetail[]>;
 
 	resolveDiscovery(
 		payload: DiscoveredTestPayload,
 		token?: CancellationToken,
 	): void;
+
 	resolveExecution(
 		payload: ExecutionTestPayload | CoveragePayload,
 		runInstance: TestRun,
 	): void;
+
 	_resolveDiscovery(
 		payload: DiscoveredTestPayload,
 		token?: CancellationToken,
 	): void;
+
 	_resolveExecution(
 		payload: ExecutionTestPayload,
 		runInstance: TestRun,
 	): void;
+
 	_resolveCoverage(payload: CoveragePayload, runInstance: TestRun): void;
 }
 export interface ITestDiscoveryAdapter {
 	// ** first line old method signature, second line new method signature
 	discoverTests(uri: Uri): Promise<DiscoveredTestPayload>;
+
 	discoverTests(
 		uri: Uri,
 		executionFactory: IPythonExecutionFactory,
@@ -259,6 +315,7 @@ export interface ITestExecutionAdapter {
 		testIds: string[],
 		profileKind?: boolean | TestRunProfileKind,
 	): Promise<ExecutionTestPayload>;
+
 	runTests(
 		uri: Uri,
 		testIds: string[],
@@ -275,14 +332,17 @@ export type DiscoveredTestType = "folder" | "file" | "class" | "test";
 
 export type DiscoveredTestCommon = {
 	path: string;
+
 	name: string;
 	// Trailing underscore to avoid collision with the 'type' Python keyword.
 	type_: DiscoveredTestType;
+
 	id_: string;
 };
 
 export type DiscoveredTestItem = DiscoveredTestCommon & {
 	lineno: number;
+
 	runID: string;
 };
 
@@ -292,17 +352,23 @@ export type DiscoveredTestNode = DiscoveredTestCommon & {
 
 export type DiscoveredTestPayload = {
 	cwd: string;
+
 	tests?: DiscoveredTestNode;
+
 	status: "success" | "error";
+
 	error?: string[];
 };
 
 export type CoveragePayload = {
 	coverage: boolean;
+
 	cwd: string;
+
 	result?: {
 		[filePathStr: string]: FileCoverageMetrics;
 	};
+
 	error: string;
 };
 
@@ -316,16 +382,24 @@ export type FileCoverageMetrics = {
 
 export type ExecutionTestPayload = {
 	cwd: string;
+
 	status: "success" | "error";
+
 	result?: {
 		[testRunID: string]: {
 			test?: string;
+
 			outcome?: string;
+
 			message?: string;
+
 			traceback?: string;
+
 			subtest?: string;
 		};
 	};
+
 	notFound?: string[];
+
 	error: string;
 };

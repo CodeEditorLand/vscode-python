@@ -25,6 +25,7 @@ export class ActiveStateLocator extends LazyResourceBasedLocator {
 
 			return;
 		}
+
 		traceInfo(`Searching for active state environments`);
 
 		const projects = await state.getProjects();
@@ -34,6 +35,7 @@ export class ActiveStateLocator extends LazyResourceBasedLocator {
 
 			return;
 		}
+
 		for (const project of projects) {
 			if (project.executables) {
 				for (const dir of project.executables) {
@@ -59,6 +61,7 @@ export class ActiveStateLocator extends LazyResourceBasedLocator {
 				}
 			}
 		}
+
 		traceInfo(
 			`Finished searching for active state environments: ${stopWatch.elapsedTime} milliseconds`,
 		);

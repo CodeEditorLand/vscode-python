@@ -16,10 +16,12 @@ export function registerTypes(serviceManager: IServiceManager) {
 		IProcessServiceFactory,
 		ProcessServiceFactory,
 	);
+
 	serviceManager.addSingleton<IPythonExecutionFactory>(
 		IPythonExecutionFactory,
 		PythonExecutionFactory,
 	);
+
 	serviceManager.addSingleton<IPythonToolExecutionService>(
 		IPythonToolExecutionService,
 		PythonToolExecutionService,

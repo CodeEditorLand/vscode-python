@@ -16,11 +16,17 @@ export enum DiagnosticScope {
 
 export interface IDiagnostic {
 	readonly code: DiagnosticCodes;
+
 	readonly message: string;
+
 	readonly severity: DiagnosticSeverity;
+
 	readonly scope: DiagnosticScope;
+
 	readonly resource: Resource;
+
 	readonly invokeHandler: "always" | "default";
+
 	readonly shouldShowPrompt?: boolean;
 }
 
@@ -28,9 +34,13 @@ export const IDiagnosticsService = Symbol("IDiagnosticsService");
 
 export interface IDiagnosticsService {
 	readonly runInBackground: boolean;
+
 	readonly runInUntrustedWorkspace: boolean;
+
 	diagnose(resource: Resource): Promise<IDiagnostic[]>;
+
 	canHandle(diagnostic: IDiagnostic): Promise<boolean>;
+
 	handle(diagnostics: IDiagnostic[]): Promise<void>;
 }
 
@@ -38,6 +48,7 @@ export const IDiagnosticFilterService = Symbol("IDiagnosticFilterService");
 
 export interface IDiagnosticFilterService {
 	shouldIgnoreDiagnostic(code: string): Promise<boolean>;
+
 	ignoreDiagnostic(code: string, scope: DiagnosticScope): Promise<void>;
 }
 
@@ -49,6 +60,7 @@ export interface IDiagnosticHandlerService<T> {
 
 export interface IDiagnosticCommand {
 	readonly diagnostic: IDiagnostic;
+
 	invoke(): Promise<void>;
 }
 
@@ -78,5 +90,6 @@ export const ISourceMapSupportService = Symbol("ISourceMapSupportService");
 
 export interface ISourceMapSupportService {
 	register(): void;
+
 	enable(): Promise<void>;
 }

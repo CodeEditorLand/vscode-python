@@ -41,7 +41,9 @@ async function getWorkspacesForQuickPick(
 
 export interface PickWorkspaceFolderOptions {
 	allowMultiSelect?: boolean;
+
 	token?: CancellationToken;
+
 	preSelectedWorkspace?: WorkspaceFolder;
 }
 
@@ -56,6 +58,7 @@ export async function pickWorkspaceFolder(
 			// No workspaces and nothing to show, should just go to previous
 			throw MultiStepAction.Back;
 		}
+
 		const result = await showErrorMessage(
 			CreateEnv.noWorkspace,
 			Common.openFolder,
@@ -64,6 +67,7 @@ export async function pickWorkspaceFolder(
 		if (result === Common.openFolder) {
 			await executeCommand("vscode.openFolder");
 		}
+
 		return undefined;
 	}
 
@@ -106,6 +110,7 @@ export async function pickWorkspaceFolder(
 
 			return workspaces.filter((w) => details.includes(w.uri.fsPath));
 		}
+
 		return workspaces.filter(
 			(w) => w.uri.fsPath === (selected as QuickPickItem).detail,
 		)[0];

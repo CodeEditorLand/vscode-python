@@ -40,6 +40,7 @@ export function combineIterators<I>(
 		const disposables = new Disposables();
 
 		let numActive = events.length;
+
 		events.forEach((event) => {
 			const disposable = event!(
 				(e: PythonEnvUpdatedEvent<I> | ProgressNotificationEvent) => {
@@ -62,6 +63,7 @@ export function combineIterators<I>(
 					}
 				},
 			);
+
 			disposables.push(disposable);
 		});
 
@@ -87,6 +89,7 @@ export class Locators<I = PythonEnvInfo>
 		private readonly locators: ReadonlyArray<ILocator<I>>,
 	) {
 		super(locators);
+
 		this.providerId = locators.map((loc) => loc.providerId).join("+");
 	}
 

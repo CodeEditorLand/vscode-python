@@ -18,9 +18,12 @@ import {
 export type MessageCommandPrompt = {
 	commandPrompts: {
 		prompt: string;
+
 		command?: IDiagnosticCommand;
 	}[];
+
 	message?: string;
+
 	onClose?: IDiagnosticMessageOnCloseHandler;
 };
 
@@ -39,6 +42,7 @@ export class DiagnosticCommandPromptHandlerService
 		this.appShell =
 			serviceContainer.get<IApplicationShell>(IApplicationShell);
 	}
+
 	public async handle(
 		diagnostic: IDiagnostic,
 		options: MessageCommandPrompt = { commandPrompts: [] },
@@ -54,9 +58,11 @@ export class DiagnosticCommandPromptHandlerService
 		if (options.onClose) {
 			options.onClose(response);
 		}
+
 		if (!response) {
 			return;
 		}
+
 		const selectedOption = options.commandPrompts.find(
 			(option) => option.prompt === response,
 		);
@@ -65,6 +71,7 @@ export class DiagnosticCommandPromptHandlerService
 			await selectedOption.command.invoke();
 		}
 	}
+
 	private async displayMessage(
 		message: string,
 		severity: DiagnosticSeverity,
@@ -74,9 +81,11 @@ export class DiagnosticCommandPromptHandlerService
 			case DiagnosticSeverity.Error: {
 				return this.appShell.showErrorMessage(message, ...prompts);
 			}
+
 			case DiagnosticSeverity.Warning: {
 				return this.appShell.showWarningMessage(message, ...prompts);
 			}
+
 			default: {
 				return this.appShell.showInformationMessage(
 					message,

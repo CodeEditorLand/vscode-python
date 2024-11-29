@@ -46,6 +46,7 @@ export function registerTriggerForPipInTerminal(
 	}
 
 	const createEnvironmentTriggered: Map<string, boolean> = new Map();
+
 	folders.forEach((workspaceFolder) => {
 		createEnvironmentTriggered.set(workspaceFolder.uri.fsPath, false);
 	});
@@ -72,6 +73,7 @@ export function registerTriggerForPipInTerminal(
 							workspaceFolder.uri.fsPath,
 							true,
 						);
+
 						sendTelemetryEvent(
 							EventName.ENVIRONMENT_TERMINAL_GLOBAL_PIP,
 						);
@@ -98,11 +100,13 @@ export function registerTriggerForPipInTerminal(
 										"CreateEnv Trigger - Environment created: ",
 										result.path,
 									);
+
 									traceInfo(
 										`CreateEnv Trigger - Running: ${
 											result.path
 										} -m ${e.execution.commandLine.value.trim()}`,
 									);
+
 									e.shellIntegration.executeCommand(
 										`${result.path} -m ${e.execution.commandLine.value}`.trim(),
 									);

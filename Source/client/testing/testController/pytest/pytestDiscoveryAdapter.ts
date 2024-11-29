@@ -102,18 +102,22 @@ export class PytestTestDiscoveryAdapter implements ITestDiscoveryAdapter {
 
 		if (stats.isSymbolicLink()) {
 			isSymbolicLink = true;
+
 			traceWarn("The cwd is a symbolic link.");
 		} else if (resolvedPath !== cwd) {
 			traceWarn(
 				"The cwd resolves to a different path, checking if it has a symbolic link somewhere in its path.",
 			);
+
 			isSymbolicLink = await hasSymlinkParent(cwd);
 		}
+
 		if (isSymbolicLink) {
 			traceWarn(
 				"Symlink found, adding '--rootdir' to pytestArgs only if it doesn't already exist. cwd: ",
 				cwd,
 			);
+
 			pytestArgs = addValueIfKeyNotExist(pytestArgs, "--rootdir", cwd);
 		}
 		// if user has provided `--rootdir` then use that, otherwise add `cwd`
@@ -131,8 +135,11 @@ export class PytestTestDiscoveryAdapter implements ITestDiscoveryAdapter {
 		const pythonPathCommand = [fullPluginPath, ...pythonPathParts].join(
 			path.delimiter,
 		);
+
 		mutableEnv.PYTHONPATH = pythonPathCommand;
+
 		mutableEnv.TEST_RUN_PIPE = discoveryPipeName;
+
 		traceInfo(
 			`All environment variables set for pytest discovery: ${JSON.stringify(mutableEnv)}`,
 		);
@@ -161,6 +168,7 @@ export class PytestTestDiscoveryAdapter implements ITestDiscoveryAdapter {
 			"vscode_pytest",
 			"--collect-only",
 		].concat(pytestArgs);
+
 		traceVerbose(
 			`Running pytest discovery with command: ${execArgs.join(" ")} for workspace ${uri.fsPath}.`,
 		);
@@ -175,14 +183,20 @@ export class PytestTestDiscoveryAdapter implements ITestDiscoveryAdapter {
 
 		result?.proc?.stdout?.on("data", (data) => {
 			const out = fixLogLinesNoTrailing(data.toString());
+
 			traceInfo(out);
+
 			spawnOptions?.outputChannel?.append(`${out}`);
 		});
+
 		result?.proc?.stderr?.on("data", (data) => {
 			const out = fixLogLinesNoTrailing(data.toString());
+
 			traceError(out);
+
 			spawnOptions?.outputChannel?.append(`${out}`);
 		});
+
 		result?.proc?.on("exit", (code, signal) => {
 			this.outputChannel?.append(MESSAGE_ON_TESTING_OUTPUT_MOVE);
 
@@ -192,12 +206,14 @@ export class PytestTestDiscoveryAdapter implements ITestDiscoveryAdapter {
 				);
 			}
 		});
+
 		result?.proc?.on("close", (code, signal) => {
 			// pytest exits with code of 5 when 0 tests are found- this is not a failure for discovery.
 			if (code !== 0 && code !== 5) {
 				traceError(
 					`Subprocess exited unsuccessfully with exit code ${code} and signal ${signal} on workspace ${uri.fsPath}. Creating and sending error discovery payload`,
 				);
+
 				this.resultResolver?.resolveDiscovery(
 					createDiscoveryErrorPayload(code, signal, cwd),
 				);
@@ -205,6 +221,7 @@ export class PytestTestDiscoveryAdapter implements ITestDiscoveryAdapter {
 			// due to the sync reading of the output.
 			deferredTillExecClose?.resolve();
 		});
+
 		await deferredTillExecClose.promise;
 	}
 }

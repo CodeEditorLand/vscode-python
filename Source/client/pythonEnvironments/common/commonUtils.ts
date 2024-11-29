@@ -38,9 +38,11 @@ export async function isPythonExecutable(filePath: string): Promise<boolean> {
 		// On Windows it's fair to assume a path ending with `.exe` denotes a file.
 		return true;
 	}
+
 	if (await isFile(filePath)) {
 		return true;
 	}
+
 	return false;
 }
 
@@ -116,7 +118,9 @@ async function* walkSubTree(
 	currentDepth: number,
 	cfg: {
 		filterSubDir: FileFilterFunc | undefined;
+
 		maxDepth: number;
+
 		ignoreErrors: boolean;
 	},
 ): AsyncIterableIterator<DirEntry> {
@@ -141,6 +145,7 @@ async function readDirEntries(
 	dirname: string,
 	opts: {
 		filterFilename?: FileFilterFunc;
+
 		ignoreErrors: boolean;
 	} = { ignoreErrors: true },
 ): Promise<DirEntry[]> {
@@ -159,13 +164,16 @@ async function readDirEntries(
 			if (exception.code === "ENOENT") {
 				return [];
 			}
+
 			if (ignoreErrors) {
 				traceError(`readdir() failed for "${dirname}" (${err})`);
 
 				return [];
 			}
+
 			throw err; // re-throw
 		}
+
 		const filenames = basenames
 			.map((b) => path.join(dirname, b))
 			.filter((f) => matchFile(f, opts.filterFilename, ignoreErrors));
@@ -190,11 +198,13 @@ async function readDirEntries(
 		if (exception.code === "ENOENT") {
 			return [];
 		}
+
 		if (ignoreErrors) {
 			traceError(`readdir() failed for "${dirname}" (${err})`);
 
 			return [];
 		}
+
 		throw err; // re-throw
 	}
 	// (FYI)
@@ -220,6 +230,7 @@ async function readDirEntries(
 			matchFile(e.filename, opts.filterFilename, ignoreErrors),
 		);
 	}
+
 	return entries;
 }
 
@@ -233,6 +244,7 @@ function matchFile(
 	if (filterFile === undefined) {
 		return true;
 	}
+
 	try {
 		return filterFile(filename);
 	} catch (err) {
@@ -241,6 +253,7 @@ function matchFile(
 
 			return false;
 		}
+
 		throw err; // re-throw
 	}
 }
@@ -269,6 +282,7 @@ async function getPythonVersionFromNearByFiles(
 			// Ignore any parse errors
 		}
 	}
+
 	return version;
 }
 
@@ -289,9 +303,11 @@ export async function getPythonVersionFromPath(
 	} catch (ex) {
 		versionA = UNKNOWN_PYTHON_VERSION;
 	}
+
 	const versionB = interpreterPath
 		? await getPythonVersionFromNearByFiles(interpreterPath)
 		: UNKNOWN_PYTHON_VERSION;
+
 	traceVerbose(
 		"Best effort version B for",
 		interpreterPath,
@@ -301,6 +317,7 @@ export async function getPythonVersionFromPath(
 	const versionC = interpreterPath
 		? await getPythonVersionFromPyvenvCfg(interpreterPath)
 		: UNKNOWN_PYTHON_VERSION;
+
 	traceVerbose(
 		"Best effort version C for",
 		interpreterPath,
@@ -310,6 +327,7 @@ export async function getPythonVersionFromPath(
 	const versionD = interpreterPath
 		? await getPythonVersionFromConda(interpreterPath)
 		: UNKNOWN_PYTHON_VERSION;
+
 	traceVerbose(
 		"Best effort version D for",
 		interpreterPath,
@@ -321,6 +339,7 @@ export async function getPythonVersionFromPath(
 	for (const v of [versionA, versionB, versionC, versionD]) {
 		version = comparePythonVersionSpecificity(version, v) > 0 ? version : v;
 	}
+
 	return version;
 }
 
@@ -331,6 +350,7 @@ async function checkPythonExecutable(
 	executable: string | DirEntry,
 	opts: {
 		matchFilename?: (f: string) => boolean;
+
 		filterFile?: (f: string | DirEntry) => Promise<boolean>;
 	},
 ): Promise<boolean> {
@@ -431,6 +451,7 @@ export async function getInterpreterPathFromDir(
 	envDir: string,
 	opts: {
 		global?: boolean;
+
 		ignoreErrors?: boolean;
 	} = {},
 ): Promise<string | undefined> {
@@ -460,6 +481,7 @@ export async function getInterpreterPathFromDir(
 			return entry.filename;
 		}
 	}
+
 	return undefined;
 }
 

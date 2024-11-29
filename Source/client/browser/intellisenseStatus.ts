@@ -14,10 +14,15 @@ export function createStatusItem(): vscode.Disposable {
 				language: "python",
 			},
 		);
+
 		statusItem.name = LanguageService.statusItem.name;
+
 		statusItem.severity = vscode.LanguageStatusSeverity.Warning;
+
 		statusItem.text = LanguageService.statusItem.text;
+
 		statusItem.detail = LanguageService.statusItem.detail;
+
 		statusItem.command = {
 			title: Common.learnMore,
 			command: "vscode.open",

@@ -45,10 +45,15 @@ export function matchPythonBinFilename(filename: string): boolean {
 
 export interface IRegistryInterpreterData {
 	interpreterPath: string;
+
 	versionStr?: string;
+
 	sysVersionStr?: string;
+
 	bitnessStr?: string;
+
 	companyDisplayName?: string;
+
 	distroOrgName?: string;
 }
 
@@ -125,6 +130,7 @@ async function getInterpreterDataFromKey(
 	if (result.interpreterPath.length > 0) {
 		return result;
 	}
+
 	return undefined;
 }
 
@@ -173,6 +179,7 @@ export async function getRegistryInterpreters(): Promise<
 	if (!isTestExecution() && registryInterpretersPromise !== undefined) {
 		return registryInterpretersPromise;
 	}
+
 	registryInterpretersPromise = getRegistryInterpretersImpl();
 
 	return registryInterpretersPromise;
@@ -215,6 +222,7 @@ async function getRegistryInterpretersImpl(
 			}
 		}
 	}
+
 	registryInterpretersCache = uniqBy(
 		registryData,
 		(r: IRegistryInterpreterData) => r.interpreterPath,

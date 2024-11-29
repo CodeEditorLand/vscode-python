@@ -68,10 +68,15 @@ export enum ModuleInstallerType {
  */
 export type InterpreterInformation = {
 	path: string;
+
 	version?: PythonVersion;
+
 	sysVersion?: string;
+
 	architecture: Architecture;
+
 	sysPrefix: string;
+
 	pipEnvWorkspaceFolder?: string;
 };
 
@@ -90,13 +95,21 @@ export type InterpreterInformation = {
 // and doesn't really belong here.
 export type PythonEnvironment = InterpreterInformation & {
 	id?: string;
+
 	companyDisplayName?: string;
+
 	displayName?: string;
+
 	detailedDisplayName?: string;
+
 	envType: EnvironmentType;
+
 	envName?: string;
+
 	envPath?: string;
+
 	cachedEntry?: boolean;
+
 	type?: PythonEnvType;
 };
 
@@ -110,36 +123,47 @@ export function getEnvironmentTypeName(
 		case EnvironmentType.Conda: {
 			return "conda";
 		}
+
 		case EnvironmentType.Pipenv: {
 			return "Pipenv";
 		}
+
 		case EnvironmentType.Pyenv: {
 			return "pyenv";
 		}
+
 		case EnvironmentType.Venv: {
 			return "venv";
 		}
+
 		case EnvironmentType.VirtualEnv: {
 			return "virtualenv";
 		}
+
 		case EnvironmentType.MicrosoftStore: {
 			return "Microsoft Store";
 		}
+
 		case EnvironmentType.Poetry: {
 			return "Poetry";
 		}
+
 		case EnvironmentType.Hatch: {
 			return "Hatch";
 		}
+
 		case EnvironmentType.Pixi: {
 			return "pixi";
 		}
+
 		case EnvironmentType.VirtualEnvWrapper: {
 			return "virtualenvwrapper";
 		}
+
 		case EnvironmentType.ActiveState: {
 			return "ActiveState";
 		}
+
 		default: {
 			return "";
 		}

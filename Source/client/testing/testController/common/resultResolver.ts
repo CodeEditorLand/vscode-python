@@ -63,10 +63,13 @@ export class PythonResultResolver implements ITestResultResolver {
 		private workspaceUri: Uri,
 	) {
 		this.testController = testController;
+
 		this.testProvider = testProvider;
 
 		this.runIdToTestItem = new Map<string, TestItem>();
+
 		this.runIdToVSid = new Map<string, string>();
+
 		this.vsIdToRunId = new Map<string, string>();
 	}
 
@@ -96,6 +99,7 @@ export class PythonResultResolver implements ITestResultResolver {
 					: Testing.errorUnittestDiscovery;
 
 			const { error } = rawTestData;
+
 			traceError(
 				testingErrorConst,
 				"for workspace: ",
@@ -119,18 +123,24 @@ export class PythonResultResolver implements ITestResultResolver {
 					message,
 					this.testProvider,
 				);
+
 				errorNode = createErrorTestItem(this.testController, options);
+
 				this.testController.items.add(errorNode);
 			}
+
 			const errorNodeLabel: MarkdownString = new MarkdownString(
 				`[Show output](command:python.viewOutput) to view error logs`,
 			);
+
 			errorNodeLabel.isTrusted = true;
+
 			errorNode.error = errorNodeLabel;
 		} else {
 			// remove error node only if no errors exist.
 			this.testController.items.delete(`DiscoveryError:${workspacePath}`);
 		}
+
 		if (rawTestData.tests || rawTestData.tests === null) {
 			// if any tests exist, they should be populated in the test tree, regardless of whether there were errors or not.
 			// parse and insert test data.
@@ -159,6 +169,7 @@ export class PythonResultResolver implements ITestResultResolver {
 		if ("coverage" in payload) {
 			// coverage data is sent once per connection
 			traceVerbose("Coverage data received.");
+
 			this._resolveCoverage(payload as CoveragePayload, runInstance);
 		} else {
 			this._resolveExecution(
@@ -175,6 +186,7 @@ export class PythonResultResolver implements ITestResultResolver {
 		if (payload.result === undefined) {
 			return;
 		}
+
 		for (const [key, value] of Object.entries(payload.result)) {
 			const fileNameStr = key;
 
@@ -195,6 +207,7 @@ export class PythonResultResolver implements ITestResultResolver {
 			const uri = Uri.file(fileNameStr);
 
 			const fileCoverage = new FileCoverage(uri, lineCoverageCount);
+
 			runInstance.addCoverage(fileCoverage);
 
 			// create detailed coverage array for each file (only line coverage on detailed, not branch)
@@ -207,8 +220,10 @@ export class PythonResultResolver implements ITestResultResolver {
 					true,
 					new Range(line - 1, 0, line - 1, Number.MAX_SAFE_INTEGER),
 				);
+
 				detailedCoverageArray.push(statementCoverage);
 			}
+
 			for (const line of linesMissed) {
 				// line is 1-indexed, so we need to subtract 1 to get the 0-indexed line number
 				// false value means line is NOT covered
@@ -216,6 +231,7 @@ export class PythonResultResolver implements ITestResultResolver {
 					false,
 					new Range(line - 1, 0, line - 1, Number.MAX_SAFE_INTEGER),
 				);
+
 				detailedCoverageArray.push(statementCoverage);
 			}
 
@@ -242,6 +258,7 @@ export class PythonResultResolver implements ITestResultResolver {
 				// grab leaf level test items
 				this.testController.items.forEach((i) => {
 					const tempArr: TestItem[] = getTestCaseNodes(i);
+
 					testCases.push(...tempArr);
 				});
 
@@ -270,6 +287,7 @@ export class PythonResultResolver implements ITestResultResolver {
 									indiItem.uri,
 									indiItem.range,
 								);
+
 								runInstance.errored(indiItem, message);
 							}
 						}
@@ -299,6 +317,7 @@ export class PythonResultResolver implements ITestResultResolver {
 									indiItem.uri,
 									indiItem.range,
 								);
+
 								runInstance.failed(indiItem, message);
 							}
 						}
@@ -358,6 +377,7 @@ export class PythonResultResolver implements ITestResultResolver {
 							// clear since subtest items don't persist between runs
 							clearAllChildren(parentTestItem);
 						}
+
 						const subTestItem = this.testController?.createTestItem(
 							subtestId,
 							subtestId,
@@ -369,7 +389,9 @@ export class PythonResultResolver implements ITestResultResolver {
 							const text = `${data.subtest} failed: ${
 								testItem.message ?? testItem.outcome
 							}\r\n${traceback}`;
+
 							parentTestItem.children.add(subTestItem);
+
 							runInstance.started(subTestItem);
 
 							const message = new TestMessage(text);
@@ -380,6 +402,7 @@ export class PythonResultResolver implements ITestResultResolver {
 									parentTestItem.range,
 								);
 							}
+
 							runInstance.failed(subTestItem, message);
 						} else {
 							throw new Error(
@@ -412,6 +435,7 @@ export class PythonResultResolver implements ITestResultResolver {
 							// clear since subtest items don't persist between runs
 							clearAllChildren(parentTestItem);
 						}
+
 						const subTestItem = this.testController?.createTestItem(
 							subtestId,
 							subtestId,
@@ -419,7 +443,9 @@ export class PythonResultResolver implements ITestResultResolver {
 						// create a new test item for the subtest
 						if (subTestItem) {
 							parentTestItem.children.add(subTestItem);
+
 							runInstance.started(subTestItem);
+
 							runInstance.passed(subTestItem);
 						} else {
 							throw new Error(

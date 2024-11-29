@@ -34,6 +34,7 @@ import type { TestTool } from "./types";
 function isTelemetrySupported(): boolean {
 	try {
 		const vsc = require("vscode");
+
 		const reporter = require("@vscode/extension-telemetry");
 
 		return vsc !== undefined && reporter !== undefined;
@@ -51,10 +52,13 @@ let packageJSON: any;
 export function isTelemetryDisabled(): boolean {
 	if (!packageJSON) {
 		const vscode = require("vscode") as typeof vscodeTypes;
+
 		const pythonExtension =
 			vscode.extensions.getExtension(PVSC_EXTENSION_ID)!;
+
 		packageJSON = pythonExtension.packageJSON;
 	}
+
 	return !packageJSON.enableTelemetry;
 }
 
@@ -71,6 +75,7 @@ export function setSharedProperty<
 	if (isUnitTestExecution() && propertyName.startsWith("ds_")) {
 		return;
 	}
+
 	if (value === undefined) {
 		delete sharedProperties[propertyName];
 	} else {
@@ -96,6 +101,7 @@ export function getTelemetryReporter(): TelemetryReporter {
 
 	const Reporter = require("@vscode/extension-telemetry")
 		.default as typeof TelemetryReporter;
+
 	telemetryReporter = new Reporter(AppinsightsKey, [
 		{
 			lookup: /(errorName|errorMessage|errorStack)/g,
@@ -121,33 +127,44 @@ export function sendTelemetryEvent<
 	if (isTestExecution() || !isTelemetrySupported() || isTelemetryDisabled()) {
 		return;
 	}
+
 	const reporter = getTelemetryReporter();
+
 	const measures =
 		typeof measuresOrDurationMs === "number"
 			? { duration: measuresOrDurationMs }
 			: measuresOrDurationMs || undefined;
+
 	const customProperties: Record<string, string> = {};
+
 	const eventNameSent = eventName as string;
 
 	if (properties) {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const data = properties as any;
+
 		Object.getOwnPropertyNames(data).forEach((prop) => {
 			if (data[prop] === undefined || data[prop] === null) {
 				return;
 			}
+
 			try {
 				// If there are any errors in serializing one property, ignore that and move on.
 				// Else nothing will be sent.
 				switch (typeof data[prop]) {
 					case "string":
 						customProperties[prop] = data[prop];
+
 						break;
+
 					case "object":
 						customProperties[prop] = "object";
+
 						break;
+
 					default:
 						customProperties[prop] = data[prop].toString();
+
 						break;
 				}
 			} catch (exception) {
@@ -167,7 +184,9 @@ export function sendTelemetryEvent<
 			errorName: ex.name,
 			errorStack: ex.stack ?? "",
 		};
+
 		Object.assign(customProperties, errorProps);
+
 		reporter.sendTelemetryErrorEvent(
 			eventNameSent,
 			customProperties,
@@ -251,6 +270,7 @@ export function captureTelemetry<
 				if (lazyProperties) {
 					return { ...properties, ...lazyProperties(this, result) };
 				}
+
 				return properties;
 			};
 
@@ -261,9 +281,11 @@ export function captureTelemetry<
 				const measures = stopWatch
 					? { duration: stopWatch.elapsedTime }
 					: undefined;
+
 				if (lazyMeasures) {
 					return { ...measures, ...lazyMeasures(this, result) };
 				}
+
 				return measures;
 			};
 
@@ -278,6 +300,7 @@ export function captureTelemetry<
 							getMeasures(data),
 							getProps(data),
 						);
+
 						return data;
 					})
 					.catch((ex) => {
@@ -285,6 +308,7 @@ export function captureTelemetry<
 							...getProps(),
 							failed: true,
 						} as P[E] & FailedEventType;
+
 						sendTelemetryEvent(
 							failureEventName || eventName,
 							getMeasures(),
@@ -319,6 +343,7 @@ export function sendTelemetryWhenDone<
 	properties?: P[E],
 ): void {
 	stopWatch = stopWatch || new StopWatch();
+
 	if (typeof promise.then === "function") {
 		(promise as Promise<unknown>).then(
 			(data) => {
@@ -327,6 +352,7 @@ export function sendTelemetryWhenDone<
 					stopWatch!.elapsedTime,
 					properties,
 				);
+
 				return data;
 			},
 			(ex) => {
@@ -336,6 +362,7 @@ export function sendTelemetryWhenDone<
 					properties,
 					ex,
 				);
+
 				return Promise.reject(ex);
 			},
 		);
@@ -1378,19 +1405,28 @@ export interface IEventNamePropertyMapping {
 		 * Global conda envs locations are returned by `conda info` in the `envs_dirs` setting.
 		 */
 		nativeCondaEnvsInEnvDir?: number;
+
 		condaRootPrefixEnvsAfterFind?: number;
+
 		condaDefaultPrefixEnvsAfterFind?: number;
 		/**
 		 * A conda env found that matches the root_prefix returned by `conda info`
 		 * However a corresponding conda env not found by native locator.
 		 */
 		condaDefaultPrefixFoundInInfoAfterFind?: boolean;
+
 		condaRootPrefixFoundInTxt?: boolean;
+
 		condaDefaultPrefixFoundInTxt?: boolean;
+
 		condaDefaultPrefixFoundInInfoAfterFindKind?: string;
+
 		condaRootPrefixFoundAsAnotherKind?: string;
+
 		condaRootPrefixFoundAsPrefixOfAnother?: string;
+
 		condaDefaultPrefixFoundAsAnotherKind?: string;
+
 		condaDefaultPrefixFoundAsPrefixOfAnother?: string;
 		/**
 		 * Whether we were able to identify the conda root prefix in the conda exe path as a conda env using `find` in native finder API.
@@ -2603,14 +2639,18 @@ export interface IEventNamePropertyMapping {
     */
 	[EventName.TERMINAL_SHELL_IDENTIFICATION]: {
 		failed: boolean;
+
 		terminalProvided: boolean;
+
 		shellIdentificationSource:
 			| "terminalName"
 			| "settings"
 			| "environment"
 			| "default"
 			| "vscode";
+
 		hasCustomShell: undefined | boolean;
+
 		hasShellInEnv: undefined | boolean;
 	};
 	/**
@@ -2670,6 +2710,7 @@ export interface IEventNamePropertyMapping {
      */
 	[EventName.TENSORBOARD_SESSION_LAUNCH]: {
 		entrypoint: TensorBoardEntrypoint;
+
 		trigger: TensorBoardEntrypointTrigger;
 	};
 	/**
@@ -2734,6 +2775,7 @@ export interface IEventNamePropertyMapping {
      */
 	[EventName.TENSORBOARD_ENTRYPOINT_SHOWN]: {
 		entrypoint: TensorBoardEntrypoint;
+
 		trigger: TensorBoardEntrypointTrigger;
 	};
 	/**
@@ -2757,6 +2799,7 @@ export interface IEventNamePropertyMapping {
      */
 	[EventName.TENSORBOARD_INSTALL_PROMPT_SELECTION]: {
 		selection: TensorBoardPromptSelection;
+
 		operationType: "install" | "upgrade";
 	};
 	/**
@@ -2782,8 +2825,11 @@ export interface IEventNamePropertyMapping {
 
 	[EventName.TENSORBOARD_PACKAGE_INSTALL_RESULT]: {
 		wasProfilerPluginAttempted: boolean;
+
 		wasTensorBoardAttempted: boolean;
+
 		wasProfilerPluginInstalled: boolean;
+
 		wasTensorBoardInstalled: boolean;
 	};
 	/**
@@ -2827,6 +2873,7 @@ export interface IEventNamePropertyMapping {
      */
 	[EventName.ENVIRONMENT_CREATING]: {
 		environmentType: "venv" | "conda" | "microvenv";
+
 		pythonVersion: string | undefined;
 	};
 	/**
@@ -2840,6 +2887,7 @@ export interface IEventNamePropertyMapping {
      */
 	[EventName.ENVIRONMENT_CREATED]: {
 		environmentType: "venv" | "conda" | "microvenv";
+
 		reason: "created" | "existing";
 	};
 	/**
@@ -2853,6 +2901,7 @@ export interface IEventNamePropertyMapping {
      */
 	[EventName.ENVIRONMENT_FAILED]: {
 		environmentType: "venv" | "conda" | "microvenv";
+
 		reason: "noVenv" | "noPip" | "noDistUtils" | "other";
 	};
 	/**
@@ -2866,6 +2915,7 @@ export interface IEventNamePropertyMapping {
      */
 	[EventName.ENVIRONMENT_INSTALLING_PACKAGES]: {
 		environmentType: "venv" | "conda" | "microvenv";
+
 		using:
 			| "requirements.txt"
 			| "pyproject.toml"
@@ -2885,6 +2935,7 @@ export interface IEventNamePropertyMapping {
      */
 	[EventName.ENVIRONMENT_INSTALLED_PACKAGES]: {
 		environmentType: "venv" | "conda";
+
 		using:
 			| "requirements.txt"
 			| "pyproject.toml"
@@ -2902,6 +2953,7 @@ export interface IEventNamePropertyMapping {
      */
 	[EventName.ENVIRONMENT_INSTALLING_PACKAGES_FAILED]: {
 		environmentType: "venv" | "conda" | "microvenv";
+
 		using:
 			| "pipUpgrade"
 			| "requirements.txt"
@@ -2928,6 +2980,7 @@ export interface IEventNamePropertyMapping {
      */
 	[EventName.ENVIRONMENT_DELETE]: {
 		environmentType: "venv" | "conda";
+
 		status: "triggered" | "deleted" | "failed";
 	};
 	/**

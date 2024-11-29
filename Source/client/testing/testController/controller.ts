@@ -151,6 +151,7 @@ export class PythonTestController
 			"python-tests",
 			"Python Tests",
 		);
+
 		this.disposables.push(this.testController);
 
 		const delayTrigger = new DelayedTrigger(
@@ -164,7 +165,9 @@ export class PythonTestController
 			250, // Delay running the refresh by 250 ms
 			"Refresh Test Data",
 		);
+
 		this.disposables.push(delayTrigger);
+
 		this.refreshData = delayTrigger;
 
 		this.disposables.push(
@@ -196,17 +199,22 @@ export class PythonTestController
 
 			this.disposables.push(coverageProfile);
 		}
+
 		this.testController.resolveHandler = this.resolveChildren.bind(this);
+
 		this.testController.refreshHandler = (token: CancellationToken) => {
 			this.disposables.push(
 				token.onCancellationRequested(() => {
 					traceVerbose("Testing: Stop refreshing triggered");
+
 					sendTelemetryEvent(EventName.UNITTEST_DISCOVERING_STOP);
+
 					this.stopRefreshing();
 				}),
 			);
 
 			traceVerbose("Testing: Manually triggered test refresh");
+
 			sendTelemetryEvent(
 				EventName.UNITTEST_DISCOVERY_TRIGGER,
 				undefined,
@@ -222,6 +230,7 @@ export class PythonTestController
 	public async activate(): Promise<void> {
 		const workspaces: readonly WorkspaceFolder[] =
 			this.workspaceService.workspaceFolders || [];
+
 		workspaces.forEach((workspace) => {
 			const settings = this.configSettings.getSettings(workspace.uri);
 
@@ -235,17 +244,20 @@ export class PythonTestController
 
 			if (settings.testing.unittestEnabled) {
 				testProvider = UNITTEST_PROVIDER;
+
 				resultResolver = new PythonResultResolver(
 					this.testController,
 					testProvider,
 					workspace.uri,
 				);
+
 				discoveryAdapter = new UnittestTestDiscoveryAdapter(
 					this.configSettings,
 					this.testOutputChannel,
 					resultResolver,
 					this.envVarsService,
 				);
+
 				executionAdapter = new UnittestTestExecutionAdapter(
 					this.configSettings,
 					this.testOutputChannel,
@@ -254,17 +266,20 @@ export class PythonTestController
 				);
 			} else {
 				testProvider = PYTEST_PROVIDER;
+
 				resultResolver = new PythonResultResolver(
 					this.testController,
 					testProvider,
 					workspace.uri,
 				);
+
 				discoveryAdapter = new PytestTestDiscoveryAdapter(
 					this.configSettings,
 					this.testOutputChannel,
 					resultResolver,
 					this.envVarsService,
 				);
+
 				executionAdapter = new PytestTestExecutionAdapter(
 					this.configSettings,
 					this.testOutputChannel,
@@ -287,7 +302,9 @@ export class PythonTestController
 				traceVerbose(
 					`Testing: Setting up watcher for ${workspace.uri.fsPath}`,
 				);
+
 				this.watchForSettingsChanges(workspace);
+
 				this.watchForTestContentChangeOnSave();
 			}
 		});
@@ -301,9 +318,12 @@ export class PythonTestController
 			if (uri === undefined) {
 				// This is a special case where we want everything to be re-discovered.
 				traceVerbose("Testing: Clearing all discovered tests");
+
 				this.testController.items.forEach((item) => {
 					const ids: string[] = [];
+
 					item.children.forEach((child) => ids.push(child.id));
+
 					ids.forEach((id) => item.children.delete(id));
 				});
 
@@ -324,13 +344,17 @@ export class PythonTestController
 
 	public stopRefreshing(): void {
 		this.refreshCancellation.cancel();
+
 		this.refreshCancellation.dispose();
+
 		this.refreshCancellation = new CancellationTokenSource();
 	}
 
 	public clearTestController(): void {
 		const ids: string[] = [];
+
 		this.testController.items.forEach((item) => ids.push(item.id));
+
 		ids.forEach((id) => this.testController.items.delete(id));
 	}
 
@@ -341,6 +365,7 @@ export class PythonTestController
 			const settings = this.configSettings.getSettings(uri);
 
 			const workspace = this.workspaceService.getWorkspaceFolder(uri);
+
 			traceInfo(
 				`Discover tests for workspace name: ${workspace?.name} - uri: ${uri.fsPath}`,
 			);
@@ -366,6 +391,7 @@ export class PythonTestController
 								traceError(
 									"Test provider in adapter is not pytest. Please reload window.",
 								);
+
 								this.surfaceErrorNode(
 									workspace.uri,
 									"Test provider types are not aligned, please reload your VS Code window.",
@@ -374,6 +400,7 @@ export class PythonTestController
 
 								return Promise.resolve();
 							}
+
 							await testAdapter.discoverTests(
 								this.testController,
 								this.refreshCancellation.token,
@@ -417,6 +444,7 @@ export class PythonTestController
 								traceError(
 									"Test provider in adapter is not unittest. Please reload window.",
 								);
+
 								this.surfaceErrorNode(
 									workspace.uri,
 									"Test provider types are not aligned, please reload your VS Code window.",
@@ -425,6 +453,7 @@ export class PythonTestController
 
 								return Promise.resolve();
 							}
+
 							await testAdapter.discoverTests(
 								this.testController,
 								this.refreshCancellation.token,
@@ -452,6 +481,7 @@ export class PythonTestController
 			} else {
 				if (this.sendTestDisabledTelemetry) {
 					this.sendTestDisabledTelemetry = false;
+
 					sendTelemetryEvent(EventName.UNITTEST_DISABLED);
 				}
 				// If we are here we may have to remove an existing node from the tree
@@ -459,6 +489,7 @@ export class PythonTestController
 				// tests for that particular case from the tree view
 				if (workspace) {
 					const toDelete: string[] = [];
+
 					this.testController.items.forEach((i: TestItem) => {
 						const w = this.workspaceService.getWorkspaceFolder(
 							i.uri,
@@ -468,6 +499,7 @@ export class PythonTestController
 							toDelete.push(i.id);
 						}
 					});
+
 					toDelete.forEach((i) =>
 						this.testController.items.delete(i),
 					);
@@ -478,6 +510,7 @@ export class PythonTestController
 
 			const workspaces: readonly WorkspaceFolder[] =
 				this.workspaceService.workspaceFolders || [];
+
 			await Promise.all(
 				workspaces.map(async (workspace) => {
 					if (
@@ -494,10 +527,12 @@ export class PythonTestController
 
 						return;
 					}
+
 					await this.refreshTestDataInternal(workspace.uri);
 				}),
 			);
 		}
+
 		this.refreshingCompletedEvent.fire();
 
 		return Promise.resolve();
@@ -516,6 +551,7 @@ export class PythonTestController
 					this.refreshCancellation.token,
 				);
 			}
+
 			if (settings.testing.unittestEnabled) {
 				return this.unittest.resolveChildren(
 					this.testController,
@@ -525,10 +561,12 @@ export class PythonTestController
 			}
 		} else {
 			traceVerbose("Testing: Refreshing all test data");
+
 			this.sendTriggerTelemetry("auto");
 
 			const workspaces: readonly WorkspaceFolder[] =
 				this.workspaceService.workspaceFolders || [];
+
 			await Promise.all(
 				workspaces.map(async (workspace) => {
 					if (
@@ -542,10 +580,12 @@ export class PythonTestController
 
 						return;
 					}
+
 					await this.refreshTestDataInternal(workspace.uri);
 				}),
 			);
 		}
+
 		return Promise.resolve();
 	}
 
@@ -570,6 +610,7 @@ export class PythonTestController
 				workspaces.push(w),
 			);
 		}
+
 		const runInstance = this.testController.createTestRun(
 			request,
 			`Running Tests for Workspace(s): ${workspaces.map((w) => w.uri.fsPath).join(";")}`,
@@ -578,6 +619,7 @@ export class PythonTestController
 
 		const dispose = token.onCancellationRequested(() => {
 			runInstance.appendOutput(`\nRun instance cancelled.\r\n`);
+
 			runInstance.end();
 		});
 
@@ -600,6 +642,7 @@ export class PythonTestController
 
 						return undefined;
 					}
+
 					const testItems: TestItem[] = [];
 					// If the run request includes test items then collect only items that belong to
 					// `workspace`. If there are no items in the run request then just run the `workspace`
@@ -646,6 +689,7 @@ export class PythonTestController
 									// given file has no detailed coverage data
 									return Promise.resolve([]);
 								}
+
 								return Promise.resolve(details);
 							};
 						}
@@ -680,6 +724,7 @@ export class PythonTestController
 									),
 								);
 							}
+
 							return this.pytest.runTests(
 								{
 									includes: testItems,
@@ -693,6 +738,7 @@ export class PythonTestController
 								token,
 							);
 						}
+
 						if (settings.testing.unittestEnabled) {
 							sendTelemetryEvent(
 								EventName.UNITTEST_RUN,
@@ -739,19 +785,24 @@ export class PythonTestController
 							);
 						}
 					}
+
 					if (
 						!settings.testing.pytestEnabled &&
 						!settings.testing.unittestEnabled
 					) {
 						unconfiguredWorkspaces.push(workspace);
 					}
+
 					return Promise.resolve();
 				}),
 			);
 		} finally {
 			traceVerbose("Finished running tests, ending runInstance.");
+
 			runInstance.appendOutput(`Finished running tests!\r\n`);
+
 			runInstance.end();
+
 			dispose.dispose();
 
 			if (unconfiguredWorkspaces.length > 0) {
@@ -779,6 +830,7 @@ export class PythonTestController
 		);
 
 		const watcher = this.workspaceService.createFileSystemWatcher(pattern);
+
 		this.disposables.push(watcher);
 
 		this.disposables.push(
@@ -794,7 +846,9 @@ export class PythonTestController
 					traceVerbose(
 						`Testing: Trigger refresh after saving ${doc.uri.fsPath}`,
 					);
+
 					this.sendTriggerTelemetry("watching");
+
 					this.refreshData.trigger(doc.uri, false);
 				}
 			}),
@@ -806,16 +860,21 @@ export class PythonTestController
 				traceVerbose(
 					`Testing: Trigger refresh after creating ${uri.fsPath}`,
 				);
+
 				this.sendTriggerTelemetry("watching");
+
 				this.refreshData.trigger(uri, false);
 			}),
 		);
+
 		this.disposables.push(
 			watcher.onDidDelete((uri) => {
 				traceVerbose(
 					`Testing: Trigger refresh after deleting in ${uri.fsPath}`,
 				);
+
 				this.sendTriggerTelemetry("watching");
+
 				this.refreshData.trigger(uri, false);
 			}),
 		);
@@ -828,7 +887,9 @@ export class PythonTestController
 					traceVerbose(
 						`Testing: Trigger refresh after saving ${doc.uri.fsPath}`,
 					);
+
 					this.sendTriggerTelemetry("watching");
+
 					this.refreshData.trigger(doc.uri, false);
 				}
 			}),
@@ -849,6 +910,7 @@ export class PythonTestController
 					trigger,
 				},
 			);
+
 			this.triggerTypes.push(trigger);
 		}
 	}
@@ -868,11 +930,16 @@ export class PythonTestController
 				message,
 				testProvider,
 			);
+
 			errorNode = createErrorTestItem(this.testController, options);
+
 			this.testController.items.add(errorNode);
 		}
+
 		const errorNodeLabel: MarkdownString = new MarkdownString(message);
+
 		errorNodeLabel.isTrusted = true;
+
 		errorNode.error = errorNodeLabel;
 	}
 }

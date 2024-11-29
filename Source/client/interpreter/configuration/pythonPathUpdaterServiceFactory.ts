@@ -25,9 +25,11 @@ export class PythonPathUpdaterServiceFactory
 				IInterpreterPathService,
 			);
 	}
+
 	public getGlobalPythonPathConfigurationService(): IPythonPathUpdaterService {
 		return new GlobalPythonPathUpdaterService(this.interpreterPathService);
 	}
+
 	public getWorkspacePythonPathConfigurationService(
 		wkspace: Uri,
 	): IPythonPathUpdaterService {
@@ -36,6 +38,7 @@ export class PythonPathUpdaterServiceFactory
 			this.interpreterPathService,
 		);
 	}
+
 	public getWorkspaceFolderPythonPathConfigurationService(
 		workspaceFolder: Uri,
 	): IPythonPathUpdaterService {
