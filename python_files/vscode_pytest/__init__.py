@@ -265,7 +265,7 @@ def pytest_report_teststatus(report, config):  # noqa: ARG001
     if SYMLINK_PATH:
         cwd = SYMLINK_PATH
 
-    if report.when == "call":
+    if report.when == "call" or (report.when == "setup" and report.skipped):
         traceback = None
         message = None
         report_value = "skipped"
@@ -453,11 +453,11 @@ def pytest_sessionfinish(session, exitstatus):
         # remove files omitted per coverage report config if any
         omit_files = cov.config.report_omit
         if omit_files:
-            omit_files = set(omit_files)
-            # convert to absolute paths, check against file set
-            omit_files = {os.fspath(pathlib.Path(file).absolute()) for file in omit_files}
-            print("Files to omit from reporting", omit_files)
-            file_set = file_set - omit_files
+            print("Plugin info[vscode-pytest]: Omit files/rules: ", omit_files)
+            for pattern in omit_files:
+                for file in list(file_set):
+                    if pathlib.Path(file).match(pattern):
+                        file_set.remove(file)
 
         for file in file_set:
             try:
