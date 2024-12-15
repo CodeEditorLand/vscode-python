@@ -2,118 +2,126 @@
 // Licensed under the MIT License.
 
 import {
-    CancellationToken,
-    Event,
-    FileCoverageDetail,
-    OutputChannel,
-    TestController,
-    TestItem,
-    TestRun,
-    TestRunProfileKind,
-    Uri,
-    WorkspaceFolder,
-} from 'vscode';
-import { ITestDebugLauncher } from '../../common/types';
-import { IPythonExecutionFactory } from '../../../common/process/types';
-import { PythonEnvironment } from '../../../pythonEnvironments/info';
+	CancellationToken,
+	Event,
+	FileCoverageDetail,
+	OutputChannel,
+	TestController,
+	TestItem,
+	TestRun,
+	TestRunProfileKind,
+	Uri,
+	WorkspaceFolder,
+} from "vscode";
+
+import { IPythonExecutionFactory } from "../../../common/process/types";
+import { PythonEnvironment } from "../../../pythonEnvironments/info";
+import { ITestDebugLauncher } from "../../common/types";
 
 export enum TestDataKinds {
-    Workspace,
-    FolderOrFile,
-    Collection,
-    Case,
+	Workspace,
+	FolderOrFile,
+	Collection,
+	Case,
 }
 
 export interface TestData {
-    rawId: string;
-    runId: string;
-    id: string;
-    uri: Uri;
-    parentId?: string;
-    kind: TestDataKinds;
+	rawId: string;
+	runId: string;
+	id: string;
+	uri: Uri;
+	parentId?: string;
+	kind: TestDataKinds;
 }
 
 export type TestRefreshOptions = { forceRefresh: boolean };
 
-export const ITestController = Symbol('ITestController');
+export const ITestController = Symbol("ITestController");
 export interface ITestController {
-    refreshTestData(resource?: Uri, options?: TestRefreshOptions): Promise<void>;
-    stopRefreshing(): void;
-    onRefreshingCompleted: Event<void>;
-    onRefreshingStarted: Event<void>;
-    onRunWithoutConfiguration: Event<WorkspaceFolder[]>;
+	refreshTestData(
+		resource?: Uri,
+		options?: TestRefreshOptions,
+	): Promise<void>;
+	stopRefreshing(): void;
+	onRefreshingCompleted: Event<void>;
+	onRefreshingStarted: Event<void>;
+	onRunWithoutConfiguration: Event<WorkspaceFolder[]>;
 }
 
-export const ITestFrameworkController = Symbol('ITestFrameworkController');
+export const ITestFrameworkController = Symbol("ITestFrameworkController");
 export interface ITestFrameworkController {
-    resolveChildren(testController: TestController, item: TestItem, token?: CancellationToken): Promise<void>;
+	resolveChildren(
+		testController: TestController,
+		item: TestItem,
+		token?: CancellationToken,
+	): Promise<void>;
 }
 
-export const ITestsRunner = Symbol('ITestsRunner');
+export const ITestsRunner = Symbol("ITestsRunner");
 export interface ITestsRunner {}
 
 // We expose these here as a convenience and to cut down on churn
 // elsewhere in the code.
 type RawTestNode = {
-    id: string;
-    name: string;
-    parentid: string;
+	id: string;
+	name: string;
+	parentid: string;
 };
 export type RawTestParent = RawTestNode & {
-    kind: 'folder' | 'file' | 'suite' | 'function' | 'workspace';
+	kind: "folder" | "file" | "suite" | "function" | "workspace";
 };
 type RawTestFSNode = RawTestParent & {
-    kind: 'folder' | 'file';
-    relpath: string;
+	kind: "folder" | "file";
+	relpath: string;
 };
 export type RawTestFolder = RawTestFSNode & {
-    kind: 'folder';
+	kind: "folder";
 };
 export type RawTestFile = RawTestFSNode & {
-    kind: 'file';
+	kind: "file";
 };
 export type RawTestSuite = RawTestParent & {
-    kind: 'suite';
+	kind: "suite";
 };
 // function-as-a-container is for parameterized ("sub") tests.
 export type RawTestFunction = RawTestParent & {
-    kind: 'function';
+	kind: "function";
 };
 export type RawTest = RawTestNode & {
-    source: string;
+	source: string;
 };
 export type RawDiscoveredTests = {
-    rootid: string;
-    root: string;
-    parents: RawTestParent[];
-    tests: RawTest[];
+	rootid: string;
+	root: string;
+	parents: RawTestParent[];
+	tests: RawTest[];
 };
 
 // New test discovery adapter types
 
 export type DataReceivedEvent = {
-    uuid: string;
-    data: string;
+	uuid: string;
+	data: string;
 };
 
 export type TestDiscoveryCommand = {
-    script: string;
-    args: string[];
+	script: string;
+	args: string[];
 };
 
 export type TestExecutionCommand = {
-    script: string;
-    args: string[];
+	script: string;
+	args: string[];
 };
 
 export type TestCommandOptions = {
-    workspaceFolder: Uri;
-    cwd: string;
-    command: TestDiscoveryCommand | TestExecutionCommand;
-    token?: CancellationToken;
-    outChannel?: OutputChannel;
-    profileKind?: TestRunProfileKind;
-    testIds?: string[];
+	workspaceFolder: Uri;
+	cwd: string;
+	command: TestDiscoveryCommand | TestExecutionCommand;
+	token?: CancellationToken;
+	outChannel?: OutputChannel;
+	profileKind?: TestRunProfileKind;
+	testIds?: string[];
 };
 
 // /**
@@ -143,98 +151,114 @@ export type TestCommandOptions = {
 //     triggerDiscoveryDataReceivedEvent(data: DataReceivedEvent): void;
 // }
 export interface ITestResultResolver {
-    runIdToVSid: Map<string, string>;
-    runIdToTestItem: Map<string, TestItem>;
-    vsIdToRunId: Map<string, string>;
-    detailedCoverageMap: Map<string, FileCoverageDetail[]>;
+	runIdToVSid: Map<string, string>;
+	runIdToTestItem: Map<string, TestItem>;
+	vsIdToRunId: Map<string, string>;
+	detailedCoverageMap: Map<string, FileCoverageDetail[]>;
 
-    resolveDiscovery(payload: DiscoveredTestPayload, token?: CancellationToken): void;
-    resolveExecution(payload: ExecutionTestPayload | CoveragePayload, runInstance: TestRun): void;
-    _resolveDiscovery(payload: DiscoveredTestPayload, token?: CancellationToken): void;
-    _resolveExecution(payload: ExecutionTestPayload, runInstance: TestRun): void;
-    _resolveCoverage(payload: CoveragePayload, runInstance: TestRun): void;
+	resolveDiscovery(
+		payload: DiscoveredTestPayload,
+		token?: CancellationToken,
+	): void;
+	resolveExecution(
+		payload: ExecutionTestPayload | CoveragePayload,
+		runInstance: TestRun,
+	): void;
+	_resolveDiscovery(
+		payload: DiscoveredTestPayload,
+		token?: CancellationToken,
+	): void;
+	_resolveExecution(
+		payload: ExecutionTestPayload,
+		runInstance: TestRun,
+	): void;
+	_resolveCoverage(payload: CoveragePayload, runInstance: TestRun): void;
 }
 export interface ITestDiscoveryAdapter {
-    // ** first line old method signature, second line new method signature
-    discoverTests(uri: Uri): Promise<DiscoveredTestPayload>;
-    discoverTests(
-        uri: Uri,
-        executionFactory: IPythonExecutionFactory,
-        interpreter?: PythonEnvironment,
-    ): Promise<DiscoveredTestPayload>;
+	// ** first line old method signature, second line new method signature
+	discoverTests(uri: Uri): Promise<DiscoveredTestPayload>;
+	discoverTests(
+		uri: Uri,
+		executionFactory: IPythonExecutionFactory,
+		interpreter?: PythonEnvironment,
+	): Promise<DiscoveredTestPayload>;
 }
 
 // interface for execution/runner adapter
 export interface ITestExecutionAdapter {
-    // ** first line old method signature, second line new method signature
-    runTests(uri: Uri, testIds: string[], profileKind?: boolean | TestRunProfileKind): Promise<ExecutionTestPayload>;
-    runTests(
-        uri: Uri,
-        testIds: string[],
-        profileKind?: boolean | TestRunProfileKind,
-        runInstance?: TestRun,
-        executionFactory?: IPythonExecutionFactory,
-        debugLauncher?: ITestDebugLauncher,
-        interpreter?: PythonEnvironment,
-    ): Promise<ExecutionTestPayload>;
+	// ** first line old method signature, second line new method signature
+	runTests(
+		uri: Uri,
+		testIds: string[],
+		profileKind?: boolean | TestRunProfileKind,
+	): Promise<ExecutionTestPayload>;
+	runTests(
+		uri: Uri,
+		testIds: string[],
+		profileKind?: boolean | TestRunProfileKind,
+		runInstance?: TestRun,
+		executionFactory?: IPythonExecutionFactory,
+		debugLauncher?: ITestDebugLauncher,
+		interpreter?: PythonEnvironment,
+	): Promise<ExecutionTestPayload>;
 }
 
 // Same types as in python_files/unittestadapter/utils.py
-export type DiscoveredTestType = 'folder' | 'file' | 'class' | 'test';
+export type DiscoveredTestType = "folder" | "file" | "class" | "test";
 
 export type DiscoveredTestCommon = {
-    path: string;
-    name: string;
-    // Trailing underscore to avoid collision with the 'type' Python keyword.
-    type_: DiscoveredTestType;
-    id_: string;
+	path: string;
+	name: string;
+	// Trailing underscore to avoid collision with the 'type' Python keyword.
+	type_: DiscoveredTestType;
+	id_: string;
 };
 
 export type DiscoveredTestItem = DiscoveredTestCommon & {
-    lineno: number;
-    runID: string;
+	lineno: number;
+	runID: string;
 };
 
 export type DiscoveredTestNode = DiscoveredTestCommon & {
-    children: (DiscoveredTestNode | DiscoveredTestItem)[];
+	children: (DiscoveredTestNode | DiscoveredTestItem)[];
 };
 
 export type DiscoveredTestPayload = {
-    cwd: string;
-    tests?: DiscoveredTestNode;
-    status: 'success' | 'error';
-    error?: string[];
+	cwd: string;
+	tests?: DiscoveredTestNode;
+	status: "success" | "error";
+	error?: string[];
 };
 
 export type CoveragePayload = {
-    coverage: boolean;
-    cwd: string;
-    result?: {
-        [filePathStr: string]: FileCoverageMetrics;
-    };
-    error: string;
+	coverage: boolean;
+	cwd: string;
+	result?: {
+		[filePathStr: string]: FileCoverageMetrics;
+	};
+	error: string;
 };
 
 // using camel-case for these types to match the python side
 export type FileCoverageMetrics = {
-    // eslint-disable-next-line camelcase
-    lines_covered: number[];
-    // eslint-disable-next-line camelcase
-    lines_missed: number[];
+	// eslint-disable-next-line camelcase
+	lines_covered: number[];
+	// eslint-disable-next-line camelcase
+	lines_missed: number[];
 };
 
 export type ExecutionTestPayload = {
-    cwd: string;
-    status: 'success' | 'error';
-    result?: {
-        [testRunID: string]: {
-            test?: string;
-            outcome?: string;
-            message?: string;
-            traceback?: string;
-            subtest?: string;
-        };
-    };
-    notFound?: string[];
-    error: string;
+	cwd: string;
+	status: "success" | "error";
+	result?: {
+		[testRunID: string]: {
+			test?: string;
+			outcome?: string;
+			message?: string;
+			traceback?: string;
+			subtest?: string;
+		};
+	};
+	notFound?: string[];
+	error: string;
 };

@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-'use strict';
+"use strict";
 
-import { IServiceManager } from '../ioc/types';
-import { registerTypes as diagnosticsRegisterTypes } from './diagnostics/serviceRegistry';
+import { IServiceManager } from "../ioc/types";
+import { registerTypes as diagnosticsRegisterTypes } from "./diagnostics/serviceRegistry";
 
 export function registerTypes(serviceManager: IServiceManager) {
-    diagnosticsRegisterTypes(serviceManager);
+	diagnosticsRegisterTypes(serviceManager);
 }

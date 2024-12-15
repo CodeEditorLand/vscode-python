@@ -1,202 +1,224 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { traceError } from '../../../../logging';
-import { sendTelemetryEvent } from '../../../../telemetry';
-import { EventName } from '../../../../telemetry/constants';
+import { traceError } from "../../../../logging";
+import { sendTelemetryEvent } from "../../../../telemetry";
+import { EventName } from "../../../../telemetry/constants";
 
-export type NativePythonTelemetry = MissingCondaEnvironments | MissingPoetryEnvironments | RefreshPerformance;
+export type NativePythonTelemetry =
+	| MissingCondaEnvironments
+	| MissingPoetryEnvironments
+	| RefreshPerformance;
 
 export type MissingCondaEnvironments = {
-    event: 'MissingCondaEnvironments';
+	event: "MissingCondaEnvironments";
 
-    data: {
-        missingCondaEnvironments: {
-            missing: number;
+	data: {
+		missingCondaEnvironments: {
+			missing: number;
 
-            envDirsNotFound?: number;
+			envDirsNotFound?: number;
 
-            userProvidedCondaExe?: boolean;
+			userProvidedCondaExe?: boolean;
 
-            rootPrefixNotFound?: boolean;
+			rootPrefixNotFound?: boolean;
 
-            condaPrefixNotFound?: boolean;
+			condaPrefixNotFound?: boolean;
 
-            condaManagerNotFound?: boolean;
+			condaManagerNotFound?: boolean;
 
-            sysRcNotFound?: boolean;
+			sysRcNotFound?: boolean;
 
-            userRcNotFound?: boolean;
+			userRcNotFound?: boolean;
 
-            otherRcNotFound?: boolean;
+			otherRcNotFound?: boolean;
 
-            missingEnvDirsFromSysRc?: number;
+			missingEnvDirsFromSysRc?: number;
 
-            missingEnvDirsFromUserRc?: number;
+			missingEnvDirsFromUserRc?: number;
 
-            missingEnvDirsFromOtherRc?: number;
+			missingEnvDirsFromOtherRc?: number;
 
-            missingFromSysRcEnvDirs?: number;
+			missingFromSysRcEnvDirs?: number;
 
-            missingFromUserRcEnvDirs?: number;
+			missingFromUserRcEnvDirs?: number;
 
-            missingFromOtherRcEnvDirs?: number;
-        };
-    };
+			missingFromOtherRcEnvDirs?: number;
+		};
+	};
 };
 
 export type MissingPoetryEnvironments = {
-    event: 'MissingPoetryEnvironments';
+	event: "MissingPoetryEnvironments";
 
-    data: {
-        missingPoetryEnvironments: {
-            missing: number;
+	data: {
+		missingPoetryEnvironments: {
+			missing: number;
 
-            missingInPath: number;
+			missingInPath: number;
 
-            userProvidedPoetryExe?: boolean;
+			userProvidedPoetryExe?: boolean;
 
-            poetryExeNotFound?: boolean;
+			poetryExeNotFound?: boolean;
 
-            globalConfigNotFound?: boolean;
+			globalConfigNotFound?: boolean;
 
-            cacheDirNotFound?: boolean;
+			cacheDirNotFound?: boolean;
 
-            cacheDirIsDifferent?: boolean;
+			cacheDirIsDifferent?: boolean;
 
-            virtualenvsPathNotFound?: boolean;
+			virtualenvsPathNotFound?: boolean;
 
-            virtualenvsPathIsDifferent?: boolean;
+			virtualenvsPathIsDifferent?: boolean;
 
-            inProjectIsDifferent?: boolean;
-        };
-    };
+			inProjectIsDifferent?: boolean;
+		};
+	};
 };
 
 export type RefreshPerformance = {
-    event: 'RefreshPerformance';
+	event: "RefreshPerformance";
 
-    data: {
-        refreshPerformance: {
-            total: number;
+	data: {
+		refreshPerformance: {
+			total: number;
 
-            breakdown: {
-                Locators: number;
+			breakdown: {
+				Locators: number;
 
-                Path: number;
+				Path: number;
 
-                GlobalVirtualEnvs: number;
+				GlobalVirtualEnvs: number;
 
-                Workspaces: number;
-            };
+				Workspaces: number;
+			};
 
-            locators: {
-                Conda?: number;
+			locators: {
+				Conda?: number;
 
-                Homebrew?: number;
+				Homebrew?: number;
 
-                LinuxGlobalPython?: number;
+				LinuxGlobalPython?: number;
 
-                MacCmdLineTools?: number;
+				MacCmdLineTools?: number;
 
-                MacPythonOrg?: number;
+				MacPythonOrg?: number;
 
-                MacXCode?: number;
+				MacXCode?: number;
 
-                PipEnv?: number;
+				PipEnv?: number;
 
-                PixiEnv?: number;
+				PixiEnv?: number;
 
-                Poetry?: number;
+				Poetry?: number;
 
-                PyEnv?: number;
+				PyEnv?: number;
 
-                Venv?: number;
+				Venv?: number;
 
-                VirtualEnv?: number;
+				VirtualEnv?: number;
 
-                VirtualEnvWrapper?: number;
+				VirtualEnvWrapper?: number;
 
-                WindowsRegistry?: number;
+				WindowsRegistry?: number;
 
-                WindowsStore?: number;
-            };
-        };
-    };
+				WindowsStore?: number;
+			};
+		};
+	};
 };
 
 let refreshTelemetrySent = false;
 
 export function sendNativeTelemetry(
-    data: NativePythonTelemetry,
-    initialRefreshMetrics: {
-        timeToSpawn: number;
+	data: NativePythonTelemetry,
+	initialRefreshMetrics: {
+		timeToSpawn: number;
 
-        timeToConfigure: number;
+		timeToConfigure: number;
 
-        timeToRefresh: number;
-    },
+		timeToRefresh: number;
+	},
 ): void {
-    switch (data.event) {
-        case 'MissingCondaEnvironments': {
-            sendTelemetryEvent(
-                EventName.NATIVE_FINDER_MISSING_CONDA_ENVS,
-                undefined,
-                data.data.missingCondaEnvironments,
-            );
+	switch (data.event) {
+		case "MissingCondaEnvironments": {
+			sendTelemetryEvent(
+				EventName.NATIVE_FINDER_MISSING_CONDA_ENVS,
+				undefined,
+				data.data.missingCondaEnvironments,
+			);
 
-            break;
-        }
+			break;
+		}
 
-        case 'MissingPoetryEnvironments': {
-            sendTelemetryEvent(
-                EventName.NATIVE_FINDER_MISSING_POETRY_ENVS,
-                undefined,
-                data.data.missingPoetryEnvironments,
-            );
+		case "MissingPoetryEnvironments": {
+			sendTelemetryEvent(
+				EventName.NATIVE_FINDER_MISSING_POETRY_ENVS,
+				undefined,
+				data.data.missingPoetryEnvironments,
+			);
 
-            break;
-        }
+			break;
+		}
 
-        case 'RefreshPerformance': {
-            if (refreshTelemetrySent) {
-                break;
-            }
+		case "RefreshPerformance": {
+			if (refreshTelemetrySent) {
+				break;
+			}
 
-            refreshTelemetrySent = true;
+			refreshTelemetrySent = true;
 
-            sendTelemetryEvent(EventName.NATIVE_FINDER_PERF, {
-                duration: data.data.refreshPerformance.total,
-                totalDuration: data.data.refreshPerformance.total,
-                breakdownGlobalVirtualEnvs: data.data.refreshPerformance.breakdown.GlobalVirtualEnvs,
-                breakdownLocators: data.data.refreshPerformance.breakdown.Locators,
-                breakdownPath: data.data.refreshPerformance.breakdown.Path,
-                breakdownWorkspaces: data.data.refreshPerformance.breakdown.Workspaces,
-                locatorConda: data.data.refreshPerformance.locators.Conda || 0,
-                locatorHomebrew: data.data.refreshPerformance.locators.Homebrew || 0,
-                locatorLinuxGlobalPython: data.data.refreshPerformance.locators.LinuxGlobalPython || 0,
-                locatorMacCmdLineTools: data.data.refreshPerformance.locators.MacCmdLineTools || 0,
-                locatorMacPythonOrg: data.data.refreshPerformance.locators.MacPythonOrg || 0,
-                locatorMacXCode: data.data.refreshPerformance.locators.MacXCode || 0,
-                locatorPipEnv: data.data.refreshPerformance.locators.PipEnv || 0,
-                locatorPixiEnv: data.data.refreshPerformance.locators.PixiEnv || 0,
-                locatorPoetry: data.data.refreshPerformance.locators.Poetry || 0,
-                locatorPyEnv: data.data.refreshPerformance.locators.PyEnv || 0,
-                locatorVenv: data.data.refreshPerformance.locators.Venv || 0,
-                locatorVirtualEnv: data.data.refreshPerformance.locators.VirtualEnv || 0,
-                locatorVirtualEnvWrapper: data.data.refreshPerformance.locators.VirtualEnvWrapper || 0,
-                locatorWindowsRegistry: data.data.refreshPerformance.locators.WindowsRegistry || 0,
-                locatorWindowsStore: data.data.refreshPerformance.locators.WindowsStore || 0,
-                timeToSpawn: initialRefreshMetrics.timeToSpawn,
-                timeToConfigure: initialRefreshMetrics.timeToConfigure,
-                timeToRefresh: initialRefreshMetrics.timeToRefresh,
-            });
+			sendTelemetryEvent(EventName.NATIVE_FINDER_PERF, {
+				duration: data.data.refreshPerformance.total,
+				totalDuration: data.data.refreshPerformance.total,
+				breakdownGlobalVirtualEnvs:
+					data.data.refreshPerformance.breakdown.GlobalVirtualEnvs,
+				breakdownLocators:
+					data.data.refreshPerformance.breakdown.Locators,
+				breakdownPath: data.data.refreshPerformance.breakdown.Path,
+				breakdownWorkspaces:
+					data.data.refreshPerformance.breakdown.Workspaces,
+				locatorConda: data.data.refreshPerformance.locators.Conda || 0,
+				locatorHomebrew:
+					data.data.refreshPerformance.locators.Homebrew || 0,
+				locatorLinuxGlobalPython:
+					data.data.refreshPerformance.locators.LinuxGlobalPython ||
+					0,
+				locatorMacCmdLineTools:
+					data.data.refreshPerformance.locators.MacCmdLineTools || 0,
+				locatorMacPythonOrg:
+					data.data.refreshPerformance.locators.MacPythonOrg || 0,
+				locatorMacXCode:
+					data.data.refreshPerformance.locators.MacXCode || 0,
+				locatorPipEnv:
+					data.data.refreshPerformance.locators.PipEnv || 0,
+				locatorPixiEnv:
+					data.data.refreshPerformance.locators.PixiEnv || 0,
+				locatorPoetry:
+					data.data.refreshPerformance.locators.Poetry || 0,
+				locatorPyEnv: data.data.refreshPerformance.locators.PyEnv || 0,
+				locatorVenv: data.data.refreshPerformance.locators.Venv || 0,
+				locatorVirtualEnv:
+					data.data.refreshPerformance.locators.VirtualEnv || 0,
+				locatorVirtualEnvWrapper:
+					data.data.refreshPerformance.locators.VirtualEnvWrapper ||
+					0,
+				locatorWindowsRegistry:
+					data.data.refreshPerformance.locators.WindowsRegistry || 0,
+				locatorWindowsStore:
+					data.data.refreshPerformance.locators.WindowsStore || 0,
+				timeToSpawn: initialRefreshMetrics.timeToSpawn,
+				timeToConfigure: initialRefreshMetrics.timeToConfigure,
+				timeToRefresh: initialRefreshMetrics.timeToRefresh,
+			});
 
-            break;
-        }
+			break;
+		}
 
-        default: {
-            traceError(`Unhandled Telemetry Event type ${JSON.stringify(data)}`);
-        }
-    }
+		default: {
+			traceError(
+				`Unhandled Telemetry Event type ${JSON.stringify(data)}`,
+			);
+		}
+	}
 }
