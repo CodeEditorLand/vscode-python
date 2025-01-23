@@ -1468,7 +1468,7 @@
 		"@types/fs-extra": "11.0.4",
 		"@types/glob": "8.1.0",
 		"@types/lodash": "4.17.14",
-		"@types/node": "22.10.7",
+		"@types/node": "22.10.9",
 		"@types/semver": "7.5.8",
 		"@types/shortid": "2.2.0",
 		"@types/sinon": "17.0.3",
