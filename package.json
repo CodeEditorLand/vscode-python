@@ -37,6 +37,7 @@
 		"verifyBundle": "gulp verifyBundle",
 		"webpack": "webpack"
 	},
+	"l10n": "./l10n",
 	"contributes": {
 		"breakpoints": [
 			{
@@ -1440,7 +1441,7 @@
 		"fs-extra": "11.3.0",
 		"glob": "11.0.1",
 		"iconv-lite": "0.6.3",
-		"inversify": "6.2.1",
+		"inversify": "6.2.2",
 		"jsonc-parser": "3.3.1",
 		"lodash": "4.17.21",
 		"minimatch": "10.0.1",
@@ -1449,7 +1450,7 @@
 		"reflect-metadata": "0.2.2",
 		"rxjs": "7.8.1",
 		"rxjs-compat": "6.6.7",
-		"semver": "7.7.0",
+		"semver": "7.7.1",
 		"stack-trace": "0.0.10",
 		"sudo-prompt": "9.2.1",
 		"tmp": "0.2.3",
@@ -1468,7 +1469,7 @@
 		"@types/fs-extra": "11.0.4",
 		"@types/glob": "8.1.0",
 		"@types/lodash": "4.17.15",
-		"@types/node": "22.13.0",
+		"@types/node": "22.13.1",
 		"@types/semver": "7.5.8",
 		"@types/shortid": "2.2.0",
 		"@types/sinon": "17.0.3",
@@ -1485,7 +1486,7 @@
 		"cross-spawn": "7.0.6",
 		"del": "8.0.0",
 		"download": "8.0.0",
-		"expose-loader": "5.0.0",
+		"expose-loader": "5.0.1",
 		"flat": "6.0.1",
 		"get-port": "7.1.0",
 		"node-has-native-dependencies": "1.0.2",
@@ -1536,6 +1537,5 @@
 	],
 	"featureFlags": {
 		"usingNewInterpreterStorage": true
-	},
-	"l10n": "./l10n"
+	}
 }
